@@ -1,0 +1,428 @@
+/* Design-system components.
+
+   Moved out of inline style objects so they can carry breakpoints, focus,
+   hover-capability guards and coarse-pointer sizing. Visual values are
+   unchanged from the incumbent design; only the conditions are new. */
+
+/* --- Button ------------------------------------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.005em;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  text-decoration: none;
+  /* Buttons hold short labels; keeping them on one line is intentional.
+     Long labels get a wrap escape at the narrowest sizes instead. */
+  white-space: nowrap;
+  transition: transform 0.12s var(--ease-out-quart), opacity 0.15s ease,
+    background 0.15s ease, color 0.15s ease;
+}
+
+.btn--sm { padding: 8px 16px; font-size: 14px; gap: 6px; }
+.btn--md { padding: 12px 24px; font-size: 16px; gap: 8px; }
+.btn--lg { padding: 16px 30px; font-size: 17px; gap: 9px; }
+
+.btn--primary {
+  background: var(--be-ink);
+  color: var(--be-paper);
+  border: 1px solid var(--be-ink);
+}
+
+.btn--secondary {
+  background: var(--be-white);
+  color: var(--be-ink);
+  border: 1px solid var(--be-ink);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--be-ink);
+  border: 1px solid transparent;
+}
+
+.btn--inverse {
+  background: var(--be-white);
+  color: var(--be-ink);
+  border: 1px solid var(--be-white);
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Press feedback for every input method — the old handlers were
+   mouse-events only, so keyboard and touch got nothing. */
+.btn:not(:disabled):active { transform: scale(0.97); }
+
+@media (hover: hover) {
+  .btn--primary:hover { background: var(--be-ink-70); border-color: var(--be-ink-70); }
+  .btn--secondary:hover { background: var(--be-paper); }
+  .btn--ghost:hover { background: rgba(18, 16, 13, 0.06); }
+}
+
+/* Touch: guarantee the 44px target without inflating the pointer layout. */
+@media (pointer: coarse) {
+  .btn--sm { min-height: var(--touch-target); padding-block: 10px; }
+  .btn--md,
+  .btn--lg { min-height: var(--touch-target); }
+}
+
+/* --- IconButton -------------------------------------------------------- */
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  background: transparent;
+  transition: transform 0.12s var(--ease-out-quart), background 0.15s ease,
+    color 0.15s ease;
+}
+
+.icon-btn--sm { width: 32px; height: 32px; }
+.icon-btn--md { width: 44px; height: 44px; }
+.icon-btn--lg { width: 56px; height: 56px; }
+
+.icon-btn--outline { color: var(--be-ink); border: 1.5px solid var(--be-ink); }
+.icon-btn--solid {
+  background: var(--be-ink);
+  color: var(--be-paper);
+  border: 1.5px solid var(--be-ink);
+}
+.icon-btn--inverse {
+  color: var(--text-on-dark);
+  border: 1.5px solid rgba(244, 237, 227, 0.6);
+}
+.icon-btn--ghost {
+  background: var(--be-white);
+  color: var(--be-ink);
+  border: 1.5px solid transparent;
+}
+.icon-btn--bare { background: none; border: none; color: inherit; }
+
+.icon-btn:active { transform: scale(0.94); }
+
+@media (hover: hover) {
+  .icon-btn--outline:hover { background: var(--be-ink); color: var(--be-paper); }
+  .icon-btn--inverse:hover { background: rgba(244, 237, 227, 0.14); }
+  .icon-btn--bare:hover { background: rgba(18, 16, 13, 0.06); }
+}
+
+/* The 32px variant is used in the header and the topic filter — both
+   primary mobile controls. Pad the hit area out to 44px without changing
+   the drawn circle. */
+@media (pointer: coarse) {
+  .icon-btn--sm {
+    position: relative;
+  }
+  .icon-btn--sm::after {
+    content: "";
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: var(--touch-target);
+    height: var(--touch-target);
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* --- Tag --------------------------------------------------------------- */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 11px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 11.5px;
+  line-height: 1;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  border-radius: var(--radius-pill);
+  border: 1px solid;
+  background: transparent;
+  white-space: nowrap;
+}
+
+.tag--ink { color: var(--be-ink); border-color: var(--border-tag); }
+.tag--warm { color: var(--be-rust); border-color: var(--border-tag-warm); }
+.tag--on-dark { color: var(--text-on-dark); border-color: rgba(244, 237, 227, 0.5); }
+
+/* --- TopicPill --------------------------------------------------------- */
+
+.topic-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  background: var(--be-white);
+  color: var(--be-ink);
+  box-shadow: var(--shadow-sticker);
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: transform 0.15s var(--ease-out-quart), background 0.15s ease;
+}
+
+/* Sizes step down on small screens so a topic cloud stays a cloud and not
+   a stack of full-width slabs. */
+.topic-pill--sm { padding: 8px 16px; font-size: 15px; }
+.topic-pill--md { padding: 10px 18px; font-size: 16px; }
+.topic-pill--lg { padding: 12px 22px; font-size: 18px; }
+
+@media (min-width: 36em) {
+  .topic-pill--md { padding: 11px 22px; font-size: 18px; }
+  .topic-pill--lg { padding: 14px 28px; font-size: 22px; }
+}
+
+.topic-pill--active {
+  background: var(--be-ink);
+  color: var(--be-paper);
+  border-color: var(--be-ink);
+}
+
+@media (pointer: coarse) {
+  .topic-pill { min-height: var(--touch-target); }
+}
+
+/* The scattered-sticker rotation is decorative. It costs horizontal room,
+   so it only applies once there's room to spare. */
+.topic-pill { transform: none; }
+
+@media (min-width: 36em) {
+  .topic-pill { transform: rotate(var(--pill-rotate, 0deg)); }
+
+  @media (hover: hover) {
+    .topic-pill:hover { transform: rotate(var(--pill-rotate, 0deg)) translateY(-2px); }
+  }
+}
+
+/* --- ArticleCard ------------------------------------------------------- */
+
+.article-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-decoration: none;
+}
+
+.article-card__media {
+  display: block;
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--card-ratio, 4 / 3);
+  border-radius: var(--radius-thumb);
+  overflow: hidden;
+  /* Paints while the cover loads; the default colour when there isn't one. */
+  background-color: var(--card-tint, var(--cover-fallback));
+}
+
+.article-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.article-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.article-card__title {
+  margin: 0;
+  color: var(--be-ink);
+  letter-spacing: var(--tracking-tight);
+  text-wrap: pretty;
+}
+
+.article-card__title--sm { font: var(--type-title-sm); }
+.article-card__title--md { font: var(--type-title-md); }
+.article-card__title--lg { font: var(--type-title-lg); }
+
+.article-card__date {
+  font: var(--type-meta);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+@media (hover: hover) {
+  .article-card:hover { opacity: 1; }
+  .article-card:hover .article-card__title { text-decoration: underline; text-underline-offset: 3px; }
+}
+
+/* Overlay (hero) form. On phones the caption plate sits below the image
+   rather than on top of it: overlaying a 62%-wide plate on a 320px image
+   leaves the headline four words wide. */
+.article-card--overlay { position: relative; display: block; gap: 0; }
+
+.article-card--overlay .article-card__media {
+  aspect-ratio: var(--card-ratio-mobile, 4 / 3);
+  border-radius: var(--radius-hero);
+}
+
+.article-card__plate {
+  background: var(--be-paper);
+  padding: 20px 22px 22px;
+  border-bottom-right-radius: var(--radius-card);
+  border-bottom-left-radius: var(--radius-card);
+}
+
+.article-card__plate .article-card__tags { margin-bottom: 14px; }
+
+.article-card__plate .article-card__title { font: var(--type-title-lg); }
+
+.article-card__plate .article-card__date { margin-top: 14px; }
+
+@media (min-width: 48em) {
+  .article-card--overlay .article-card__media {
+    aspect-ratio: var(--card-ratio, 21 / 9);
+  }
+
+  .article-card__plate {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    max-width: min(520px, 62%);
+    padding: 24px 28px 26px;
+    border-radius: 0;
+    border-top-right-radius: var(--radius-card);
+  }
+}
+
+/* --- ResourceCard ------------------------------------------------------ */
+
+.resource-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-decoration: none;
+}
+
+.resource-card__figure {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  background: linear-gradient(160deg, #efe6f6, #e7dcf2);
+  box-shadow: var(--shadow-card);
+  padding: 22px;
+}
+
+.resource-card__doc {
+  position: absolute;
+  inset: 22px 22px auto 22px;
+  height: 52%;
+  border-radius: 10px;
+  background: var(--doc-color, var(--be-gold));
+  padding: 20px 22px;
+}
+
+.resource-card__doc-title {
+  font: var(--type-title-sm);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.01em;
+  display: block;
+  max-width: 78%;
+}
+
+.resource-card__pocket {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 62%;
+  background: linear-gradient(180deg, var(--be-glass-pink), var(--be-glass-lilac));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-top-left-radius: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.45);
+  clip-path: polygon(0 22%, 46% 22%, 52% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.resource-card__tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.resource-card__title {
+  font: var(--type-title-md);
+  color: var(--be-ink);
+  margin: 0;
+  letter-spacing: var(--tracking-tight);
+  text-wrap: pretty;
+}
+
+.resource-card__date {
+  font: var(--type-meta);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+@media (hover: hover) {
+  .resource-card:hover .resource-card__title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+/* --- SectionHeading ---------------------------------------------------- */
+
+.section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  /* The action wraps beneath the title on narrow screens instead of
+     squeezing a long serif heading into two words per line. */
+  flex-wrap: wrap;
+}
+
+.section-heading--center { justify-content: center; }
+
+.section-heading__title {
+  font: var(--type-section);
+  color: var(--be-ink);
+  margin: 0;
+  letter-spacing: 0.005em;
+  text-wrap: balance;
+  /* Long single words ("Recommendations") must never push the row wider
+     than its column. */
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.section-heading--on-dark .section-heading__title { color: var(--text-on-dark); }
+
+.section-heading__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border: 1px solid var(--border-tag);
+  border-radius: var(--radius-pill);
+  font: var(--type-nav);
+  color: var(--be-ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.section-heading--on-dark .section-heading__link { color: var(--text-on-dark); }
+
+@media (pointer: coarse) {
+  .section-heading__link { min-height: var(--touch-target); }
+}
+
+@media (hover: hover) {
+  .section-heading__link:hover { background: var(--be-ink); color: var(--be-paper); opacity: 1; }
+}

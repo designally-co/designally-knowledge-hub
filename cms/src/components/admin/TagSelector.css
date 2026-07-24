@@ -1,0 +1,121 @@
+/* Custom tag field for the Payload admin. Uses Payload theme variables so it
+   works in both light and dark admin themes. */
+
+.tag-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tag-selector__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.tag-selector__label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--theme-elevation-800);
+}
+
+.tag-selector__count {
+  font-size: 0.78rem;
+  color: var(--theme-elevation-500);
+  font-variant-numeric: tabular-nums;
+}
+
+.tag-selector__count.is-max {
+  color: var(--theme-success-500);
+}
+
+.tag-selector__selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-selector__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border-bottom: 1px solid var(--theme-elevation-150);
+  padding-bottom: 8px;
+}
+
+.tag-selector__tab {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.76rem;
+  padding: 4px 9px;
+  border-radius: 4px;
+  color: var(--theme-elevation-500);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.tag-selector__tab:hover {
+  background: var(--theme-elevation-100);
+  color: var(--theme-elevation-800);
+}
+
+.tag-selector__tab.is-active {
+  background: var(--theme-elevation-150);
+  color: var(--theme-elevation-1000);
+  font-weight: 600;
+}
+
+.tag-selector__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--theme-elevation-200);
+  background: var(--theme-elevation-50);
+  color: var(--theme-elevation-800);
+  border-radius: 999px;
+  padding: 4px 11px;
+  font-size: 0.78rem;
+  line-height: 1.25;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease,
+    opacity 0.12s ease;
+}
+
+.tag-chip:hover:not(:disabled) {
+  border-color: var(--theme-elevation-400);
+}
+
+.tag-chip--on {
+  background: var(--theme-elevation-1000);
+  color: var(--theme-elevation-0);
+  border-color: var(--theme-elevation-1000);
+}
+
+.tag-chip:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.tag-chip__x {
+  margin-left: 6px;
+  font-size: 0.95rem;
+  line-height: 1;
+  opacity: 0.75;
+}
+
+.tag-selector__hint {
+  font-size: 0.72rem;
+  color: var(--theme-elevation-450);
+  margin: 2px 0 0;
+}
+
+.tag-selector__error {
+  font-size: 0.74rem;
+  color: var(--theme-error-500);
+  margin: 2px 0 0;
+}

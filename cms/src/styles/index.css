@@ -1,0 +1,20 @@
+/* Designally Knowledge Hub — public site stylesheet entry.
+
+   Ported from the standalone Vite app's design system. Order matters: tokens
+   define the vocabulary, base sets document defaults + the breakpoint contract,
+   then components and site chrome (header/drawer/footer).
+
+   NOTE: the fonts (Newsreader + Hanken Grotesk) and the warm-paper palette are
+   PLACEHOLDERS to be replaced once the real Designally brand assets arrive.
+   The webfonts are loaded via <link> in (frontend)/layout.tsx, not via CSS
+   @import, so Next can preconnect them. */
+@import "./tokens/colors.css";
+@import "./tokens/typography.css";
+@import "./tokens/spacing.css";
+
+@import "./base.css";
+@import "./components.css";
+@import "./layout.css";
+@import "./carousel.css";
+@import "./article.css";
+@import "./listing.css";

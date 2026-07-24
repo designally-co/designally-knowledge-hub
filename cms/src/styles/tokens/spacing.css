@@ -1,0 +1,53 @@
+/* Branding Explained — Spacing, radii, shadows, layout */
+:root {
+  /* Spacing scale (4px base) */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+  --sp-10: 128px;
+
+  /* Radii */
+  --radius-thumb: 6px;    /* article/inspiration thumbnails */
+  --radius-card: 16px;    /* resource + promo cards */
+  --radius-hero: 20px;    /* hero image */
+  --radius-input: 10px;
+  --radius-pill: 999px;   /* buttons, tags, topic pills */
+
+  /* Shadows — soft + low, warm */
+  --shadow-card: 0 18px 40px -24px rgba(18,16,13,0.35);
+  --shadow-pill: 0 2px 8px -2px rgba(18,16,13,0.18);
+  --shadow-sticker: 0 6px 16px -8px rgba(18,16,13,0.28);
+
+  /* Layout */
+  --page-max: 1600px;
+  --page-gutter: clamp(20px, 5vw, 88px); /* @kind spacing */
+  --section-gap: clamp(56px, 8vw, 128px);
+
+  /* Minimum comfortable touch target (WCAG 2.5.8). Applied under
+     `pointer: coarse` so pointer devices keep the tighter desktop rhythm. */
+  --touch-target: 44px;
+
+  /* Semantic z-index scale. Layers are named by role so new surfaces slot
+     into the order instead of guessing a number. */
+  --z-base: 1;
+  --z-sticky: 100;
+  --z-drawer-scrim: 200;
+  --z-drawer: 210;
+  --z-skip-link: 300;
+
+  /* Easing — exponential ease-out only. No bounce, no elastic.
+     Listed by how hard they leave the gate (initial velocity vs linear), which
+     is what reads as "snappy" versus "smooth":
+       cubic  ~2.8x  long travel, where an abrupt start looks like a jump
+       quart  ~5.1x  UI state changes; the default for small, fast moves
+       quint  ~4.3x  with a longer tail, for emphasis */
+  --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+}

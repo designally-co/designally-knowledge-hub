@@ -1,0 +1,59 @@
+/* Shared listing styles — homepage category sections and the /tag/[slug] pages. */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: clamp(24px, 3vw, 40px);
+  margin-top: clamp(24px, 4vw, 36px);
+}
+
+/* --- Homepage category sections ---------------------------------------- */
+
+.home-section {
+  padding-block: clamp(32px, 6vw, 64px);
+}
+
+.home-section + .home-section {
+  border-top: 1px solid var(--border-hairline);
+}
+
+/* --- Tag listing page -------------------------------------------------- */
+
+.listing {
+  padding-block: clamp(28px, 5vw, 48px) clamp(64px, 10vw, 96px);
+}
+
+.listing__back {
+  display: inline-block;
+  font: var(--type-nav);
+  color: var(--text-secondary);
+  text-decoration: none;
+  margin-bottom: clamp(20px, 4vw, 28px);
+}
+
+.listing__eyebrow {
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 8px;
+}
+
+.listing__title {
+  font: var(--type-display-2);
+  color: var(--be-ink);
+  margin: 0;
+  text-wrap: balance;
+}
+
+.listing__count {
+  font: var(--type-meta);
+  color: var(--text-secondary);
+  margin: 12px 0 0;
+}
+
+.listing__empty {
+  font: var(--type-body-lg);
+  color: var(--text-secondary);
+  margin-top: clamp(32px, 6vw, 48px);
+}

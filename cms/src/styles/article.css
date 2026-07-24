@@ -1,0 +1,322 @@
+/* Article reading view — ported from the Vite app's pages.css and extended for
+   the rich-text elements Payload's Lexical renderer emits (H2/H3, lists, links,
+   blockquotes) plus the structured references list. */
+
+.article {
+  /* Shared max width for the header, cover, and two-column body, so they all
+     cap + centre together and their edges stay aligned on large screens. */
+  --article-max: var(--page-max);
+  /* Comfortable reading measure the body text is capped to inside its column. */
+  --reading-measure: 720px;
+  padding-top: clamp(28px, 5vw, 48px);
+  padding-bottom: clamp(64px, 10vw, 96px);
+}
+
+/* Full-bleed header — spans the full viewport width (gutter padding only),
+   matching the full-bleed cover below it. */
+.article__head {
+  max-width: var(--article-max);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+.article__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: var(--type-nav);
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 0;
+  margin-bottom: clamp(20px, 4vw, 28px);
+}
+
+.article__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.article__tag-link {
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+}
+
+@media (hover: hover) {
+  .article__tag-link:hover {
+    opacity: 1;
+  }
+  .article__tag-link:hover .tag {
+    background: var(--be-ink);
+    color: var(--be-paper);
+    border-color: var(--be-ink);
+  }
+}
+
+.article__title {
+  font: var(--type-title-lg);
+  color: var(--be-ink);
+  margin: 0;
+  max-width: 60rem;
+  letter-spacing: var(--tracking-tight);
+  text-wrap: balance;
+}
+
+/* Dek / subtitle — the one-sentence lede under the title. */
+.article__dek {
+  font: var(--type-body-lg);
+  font-size: clamp(19px, 2.4vw, 23px);
+  color: var(--text-secondary);
+  margin: clamp(14px, 3vw, 18px) 0 0;
+  max-width: 60ch;
+  text-wrap: pretty;
+}
+
+.article__byline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: clamp(20px, 4vw, 26px) 0 0;
+  flex-wrap: wrap;
+}
+
+.article__meta {
+  font: var(--type-meta);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Cover sits inside the same left/right gutter as the header text, so its edges
+   line up with the title above it. */
+.article__cover {
+  max-width: var(--article-max);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+/* Cover image: fills the gutter-inset width at its own aspect ratio (no crop,
+   no fixed height), square corners. */
+.article__hero {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+  background-color: var(--card-tint, var(--cover-fallback));
+  margin-top: clamp(24px, 5vw, 36px);
+}
+
+/* No cover image → a default-colour band (natural ratio would collapse to 0). */
+.article__hero--empty {
+  aspect-ratio: 16 / 6;
+}
+
+/* --- Two-column body: TOC rail + article ------------------------------- */
+
+.article__layout {
+  max-width: var(--article-max);
+  margin-inline: auto;
+  margin-top: clamp(32px, 6vw, 48px);
+  padding-inline: var(--page-gutter);
+  display: grid;
+  gap: clamp(28px, 4vw, 56px);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.article__main {
+  min-width: 0;
+}
+
+@media (min-width: 64em) {
+  .article__layout {
+    /* TOC pinned left (at the cover's left edge), the article a readable column
+       pinned right (ending at the cover's right edge); the space between them is
+       distributed automatically. */
+    grid-template-columns: 230px minmax(0, var(--reading-measure));
+    justify-content: space-between;
+    align-items: start;
+  }
+}
+
+/* TOC: hidden on mobile, a sticky rail on desktop. */
+.article__toc-col {
+  display: none;
+}
+
+@media (min-width: 64em) {
+  .article__toc-col {
+    display: block;
+    position: sticky;
+    top: 96px;
+    align-self: start;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+}
+
+.article-toc__label {
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 14px;
+}
+
+.article-toc__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border-hairline);
+}
+
+.article-toc__link {
+  display: block;
+  padding: 6px 0 6px 14px;
+  margin-left: -1px;
+  border-left: 2px solid transparent;
+  font: var(--type-body-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
+.article-toc__item--h3 .article-toc__link {
+  padding-left: 28px;
+}
+
+@media (hover: hover) {
+  .article-toc__link:hover {
+    color: var(--be-ink);
+    opacity: 1;
+  }
+}
+
+.article-toc__item.is-active .article-toc__link {
+  color: var(--be-ink);
+  border-left-color: var(--be-ink);
+  font-weight: 600;
+}
+
+/* --- Body (rich text) --------------------------------------------------- */
+
+.article-body {
+  margin-top: 0;
+}
+
+/* A jumped-to heading clears the sticky offset instead of hugging the top. */
+.article-body :is(h2, h3) {
+  scroll-margin-top: 96px;
+}
+
+.article-body p {
+  font: var(--type-body-lg);
+  color: var(--be-ink-70);
+  margin: 0 0 24px;
+  text-wrap: pretty;
+}
+
+/* The introduction (opening paragraphs, no heading) reads a touch stronger. */
+.article-body > p:first-child {
+  color: var(--be-ink);
+}
+
+.article-body h2 {
+  font: var(--type-title-md);
+  font-size: clamp(24px, 3.2vw, 30px);
+  color: var(--be-ink);
+  letter-spacing: var(--tracking-tight);
+  margin: clamp(36px, 6vw, 48px) 0 16px;
+  text-wrap: balance;
+}
+
+.article-body h3 {
+  font: var(--type-title-sm);
+  font-size: clamp(19px, 2.4vw, 22px);
+  color: var(--be-ink);
+  margin: clamp(28px, 4vw, 32px) 0 12px;
+}
+
+.article-body ul,
+.article-body ol {
+  font: var(--type-body-lg);
+  color: var(--be-ink-70);
+  margin: 0 0 24px;
+  padding-left: 1.4em;
+}
+
+.article-body li {
+  margin-bottom: 8px;
+  text-wrap: pretty;
+}
+
+.article-body a {
+  color: var(--be-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.article-body strong {
+  font-weight: 700;
+  color: var(--be-ink);
+}
+
+.article-body blockquote {
+  margin: clamp(32px, 6vw, 40px) 0;
+  padding: clamp(24px, 4vw, 32px) 0;
+  border-top: 1px solid var(--border-hairline);
+  border-bottom: 1px solid var(--border-hairline);
+  font: var(--type-display-2);
+  font-size: clamp(24px, 4.4vw, 38px);
+  color: var(--be-ink);
+  text-wrap: balance;
+}
+
+/* --- References --------------------------------------------------------- */
+
+.article-references {
+  margin-top: clamp(40px, 7vw, 56px);
+  padding-top: clamp(24px, 4vw, 32px);
+  border-top: 1px solid var(--border-hairline);
+}
+
+.article-references__title {
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+}
+
+.article-references__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.article-references__link {
+  font: var(--type-body);
+  color: var(--be-ink);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-word;
+}
+
+.article__related {
+  margin-top: clamp(48px, 9vw, 72px);
+}
+
+.article__related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: clamp(20px, 3vw, 32px);
+  margin-top: 24px;
+}

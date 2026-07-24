@@ -1,0 +1,15 @@
+/* Branding Explained — stylesheet entry.
+
+   Order matters: tokens define the vocabulary, base sets document defaults
+   and the breakpoint contract, then components, chrome, and page
+   compositions. Styling lives here rather than in inline style objects so
+   it can carry media queries, focus states, and pointer/hover conditions. */
+@import "../tokens/fonts.css";
+@import "../tokens/colors.css";
+@import "../tokens/typography.css";
+@import "../tokens/spacing.css";
+
+@import "./styles/base.css";
+@import "./styles/components.css";
+@import "./styles/layout.css";
+@import "./styles/pages.css";

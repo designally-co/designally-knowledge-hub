@@ -1,0 +1,108 @@
+/* Layout-only styles for the Phase 1 design-system gallery. Throwaway once the
+   real pages land in Phase 2 — it only arranges the ported components on a
+   page, it does not restyle them. */
+
+.ds-page {
+  padding-block: clamp(48px, 8vw, 96px);
+}
+
+.ds-head {
+  margin-bottom: clamp(40px, 6vw, 72px);
+}
+
+.ds-head__eyebrow {
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 12px;
+}
+
+.ds-head__title {
+  font: var(--type-display-2);
+  color: var(--be-ink);
+  margin: 0 0 16px;
+  text-wrap: balance;
+}
+
+.ds-head__lede {
+  font: var(--type-body-lg);
+  color: var(--text-secondary);
+  max-width: 60ch;
+  margin: 0;
+}
+
+.ds-section {
+  padding-block: clamp(32px, 5vw, 56px);
+  border-top: 1px solid var(--border-hairline);
+}
+
+.ds-section__label {
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 24px;
+}
+
+.ds-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.ds-row + .ds-row {
+  margin-top: 20px;
+}
+
+.ds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: clamp(20px, 3vw, 32px);
+}
+
+.ds-band {
+  background: var(--surface-inverse);
+  border-radius: var(--radius-card);
+  padding: clamp(28px, 5vw, 48px);
+  margin-top: 24px;
+}
+
+/* Colour + type token specimens */
+.ds-swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+.ds-swatch__chip {
+  height: 72px;
+  border-radius: var(--radius-input);
+  border: 1px solid var(--border-hairline);
+}
+
+.ds-swatch__name {
+  font: var(--type-body-sm);
+  color: var(--text-secondary);
+  margin: 8px 0 0;
+}
+
+.ds-type {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ds-type__row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed var(--border-hairline);
+}
+
+.ds-type__meta {
+  font: var(--type-body-sm);
+  color: var(--text-muted);
+}
