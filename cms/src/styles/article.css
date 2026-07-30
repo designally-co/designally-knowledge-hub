@@ -57,23 +57,43 @@
   }
 }
 
+/* Title styled to match Creative Boom's article title: medium (500) weight,
+   sans display face, 40/46 stepping up to 60/66 at >=48rem. (Their exact face is
+   Roobert/ABC Diatype — licensed — so this uses the Hub's sans; swap --font-sans
+   for the real face if it's added.) */
 .article__title {
-  font: var(--type-title-lg);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 40px;
+  line-height: 46px;
   color: var(--be-ink);
   margin: 0;
   max-width: 60rem;
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: normal;
   text-wrap: balance;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (min-width: 48rem) {
+  .article__title {
+    font-size: 60px;
+    line-height: 66px;
+  }
 }
 
 /* Dek / subtitle — the one-sentence lede under the title. */
+/* Deck matched to Creative Boom's: medium (500), 24/30, sans, near-black, with
+   their 24px (space-y-6) gap under the title. */
 .article__dek {
-  font: var(--type-body-lg);
-  font-size: clamp(19px, 2.4vw, 23px);
-  color: var(--text-secondary);
-  margin: clamp(14px, 3vw, 18px) 0 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 30px;
+  color: var(--be-ink);
+  margin: 24px 0 0;
   max-width: 60ch;
   text-wrap: pretty;
+  -webkit-font-smoothing: antialiased;
 }
 
 .article__byline {
@@ -310,13 +330,33 @@
   word-break: break-word;
 }
 
+/* Full-bleed grey band. The negative margin-bottom cancels .article's
+   padding-bottom so the band reaches the page bottom flush. */
 .article__related {
+  background: #e7e7e7;
   margin-top: clamp(48px, 9vw, 72px);
+  margin-bottom: calc(clamp(64px, 10vw, 96px) * -1);
+  padding-block: clamp(40px, 7vw, 72px);
 }
 
 .article__related-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: 1fr;
   gap: clamp(20px, 3vw, 32px);
   margin-top: 24px;
+  /* Cards follow their cover's natural ratio, so heights vary — top-align them
+     rather than stretching to the tallest in the row. */
+  align-items: start;
+}
+
+@media (min-width: 40em) {
+  .article__related-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64em) {
+  .article__related-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }

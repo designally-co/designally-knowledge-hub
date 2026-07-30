@@ -2,7 +2,7 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { ArticleCard, Icon, Tag } from '@/components/ds'
+import { ArticleCard, Tag } from '@/components/ds'
 import { ArticleToc } from '@/components/ArticleToc'
 import {
   getAllArticleSlugs,
@@ -57,13 +57,6 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
   return (
     <article className="article">
       <header className="article__head">
-        <a className="article__back" href="/">
-          <span className="icon-btn icon-btn--outline icon-btn--sm" aria-hidden="true">
-            <Icon name="arrow-left" size={16} />
-          </span>
-          Back to home
-        </a>
-
         {article.tags.length > 0 && (
           <div className="article__tags">
             {article.tags.map((t) => (
@@ -128,22 +121,24 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
       )}
 
       {related.length > 0 && (
-        <div className="shell article__related">
-          <h2 className="section-heading__title">More like this</h2>
-          <div className="article__related-grid">
-            {related.map((r) => (
-              <ArticleCard
-                key={r.href}
-                title={r.title}
-                date={r.date}
-                tags={r.tags}
-                image={r.image}
-                ratio="4 / 3"
-                href={r.href}
-              />
-            ))}
+        <section className="article__related">
+          <div className="shell">
+            <h2 className="section-heading__title">Related articles</h2>
+            <div className="article__related-grid">
+              {related.map((r) => (
+                <ArticleCard
+                  key={r.href}
+                  title={r.title}
+                  date={r.date}
+                  tags={r.tags}
+                  image={r.image}
+                  ratio={r.ratio}
+                  href={r.href}
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        </section>
       )}
     </article>
   )
