@@ -54,6 +54,11 @@ const s3Configured = Boolean(
     process.env.S3_SECRET_ACCESS_KEY,
 )
 
+// NOTE: enabling s3Storage injects the `S3ClientUploadHandler` client component
+// into the admin, which must exist in `admin/importMap.js`. Because S3 is only
+// configured in production (env-gated above), a map generated locally would omit
+// it and the whole admin would render blank in prod. The `build` script runs
+// `payload generate:importmap` first (with prod env), so the map can't drift.
 const storagePlugins = s3Configured
   ? [
       s3Storage({
