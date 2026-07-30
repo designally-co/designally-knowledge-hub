@@ -9,7 +9,7 @@ import { TAG_OPTIONS, categoryForTag, tagFromSlug, tagSlug } from '@/lib/tags'
  * Tag listing page — every published article carrying one tag.
  * SSG: one page per tag in the fixed taxonomy; ISR keeps them fresh.
  */
-export const revalidate = 300
+export const revalidate = 60
 export const dynamicParams = true
 
 type Params = { slug: string }

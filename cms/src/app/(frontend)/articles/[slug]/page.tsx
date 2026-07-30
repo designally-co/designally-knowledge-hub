@@ -18,7 +18,7 @@ import { tagSlug } from '@/lib/tags'
  * ISR: revalidate rebuilds a page at most every 5 minutes, and dynamicParams
  * lets a newly published slug render on first request then cache.
  */
-export const revalidate = 300
+export const revalidate = 60
 export const dynamicParams = true
 
 type Params = { slug: string }
