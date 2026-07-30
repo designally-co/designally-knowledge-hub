@@ -55,10 +55,13 @@ const s3Configured = Boolean(
 )
 
 // NOTE: enabling s3Storage injects the `S3ClientUploadHandler` client component
-// into the admin, which must exist in `admin/importMap.js`. Because S3 is only
-// configured in production (env-gated above), a map generated locally would omit
-// it and the whole admin would render blank in prod. The `build` script runs
-// `payload generate:importmap` first (with prod env), so the map can't drift.
+// into the admin, which must exist in the committed `admin/importMap.js`. Because
+// S3 is only configured in production (env-gated above), a map generated with S3
+// OFF would omit it and the admin would render blank in prod. So: regenerate the
+// import map with the S3_* vars set (`S3_BUCKET=… … payload generate:importmap`)
+// and COMMIT the result. The build intentionally does NOT regenerate the map
+// (letting Vercel regenerate it risks dropping entries during its build) — the
+// committed file is the single source of truth.
 const storagePlugins = s3Configured
   ? [
       s3Storage({
