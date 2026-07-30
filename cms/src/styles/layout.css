@@ -346,15 +346,36 @@
 
 /* --- Footer ------------------------------------------------------------ */
 
+/* Photo background under an ochre wash that deepens toward the bottom, so the
+   mural shows through behind the tagline and the columns sit on near-solid ochre. */
 .site-footer {
-  background: var(--be-band-ochre);
-  color: var(--text-on-dark);
   position: relative;
+  color: var(--text-on-dark);
+  background-color: #a76a00;
+  background-image: linear-gradient(
+      to bottom,
+      rgba(108, 69, 0, 0.6) 0%,
+      rgba(167, 106, 0, 1) 60%
+    ),
+    url('/footer-bg.jpg');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
 }
 
 .site-footer__inner {
-  padding-top: clamp(48px, 8vw, 72px);
+  padding-top: clamp(72px, 12vw, 150px);
   padding-bottom: calc(40px + env(safe-area-inset-bottom));
+}
+
+/* Serif tagline over the mural. */
+.site-footer__tagline {
+  font: 400 clamp(30px, 4.4vw, 52px) / 1.1 var(--font-serif);
+  color: var(--text-on-dark);
+  text-align: center;
+  text-wrap: balance;
+  max-width: 20ch;
+  margin: 0 auto clamp(40px, 7vw, 72px);
 }
 
 .site-footer__rule {
@@ -375,7 +396,7 @@
 }
 
 @media (min-width: 64em) {
-  .site-footer__cols { grid-template-columns: 1.4fr 1fr 1fr 1fr; }
+  .site-footer__cols { grid-template-columns: 1.6fr 1fr 1fr; }
   .site-footer__masthead { grid-column: auto; }
 }
 

@@ -1,6 +1,7 @@
 import React from 'react'
 import '@/styles/index.css'
 import { SiteHeader } from '@/components/SiteHeader'
+import { SiteFooter } from '@/components/SiteFooter'
 
 export const metadata = {
   title: 'Designally Knowledge Hub',
@@ -33,6 +34,7 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
         </a>
         <SiteHeader />
         <main id="main">{children}</main>
+        <SiteFooter />
       </body>
     </html>
   )

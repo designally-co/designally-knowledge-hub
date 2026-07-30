@@ -8,8 +8,31 @@
   --article-max: var(--page-max);
   /* Comfortable reading measure the body text is capped to inside its column. */
   --reading-measure: 720px;
-  padding-top: clamp(28px, 5vw, 48px);
-  padding-bottom: clamp(64px, 10vw, 96px);
+  /* Top spacing lives on the masthead so the tan hero band can start flush at
+     the very top. No bottom padding: the page ends on a full-bleed band. */
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Hero masthead — holds the title block + cover over a full-bleed tan band that
+   is exactly 100vh tall and scrolls with the page (not fixed). The wrapper grows
+   with the tall cover, so the cover spills past the band's bottom onto the paper
+   below — the intended overflow. The body sits outside this wrapper, so it never
+   picks up the tan. isolation keeps the -1 layer contained to the masthead. */
+.article__masthead {
+  position: relative;
+  isolation: isolate;
+  padding-top: clamp(40px, 7vw, 76px);
+}
+
+.article__masthead::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 100vh;
+  z-index: -1;
+  background: #ece1cd url('/newsletter-waves.svg') no-repeat center / cover;
+  pointer-events: none;
 }
 
 /* Full-bleed header — spans the full viewport width (gutter padding only),
@@ -330,12 +353,10 @@
   word-break: break-word;
 }
 
-/* Full-bleed grey band. The negative margin-bottom cancels .article's
-   padding-bottom so the band reaches the page bottom flush. */
+/* Full-bleed grey band, followed by the full-bleed CTA band below it. */
 .article__related {
   background: #e7e7e7;
   margin-top: clamp(48px, 9vw, 72px);
-  margin-bottom: calc(clamp(64px, 10vw, 96px) * -1);
   padding-block: clamp(40px, 7vw, 72px);
 }
 

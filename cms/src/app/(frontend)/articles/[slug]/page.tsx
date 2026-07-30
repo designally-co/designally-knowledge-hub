@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 
 import { ArticleCard, Tag } from '@/components/ds'
 import { ArticleToc } from '@/components/ArticleToc'
+import { NewsletterCta } from '@/components/NewsletterCta'
 import {
   getAllArticleSlugs,
   getArticleBySlug,
@@ -56,7 +57,8 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
 
   return (
     <article className="article">
-      <header className="article__head">
+      <div className="article__masthead">
+        <header className="article__head">
         {article.tags.length > 0 && (
           <div className="article__tags">
             {article.tags.map((t) => (
@@ -78,12 +80,13 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
         )}
       </header>
 
-      <div className="article__cover">
-        {article.image ? (
-          <img className="article__hero" src={article.image} alt="" decoding="async" />
-        ) : (
-          <div className="article__hero article__hero--empty" aria-hidden="true" />
-        )}
+        <div className="article__cover">
+          {article.image ? (
+            <img className="article__hero" src={article.image} alt="" decoding="async" />
+          ) : (
+            <div className="article__hero article__hero--empty" aria-hidden="true" />
+          )}
+        </div>
       </div>
 
       {article.body && (
@@ -140,6 +143,8 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
           </div>
         </section>
       )}
+
+      <NewsletterCta />
     </article>
   )
 }
