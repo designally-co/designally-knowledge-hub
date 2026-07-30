@@ -161,6 +161,30 @@ export async function getArticlesByCategory(
   )
 }
 
+/**
+ * Published downloadable files (type `template`) — the /resources listing.
+ * Files have no detail page yet, so cards carry the title/tags only.
+ */
+export async function getDownloadableFiles(limit = 60): Promise<CarouselItem[]> {
+  return safeRead(
+    'getDownloadableFiles',
+    async () => {
+      const payload = await getPayload({ config })
+      const { docs } = await payload.find({
+        collection: 'resources',
+        where: {
+          and: [{ status: { equals: 'published' } }, { type: { equals: 'template' } }],
+        },
+        sort: '-publishedDate',
+        limit,
+        depth: 1,
+      })
+      return docs.map(toCard)
+    },
+    [],
+  )
+}
+
 export interface Article {
   slug: string
   title: string

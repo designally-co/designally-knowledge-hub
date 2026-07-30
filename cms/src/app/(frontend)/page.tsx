@@ -48,7 +48,11 @@ export default async function HomePage() {
       </div>
 
       {sections.map(({ category, items: cards }) => (
-        <section className="shell home-section" key={category}>
+        <section
+          className="shell home-section"
+          id={`cat-${category.toLowerCase().replace(/\s+/g, '-')}`}
+          key={category}
+        >
           <SectionHeading>{category}</SectionHeading>
           <div className="card-grid">
             {cards.map((it) => (

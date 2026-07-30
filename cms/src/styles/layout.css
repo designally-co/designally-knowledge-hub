@@ -58,14 +58,168 @@
 }
 
 .site-nav__link {
+  position: relative;
   font: var(--type-nav);
   color: var(--be-ink);
   text-decoration: none;
   white-space: nowrap;
+  /* Room for the underline to sit clear of the descenders. */
+  padding-block: 6px;
 }
 
+/* Underline grows from the left rather than blinking on — it reads as the item
+   arming itself, and it survives the panel being open (.is-open). */
+.site-nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.5px;
+  background: var(--be-ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.28s var(--ease-out-quart);
+}
+
+.site-nav__link.is-open::after,
+.site-nav__link:focus-visible::after { transform: scaleX(1); }
+
 @media (hover: hover) {
-  .site-nav__link:hover { text-decoration: underline; text-underline-offset: 4px; opacity: 1; }
+  .site-nav__link:hover::after { transform: scaleX(1); }
+}
+
+/* --- Desktop category panel --------------------------------------------- */
+
+/* The panel is a child of the sticky header, so it inherits its stacking
+   context and sits above the page without a portal. Pointer devices at >=64em
+   only: touch and narrow viewports use the drawer instead. */
+.nav-panel { display: none; }
+
+@media (min-width: 64em) and (hover: hover) {
+  .nav-panel {
+    display: block;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    background: var(--surface-raised);
+    border-top: 1px solid var(--border-hairline);
+    border-bottom: 1px solid var(--border-hairline);
+    box-shadow: var(--shadow-card);
+    animation: nav-panel-in 0.24s var(--ease-out-quart) both;
+  }
+}
+
+@keyframes nav-panel-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-panel__inner {
+  display: grid;
+  grid-template-columns: minmax(180px, 22%) 1fr;
+  gap: clamp(24px, 4vw, 64px);
+  padding-block: clamp(28px, 3vw, 44px);
+}
+
+/* Left rail: the category stated once, in the display serif, with the escape
+   hatch to the full section. */
+.nav-panel__rail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  border-right: 1px solid var(--border-hairline);
+  padding-right: clamp(16px, 2vw, 32px);
+}
+
+/* Chrome-scale serif: echoes the editorial display voice without competing with
+   page headings, and stays narrow enough that "Creative Things" wraps to two
+   lines at most. No matching token exists at this size — the scale jumps from
+   --type-title-md (22px sans) to --type-section (up to 52px). */
+.nav-panel__title {
+  font: 400 clamp(26px, 2vw, 34px) / 1.05 var(--font-serif);
+  color: var(--be-ink);
+  text-wrap: balance;
+}
+
+.nav-panel__all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: var(--type-body-sm);
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.nav-panel__all svg { transition: transform 0.25s var(--ease-out-quart); }
+
+@media (hover: hover) {
+  .nav-panel__all:hover { color: var(--be-ink); }
+  .nav-panel__all:hover svg { transform: translateX(3px); }
+}
+
+/* Three columns, not four: the taxonomy runs 8-10 tags per category, which
+   balances as 3/3/2 and 4/3/3. Four columns strands a single orphan tag in the
+   last column (10 -> 3/3/3/1). */
+.nav-panel__tags {
+  columns: 3;
+  column-gap: clamp(16px, 2.5vw, 40px);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-panel__tags li {
+  break-inside: avoid;
+  /* Staggered reveal: each row trails the one before it by 22ms. */
+  animation: nav-tag-in 0.3s var(--ease-out-quart) both;
+  animation-delay: calc(var(--i, 0) * 22ms);
+}
+
+@keyframes nav-tag-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Full-row hit area, but the label and its arrow stay together on the left —
+   space-between would strand the arrow at the far edge of a ~300px column,
+   reading as unrelated to the text. */
+.nav-panel__tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-block: 7px;
+  font: var(--type-body-sm);
+  color: var(--be-ink);
+  text-decoration: none;
+}
+
+/* The arrow is the affordance; it stays out of the way until the row is live. */
+.nav-panel__tag svg {
+  opacity: 0;
+  transform: translateX(-4px);
+  transition:
+    opacity 0.22s var(--ease-out-quart),
+    transform 0.22s var(--ease-out-quart);
+  flex: none;
+}
+
+.nav-panel__tag:focus-visible svg { opacity: 1; transform: translateX(0); }
+
+@media (hover: hover) {
+  .nav-panel__tag:hover { color: var(--be-ink); }
+  .nav-panel__tag:hover svg { opacity: 1; transform: translateX(0); }
+}
+
+/* Motion is decoration here; the reveal itself must never be suppressed. */
+@media (prefers-reduced-motion: reduce) {
+  .nav-panel,
+  .nav-panel__tags li { animation: none; }
+  .site-nav__link::after,
+  .nav-panel__tag svg,
+  .nav-panel__all svg { transition: none; }
 }
 
 .site-header__actions {

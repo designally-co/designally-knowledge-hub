@@ -1,5 +1,6 @@
 import React from 'react'
 import '@/styles/index.css'
+import { SiteHeader } from '@/components/SiteHeader'
 
 export const metadata = {
   title: 'Designally Knowledge Hub',
@@ -30,6 +31,7 @@ export default function FrontendLayout({ children }: { children: React.ReactNode
         <a className="skip-link" href="#main">
           Skip to content
         </a>
+        <SiteHeader />
         <main id="main">{children}</main>
       </body>
     </html>
