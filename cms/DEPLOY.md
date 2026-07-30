@@ -64,13 +64,23 @@ The DB adapter switches on the `DATABASE_URI` scheme (`postgres://` → Postgres
 and R2 turns on when the `S3_*` vars are present — no code change. See
 `src/payload.config.ts`.
 
-## 4. First deploy & schema
+## 4. Deploy & create the schema
 
-- Deploy. On first boot the Postgres adapter **auto-creates the schema**
-  (`push: true` in `src/payload.config.ts`) — a fresh Neon DB gets its tables
-  automatically. (Later, for zero-cold-start-cost schema changes, switch to
-  Payload migrations: `payload migrate:create` + run `payload migrate` at release.)
+Payload's `push` only runs in dev, so a **production DB does not get its tables
+automatically**. The build is resilient (it returns empty data instead of
+failing when the schema is missing), so the deploy itself succeeds — but you
+must create the schema once before the admin/site work:
+
+- **Create the schema** — run locally, pointed at your production Postgres:
+  ```bash
+  cd cms
+  DATABASE_URI="<prod session-pooler url>" PAYLOAD_SECRET="<prod secret>" \
+    node --import tsx ./src/scripts/pushSchema.ts
+  ```
+  Re-run it whenever the schema changes.
 - Open `https://<your-hub>/admin` → **create the first admin user**.
+- Published content appears on the public pages within the ISR window (~5 min)
+  or on the next redeploy.
 
 ## 5. Create the Content Generator's API key (in production)
 
