@@ -82,32 +82,61 @@ const publishedArticle = [
 ] as const
 
 /**
+ * Read helper: returns a fallback instead of throwing when the DB/table isn't
+ * available — e.g. during a production build before the schema exists, or if the
+ * DB is briefly unreachable. Keeps a deploy from hard-failing; pages fill in at
+ * runtime via ISR once the data is there.
+ */
+async function safeRead<T>(label: string, run: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await run()
+  } catch (err) {
+    console.warn(
+      `[resources] ${label} unavailable, using fallback: ${err instanceof Error ? err.message : String(err)}`,
+    )
+    return fallback
+  }
+}
+
+/**
  * Most recent published articles, newest first — the hero carousel source.
  * (Downloadable files are excluded: the hero needs a cover + a detail page.)
  */
 export async function getRecentArticles(limit = 10): Promise<CarouselItem[]> {
-  const payload = await getPayload({ config })
-  const { docs } = await payload.find({
-    collection: 'resources',
-    where: { and: [...publishedArticle] },
-    sort: '-publishedDate',
-    limit,
-    depth: 1, // populate the coverImage upload relation
-  })
-  return docs.map(toCard)
+  return safeRead(
+    'getRecentArticles',
+    async () => {
+      const payload = await getPayload({ config })
+      const { docs } = await payload.find({
+        collection: 'resources',
+        where: { and: [...publishedArticle] },
+        sort: '-publishedDate',
+        limit,
+        depth: 1, // populate the coverImage upload relation
+      })
+      return docs.map(toCard)
+    },
+    [],
+  )
 }
 
 /** Published articles carrying a given tag, newest first. */
 export async function getArticlesByTag(tag: string, limit = 60): Promise<CarouselItem[]> {
-  const payload = await getPayload({ config })
-  const { docs } = await payload.find({
-    collection: 'resources',
-    where: { and: [...publishedArticle, { tags: { in: [tag] } }] },
-    sort: '-publishedDate',
-    limit,
-    depth: 1,
-  })
-  return docs.map(toCard)
+  return safeRead(
+    'getArticlesByTag',
+    async () => {
+      const payload = await getPayload({ config })
+      const { docs } = await payload.find({
+        collection: 'resources',
+        where: { and: [...publishedArticle, { tags: { in: [tag] } }] },
+        sort: '-publishedDate',
+        limit,
+        depth: 1,
+      })
+      return docs.map(toCard)
+    },
+    [],
+  )
 }
 
 /** Published articles in a category (any of its tags), newest first. */
@@ -115,15 +144,21 @@ export async function getArticlesByCategory(
   category: Category,
   limit = 4,
 ): Promise<CarouselItem[]> {
-  const payload = await getPayload({ config })
-  const { docs } = await payload.find({
-    collection: 'resources',
-    where: { and: [...publishedArticle, { tags: { in: [...TAXONOMY[category]] } }] },
-    sort: '-publishedDate',
-    limit,
-    depth: 1,
-  })
-  return docs.map(toCard)
+  return safeRead(
+    'getArticlesByCategory',
+    async () => {
+      const payload = await getPayload({ config })
+      const { docs } = await payload.find({
+        collection: 'resources',
+        where: { and: [...publishedArticle, { tags: { in: [...TAXONOMY[category]] } }] },
+        sort: '-publishedDate',
+        limit,
+        depth: 1,
+      })
+      return docs.map(toCard)
+    },
+    [],
+  )
 }
 
 export interface Article {
@@ -139,51 +174,63 @@ export interface Article {
   references: { label: string; url: string }[]
 }
 
-/** A single published article by slug, or null if not found. */
+/** A single published article by slug, or null if not found / DB unavailable. */
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
-  const payload = await getPayload({ config })
-  const { docs } = await payload.find({
-    collection: 'resources',
-    where: {
-      and: [
-        { slug: { equals: slug } },
-        { type: { equals: 'article' } },
-        { status: { equals: 'published' } },
-      ],
+  return safeRead(
+    'getArticleBySlug',
+    async () => {
+      const payload = await getPayload({ config })
+      const { docs } = await payload.find({
+        collection: 'resources',
+        where: {
+          and: [
+            { slug: { equals: slug } },
+            { type: { equals: 'article' } },
+            { status: { equals: 'published' } },
+          ],
+        },
+        limit: 1,
+        depth: 1,
+      })
+
+      const r = docs[0]
+      if (!r) return null
+
+      return {
+        slug: r.slug ?? slug,
+        title: r.title,
+        dek: r.summary ?? undefined,
+        date: formatDate(r.publishedDate),
+        tags: r.tags ?? [],
+        image: coverOf(r),
+        ratio: ratioOf(r),
+        readTime: readingMinutes(r.body),
+        body: r.body ?? null,
+        references: (r.references ?? []).map((ref) => ({ label: ref.label, url: ref.url })),
+      }
     },
-    limit: 1,
-    depth: 1,
-  })
-
-  const r = docs[0]
-  if (!r) return null
-
-  return {
-    slug: r.slug ?? slug,
-    title: r.title,
-    dek: r.summary ?? undefined,
-    date: formatDate(r.publishedDate),
-    tags: r.tags ?? [],
-    image: coverOf(r),
-    ratio: ratioOf(r),
-    readTime: readingMinutes(r.body),
-    body: r.body ?? null,
-    references: (r.references ?? []).map((ref) => ({ label: ref.label, url: ref.url })),
-  }
+    null,
+  )
 }
 
 /** Every published article slug — for generateStaticParams (SSG). */
 export async function getAllArticleSlugs(): Promise<string[]> {
-  const payload = await getPayload({ config })
-  const { docs } = await payload.find({
-    collection: 'resources',
-    where: {
-      and: [{ type: { equals: 'article' } }, { status: { equals: 'published' } }],
+  return safeRead(
+    'getAllArticleSlugs',
+    async () => {
+      const payload = await getPayload({ config })
+      const { docs } = await payload.find({
+        collection: 'resources',
+        where: {
+          and: [{ type: { equals: 'article' } }, { status: { equals: 'published' } }],
+        },
+        limit: 1000,
+        depth: 0,
+        pagination: false,
+        select: { slug: true },
+      })
+      return docs.map((r) => r.slug).filter((s): s is string => Boolean(s))
     },
-    limit: 1000,
-    depth: 0,
-    pagination: false,
-    select: { slug: true },
-  })
-  return docs.map((r) => r.slug).filter((s): s is string => Boolean(s))
+    [],
+  )
 }
