@@ -26,11 +26,15 @@ const isPostgres = /^postgres(ql)?:\/\//i.test(databaseURI)
 const db = isPostgres
   ? postgresAdapter({
       pool: { connectionString: databaseURI },
+      // Isolate the Hub's tables in their own Postgres schema when set. REQUIRED
+      // if you share one database with another app (e.g. the Content Generator
+      // on Supabase) — otherwise `push` below could drop that app's tables.
+      // Create it first: `create schema if not exists "<name>";`. Leave unset
+      // when the Hub has its own database/project (uses the default `public`).
+      ...(process.env.DB_SCHEMA ? { schemaName: process.env.DB_SCHEMA } : {}),
       // Auto-create / sync the schema on boot. Simplest path for this internal
-      // CMS — no migration files to manage, and a fresh Neon DB gets its tables
-      // on first run. Trade-off: a small schema-diff cost on cold starts. Switch
-      // to Payload migrations (payload migrate:create + migrate at release time)
-      // if you later want zero-risk, zero-cold-start-cost schema changes.
+      // CMS — a fresh DB gets its tables on first run, no migration files. Switch
+      // to Payload migrations later for zero-risk / zero-cold-start schema syncs.
       push: true,
     })
   : sqliteAdapter({ client: { url: databaseURI } })

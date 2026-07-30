@@ -4,6 +4,25 @@ The Hub is a Payload CMS + Next.js app living in **`cms/`** (the repo root is th
 legacy Vite app — it is NOT deployed). Deploying is env-only: no code changes
 between local dev (SQLite + local media) and production (Postgres + R2).
 
+## Option: use Supabase for everything
+
+Supabase is Postgres **and** its Storage is S3-compatible, so the Hub can run
+entirely on Supabase (same service the Content Generator uses) — no Neon, no R2.
+
+- **Database:** set `DATABASE_URI` to the Supabase **session pooler** connection
+  (`…pooler.supabase.com:5432`). The transaction pooler (`:6543`) can't run the
+  on-boot schema sync.
+- **Media:** point the `S3_*` vars at Supabase Storage's S3 endpoint
+  (`https://<ref>.supabase.co/storage/v1/s3`) instead of R2. See `.env.example`.
+- **⚠️ Isolate from the Content Generator.** The Hub and the generator must not
+  share tables. Either use a **separate Supabase project** for the Hub (cleanest),
+  or the **same project with a dedicated schema**: run
+  `create schema if not exists "hub";` in the SQL editor and set `DB_SCHEMA=hub`.
+  Without isolation, the Hub's `push` on boot could **drop the generator's tables**.
+
+If you go this route, replace "Neon" with the Supabase session-pooler string and
+"R2" with the Supabase S3 vars throughout the steps below.
+
 ## 1. Provision services
 
 **Neon (Postgres):**
