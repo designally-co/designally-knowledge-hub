@@ -24,7 +24,15 @@ const databaseURI = process.env.DATABASE_URI || 'file:./designally-hub.db'
 const isPostgres = /^postgres(ql)?:\/\//i.test(databaseURI)
 
 const db = isPostgres
-  ? postgresAdapter({ pool: { connectionString: databaseURI } })
+  ? postgresAdapter({
+      pool: { connectionString: databaseURI },
+      // Auto-create / sync the schema on boot. Simplest path for this internal
+      // CMS — no migration files to manage, and a fresh Neon DB gets its tables
+      // on first run. Trade-off: a small schema-diff cost on cold starts. Switch
+      // to Payload migrations (payload migrate:create + migrate at release time)
+      // if you later want zero-risk, zero-cold-start-cost schema changes.
+      push: true,
+    })
   : sqliteAdapter({ client: { url: databaseURI } })
 
 // ---------------------------------------------------------------------------
