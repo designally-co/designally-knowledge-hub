@@ -80,12 +80,28 @@ const storagePlugins = s3Configured
     ]
   : []
 
-// Origins allowed to call the REST/GraphQL API from the browser. The Vite
-// frontend runs on 5173 in dev; set FRONTEND_URL to the deployed origin in prod.
+// Origins allowed to call the REST/GraphQL API from the browser AND to be
+// trusted for cookie auth (CSRF). This MUST include the admin's own production
+// origin, or Payload rejects authenticated writes from it ("you are not allowed
+// to perform this action") even though reads/login work.
+//
+// Vercel exposes the deploy's own hostnames at runtime, so the admin works with
+// zero manual env config; FRONTEND_URL/PAYLOAD_PUBLIC_SERVER_URL are still
+// honoured for a custom domain.
+const vercelOrigins = [
+  process.env.VERCEL_PROJECT_PRODUCTION_URL, // stable prod domain, e.g. hub.vercel.app
+  process.env.VERCEL_URL, // this deployment's URL
+  process.env.VERCEL_BRANCH_URL, // branch/preview URL
+]
+  .filter(Boolean)
+  .map((host) => `https://${host}`)
+
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:5173',
+  process.env.PAYLOAD_PUBLIC_SERVER_URL,
   'http://localhost:3000',
-].filter(Boolean)
+  ...vercelOrigins,
+].filter(Boolean) as string[]
 
 export default buildConfig({
   admin: {
