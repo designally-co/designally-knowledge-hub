@@ -124,8 +124,8 @@ POST /api/graphql       # playground at /api/graphql-playground
 
 ## Seed data
 
-[`src/seed.ts`](src/seed.ts) imports `BE_DATA` from the frontend's
-`../../src/data.js` — keeping that file the single source of truth for the
+[`src/seed.ts`](src/seed.ts) imports `BE_DATA` from
+[`src/seed-data.js`](src/seed-data.js) — the single source of truth for the
 sample library. It maps editorial cards → `article` resources and the resource
 kit → `template` resources (all `published`). Videos, courses and tools have no
 placeholder data yet, so those types seed empty.

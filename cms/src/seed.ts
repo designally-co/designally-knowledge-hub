@@ -1,7 +1,7 @@
 /**
- * Seed the Hub CMS from the frontend's placeholder content (../../src/data.js),
- * keeping that file the single source of truth for the sample library. Idempotent:
- * it clears the seeded collections first, so it can be re-run safely.
+ * Seed the Hub CMS from the placeholder content in ./seed-data.js, the single
+ * source of truth for the sample library. Idempotent: it clears the seeded
+ * collections first, so it can be re-run safely.
  *
  * Run with:  npm run seed   (from the cms/ directory)
  */
@@ -9,8 +9,8 @@ import { getPayload } from 'payload'
 
 import config from './payload.config'
 import type { Resource } from './payload-types'
-// The frontend sample content. Pure-JS ESM module, imported across the repo.
-import { BE_DATA } from '../../src/data.js'
+// The sample content. Pure-JS ESM module, untyped by design.
+import { BE_DATA } from './seed-data.js'
 
 type RawCard = {
   title: string
