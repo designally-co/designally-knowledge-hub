@@ -31,7 +31,23 @@
   inset: 0 0 auto 0;
   height: 100vh;
   z-index: -1;
-  background: #ece1cd url('/newsletter-waves.svg') no-repeat center / cover;
+  background: #ece1cd;
+  pointer-events: none;
+}
+
+/* The pencil-line pattern sits on its own layer above the tan so it can carry
+   its own opacity: as part of the ::before shorthand it would have dimmed the
+   band too. The SVG carries no opacity of its own, so the value below is the
+   real rendered one. `cover` fills the whole band; swap it for an explicit
+   width (e.g. `500px auto`) to shrink the pattern to a centred accent mark. */
+.article__masthead::after {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 100vh;
+  z-index: -1;
+  opacity: 0.2;
+  background: url('/hero-bg-pattern.svg') no-repeat center / cover;
   pointer-events: none;
 }
 
