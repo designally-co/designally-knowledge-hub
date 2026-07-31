@@ -11,22 +11,20 @@ import {
   getRecentArticles,
 } from '@/lib/resources'
 import { tagSlug } from '@/lib/tags'
+import { getDictionary, isLocale, localeHref, tagLabel, LOCALES, type Locale } from '@/lib/i18n'
 
 /**
- * Article detail page — the reading view the hero-carousel cards link into.
- *
- * SSG: generateStaticParams prebuilds a page per published article slug.
- * ISR: revalidate rebuilds a page at most every 5 minutes, and dynamicParams
+ * Article detail page. SSG per (locale, slug); ISR revalidates; dynamicParams
  * lets a newly published slug render on first request then cache.
  */
 export const revalidate = 60
 export const dynamicParams = true
 
-type Params = { slug: string }
+type Params = { lang: string; slug: string }
 
 export async function generateStaticParams(): Promise<Params[]> {
   const slugs = await getAllArticleSlugs()
-  return slugs.map((slug) => ({ slug }))
+  return LOCALES.flatMap((lang) => slugs.map((slug) => ({ lang, slug })))
 }
 
 export async function generateMetadata({
@@ -34,8 +32,9 @@ export async function generateMetadata({
 }: {
   params: Promise<Params>
 }): Promise<Metadata> {
-  const { slug } = await params
-  const article = await getArticleBySlug(slug)
+  const { lang, slug } = await params
+  const locale: Locale = isLocale(lang) ? lang : 'en'
+  const article = await getArticleBySlug(slug, locale)
   if (!article) return { title: 'Article not found' }
   return {
     title: article.title,
@@ -44,14 +43,17 @@ export async function generateMetadata({
 }
 
 export default async function ArticlePage({ params }: { params: Promise<Params> }) {
-  const { slug } = await params
-  const article = await getArticleBySlug(slug)
+  const { lang, slug } = await params
+  const locale: Locale = isLocale(lang) ? lang : 'en'
+  const dict = getDictionary(locale)
+
+  const article = await getArticleBySlug(slug, locale)
   if (!article) notFound()
 
-  // Related: other recent articles, excluding this one.
-  const related = (await getRecentArticles(5)).filter((r) => r.href !== `/articles/${slug}`).slice(0, 4)
+  const selfHref = localeHref(locale, `/articles/${slug}`)
+  const related = (await getRecentArticles(5, locale)).filter((r) => r.href !== selfHref).slice(0, 4)
 
-  const meta = [article.date, article.readTime ? `${article.readTime} min read` : null]
+  const meta = [article.date, article.readTime ? `${article.readTime} ${dict.article.minRead}` : null]
     .filter(Boolean)
     .join(' · ')
 
@@ -59,26 +61,30 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
     <article className="article">
       <div className="article__masthead">
         <header className="article__head">
-        {article.tags.length > 0 && (
-          <div className="article__tags">
-            {article.tags.map((t) => (
-              <a key={t} href={`/tag/${tagSlug(t)}`} className="article__tag-link">
-                <Tag>{t}</Tag>
-              </a>
-            ))}
-          </div>
-        )}
+          {article.tags.length > 0 && (
+            <div className="article__tags">
+              {article.tags.map((t) => (
+                <a
+                  key={t}
+                  href={localeHref(locale, `/tag/${tagSlug(t)}`)}
+                  className="article__tag-link"
+                >
+                  <Tag>{tagLabel(t, locale)}</Tag>
+                </a>
+              ))}
+            </div>
+          )}
 
-        <h1 className="article__title">{article.title}</h1>
+          <h1 className="article__title">{article.title}</h1>
 
-        {article.dek && <p className="article__dek">{article.dek}</p>}
+          {article.dek && <p className="article__dek">{article.dek}</p>}
 
-        {meta && (
-          <div className="article__byline">
-            <p className="article__meta">{meta}</p>
-          </div>
-        )}
-      </header>
+          {meta && (
+            <div className="article__byline">
+              <p className="article__meta">{meta}</p>
+            </div>
+          )}
+        </header>
 
         <div className="article__cover">
           {article.image ? (
@@ -102,7 +108,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
 
             {article.references.length > 0 && (
               <div className="article-references">
-                <p className="article-references__title">References</p>
+                <p className="article-references__title">{dict.article.references}</p>
                 <ul className="article-references__list">
                   {article.references.map((ref, i) => (
                     <li key={i}>
@@ -126,7 +132,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
       {related.length > 0 && (
         <section className="article__related">
           <div className="shell">
-            <h2 className="section-heading__title">Related articles</h2>
+            <h2 className="section-heading__title">{dict.article.related}</h2>
             <div className="article__related-grid">
               {related.map((r) => (
                 <ArticleCard
@@ -144,7 +150,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
         </section>
       )}
 
-      <NewsletterCta />
+      <NewsletterCta dict={dict} />
     </article>
   )
 }

@@ -2,6 +2,7 @@ import { convertMarkdownToLexical, editorConfigFactory } from '@payloadcms/richt
 import { addDataAndFileToRequest, type PayloadHandler } from 'payload'
 
 import type { Resource } from '../payload-types'
+import { translateResourceToThai, translationConfigured } from '../lib/translate'
 
 /**
  * POST /api/resources/from-markdown
@@ -69,11 +70,29 @@ export const fromMarkdownHandler: PayloadHandler = async (req) => {
         references: data.references,
         slug: data.slug,
         body,
+        // Keep the English source markdown so the Thai translation can be
+        // (re)generated cleanly (markdown → translate → Lexical).
+        bodyMarkdown,
       },
     })
 
+    // Auto-translate the English draft to Thai. Runs AFTER the create commits
+    // (its own operations, not the create transaction) so no DB connection is
+    // held during the Claude call. Best-effort: a translation failure never
+    // fails the publish — the editor can retry from the admin.
+    let thaiTranslated = false
+    if (translationConfigured()) {
+      try {
+        await translateResourceToThai({ payload: req.payload, id: doc.id })
+        thaiTranslated = true
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err)
+        req.payload.logger.error(`Thai auto-translation failed for resource ${doc.id}: ${message}`)
+      }
+    }
+
     return Response.json(
-      { id: doc.id, slug: doc.slug, url: `/articles/${doc.slug}`, status: doc.status },
+      { id: doc.id, slug: doc.slug, url: `/articles/${doc.slug}`, status: doc.status, thaiTranslated },
       { status: 201 },
     )
   } catch (err) {

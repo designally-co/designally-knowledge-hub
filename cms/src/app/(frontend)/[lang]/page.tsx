@@ -4,27 +4,27 @@ import { ArticleCard, SectionHeading } from '@/components/ds'
 import { HeroCarousel } from '@/components/HeroCarousel'
 import { getArticlesByCategory, getRecentArticles } from '@/lib/resources'
 import { CATEGORIES } from '@/lib/tags'
+import { categoryLabel, getDictionary, isLocale, type Locale } from '@/lib/i18n'
 
 /**
  * Homepage. A server component that reads the most recent published articles
- * from Payload's Local API and hands them to the (client) hero carousel.
- *
- * `revalidate` makes this Incrementally Static: the page is prerendered and
- * CDN-cached, then quietly rebuilt at most once every 5 minutes, so newly
- * published articles appear without a redeploy and without hitting the DB on
- * every visit.
+ * from Payload's Local API (in the active locale) and hands them to the hero
+ * carousel + per-category rows. ISR-cached.
  */
 export const revalidate = 60
 
-export default async function HomePage() {
-  const items = await getRecentArticles(10)
+export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params
+  const locale: Locale = isLocale(lang) ? lang : 'en'
+  const dict = getDictionary(locale)
 
-  // One section per category (in taxonomy order), skipping any with no articles.
+  const items = await getRecentArticles(10, locale)
+
   const sections = (
     await Promise.all(
       CATEGORIES.map(async (category) => ({
         category,
-        items: await getArticlesByCategory(category, 4),
+        items: await getArticlesByCategory(category, 4, locale),
       })),
     )
   ).filter((s) => s.items.length > 0)
@@ -43,7 +43,7 @@ export default async function HomePage() {
             textWrap: 'balance',
           }}
         >
-          Learn how better brands are built.
+          {dict.home.heading}
         </h1>
       </div>
 
@@ -53,7 +53,7 @@ export default async function HomePage() {
           id={`cat-${category.toLowerCase().replace(/\s+/g, '-')}`}
           key={category}
         >
-          <SectionHeading>{category}</SectionHeading>
+          <SectionHeading>{categoryLabel(category, locale)}</SectionHeading>
           <div className="card-grid">
             {cards.map((it) => (
               <ArticleCard

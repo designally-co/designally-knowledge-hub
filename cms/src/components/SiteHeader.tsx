@@ -4,35 +4,34 @@ import React from 'react'
 import Link from 'next/link'
 
 import { Button, IconButton, Icon } from './ds'
+import { LocaleSwitcher } from './LocaleSwitcher'
 import { CATEGORIES, TAXONOMY, TAG_OPTIONS, tagSlug, type Category } from '@/lib/tags'
+import {
+  categoryLabel,
+  localeHref,
+  tagLabel,
+  type Dictionary,
+  type Locale,
+} from '@/lib/i18n'
 
 /*
- * SiteHeader — sticky masthead, ported from the standalone Vite app's
- * pages/Header.jsx. Styling lives in styles/layout.css (.site-header / .nav-panel
- * / .drawer …).
+ * SiteHeader — sticky masthead, ported from the standalone Vite app. Locale-aware:
+ * links are prefixed for the active locale (English unprefixed, Thai under /th),
+ * category/tag labels and chrome strings come from the dictionary, and a language
+ * switcher swaps between EN / ไทย for the current page.
  *
- * Desktop (>=64em, pointer devices): the four category links reveal a full-width
- * panel listing that category's tags. Hover intent is debounced (OPEN_DELAY /
- * CLOSE_DELAY) so travelling diagonally from a trigger into the panel doesn't
- * flicker it shut, and the panel is keyboard reachable (focus opens it, Escape
- * closes and restores focus).
- *
- * Below 64em / on touch the nav collapses into the drawer, which lists the
- * categories and a sample of topics.
- *
- * Links go to real Hub routes: categories -> homepage section anchors, tags ->
- * /tag/[slug], Resources -> /resources.
+ * Desktop (>=64em, pointer): the four category links reveal a full-width panel of
+ * that category's tags, with debounced hover intent. Below 64em / on touch the nav
+ * collapses into the drawer.
  */
 
 const WORDMARK = 'Designally'
 
-/** Homepage anchor for a category section (see (frontend)/page.tsx). */
-export function categoryAnchor(category: string): string {
-  return `/#cat-${category.toLowerCase().replace(/\s+/g, '-')}`
+/** Homepage anchor for a category section, in the given locale. */
+function categoryAnchor(category: string, locale: Locale): string {
+  return localeHref(locale, `/#cat-${category.toLowerCase().replace(/\s+/g, '-')}`)
 }
 
-// TODO: point Subscribe at a real destination (newsletter signup / external).
-const SUBSCRIBE_HREF = '/'
 const DRAWER_TOPICS = TAG_OPTIONS.slice(0, 8)
 
 // Hover intent. Opening is near-instant; closing lags so the cursor can cross
@@ -54,16 +53,16 @@ function useLockBodyScroll() {
 /* Desktop category panel                                                      */
 /* -------------------------------------------------------------------------- */
 
-function NavPanel({ category }: { category: Category }) {
+function NavPanel({ category, locale, dict }: { category: Category; locale: Locale; dict: Dictionary }) {
   const tags = TAXONOMY[category]
 
   return (
     <div className="nav-panel" id={`nav-panel-${tagSlug(category)}`}>
       <div className="shell nav-panel__inner">
         <div className="nav-panel__rail">
-          <span className="nav-panel__title">{category}</span>
-          <Link className="nav-panel__all" href={categoryAnchor(category)}>
-            View all
+          <span className="nav-panel__title">{categoryLabel(category, locale)}</span>
+          <Link className="nav-panel__all" href={categoryAnchor(category, locale)}>
+            {dict.nav.viewAll}
             <Icon name="arrow-right" size={16} />
           </Link>
         </div>
@@ -71,8 +70,8 @@ function NavPanel({ category }: { category: Category }) {
         <ul className="nav-panel__tags">
           {tags.map((tag, i) => (
             <li key={tag} style={{ '--i': i } as React.CSSProperties}>
-              <Link className="nav-panel__tag" href={`/tag/${tagSlug(tag)}`}>
-                <span>{tag}</span>
+              <Link className="nav-panel__tag" href={localeHref(locale, `/tag/${tagSlug(tag)}`)}>
+                <span>{tagLabel(tag, locale)}</span>
                 <Icon name="arrow-right" size={14} />
               </Link>
             </li>
@@ -90,9 +89,11 @@ function NavPanel({ category }: { category: Category }) {
 type DrawerProps = {
   onClose: () => void
   returnFocusTo: React.RefObject<HTMLButtonElement | null>
+  locale: Locale
+  dict: Dictionary
 }
 
-function Drawer({ onClose, returnFocusTo }: DrawerProps) {
+function Drawer({ onClose, returnFocusTo, locale, dict }: DrawerProps) {
   const panelRef = React.useRef<HTMLDivElement>(null)
   const closeRef = React.useRef<HTMLButtonElement>(null)
 
@@ -108,7 +109,6 @@ function Drawer({ onClose, returnFocusTo }: DrawerProps) {
         return
       }
       if (e.key !== 'Tab') return
-      // Keep tabbing inside the panel while it owns the screen.
       const focusables = panelRef.current?.querySelectorAll<HTMLElement>(
         'a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])',
       )
@@ -134,7 +134,7 @@ function Drawer({ onClose, returnFocusTo }: DrawerProps) {
   return (
     <>
       <div className="drawer-scrim" onClick={onClose} />
-      <div className="drawer" role="dialog" aria-modal="true" aria-label="Site menu" ref={panelRef}>
+      <div className="drawer" role="dialog" aria-modal="true" aria-label={dict.nav.menu} ref={panelRef}>
         <div className="drawer__head">
           <span className="wordmark" aria-hidden="true">
             {WORDMARK}
@@ -142,7 +142,7 @@ function Drawer({ onClose, returnFocusTo }: DrawerProps) {
           <button
             type="button"
             className="icon-btn icon-btn--bare icon-btn--md"
-            aria-label="Close menu"
+            aria-label={dict.nav.closeMenu}
             onClick={onClose}
             ref={closeRef}
           >
@@ -150,35 +150,42 @@ function Drawer({ onClose, returnFocusTo }: DrawerProps) {
           </button>
         </div>
 
-        <nav aria-label="Sections">
+        <nav aria-label={dict.nav.menu}>
           <ul className="drawer__list">
             {CATEGORIES.map((item) => (
               <li key={item}>
-                <Link className="drawer__link" href={categoryAnchor(item)} onClick={onClose}>
-                  {item}
+                <Link className="drawer__link" href={categoryAnchor(item, locale)} onClick={onClose}>
+                  {categoryLabel(item, locale)}
                 </Link>
               </li>
             ))}
             <li>
-              <Link className="drawer__link" href="/resources" onClick={onClose}>
-                Resources
+              <Link className="drawer__link" href={localeHref(locale, '/resources')} onClick={onClose}>
+                {dict.nav.resources}
               </Link>
             </li>
           </ul>
         </nav>
 
-        <p className="drawer__label">Topics</p>
+        <p className="drawer__label">{dict.nav.topics}</p>
         <div className="drawer__topics">
           {DRAWER_TOPICS.map((t) => (
-            <Link key={t} className="topic-chip" href={`/tag/${tagSlug(t)}`} onClick={onClose}>
-              {t}
+            <Link
+              key={t}
+              className="topic-chip"
+              href={localeHref(locale, `/tag/${tagSlug(t)}`)}
+              onClick={onClose}
+            >
+              {tagLabel(t, locale)}
             </Link>
           ))}
         </div>
 
-        <Button href={SUBSCRIBE_HREF} className="drawer__cta" onClick={onClose}>
-          Subscribe
+        <Button href={localeHref(locale, '/')} className="drawer__cta" onClick={onClose}>
+          {dict.nav.subscribe}
         </Button>
+
+        <LocaleSwitcher locale={locale} className="drawer__locale" />
       </div>
     </>
   )
@@ -188,7 +195,7 @@ function Drawer({ onClose, returnFocusTo }: DrawerProps) {
 /* Header                                                                      */
 /* -------------------------------------------------------------------------- */
 
-export function SiteHeader() {
+export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const [drawerOpen, setDrawerOpen] = React.useState(false)
   const [openCategory, setOpenCategory] = React.useState<Category | null>(null)
   const toggleRef = React.useRef<HTMLButtonElement>(null)
@@ -239,25 +246,25 @@ export function SiteHeader() {
         onMouseLeave={scheduleClose}
       >
         <div className="shell site-header__bar">
-          <Link className="wordmark" href="/" onFocus={closeNow}>
+          <Link className="wordmark" href={localeHref(locale, '/')} onFocus={closeNow}>
             {WORDMARK}
           </Link>
 
-          <nav className="site-nav" aria-label="Sections" ref={navRef}>
+          <nav className="site-nav" aria-label={dict.nav.menu} ref={navRef}>
             {CATEGORIES.map((item) => {
               const isOpen = openCategory === item
               return (
                 <Link
                   key={item}
                   className={['site-nav__link', isOpen ? 'is-open' : ''].filter(Boolean).join(' ')}
-                  href={categoryAnchor(item)}
+                  href={categoryAnchor(item, locale)}
                   aria-expanded={isOpen}
                   aria-controls={`nav-panel-${tagSlug(item)}`}
                   onMouseEnter={() => scheduleOpen(item)}
                   onFocus={() => setOpenCategory(item)}
                   onClick={closeNow}
                 >
-                  {item}
+                  {categoryLabel(item, locale)}
                 </Link>
               )
             })}
@@ -265,17 +272,18 @@ export function SiteHeader() {
             {/* Resources has no sub-tags — a plain link, no panel. */}
             <Link
               className="site-nav__link"
-              href="/resources"
+              href={localeHref(locale, '/resources')}
               onMouseEnter={scheduleClose}
               onFocus={closeNow}
             >
-              Resources
+              {dict.nav.resources}
             </Link>
           </nav>
 
           <div className="site-header__actions">
-            <Button size="sm" href={SUBSCRIBE_HREF} className="site-header__subscribe">
-              Subscribe
+            <LocaleSwitcher locale={locale} className="site-header__locale" />
+            <Button size="sm" href={localeHref(locale, '/')} className="site-header__subscribe">
+              {dict.nav.subscribe}
             </Button>
             {/* TODO: wire search once a search route exists. */}
             <IconButton icon="search" variant="bare" size="sm" label="Search" />
@@ -283,7 +291,7 @@ export function SiteHeader() {
               type="button"
               className="menu-toggle"
               aria-expanded={drawerOpen}
-              aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+              aria-label={drawerOpen ? dict.nav.closeMenu : dict.nav.menu}
               onClick={() => setDrawerOpen((v) => !v)}
               ref={toggleRef}
             >
@@ -294,15 +302,18 @@ export function SiteHeader() {
 
         {openCategory && (
           <div onMouseEnter={clearTimer} onMouseLeave={scheduleClose}>
-            <NavPanel category={openCategory} />
+            <NavPanel category={openCategory} locale={locale} dict={dict} />
           </div>
         )}
       </header>
 
-      {/* Rendered outside the sticky header so the panel isn't trapped in its
-          stacking context. */}
       {drawerOpen && (
-        <Drawer onClose={() => setDrawerOpen(false)} returnFocusTo={toggleRef} />
+        <Drawer
+          onClose={() => setDrawerOpen(false)}
+          returnFocusTo={toggleRef}
+          locale={locale}
+          dict={dict}
+        />
       )}
     </>
   )

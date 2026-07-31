@@ -1,22 +1,13 @@
-import type { Metadata } from 'next'
-
 import { ResourceCard } from '@/components/ds'
 import { getDownloadableFiles } from '@/lib/resources'
+import { getDictionary, isLocale, type Locale } from '@/lib/i18n'
 
 /**
  * Resources — the downloadable files (fonts, Figma files, templates), i.e.
  * published resources of type `template`. Articles live on the homepage and the
  * tag pages instead.
- *
- * Files have no detail page yet, so cards are non-navigating placeholders until
- * the download/detail route exists.
  */
 export const revalidate = 60
-
-export const metadata: Metadata = {
-  title: 'Resources — Designally Knowledge Hub',
-  description: 'Free downloadable design resources: templates, fonts and Figma files.',
-}
 
 // Spot colours cycle so a grid of documents reads as a set, not a repetition.
 const DOC_COLORS = [
@@ -28,17 +19,17 @@ const DOC_COLORS = [
   'var(--be-rust)',
 ]
 
-export default async function ResourcesPage() {
-  const items = await getDownloadableFiles()
+export default async function ResourcesPage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params
+  const locale: Locale = isLocale(lang) ? lang : 'en'
+  const dict = getDictionary(locale)
+
+  const items = await getDownloadableFiles(60, locale)
 
   return (
     <div className="shell listing">
-      <h1 className="listing__title">Resources</h1>
-      <p className="listing__count">
-        {items.length > 0
-          ? `${items.length} ${items.length === 1 ? 'file' : 'files'} to download`
-          : 'Templates, fonts and Figma files — free to use.'}
-      </p>
+      <h1 className="listing__title">{dict.resources.title}</h1>
+      <p className="listing__count">{dict.resources.lede}</p>
 
       {items.length > 0 ? (
         <div className="card-grid">
@@ -53,9 +44,7 @@ export default async function ResourcesPage() {
           ))}
         </div>
       ) : (
-        <p className="listing__empty">
-          No downloadable files yet — they’ll appear here as soon as the first one is published.
-        </p>
+        <p className="listing__empty">{dict.resources.lede}</p>
       )}
     </div>
   )

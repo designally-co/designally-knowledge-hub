@@ -4,18 +4,27 @@ import { notFound } from 'next/navigation'
 import { ArticleCard } from '@/components/ds'
 import { getArticlesByTag } from '@/lib/resources'
 import { TAG_OPTIONS, categoryForTag, tagFromSlug, tagSlug } from '@/lib/tags'
+import {
+  categoryLabel,
+  getDictionary,
+  isLocale,
+  localeHref,
+  tagLabel,
+  LOCALES,
+  type Locale,
+} from '@/lib/i18n'
 
 /**
  * Tag listing page — every published article carrying one tag.
- * SSG: one page per tag in the fixed taxonomy; ISR keeps them fresh.
+ * SSG: one page per (locale, tag) in the fixed taxonomy; ISR keeps them fresh.
  */
 export const revalidate = 60
 export const dynamicParams = true
 
-type Params = { slug: string }
+type Params = { lang: string; slug: string }
 
 export function generateStaticParams(): Params[] {
-  return TAG_OPTIONS.map((t) => ({ slug: tagSlug(t) }))
+  return LOCALES.flatMap((lang) => TAG_OPTIONS.map((t) => ({ lang, slug: tagSlug(t) })))
 }
 
 export async function generateMetadata({
@@ -30,23 +39,26 @@ export async function generateMetadata({
 }
 
 export default async function TagPage({ params }: { params: Promise<Params> }) {
-  const { slug } = await params
+  const { lang, slug } = await params
+  const locale: Locale = isLocale(lang) ? lang : 'en'
+  const dict = getDictionary(locale)
+
   const tag = tagFromSlug(slug)
   if (!tag) notFound()
 
-  const items = await getArticlesByTag(tag)
+  const items = await getArticlesByTag(tag, 60, locale)
   const category = categoryForTag(tag)
 
   return (
     <div className="shell listing">
-      <a className="listing__back" href="/">
-        ← Home
+      <a className="listing__back" href={localeHref(locale, '/')}>
+        ← {dict.listing.home}
       </a>
 
-      {category && <p className="listing__eyebrow">{category}</p>}
-      <h1 className="listing__title">{tag}</h1>
+      {category && <p className="listing__eyebrow">{categoryLabel(category, locale)}</p>}
+      <h1 className="listing__title">{tagLabel(tag, locale)}</h1>
       <p className="listing__count">
-        {items.length} {items.length === 1 ? 'article' : 'articles'}
+        {items.length} {dict.listing.articles}
       </p>
 
       {items.length > 0 ? (
@@ -64,7 +76,7 @@ export default async function TagPage({ params }: { params: Promise<Params> }) {
           ))}
         </div>
       ) : (
-        <p className="listing__empty">No articles tagged “{tag}” yet.</p>
+        <p className="listing__empty">{dict.listing.emptyForTag}</p>
       )}
     </div>
   )

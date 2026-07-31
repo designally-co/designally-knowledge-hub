@@ -120,6 +120,17 @@ export default buildConfig({
   },
   collections: [Resources, Media, Users],
   editor: lexicalEditor(),
+  // Bilingual content: English is the source (authored/generated); Thai is a
+  // translation. Localized fields store a value per locale; `fallback` shows the
+  // English value until a Thai one exists. The admin gets a locale switcher.
+  localization: {
+    locales: [
+      { label: 'English', code: 'en' },
+      { label: 'ไทย (Thai)', code: 'th' },
+    ],
+    defaultLocale: 'en',
+    fallback: true,
+  },
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),

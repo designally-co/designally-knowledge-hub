@@ -3,8 +3,12 @@
    section titles, and a neutral grotesque (Hanken Grotesk) for UI, article
    titles, body and meta. See tokens/fonts.css for the @font-face / import. */
 :root {
-  --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
-  --font-sans: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  /* Thai faces (Noto Serif/Sans Thai) sit in the stack after the Latin faces, so
+     the browser renders Latin glyphs with Newsreader/Hanken and Thai glyphs with
+     the Noto Thai faces automatically (per-glyph fallback). Loaded in the
+     frontend layout alongside the Latin webfonts. */
+  --font-serif: "Newsreader", "Noto Serif Thai", Georgia, "Times New Roman", serif;
+  --font-sans: "Hanken Grotesk", "Noto Sans Thai", "Helvetica Neue", Arial, sans-serif;
 
   /* Display serif — big editorial statements */
   --type-display-1: 400 clamp(44px, 6vw, 92px)/1.02 var(--font-serif);

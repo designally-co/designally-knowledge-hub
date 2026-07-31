@@ -2,6 +2,7 @@ import { getPayload } from 'payload'
 
 import config from '@/payload.config'
 import type { Media, Resource } from '@/payload-types'
+import { localeHref, type Locale } from './i18n'
 import { readingMinutes } from './readingTime'
 import { TAXONOMY, type Category } from './tags'
 
@@ -22,11 +23,11 @@ export interface CarouselItem {
 }
 
 /** Human date, e.g. "6 July 2026". Empty string when unset. */
-function formatDate(value?: string | null): string {
+function formatDate(value: string | null | undefined, locale: Locale): string {
   if (!value) return ''
   const d = new Date(value)
   if (Number.isNaN(d.getTime())) return ''
-  return new Intl.DateTimeFormat('en-GB', {
+  return new Intl.DateTimeFormat(locale === 'th' ? 'th-TH' : 'en-GB', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -59,19 +60,19 @@ function ratioOf(r: Resource): string {
 }
 
 /** The public path for a resource. Only articles have detail pages. */
-function hrefOf(r: Resource): string {
-  return r.type === 'article' ? `/articles/${r.slug}` : '/resources'
+function hrefOf(r: Resource, locale: Locale): string {
+  return localeHref(locale, r.type === 'article' ? `/articles/${r.slug}` : '/resources')
 }
 
 /** Map a Resource to the card shape used across listings. */
-function toCard(r: Resource): CarouselItem {
+function toCard(r: Resource, locale: Locale): CarouselItem {
   return {
     title: r.title,
-    date: formatDate(r.publishedDate),
+    date: formatDate(r.publishedDate, locale),
     tags: r.tags ?? [],
     image: coverOf(r),
     ratio: ratioOf(r),
-    href: hrefOf(r),
+    href: hrefOf(r, locale),
   }
 }
 
@@ -102,7 +103,10 @@ async function safeRead<T>(label: string, run: () => Promise<T>, fallback: T): P
  * Most recent published articles, newest first — the hero carousel source.
  * (Downloadable files are excluded: the hero needs a cover + a detail page.)
  */
-export async function getRecentArticles(limit = 10): Promise<CarouselItem[]> {
+export async function getRecentArticles(
+  limit = 10,
+  locale: Locale = 'en',
+): Promise<CarouselItem[]> {
   return safeRead(
     'getRecentArticles',
     async () => {
@@ -113,15 +117,20 @@ export async function getRecentArticles(limit = 10): Promise<CarouselItem[]> {
         sort: '-publishedDate',
         limit,
         depth: 1, // populate the coverImage upload relation
+        locale,
       })
-      return docs.map(toCard)
+      return docs.map((r) => toCard(r, locale))
     },
     [],
   )
 }
 
 /** Published articles carrying a given tag, newest first. */
-export async function getArticlesByTag(tag: string, limit = 60): Promise<CarouselItem[]> {
+export async function getArticlesByTag(
+  tag: string,
+  limit = 60,
+  locale: Locale = 'en',
+): Promise<CarouselItem[]> {
   return safeRead(
     'getArticlesByTag',
     async () => {
@@ -132,8 +141,9 @@ export async function getArticlesByTag(tag: string, limit = 60): Promise<Carouse
         sort: '-publishedDate',
         limit,
         depth: 1,
+        locale,
       })
-      return docs.map(toCard)
+      return docs.map((r) => toCard(r, locale))
     },
     [],
   )
@@ -143,6 +153,7 @@ export async function getArticlesByTag(tag: string, limit = 60): Promise<Carouse
 export async function getArticlesByCategory(
   category: Category,
   limit = 4,
+  locale: Locale = 'en',
 ): Promise<CarouselItem[]> {
   return safeRead(
     'getArticlesByCategory',
@@ -154,8 +165,9 @@ export async function getArticlesByCategory(
         sort: '-publishedDate',
         limit,
         depth: 1,
+        locale,
       })
-      return docs.map(toCard)
+      return docs.map((r) => toCard(r, locale))
     },
     [],
   )
@@ -165,7 +177,10 @@ export async function getArticlesByCategory(
  * Published downloadable files (type `template`) — the /resources listing.
  * Files have no detail page yet, so cards carry the title/tags only.
  */
-export async function getDownloadableFiles(limit = 60): Promise<CarouselItem[]> {
+export async function getDownloadableFiles(
+  limit = 60,
+  locale: Locale = 'en',
+): Promise<CarouselItem[]> {
   return safeRead(
     'getDownloadableFiles',
     async () => {
@@ -178,8 +193,9 @@ export async function getDownloadableFiles(limit = 60): Promise<CarouselItem[]> 
         sort: '-publishedDate',
         limit,
         depth: 1,
+        locale,
       })
-      return docs.map(toCard)
+      return docs.map((r) => toCard(r, locale))
     },
     [],
   )
@@ -199,7 +215,10 @@ export interface Article {
 }
 
 /** A single published article by slug, or null if not found / DB unavailable. */
-export async function getArticleBySlug(slug: string): Promise<Article | null> {
+export async function getArticleBySlug(
+  slug: string,
+  locale: Locale = 'en',
+): Promise<Article | null> {
   return safeRead(
     'getArticleBySlug',
     async () => {
@@ -215,6 +234,7 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
         },
         limit: 1,
         depth: 1,
+        locale,
       })
 
       const r = docs[0]
@@ -224,7 +244,7 @@ export async function getArticleBySlug(slug: string): Promise<Article | null> {
         slug: r.slug ?? slug,
         title: r.title,
         dek: r.summary ?? undefined,
-        date: formatDate(r.publishedDate),
+        date: formatDate(r.publishedDate, locale),
         tags: r.tags ?? [],
         image: coverOf(r),
         ratio: ratioOf(r),

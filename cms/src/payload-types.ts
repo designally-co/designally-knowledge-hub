@@ -88,10 +88,10 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
-  fallbackLocale: null;
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'th') | ('en' | 'th')[];
   globals: {};
   globalsSelect: {};
-  locale: null;
+  locale: 'en' | 'th';
   widgets: {
     collections: CollectionsWidget;
   };
@@ -130,6 +130,7 @@ export interface Resource {
    * Dek / subtitle: the one-sentence lede shown under the title, also used as the card excerpt and default meta description.
    */
   summary?: string | null;
+  bodyMarkdown?: string | null;
   /**
    * Rich body. Opens with a 2–3 sentence introduction (no heading), then 3–6 H2 sections (H3 only when a section has separate parts).
    */
@@ -420,6 +421,7 @@ export interface PayloadMigration {
 export interface ResourcesSelect<T extends boolean = true> {
   title?: T;
   summary?: T;
+  bodyMarkdown?: T;
   body?: T;
   references?:
     | T

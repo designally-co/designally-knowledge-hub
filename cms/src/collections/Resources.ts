@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { fromMarkdownHandler } from '../endpoints/fromMarkdown'
+import { translateToThaiHandler } from '../endpoints/translateToThai'
 import { slugField } from '../fields/slug'
 import { TAG_SELECT_OPTIONS } from '../lib/tags'
 
@@ -38,6 +39,12 @@ export const Resources: CollectionConfig = {
       method: 'post',
       handler: fromMarkdownHandler,
     },
+    {
+      // Manual (re)translation of one resource's English content into Thai.
+      path: '/:id/translate-to-thai',
+      method: 'post',
+      handler: translateToThaiHandler,
+    },
   ],
   hooks: {
     // Stamp the publish date the first time a resource goes live, so listings
@@ -58,14 +65,23 @@ export const Resources: CollectionConfig = {
       name: 'title',
       type: 'text',
       required: true,
+      localized: true,
     },
     {
       name: 'summary',
       type: 'textarea',
+      localized: true,
       admin: {
         description:
           'Dek / subtitle: the one-sentence lede shown under the title, also used as the card excerpt and default meta description.',
       },
+    },
+    {
+      // English source markdown (set by the from-markdown endpoint). The Thai
+      // translation step reads this to produce the Thai body. Hidden from editors.
+      name: 'bodyMarkdown',
+      type: 'textarea',
+      admin: { hidden: true },
     },
 
     // ---- Type-specific fields, grouped in tabs ----------------------------
@@ -79,6 +95,7 @@ export const Resources: CollectionConfig = {
             {
               name: 'body',
               type: 'richText',
+              localized: true,
               admin: {
                 description:
                   'Rich body. Opens with a 2–3 sentence introduction (no heading), then 3–6 H2 sections (H3 only when a section has separate parts).',
@@ -168,6 +185,17 @@ export const Resources: CollectionConfig = {
       },
     },
     {
+      // Sidebar button: (re)generate the Thai version from the English source.
+      name: 'translateToThai',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: {
+          Field: '/components/admin/TranslateToThaiButton#TranslateToThaiButton',
+        },
+      },
+    },
+    {
       name: 'publishedDate',
       type: 'date',
       admin: {
@@ -220,8 +248,8 @@ export const Resources: CollectionConfig = {
       label: 'SEO',
       admin: { description: 'Per-resource search metadata. Falls back to title/summary.' },
       fields: [
-        { name: 'metaTitle', type: 'text' },
-        { name: 'metaDescription', type: 'textarea' },
+        { name: 'metaTitle', type: 'text', localized: true },
+        { name: 'metaDescription', type: 'textarea', localized: true },
         { name: 'ogImage', type: 'upload', relationTo: 'media' },
       ],
     },
