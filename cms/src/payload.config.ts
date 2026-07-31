@@ -25,17 +25,12 @@ const isPostgres = /^postgres(ql)?:\/\//i.test(databaseURI)
 
 const db = isPostgres
   ? postgresAdapter({
-      pool: {
-        connectionString: databaseURI,
-        // Serverless: each function instance keeps at most ONE DB connection so
-        // many concurrent instances (especially during a deploy overlap) don't
-        // exhaust Supabase's pooler slots — the cause of the intermittent
-        // "error initializing Payload" 500s. Supabase's pooler multiplexes, so a
-        // client pool of 1 is the recommended setup.
-        max: 1,
-        idleTimeoutMillis: 30_000,
-        connectionTimeoutMillis: 10_000,
-      },
+      // NOTE: do NOT set pool.max to 1 here — Payload runs queries inside
+      // transactions that hold a connection while needing another, so a
+      // single-connection pool deadlocks and every query 500s. Leave the pool at
+      // the driver default. (The intermittent post-deploy "error initializing
+      // Payload" is transient pooler contention that clears on its own.)
+      pool: { connectionString: databaseURI },
       // Isolate the Hub's tables in their own Postgres schema when set. REQUIRED
       // if you share one database with another app (e.g. the Content Generator
       // on Supabase) — otherwise `push` below could drop that app's tables.
