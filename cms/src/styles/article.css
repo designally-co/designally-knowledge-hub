@@ -14,37 +14,28 @@
   padding-bottom: 0;
 }
 
-/* Hero masthead — holds the title block + cover over a full-bleed tan band that
-   is exactly 100vh tall and scrolls with the page (not fixed). The wrapper grows
-   with the tall cover, so the cover spills past the band's bottom onto the paper
-   below — the intended overflow. The body sits outside this wrapper, so it never
-   picks up the tan. isolation keeps the -1 layer contained to the masthead. */
+/* Cover aspect ratio (width / height), set per-article inline from the image's
+   real dimensions; drives the hero band's reserved half-cover height below. */
+.article {
+  --cover-r: 1.5;
+}
+
+/* Hero masthead — the title block + the cover's TOP HALF on a solid tan band.
+   The band is the masthead's own background (full-bleed: the masthead is a
+   full-width block). Its box ends at the cover's midline because the cover frame
+   is only half the cover's height and the hero image overflows it downward onto
+   the paper below. The pattern sits on ::after so it can carry its own opacity. */
 .article__masthead {
   position: relative;
   isolation: isolate;
   padding-top: clamp(40px, 7vw, 76px);
-}
-
-.article__masthead::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 100vh;
-  z-index: -1;
   background: #ece1cd;
-  pointer-events: none;
 }
 
-/* The pencil-line pattern sits on its own layer above the tan so it can carry
-   its own opacity: as part of the ::before shorthand it would have dimmed the
-   band too. The SVG carries no opacity of its own, so the value below is the
-   real rendered one. `cover` fills the whole band; swap it for an explicit
-   width (e.g. `500px auto`) to shrink the pattern to a centred accent mark. */
 .article__masthead::after {
   content: '';
   position: absolute;
-  inset: 0 0 auto 0;
-  height: 100vh;
+  inset: 0;
   z-index: -1;
   opacity: 0.2;
   background: url('/hero-bg-pattern.svg') no-repeat center / cover;
@@ -155,22 +146,39 @@
   max-width: var(--article-max);
   margin-inline: auto;
   padding-inline: var(--page-gutter);
-}
-
-/* Cover image: fills the gutter-inset width at its own aspect ratio (no crop,
-   no fixed height), square corners. */
-.article__hero {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 0;
-  background-color: var(--card-tint, var(--cover-fallback));
   margin-top: clamp(24px, 5vw, 36px);
 }
 
-/* No cover image → a default-colour band (natural ratio would collapse to 0). */
+/* Frame = HALF the cover's height. Sized by padding-bottom (50% / r of its own
+   width) rather than aspect-ratio, because an aspect-ratio box GROWS to fit a
+   taller child — which made the band cover the whole image. The hero is
+   absolutely positioned so it can't stretch the frame; its bottom half spills
+   below the masthead onto the paper. */
+.article__cover-frame {
+  position: relative;
+  height: 0;
+  padding-bottom: calc(50% / var(--cover-r));
+  overflow: visible;
+}
+
+/* Cover image at its real aspect ratio (r === the image's own ratio, so cover
+   doesn't crop), square corners. Full height, overflowing the half-height frame. */
+.article__hero {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  aspect-ratio: var(--cover-r);
+  height: auto;
+  object-fit: cover;
+  border-radius: 0;
+  background-color: var(--card-tint, var(--cover-fallback));
+}
+
+/* No cover image → a default-colour band at the same ratio. */
 .article__hero--empty {
-  aspect-ratio: 16 / 6;
+  aspect-ratio: var(--cover-r);
 }
 
 /* --- Two-column body: TOC rail + article ------------------------------- */
@@ -178,11 +186,21 @@
 .article__layout {
   max-width: var(--article-max);
   margin-inline: auto;
-  margin-top: clamp(32px, 6vw, 48px);
+  margin-top: 0;
   padding-inline: var(--page-gutter);
   display: grid;
   gap: clamp(28px, 4vw, 56px);
   grid-template-columns: minmax(0, 1fr);
+}
+
+/* First full-width grid row reserves the cover's overflowing bottom half (half
+   the cover's height, same 2·r box), so the TOC + article start below it. */
+.article__layout::before {
+  content: '';
+  grid-column: 1 / -1;
+  align-self: start;
+  width: 100%;
+  aspect-ratio: calc(2 * var(--cover-r));
 }
 
 .article__main {

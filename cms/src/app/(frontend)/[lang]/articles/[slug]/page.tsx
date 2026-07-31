@@ -57,8 +57,17 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
     .filter(Boolean)
     .join(' · ')
 
+  // Cover aspect ratio (width / height) drives the hero band: the tan reserves
+  // half the cover's height so the cover overflows to its midline. `article.ratio`
+  // is "W / H" (from the image's real dimensions); fall back to 3:2.
+  const [rw, rh] = article.ratio.split('/').map((n) => parseFloat(n.trim()))
+  const coverRatio = rw && rh ? rw / rh : 1.5
+
   return (
-    <article className="article">
+    <article
+      className="article"
+      style={{ ['--cover-r' as string]: String(coverRatio) }}
+    >
       <div className="article__masthead">
         <header className="article__head">
           {article.tags.length > 0 && (
@@ -87,11 +96,15 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
         </header>
 
         <div className="article__cover">
-          {article.image ? (
-            <img className="article__hero" src={article.image} alt="" decoding="async" />
-          ) : (
-            <div className="article__hero article__hero--empty" aria-hidden="true" />
-          )}
+          {/* Frame is half the cover's height; the hero overflows it downward so
+              its bottom half drops past the masthead onto the paper below. */}
+          <div className="article__cover-frame">
+            {article.image ? (
+              <img className="article__hero" src={article.image} alt="" decoding="async" />
+            ) : (
+              <div className="article__hero article__hero--empty" aria-hidden="true" />
+            )}
+          </div>
         </div>
       </div>
 
