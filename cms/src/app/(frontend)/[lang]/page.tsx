@@ -5,6 +5,7 @@ import { CaseStudyCarousel } from '@/components/CaseStudyCarousel'
 import { InsightsGrid } from '@/components/InsightsGrid'
 import { InsightsVideoPromo } from '@/components/InsightsVideoPromo'
 import { WorkflowsGrid } from '@/components/WorkflowsGrid'
+import { TopicsSection } from '@/components/TopicsSection'
 import { HeroCarousel } from '@/components/HeroCarousel'
 import { getArticlesByCategory, getRecentArticles } from '@/lib/resources'
 import { CATEGORIES, TAXONOMY, tagSlug } from '@/lib/tags'
@@ -135,13 +136,17 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         facebookHref="https://www.facebook.com/designallyco/"
       />
 
-      <WorkflowsGrid
-        items={workflows}
-        title={dict.home.workflows}
-        bannerLabel={dict.home.workflowsBanner}
-        bannerHref={localeHref(locale, '/category/design-with-ai')}
-        seeAllLabel={dict.home.seeAllWorkflows}
-      />
+      <div className="warm-band">
+        <WorkflowsGrid
+          items={workflows}
+          title={dict.home.workflows}
+          bannerLabel={dict.home.workflowsBanner}
+          bannerHref={localeHref(locale, '/category/design-with-ai')}
+          seeAllLabel={dict.home.seeAllWorkflows}
+        />
+
+        <TopicsSection title={dict.home.topics} locale={locale} />
+      </div>
 
       {sections.map(({ category, items: cards }) => (
         <section

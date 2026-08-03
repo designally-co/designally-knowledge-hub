@@ -90,6 +90,7 @@ export type Dictionary = {
     workflows: string
     workflowsBanner: string
     seeAllWorkflows: string
+    topics: string
     videoPromoKicker: string
     videoPromoHeading: string
     videoPromoBody: string
@@ -154,6 +155,7 @@ const en: Dictionary = {
     workflows: 'Workflows',
     workflowsBanner: 'Workflow',
     seeAllWorkflows: 'See all Design with AI',
+    topics: 'Topics',
     videoPromoKicker: 'Watch · Learn · Try',
     videoPromoHeading: 'Fresh design ideas, made simple.',
     videoPromoBody:
@@ -226,6 +228,7 @@ const th: Dictionary = {
     workflows: 'เวิร์กโฟลว์',
     workflowsBanner: 'เวิร์กโฟลว์',
     seeAllWorkflows: 'ดูดีไซน์ด้วย AI ทั้งหมด',
+    topics: 'หัวข้อ',
     videoPromoKicker: 'ดู · เรียนรู้ · ลองทำ',
     videoPromoHeading: 'ไอเดียดีไซน์ใหม่ ๆ เข้าใจง่าย',
     videoPromoBody:

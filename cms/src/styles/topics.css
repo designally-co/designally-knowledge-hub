@@ -1,0 +1,90 @@
+/* --- Topics — centred index (title + icon row + sticker-pill cloud) --- */
+
+/* Continuous white → warm-yellow field behind Workflows + Topics. White holds
+   flat through the whole Workflows section and only fades to yellow across the
+   Topics section, so the white ends exactly at the Workflows/Topics boundary. */
+.warm-band {
+  background: #ffffff;
+}
+
+.topics {
+  padding-block: clamp(48px, 7vw, 88px) clamp(72px, 11vw, 132px);
+  background: linear-gradient(180deg, #ffffff 0%, #f6e6ac 100%);
+}
+
+.topics__inner {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.topics__heading {
+  margin: 0;
+  color: var(--be-ink);
+  font: var(--type-display-2);
+  letter-spacing: -0.02em;
+}
+
+.topics__icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(20px, 4vw, 52px);
+  margin-top: clamp(24px, 4vw, 44px);
+}
+
+.topics__icon {
+  font-size: clamp(38px, 5vw, 60px);
+  line-height: 1;
+}
+
+/* Full content width, so the pile has the whole section to spread across. */
+.topics__cloud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 1.4vw, 18px);
+  width: 100%;
+  margin-top: clamp(56px, 9vw, 108px);
+}
+
+/* Each pill sits in a wrapper the physics sim drives. Default = resting sticker
+   cloud (what no-JS and reduced-motion users see). */
+.topics__pill-drop {
+  display: inline-flex;
+}
+
+/* JS reserves the stage height (set inline from the pill count) and hides the
+   pills, ready to drop them. Never clips: pills fall in from just above and
+   their soft shadows must stay whole, so there is no overflow here. */
+.topics__cloud--stage {
+  position: relative;
+  width: 100%;
+  min-height: clamp(300px, 30vw, 360px);
+}
+
+.topics__cloud--pending .topics__pill-drop {
+  opacity: 0;
+}
+
+/* Physics running: pills are absolutely placed by Matter.js each frame and
+   revealed as their body drops in. */
+.topics__cloud--physics .topics__pill-drop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* The wrapper owns the rotation, so drop the pill's own static tilt. */
+.topics__cloud--physics .topic-pill {
+  transform: none;
+}
