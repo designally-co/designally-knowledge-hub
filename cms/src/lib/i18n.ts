@@ -73,7 +73,7 @@ export type Dictionary = {
     placeholder: string
     note: string
   }
-  article: { related: string; onThisPage: string; references: string; writtenBy: string; minRead: string }
+  article: { related: string; onThisPage: string; references: string; writtenBy: string; minRead: string; share: string; copyLink: string; copied: string; shareVia: string }
   home: { heading: string; heroLede: string }
   resources: { title: string; lede: string }
   listing: { home: string; articles: string; emptyForTag: string }
@@ -113,6 +113,10 @@ const en: Dictionary = {
     references: 'References',
     writtenBy: 'Written By',
     minRead: 'min read',
+    share: 'Share this article',
+    copyLink: 'Copy link',
+    copied: 'Link copied',
+    shareVia: 'Share',
   },
   home: {
     heading: 'Learn how better brands are built.',
@@ -163,6 +167,10 @@ const th: Dictionary = {
     references: 'แหล่งอ้างอิง',
     writtenBy: 'เขียนโดย',
     minRead: 'นาทีในการอ่าน',
+    share: 'แชร์บทความนี้',
+    copyLink: 'คัดลอกลิงก์',
+    copied: 'คัดลอกลิงก์แล้ว',
+    shareVia: 'แชร์',
   },
   home: {
     heading: 'เรียนรู้วิธีสร้างแบรนด์ที่ดีกว่า',

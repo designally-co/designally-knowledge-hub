@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 
 import { ArticleCard, Tag } from '@/components/ds'
 import { ArticleToc } from '@/components/ArticleToc'
+import { ArticleShare } from '@/components/ArticleShare'
 import { NewsletterCta } from '@/components/NewsletterCta'
 import {
   getAllArticleSlugs,
@@ -118,6 +119,16 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
             <div className="article-body">
               <RichText data={article.body} />
             </div>
+
+            <ArticleShare
+              title={article.title}
+              labels={{
+                heading: dict.article.share,
+                copyLink: dict.article.copyLink,
+                copied: dict.article.copied,
+                shareVia: dict.article.shareVia,
+              }}
+            />
 
             {article.references.length > 0 && (
               <div className="article-references">

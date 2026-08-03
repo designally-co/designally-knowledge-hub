@@ -387,6 +387,83 @@
   word-break: break-word;
 }
 
+/* --- Share row (end of article) ---------------------------------------- */
+
+.article-share {
+  margin-top: clamp(36px, 6vw, 48px);
+  padding-top: clamp(24px, 4vw, 32px);
+  border-top: 1px solid var(--border-hairline);
+}
+
+.article-share__label {
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+}
+
+.article-share__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.article-share__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-tag);
+  background: transparent;
+  color: var(--be-ink);
+  cursor: pointer;
+  transition:
+    background 0.15s var(--ease-out-quart, ease),
+    color 0.15s var(--ease-out-quart, ease),
+    border-color 0.15s var(--ease-out-quart, ease);
+}
+
+.article-share__btn:hover {
+  background: var(--be-ink);
+  color: var(--be-paper);
+  border-color: var(--be-ink);
+}
+
+.article-share__btn:focus-visible {
+  outline: 2px solid var(--be-ink);
+  outline-offset: 2px;
+}
+
+/* Brief confirmation tint after "Copy link". */
+.article-share__btn[data-copied] {
+  color: var(--be-paper);
+  background: var(--be-ink);
+  border-color: var(--be-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .article-share__btn {
+    transition: none;
+  }
+}
+
+/* Visually hidden live region for the copy confirmation. */
+.article-share__status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* Full-bleed grey band, followed by the full-bleed CTA band below it. */
 .article__related {
   background: #e7e7e7;
