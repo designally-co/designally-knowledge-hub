@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 import { Button, IconButton, Icon } from './ds'
 import { LocaleSwitcher } from './LocaleSwitcher'
-import { CATEGORIES, TAXONOMY, TAG_OPTIONS, tagSlug, type Category } from '@/lib/tags'
+import { CATEGORIES, TAXONOMY, TAG_OPTIONS, categorySlug, tagSlug, type Category } from '@/lib/tags'
 import {
   categoryLabel,
   localeHref,
@@ -27,9 +27,9 @@ import {
 
 const WORDMARK = 'Designally'
 
-/** Homepage anchor for a category section, in the given locale. */
-function categoryAnchor(category: string, locale: Locale): string {
-  return localeHref(locale, `/#cat-${category.toLowerCase().replace(/\s+/g, '-')}`)
+/** Category listing page, in the given locale. */
+function categoryAnchor(category: Category, locale: Locale): string {
+  return localeHref(locale, `/category/${categorySlug(category)}`)
 }
 
 const DRAWER_TOPICS = TAG_OPTIONS.slice(0, 8)

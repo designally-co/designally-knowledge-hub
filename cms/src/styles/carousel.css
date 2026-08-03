@@ -58,7 +58,6 @@
   flex: 0 0 auto;
   width: calc(var(--card-h) * var(--cover-ratio, 0.75));
   margin-top: calc(var(--card-lift) * (1 - var(--emph)));
-  opacity: calc(0.72 + 0.28 * var(--emph));
   position: relative;
   display: flex;
   flex-direction: column;

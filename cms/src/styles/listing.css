@@ -9,6 +9,72 @@
 
 /* --- Homepage category sections ---------------------------------------- */
 
+.home-topics {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: clamp(28px, 6vw, 56px);
+  padding-block: clamp(48px, 8vw, 96px);
+  padding-inline: clamp(16px, 2vw, 32px);
+}
+
+.home-topics__intro,
+.home-topics__list {
+  min-width: 0;
+}
+
+.home-topics__heading {
+  max-width: none;
+  margin: 0;
+  color: var(--be-ink);
+  font: 400 5.75vw / 1.06 var(--font-serif);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.home-topics__links {
+  display: flex;
+  align-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 12px 10px;
+}
+
+/* This topic cluster is a calm index, not the scattered sticker cloud used
+   elsewhere. The outline keeps all nine links visually equal and lightweight. */
+.home-topics__pill {
+  border-color: var(--be-ink);
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+@media (hover: hover) {
+  .home-topics__pill:hover {
+    background: var(--be-ink);
+    color: var(--be-paper);
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+@media (min-width: 64em) {
+  .home-topics {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 0;
+  }
+
+  .home-topics__intro,
+  .home-topics__list {
+    flex: 0 0 50%;
+  }
+
+  .home-topics__heading {
+    font-size: 2.94vw;
+  }
+}
+
 .home-section {
   padding-block: clamp(32px, 6vw, 64px);
 }

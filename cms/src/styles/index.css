@@ -8,14 +8,62 @@
    PLACEHOLDERS to be replaced once the real Designally brand assets arrive.
    The webfonts are loaded via <link> in (frontend)/layout.tsx, not via CSS
    @import, so Next can preconnect them. */
+@import "tailwindcss";
+
 @import "./tokens/colors.css";
 @import "./tokens/typography.css";
 @import "./tokens/spacing.css";
 
 @import "./base.css";
 @import "./components.css";
+@import "./promo-banner.css";
 @import "./layout.css";
 @import "./carousel.css";
+@import "./recent-article.css";
+@import "./case-studies.css";
+@import "./insights.css";
+@import "./insights-promo.css";
+@import "./workflows.css";
 @import "./article.css";
 @import "./listing.css";
 @import "./cta.css";
+
+:root {
+  --background: var(--surface-page);
+  --foreground: var(--text-primary);
+  --card: var(--surface-card);
+  --card-foreground: var(--text-primary);
+  --primary: var(--be-ink);
+  --primary-foreground: var(--be-paper);
+  --secondary: var(--be-line);
+  --secondary-foreground: var(--be-ink);
+  --muted: var(--be-line);
+  --muted-foreground: var(--text-secondary);
+  --accent: var(--be-line);
+  --accent-foreground: var(--be-ink);
+  --destructive: var(--be-brick);
+  --destructive-foreground: var(--be-white);
+  --border: var(--border-hairline);
+  --input: var(--border-hairline);
+  --ring: var(--be-ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}

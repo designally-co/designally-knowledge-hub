@@ -1,0 +1,157 @@
+/* Homepage recent article — one editorial feature, composed from the newest
+   published CMS article. The backdrop deliberately reuses the article masthead
+   treatment so the homepage feature previews the reading experience. */
+
+.recent-article {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding-block: clamp(56px, 9vw, 112px);
+  background: #ece1cd;
+}
+
+.recent-article::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.2;
+  background: url('/hero-bg-pattern.svg') no-repeat center / cover;
+  pointer-events: none;
+}
+
+.recent-article__inner {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+.recent-article__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 16px;
+  background: var(--cover-fallback);
+}
+
+.recent-article__image {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recent-article__panel {
+  position: absolute;
+  left: clamp(12px, 4vw, 56px);
+  bottom: clamp(12px, 4vw, 56px);
+  width: min(74%, 520px);
+  margin: 0;
+  padding: clamp(14px, 3vw, 48px);
+  background: var(--be-white);
+}
+
+.recent-article__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.recent-article__title {
+  max-width: 18ch;
+  margin: 0;
+  color: var(--be-ink);
+  font: var(--type-title-lg);
+  text-wrap: balance;
+}
+
+.recent-article__date {
+  margin: 18px 0 0;
+  color: var(--text-secondary);
+  font: var(--type-meta);
+}
+
+.recent-article__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  margin-top: 20px;
+  border: 1px solid var(--be-ink);
+  border-radius: var(--radius-pill);
+  color: var(--be-ink);
+  text-decoration: none;
+  transition:
+    background 0.18s var(--ease-out-quart),
+    color 0.18s var(--ease-out-quart),
+    transform 0.18s var(--ease-out-quart);
+}
+
+@media (hover: hover) {
+  .recent-article__link:hover {
+    background: var(--be-ink);
+    color: var(--be-paper);
+    opacity: 1;
+    transform: translateX(3px);
+  }
+}
+
+@media (max-width: 47.999em) {
+  .recent-article__panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 12px;
+  }
+
+  .recent-article__tags {
+    grid-column: 1 / -1;
+    margin-bottom: 8px;
+  }
+
+  .recent-article__title {
+    grid-column: 1 / -1;
+    display: -webkit-box;
+    font-size: clamp(16px, 4.8vw, 24px);
+    line-height: 1.15;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .recent-article__date {
+    align-self: end;
+    margin-top: 8px;
+    font-size: 12px;
+  }
+
+  .recent-article__link {
+    width: 38px;
+    height: 38px;
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+    margin: 8px 0 0;
+  }
+}
+
+@media (min-width: 48em) {
+  .recent-article__panel {
+    width: min(38%, 520px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recent-article__link {
+    transition: background 0.18s ease, color 0.18s ease;
+  }
+
+  .recent-article__link:hover {
+    transform: none;
+  }
+}

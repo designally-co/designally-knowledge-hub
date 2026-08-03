@@ -105,6 +105,10 @@ const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:5173',
   process.env.PAYLOAD_PUBLIC_SERVER_URL,
   'http://localhost:3000',
+  // Next falls back here when port 3000 is occupied by the Content Generator.
+  // Keep the fallback origin trusted so authenticated admin writes still pass
+  // Payload's CSRF check in local development.
+  'http://localhost:3001',
   ...vercelOrigins,
 ].filter(Boolean) as string[]
 

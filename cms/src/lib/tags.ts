@@ -73,6 +73,22 @@ export function categoryForTag(tag: string): Category | undefined {
   return TAG_TO_CATEGORY[tag]
 }
 
+/** URL-safe category slug, following the same rules as tag slugs. */
+export function categorySlug(category: Category): string {
+  return category
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+const CATEGORY_BY_SLUG: Record<string, Category> = Object.fromEntries(
+  CATEGORIES.map((category) => [categorySlug(category), category]),
+)
+
+export function categoryFromSlug(slug: string): Category | undefined {
+  return CATEGORY_BY_SLUG[slug]
+}
+
 /** URL-safe slug for a tag, e.g. "UX/UI" → "ux-ui", "Strategy + AI" → "strategy-ai". */
 export function tagSlug(tag: string): string {
   return tag

@@ -1,0 +1,169 @@
+/* --- Workflows — Design with AI: featured story + divided list + banner --- */
+
+.workflows {
+  padding-block: clamp(64px, 10vw, 120px);
+  background: var(--be-band-mint);
+}
+
+.workflows__inner {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+.workflows__heading {
+  margin: 0 0 clamp(28px, 4vw, 48px);
+  color: var(--be-ink);
+  font: var(--type-display-2);
+  letter-spacing: -0.02em;
+}
+
+.workflows__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(32px, 4vw, 56px);
+}
+
+/* Shared card body (tags → title → date) for feature and rows. */
+.workflows__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.workflows__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.workflows__date {
+  margin-top: 12px;
+  font: var(--type-meta);
+  color: var(--text-secondary);
+}
+
+/* --- Featured (left) --- */
+
+.workflows__feature {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+}
+
+.workflows__feature-media {
+  display: block;
+  position: relative;
+  width: 100%;
+  margin-bottom: clamp(18px, 2vw, 26px);
+  aspect-ratio: var(--card-ratio, 4 / 3);
+  overflow: hidden;
+  background-color: var(--card-tint, var(--cover-fallback));
+}
+
+.workflows__feature-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.workflows__feature-title {
+  color: var(--be-ink);
+  font: var(--type-section);
+  letter-spacing: -0.02em;
+  text-wrap: pretty;
+}
+
+/* --- Side column: list + banner (right) --- */
+
+.workflows__side {
+  display: flex;
+  flex-direction: column;
+}
+
+.workflows__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.workflows__row {
+  border-top: 1px solid var(--border-hairline);
+}
+.workflows__row:first-child {
+  border-top: 0;
+}
+.workflows__row:last-child {
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+.workflows__row-link {
+  display: grid;
+  grid-template-columns: clamp(116px, 15vw, 168px) minmax(0, 1fr);
+  gap: clamp(16px, 2vw, 28px);
+  align-items: start;
+  padding-block: clamp(20px, 2.4vw, 30px);
+  text-decoration: none;
+}
+/* First row starts flush with the featured cover on the same top plane. */
+.workflows__row:first-child .workflows__row-link {
+  padding-top: 0;
+}
+
+.workflows__row-media {
+  display: block;
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: var(--card-tint, var(--cover-fallback));
+}
+
+.workflows__row-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.workflows__row-title {
+  color: var(--be-ink);
+  font: var(--type-title-sm);
+  letter-spacing: var(--tracking-tight);
+  text-wrap: pretty;
+}
+
+/* Colour + placement — shared look lives in promo-banner.css. The graphic sits
+   bottom-left; the text + button stack at the top-right. */
+.workflows__banner {
+  --promo-bg: var(--be-green);
+  margin-top: clamp(24px, 3vw, 36px);
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.workflows__banner .promo-banner__content {
+  max-width: 50%;
+}
+
+.workflows__banner .promo-banner__art {
+  right: auto;
+  left: clamp(24px, 4vw, 44px);
+  bottom: 0;
+  max-width: 42%;
+}
+
+@media (hover: hover) {
+  .workflows__feature:hover .workflows__feature-title,
+  .workflows__row-link:hover .workflows__row-title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+@media (min-width: 64em) {
+  .workflows__layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}

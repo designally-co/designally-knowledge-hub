@@ -74,7 +74,27 @@ export type Dictionary = {
     note: string
   }
   article: { related: string; onThisPage: string; references: string; writtenBy: string; minRead: string; share: string; copyLink: string; copied: string; shareVia: string }
-  home: { heading: string; heroLede: string }
+  home: {
+    heading: string
+    heroLede: string
+    topicsLabel: string
+    allTopics: string
+    recentArticle: string
+    readArticle: string
+    caseStudies: string
+    insights: string
+    previousArticles: string
+    nextArticles: string
+    exploreDesign: string
+    seeAllInsights: string
+    workflows: string
+    workflowsBanner: string
+    seeAllWorkflows: string
+    videoPromoKicker: string
+    videoPromoHeading: string
+    videoPromoBody: string
+    videoPromoFrequency: string
+  }
   resources: { title: string; lede: string }
   listing: { home: string; articles: string; emptyForTag: string }
 }
@@ -121,6 +141,24 @@ const en: Dictionary = {
   home: {
     heading: 'Learn how better brands are built.',
     heroLede: 'Design templates, articles and resources — your creative design ally.',
+    topicsLabel: 'Explore creative topics',
+    allTopics: 'See all topics',
+    recentArticle: 'Recent Article',
+    readArticle: 'Read article',
+    caseStudies: 'Case Studies',
+    insights: 'Insights',
+    previousArticles: 'Previous articles',
+    nextArticles: 'Next articles',
+    exploreDesign: 'DESIGN IS BETTER WHEN IDEAS CONNECT.',
+    seeAllInsights: 'See all insights',
+    workflows: 'Workflows',
+    workflowsBanner: 'Workflow',
+    seeAllWorkflows: 'See all Design with AI',
+    videoPromoKicker: 'Watch · Learn · Try',
+    videoPromoHeading: 'Fresh design ideas, made simple.',
+    videoPromoBody:
+      'Follow Designally for short videos about branding, design, creative tools, AI, and new technology.',
+    videoPromoFrequency: 'New videos every week.',
   },
   resources: {
     title: 'Resources',
@@ -175,6 +213,24 @@ const th: Dictionary = {
   home: {
     heading: 'เรียนรู้วิธีสร้างแบรนด์ที่ดีกว่า',
     heroLede: 'เทมเพลต บทความ และรีซอร์สด้านดีไซน์ — พันธมิตรด้านการออกแบบของคุณ',
+    topicsLabel: 'สำรวจหัวข้องานสร้างสรรค์',
+    allTopics: 'ดูหัวข้อทั้งหมด',
+    recentArticle: 'บทความล่าสุด',
+    readArticle: 'อ่านบทความ',
+    caseStudies: 'กรณีศึกษา',
+    insights: 'อินไซต์',
+    previousArticles: 'บทความก่อนหน้า',
+    nextArticles: 'บทความถัดไป',
+    exploreDesign: 'DESIGN IS BETTER WHEN IDEAS CONNECT.',
+    seeAllInsights: 'ดูอินไซต์ทั้งหมด',
+    workflows: 'เวิร์กโฟลว์',
+    workflowsBanner: 'เวิร์กโฟลว์',
+    seeAllWorkflows: 'ดูดีไซน์ด้วย AI ทั้งหมด',
+    videoPromoKicker: 'ดู · เรียนรู้ · ลองทำ',
+    videoPromoHeading: 'ไอเดียดีไซน์ใหม่ ๆ เข้าใจง่าย',
+    videoPromoBody:
+      'ติดตาม Designally สำหรับวิดีโอสั้นเกี่ยวกับแบรนดิ้ง การออกแบบ เครื่องมือสร้างสรรค์ AI และเทคโนโลยีใหม่ ๆ',
+    videoPromoFrequency: 'วิดีโอใหม่ทุกสัปดาห์',
   },
   resources: {
     title: 'รีซอร์ส',

@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 import { Icon } from './ds'
 import { LocaleSwitcher } from './LocaleSwitcher'
-import { CATEGORIES, TAG_OPTIONS, tagSlug } from '@/lib/tags'
+import { CATEGORIES, TAG_OPTIONS, categorySlug, tagSlug } from '@/lib/tags'
 import {
   categoryLabel,
   localeHref,
@@ -22,8 +22,8 @@ import {
 const FOOTER_TOPICS = TAG_OPTIONS.slice(0, 8)
 
 export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary }) {
-  const catAnchor = (c: string) =>
-    localeHref(locale, `/#cat-${c.toLowerCase().replace(/\s+/g, '-')}`)
+  const catAnchor = (c: (typeof CATEGORIES)[number]) =>
+    localeHref(locale, `/category/${categorySlug(c)}`)
 
   return (
     <footer className="site-footer">

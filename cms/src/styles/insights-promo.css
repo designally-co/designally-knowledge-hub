@@ -1,0 +1,108 @@
+/* --- Insights video promo — dark, full-bleed band under the Insights grid --- */
+
+.ivp {
+  background: #000;
+  color: #fff;
+  overflow: hidden;
+  padding-block: clamp(56px, 9vw, 104px);
+}
+
+.ivp__inner {
+  text-align: center;
+}
+
+/* --- Three-phone image --- */
+
+.ivp__stage {
+  margin: 0 auto clamp(40px, 5vw, 60px);
+  width: 100%;
+  max-width: 880px;
+}
+
+.ivp__stage-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* --- Copy --- */
+
+.ivp__kicker {
+  margin: 0 0 clamp(22px, 3vw, 30px);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.ivp__heading {
+  margin: 0;
+  max-width: 15ch;
+  margin-inline: auto;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(34px, 6vw, 64px);
+  line-height: 1.05;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.ivp__body {
+  margin: clamp(20px, 3vw, 28px) auto 0;
+  max-width: 36ch;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: clamp(16px, 1.6vw, 19px);
+  line-height: 1.5;
+  color: #fff;
+  text-wrap: pretty;
+}
+
+.ivp__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: clamp(24px, 4vw, 36px);
+}
+
+.ivp__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  color: var(--be-ink);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1;
+  text-decoration: none;
+  transition: background 0.15s var(--ease-out-quart, ease), transform 0.15s var(--ease-out-quart, ease);
+}
+.ivp__btn:hover {
+  background: #ededed;
+  transform: translateY(-1px);
+}
+.ivp__btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.ivp__freq {
+  margin: clamp(28px, 4vw, 40px) 0 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ivp__btn {
+    transition: none;
+  }
+}

@@ -1,10 +1,14 @@
 import React from 'react'
 
-import { ArticleCard, SectionHeading } from '@/components/ds'
+import { ArticleCard, Icon, SectionHeading, Tag, TopicPill } from '@/components/ds'
+import { CaseStudyCarousel } from '@/components/CaseStudyCarousel'
+import { InsightsGrid } from '@/components/InsightsGrid'
+import { InsightsVideoPromo } from '@/components/InsightsVideoPromo'
+import { WorkflowsGrid } from '@/components/WorkflowsGrid'
 import { HeroCarousel } from '@/components/HeroCarousel'
 import { getArticlesByCategory, getRecentArticles } from '@/lib/resources'
-import { CATEGORIES } from '@/lib/tags'
-import { categoryLabel, getDictionary, isLocale, type Locale } from '@/lib/i18n'
+import { CATEGORIES, TAXONOMY, tagSlug } from '@/lib/tags'
+import { categoryLabel, getDictionary, isLocale, localeHref, type Locale } from '@/lib/i18n'
 
 /**
  * Homepage. A server component that reads the most recent published articles
@@ -19,10 +23,14 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   const dict = getDictionary(locale)
 
   const items = await getRecentArticles(10, locale)
+  const recentArticle = items[0]
+  const caseStudies = await getArticlesByCategory('Design', 12, locale)
+  const insights = await getArticlesByCategory('Creative Things', 12, locale)
+  const workflows = await getArticlesByCategory('Design with AI', 4, locale)
 
   const sections = (
     await Promise.all(
-      CATEGORIES.map(async (category) => ({
+      CATEGORIES.filter((category) => category === 'New Update').map(async (category) => ({
         category,
         items: await getArticlesByCategory(category, 4, locale),
       })),
@@ -31,21 +39,109 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
 
   return (
     <div>
-      <HeroCarousel items={items} />
+      <div className="home-hero">
+        <HeroCarousel items={items} />
 
-      <div className="shell" style={{ paddingBlock: 'clamp(16px, 4vw, 48px)' }}>
-        <h1
-          style={{
-            font: 'var(--type-display-2)',
-            color: 'var(--be-ink)',
-            margin: 0,
-            maxWidth: '18ch',
-            textWrap: 'balance',
-          }}
-        >
-          {dict.home.heading}
-        </h1>
+        <section className="home-topics" aria-labelledby="home-topics-heading">
+          <div className="home-topics__intro">
+            <h1 id="home-topics-heading" className="home-topics__heading">
+              {dict.home.heading}
+            </h1>
+          </div>
+
+          <div className="home-topics__list">
+            <nav className="home-topics__links" aria-label={dict.home.topicsLabel}>
+              {TAXONOMY['Creative Things'].map((topic) => (
+                <TopicPill
+                  className="home-topics__pill"
+                  href={localeHref(locale, `/tag/${tagSlug(topic)}`)}
+                  key={topic}
+                  size="md"
+                >
+                  {topic}
+                </TopicPill>
+              ))}
+              <TopicPill
+                className="home-topics__pill"
+                href={localeHref(locale, '/category/creative-things')}
+                size="md"
+              >
+                {dict.home.allTopics}
+              </TopicPill>
+            </nav>
+          </div>
+        </section>
       </div>
+
+      {recentArticle && (
+        <section className="recent-article" aria-label={dict.home.recentArticle}>
+          <div className="recent-article__inner">
+            <div className="recent-article__stage">
+              {recentArticle.image ? (
+                <img
+                  className="recent-article__image"
+                  src={recentArticle.image}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <div className="recent-article__image recent-article__image--empty" aria-hidden="true" />
+              )}
+
+              <article className="recent-article__panel">
+                <div className="recent-article__tags">
+                  {recentArticle.tags.map((tag) => (
+                    <Tag key={tag}>{tag}</Tag>
+                  ))}
+                </div>
+                <h3 className="recent-article__title">{recentArticle.title}</h3>
+                {recentArticle.date && <p className="recent-article__date">{recentArticle.date}</p>}
+                <a
+                  className="recent-article__link"
+                  href={recentArticle.href}
+                  aria-label={`${dict.home.readArticle}: ${recentArticle.title}`}
+                >
+                  <Icon name="arrow-right" size={24} strokeWidth={1.8} />
+                </a>
+              </article>
+            </div>
+          </div>
+        </section>
+      )}
+
+      <CaseStudyCarousel
+        items={caseStudies}
+        title={dict.home.caseStudies}
+        previousLabel={dict.home.previousArticles}
+        nextLabel={dict.home.nextArticles}
+        bannerLabel={dict.home.exploreDesign}
+        bannerHref={localeHref(locale, '/category/design')}
+      />
+
+      <InsightsGrid
+        items={insights}
+        title={dict.home.insights}
+        bannerLabel={dict.home.seeAllInsights}
+        bannerHref={localeHref(locale, '/category/creative-things')}
+      />
+
+      <InsightsVideoPromo
+        kicker={dict.home.videoPromoKicker}
+        heading={dict.home.videoPromoHeading}
+        body={dict.home.videoPromoBody}
+        frequency={dict.home.videoPromoFrequency}
+        instagramHref="https://www.instagram.com/designally.co/"
+        facebookHref="https://www.facebook.com/designallyco/"
+      />
+
+      <WorkflowsGrid
+        items={workflows}
+        title={dict.home.workflows}
+        bannerLabel={dict.home.workflowsBanner}
+        bannerHref={localeHref(locale, '/category/design-with-ai')}
+        seeAllLabel={dict.home.seeAllWorkflows}
+      />
 
       {sections.map(({ category, items: cards }) => (
         <section
