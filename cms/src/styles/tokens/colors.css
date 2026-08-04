@@ -53,6 +53,10 @@
   --border-pill: var(--be-ink);
   --border-tag: rgba(18,16,13,0.35);
   --border-tag-warm: rgba(192,73,31,0.45);
+  /* Outline = the element's own label colour at 50% opacity. currentColor
+     resolves per element, so every tag / button / pill gets a matching,
+     lighter outline (ink label -> grey, rust label -> faded rust, etc.). */
+  --border-outline: color-mix(in srgb, currentColor 50%, transparent);
 
   --accent: var(--be-ink);
   --accent-contrast: var(--be-paper);

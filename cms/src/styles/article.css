@@ -417,7 +417,7 @@
   height: 44px;
   padding: 0;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--border-tag);
+  border: 1px solid var(--border-outline);
   background: transparent;
   color: var(--be-ink);
   cursor: pointer;

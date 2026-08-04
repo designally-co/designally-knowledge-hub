@@ -37,7 +37,7 @@
 .btn--secondary {
   background: var(--be-white);
   color: var(--be-ink);
-  border: 1px solid var(--be-ink);
+  border: 1px solid var(--border-outline);
 }
 
 .btn--ghost {
@@ -93,7 +93,7 @@
 .icon-btn--md { width: 44px; height: 44px; }
 .icon-btn--lg { width: 56px; height: 56px; }
 
-.icon-btn--outline { color: var(--be-ink); border: 1.5px solid var(--be-ink); }
+.icon-btn--outline { color: var(--be-ink); border: 1.5px solid var(--border-outline); }
 .icon-btn--solid {
   background: var(--be-ink);
   color: var(--be-paper);
@@ -101,7 +101,7 @@
 }
 .icon-btn--inverse {
   color: var(--text-on-dark);
-  border: 1.5px solid rgba(244, 237, 227, 0.6);
+  border: 1.5px solid var(--border-outline);
 }
 .icon-btn--ghost {
   background: var(--be-white);
@@ -113,7 +113,7 @@
 .icon-btn:active { transform: scale(0.94); }
 
 @media (hover: hover) {
-  .icon-btn--outline:hover { background: var(--be-ink); color: var(--be-paper); }
+  .icon-btn--outline:hover { background: var(--be-ink); color: var(--be-paper); border-color: var(--be-ink); }
   .icon-btn--inverse:hover { background: rgba(244, 237, 227, 0.14); }
   .icon-btn--bare:hover { background: rgba(18, 16, 13, 0.06); }
 }
@@ -148,14 +148,15 @@
   letter-spacing: var(--tracking-label);
   text-transform: uppercase;
   border-radius: var(--radius-pill);
-  border: 1px solid;
+  border: 1px solid var(--border-outline);
   background: transparent;
   white-space: nowrap;
 }
 
-.tag--ink { color: var(--be-ink); border-color: var(--border-tag); }
-.tag--warm { color: var(--be-rust); border-color: var(--border-tag-warm); }
-.tag--on-dark { color: var(--text-on-dark); border-color: rgba(244, 237, 227, 0.5); }
+/* Outline colour comes from --border-outline (label colour @ 50%) on the base. */
+.tag--ink { color: var(--be-ink); }
+.tag--warm { color: var(--be-rust); }
+.tag--on-dark { color: var(--text-on-dark); }
 
 /* --- TopicPill --------------------------------------------------------- */
 
@@ -427,7 +428,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px 18px;
-  border: 1px solid var(--border-tag);
+  border: 1px solid var(--border-outline);
   border-radius: var(--radius-pill);
   font: var(--type-nav);
   color: var(--be-ink);

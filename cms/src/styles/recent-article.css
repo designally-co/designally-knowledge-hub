@@ -83,7 +83,7 @@
   width: var(--touch-target);
   height: var(--touch-target);
   margin-top: 20px;
-  border: 1px solid var(--be-ink);
+  border: 1px solid var(--border-outline);
   border-radius: var(--radius-pill);
   color: var(--be-ink);
   text-decoration: none;
@@ -97,6 +97,7 @@
   .recent-article__link:hover {
     background: var(--be-ink);
     color: var(--be-paper);
+    border-color: var(--be-ink);
     opacity: 1;
     transform: translateX(3px);
   }

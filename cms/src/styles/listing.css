@@ -49,7 +49,7 @@
 /* This topic cluster is a calm index, not the scattered sticker cloud used
    elsewhere. The outline keeps all nine links visually equal and lightweight. */
 .home-topics__pill {
-  border-color: var(--be-ink);
+  border-color: var(--border-outline);
   background: transparent;
   box-shadow: none;
   transform: none;
@@ -57,6 +57,7 @@
 
 @media (hover: hover) {
   .home-topics__pill:hover {
+    border-color: var(--be-ink);
     background: var(--be-ink);
     color: var(--be-paper);
     opacity: 1;
