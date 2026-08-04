@@ -335,7 +335,21 @@
 .article-body a {
   color: var(--be-ink);
   text-decoration: underline;
+  text-decoration-thickness: 1px;
   text-underline-offset: 2px;
+  transition:
+    text-decoration-thickness var(--hover-state-dur) var(--ease-out-quart),
+    text-underline-offset var(--hover-state-dur) var(--ease-out-quart);
+}
+
+/* Prose links thicken rather than fade — inside a body of text, a 70% link is
+   just harder to read. */
+@media (hover: hover) {
+  .article-body a:hover {
+    opacity: 1;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
 }
 
 .article-body strong {
@@ -383,8 +397,20 @@
   font: var(--type-body);
   color: var(--be-ink);
   text-decoration: underline;
+  text-decoration-thickness: 1px;
   text-underline-offset: 2px;
   word-break: break-word;
+  transition:
+    text-decoration-thickness var(--hover-state-dur) var(--ease-out-quart),
+    text-underline-offset var(--hover-state-dur) var(--ease-out-quart);
+}
+
+@media (hover: hover) {
+  .article-references__link:hover {
+    opacity: 1;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
 }
 
 /* --- Share row (end of article) ---------------------------------------- */

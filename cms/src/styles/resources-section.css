@@ -1,0 +1,133 @@
+/* --- Resources — downloadable-file folder cards --- */
+
+.resources {
+  padding-block: clamp(64px, 10vw, 120px);
+  background: #f5f3f8;
+}
+
+.resources__inner {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+.resources__header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(12px, 3vw, 24px);
+  margin-bottom: clamp(28px, 4vw, 48px);
+}
+
+.resources__heading {
+  display: flex;
+  align-items: center;
+  gap: 0.32em;
+  margin: 0;
+  color: var(--be-ink);
+  font: var(--type-display-2);
+  letter-spacing: -0.02em;
+}
+
+.resources__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(20px, 2.2vw, 34px);
+}
+
+.resources__banner {
+  --promo-bg: #b9c7f3;
+  min-height: 0;
+  aspect-ratio: 1 / 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.resources__banner .promo-banner__content {
+  max-width: 100%;
+}
+
+.resources__banner .promo-banner__label {
+  max-width: 12ch;
+}
+
+.resources__banner .promo-banner__art {
+  right: auto;
+  bottom: 0;
+  left: clamp(24px, 4vw, 40px);
+  max-width: 55%;
+  height: 42%;
+}
+
+@media (max-width: 63.999em) {
+  .resources__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Phones keep two columns rather than dropping to one. Eight full-width
+   squares stacked ran the section past 3,000px of scroll for what is a row of
+   browsable objects; at 2-up the same set is half the height and still reads,
+   because the folder art is drawn in container units and scales with the tile.
+   Below 22em there genuinely is not room, so it drops to one. */
+@media (max-width: 30em) {
+  .resources__grid {
+    gap: 14px;
+  }
+
+  .resources__grid .resource-card__title {
+    font-size: 17px;
+    line-height: 1.25;
+  }
+
+  .resources__grid .resource-card {
+    gap: 12px;
+  }
+
+  /* Seven cards plus a row-spanning banner would leave one dead cell in the
+     last row. Six fills three clean rows with the banner closing the block. */
+  .resources__grid .resource-card:nth-of-type(7) {
+    display: none;
+  }
+
+  /* The doc-panel title is sized in cqw, but its 22px floor was written for a
+     full-width tile and would not step down inside a 165px one. */
+  .resources__grid .resource-card__doc-title,
+  .resources__grid .resource-card__pocket-cover-title {
+    font-size: clamp(13px, 8cqw, 30px);
+  }
+
+  /* The banner cannot be a tile at this size — a 27px label plus a 44px arrow
+     needs about 190px of height inside a 165px square. It spans the row and
+     goes back to the wide shape it has in every other section instead. */
+  .resources__banner {
+    grid-column: 1 / -1;
+    aspect-ratio: auto;
+    min-height: clamp(112px, 14vw, 176px);
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* The tile form let the label use the full width because the art sat below
+     it. Back in the wide form the art is beside it again, so give the width
+     back. */
+  .resources__banner .promo-banner__content {
+    max-width: 68%;
+  }
+
+  .resources__banner .promo-banner__art {
+    right: 12px;
+    left: auto;
+    max-width: 46%;
+    height: 92%;
+  }
+}
+
+@media (max-width: 22em) {
+  .resources__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

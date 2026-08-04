@@ -44,6 +44,26 @@
   flex: none;
 }
 
+/* Below 36em the illustration and a 32px serif headline were splitting ~350px
+   between them, leaving the title about two words per line. Stack them: the
+   art keeps its presence at a smaller size and the headline gets the full
+   measure. */
+@media (max-width: 35.999em) {
+  .cta__lead {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .cta__art {
+    width: 108px;
+  }
+
+  .cta__title {
+    max-width: 16ch;
+  }
+}
+
 .cta__eyebrow {
   font: 600 14px/1 var(--font-sans);
   text-transform: uppercase;

@@ -83,9 +83,23 @@
   }
 }
 
+.promo-banner__art {
+  transition: transform var(--hover-media-dur) var(--ease-out-quart);
+}
+
+.promo-banner:focus-visible .promo-banner__art { transform: scale(1.04); }
+
 @media (hover: hover) {
+  .promo-banner:hover { opacity: 1; }
+
   .promo-banner:hover .promo-banner__icon {
     transform: translateX(4px);
+  }
+
+  /* The banner is a whole clickable block; shifting a 24px arrow was the only
+     thing acknowledging that. The artwork answers with it now. */
+  .promo-banner:hover .promo-banner__art {
+    transform: scale(1.04);
   }
 }
 

@@ -185,19 +185,19 @@ export default function DesignSystemGallery() {
           <ResourceCard
             title="The Practical Brand Strategy Starter Kit"
             date="12 July 2026"
-            tags={['Brand Audit']}
+            category="Figma File"
             color="var(--be-gold)"
           />
           <ResourceCard
             title="A Simple Checklist for Better Logo Reviews"
             date="8 July 2026"
-            tags={['Design Tools']}
+            category="PDF"
             color="var(--be-cobalt)"
           />
           <ResourceCard
             title="24 Free Fonts for Modern Editorial Design"
             date="1 July 2026"
-            tags={['Typography']}
+            category="Fonts"
             color="var(--be-green)"
           />
         </div>

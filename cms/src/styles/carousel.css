@@ -93,6 +93,13 @@
   margin: 0;
   color: var(--be-ink);
   letter-spacing: var(--tracking-tight);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition:
+    text-decoration-color var(--hover-state-dur) var(--ease-out-quart),
+    text-underline-offset var(--hover-state-dur) var(--ease-out-quart);
   font-family: var(--font-sans);
   /* 14px/400 passing -> 22px/700 emphasised, continuously. */
   font-size: calc(14px + 8px * var(--emph));
@@ -110,6 +117,24 @@
   color: var(--text-secondary);
   margin: 0;
   opacity: var(--emph);
+}
+
+/* The rail already animates emphasis from position, and it is a drag surface,
+   so hover stays out of its way: no scale, no shadow (both are driven by
+   --emph), just the rule marking which card the cursor would open. Pointer
+   devices only, or a drag would leave the state stuck on a card. */
+.carousel__card:focus-visible .carousel__title {
+  text-decoration-color: currentColor;
+  text-underline-offset: 5px;
+}
+
+@media (hover: hover) {
+  .carousel__card:hover { opacity: 1; }
+
+  .carousel__card:hover .carousel__title {
+    text-decoration-color: currentColor;
+    text-underline-offset: 5px;
+  }
 }
 
 /* Paper mist fading both edges. */

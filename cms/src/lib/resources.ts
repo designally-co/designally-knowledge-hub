@@ -14,6 +14,7 @@ import { TAXONOMY, type Category } from './tags'
  */
 
 export interface CarouselItem {
+  id: string
   title: string
   date: string
   tags: string[]
@@ -67,6 +68,7 @@ function hrefOf(r: Resource, locale: Locale): string {
 /** Map a Resource to the card shape used across listings. */
 function toCard(r: Resource, locale: Locale): CarouselItem {
   return {
+    id: String(r.id),
     title: r.title,
     date: formatDate(r.publishedDate, locale),
     tags: r.tags ?? [],

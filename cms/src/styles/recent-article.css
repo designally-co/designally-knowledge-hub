@@ -30,10 +30,13 @@
 .recent-article__stage {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 18 / 9;
   overflow: hidden;
   border-radius: 16px;
   background: var(--cover-fallback);
+  /* The panel is measured against the frame, so its type and rhythm scale in
+     cqh and it can never grow past half the stage height. */
+  container: recent-article-stage / size;
 }
 
 .recent-article__image {
@@ -43,6 +46,23 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition:
+    transform var(--hover-media-dur) var(--ease-out-quart),
+    filter var(--hover-media-dur) var(--ease-out-quart);
+}
+
+/* Only the arrow is a link, but the whole feature is what the pointer is
+   aimed at — so the cover answers from the stage, not from the 44px button. */
+.recent-article__stage:has(.recent-article__link:focus-visible) .recent-article__image {
+  transform: scale(1.035);
+  filter: saturate(1.06) contrast(1.02);
+}
+
+@media (hover: hover) {
+  .recent-article__stage:has(.recent-article__link:hover) .recent-article__image {
+    transform: scale(1.035);
+    filter: saturate(1.06) contrast(1.02);
+  }
 }
 
 .recent-article__panel {
@@ -50,8 +70,10 @@
   left: clamp(12px, 4vw, 56px);
   bottom: clamp(12px, 4vw, 56px);
   width: min(74%, 520px);
+  max-height: 50cqh;
   margin: 0;
-  padding: clamp(14px, 3vw, 48px);
+  padding: clamp(12px, 4cqh, 40px);
+  overflow: hidden;
   background: var(--be-white);
 }
 
@@ -59,30 +81,40 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 18px;
+  /* One row only — a second row of pills would eat the panel's height budget. */
+  max-height: 24px;
+  margin-bottom: clamp(6px, 2.4cqh, 18px);
+  overflow: hidden;
 }
 
 .recent-article__title {
+  display: -webkit-box;
   max-width: 18ch;
   margin: 0;
   color: var(--be-ink);
   font: var(--type-title-lg);
+  font-size: clamp(15px, 5.2cqh, 40px);
   text-wrap: balance;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
 }
 
 .recent-article__date {
-  margin: 18px 0 0;
+  margin: clamp(6px, 2.4cqh, 18px) 0 0;
   color: var(--text-secondary);
   font: var(--type-meta);
+  font-size: clamp(11px, 1.9cqh, 14px);
 }
 
 .recent-article__link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--touch-target);
-  height: var(--touch-target);
-  margin-top: 20px;
+  width: clamp(32px, 5.8cqh, var(--touch-target));
+  height: clamp(32px, 5.8cqh, var(--touch-target));
+  margin-top: clamp(8px, 2.6cqh, 20px);
   border: 1px solid var(--border-outline);
   border-radius: var(--radius-pill);
   color: var(--be-ink);
@@ -91,6 +123,11 @@
     background 0.18s var(--ease-out-quart),
     color 0.18s var(--ease-out-quart),
     transform 0.18s var(--ease-out-quart);
+}
+
+.recent-article__link .be-icon {
+  width: clamp(16px, 3.2cqh, 24px);
+  height: clamp(16px, 3.2cqh, 24px);
 }
 
 @media (hover: hover) {
@@ -104,40 +141,50 @@
 }
 
 @media (max-width: 47.999em) {
+  /* A 18/9 frame is too short for a half-height panel to stay readable, so the
+     stage gets taller as the viewport narrows and the 50% cap still holds. The
+     min-height is the floor three title lines plus a 44px link need on phones. */
+  .recent-article__stage {
+    aspect-ratio: 3 / 2;
+    min-height: 340px;
+  }
+
   .recent-article__panel {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     column-gap: 12px;
+    padding: clamp(10px, 3.4cqh, 24px);
   }
 
   .recent-article__tags {
     grid-column: 1 / -1;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   .recent-article__title {
     grid-column: 1 / -1;
-    display: -webkit-box;
-    font-size: clamp(16px, 4.8vw, 24px);
+    font-size: clamp(15px, 5.6cqh, 24px);
     line-height: 1.15;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    overflow: hidden;
   }
 
   .recent-article__date {
     align-self: end;
-    margin-top: 8px;
+    margin-top: 6px;
     font-size: 12px;
   }
 
   .recent-article__link {
-    width: 38px;
-    height: 38px;
-    min-width: var(--touch-target);
-    min-height: var(--touch-target);
-    margin: 8px 0 0;
+    width: var(--touch-target);
+    height: var(--touch-target);
+    margin: 6px 0 0;
+  }
+}
+
+/* Tablet: 18/9 leaves the half-height panel too little room for three title
+   lines plus the read affordance, so the frame stays taller until desktop. */
+@media (min-width: 48em) and (max-width: 63.999em) {
+  .recent-article__stage {
+    aspect-ratio: 3 / 2;
   }
 }
 

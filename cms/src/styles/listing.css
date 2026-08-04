@@ -24,18 +24,33 @@
   padding-inline: clamp(16px, 2vw, 32px);
 }
 
+/* On phones this band's own 16px inset left the H1 and the pills sitting 4px
+   to the left of every section below it, which reads as a wobble down the
+   page. Match the page gutter; the wider desktop inset is left as designed. */
+@media (max-width: 47.999em) {
+  .home-topics {
+    padding-inline: var(--page-gutter);
+  }
+}
+
 .home-topics__intro,
 .home-topics__list {
   min-width: 0;
 }
 
+/* Sized in vw so the sentence fills the band edge to edge. It used to carry
+   `white-space: nowrap`, which meant that whenever the string did not fit —
+   every phone width, and any locale whose translation runs longer — the H1
+   was silently cut off by the page's `overflow-x: clip` rather than wrapping.
+   The floor also stops it collapsing to 22px on a phone, which left the page's
+   main heading smaller than the card titles under it. */
 .home-topics__heading {
   max-width: none;
   margin: 0;
   color: var(--be-ink);
-  font: 400 5.75vw / 1.06 var(--font-serif);
+  font: 400 clamp(30px, 5.75vw, 92px) / 1.06 var(--font-serif);
   letter-spacing: -0.02em;
-  white-space: nowrap;
+  text-wrap: balance;
 }
 
 .home-topics__links {
@@ -53,6 +68,13 @@
   background: transparent;
   box-shadow: none;
   transform: none;
+}
+
+/* This cluster is real navigation, and at 16px text with 10px padding it drew
+   a 38px target. Height only — widening the pills would break the rhythm of
+   the cluster. */
+@media (pointer: coarse) {
+  .home-topics__pill { min-height: var(--touch-target); }
 }
 
 @media (hover: hover) {
@@ -102,6 +124,18 @@
   color: var(--text-secondary);
   text-decoration: none;
   margin-bottom: clamp(20px, 4vw, 28px);
+  transition:
+    color var(--hover-state-dur) var(--ease-out-quart),
+    transform var(--hover-state-dur) var(--ease-out-quart);
+}
+
+/* Back moves backwards. */
+@media (hover: hover) {
+  .listing__back:hover {
+    opacity: 1;
+    color: var(--be-ink);
+    transform: translateX(-3px);
+  }
 }
 
 .listing__eyebrow {

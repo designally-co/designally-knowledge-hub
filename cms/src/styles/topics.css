@@ -34,15 +34,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(20px, 4vw, 52px);
+  gap: clamp(12px, 4vw, 52px);
   margin-top: clamp(24px, 4vw, 44px);
 }
 
-/* Square 3D icon art. The source is 140px, which covers the 56px floor at 2x
-   and softens gently toward the 92px cap. */
+/* Square 3D icon art. The source is 140px, which covers the floor at 2x and
+   softens gently toward the 92px cap.
+
+   The floors matter: five icons plus four gaps have to fit the gutter-inset
+   width, and the old 56px/20px pair came to 360px against the 350px a 390px
+   phone actually has — so the row was being clipped. 44px/12px lands at 268px,
+   which still clears a 320px screen. */
 .topics__icon {
-  width: clamp(56px, 7.5vw, 92px);
-  height: clamp(56px, 7.5vw, 92px);
+  width: clamp(44px, 7.5vw, 92px);
+  height: clamp(44px, 7.5vw, 92px);
   object-fit: contain;
 }
 

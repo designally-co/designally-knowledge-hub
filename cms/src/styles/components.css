@@ -21,7 +21,8 @@
      Long labels get a wrap escape at the narrowest sizes instead. */
   white-space: nowrap;
   transition: transform 0.12s var(--ease-out-quart), opacity 0.15s ease,
-    background 0.15s ease, color 0.15s ease;
+    background 0.15s ease, color 0.15s ease,
+    box-shadow 0.18s var(--ease-out-quart);
 }
 
 .btn--sm { padding: 8px 16px; font-size: 14px; gap: 6px; }
@@ -66,6 +67,24 @@
   .btn--primary:hover { background: var(--be-ink-70); border-color: var(--be-ink-70); }
   .btn--secondary:hover { background: var(--be-paper); }
   .btn--ghost:hover { background: rgba(18, 16, 13, 0.06); }
+  /* On dark bands this one had no hover of its own — it borrowed the blanket
+     link fade, so it dimmed instead of responding. */
+  .btn--inverse:hover { background: var(--be-paper); border-color: var(--be-paper); }
+
+  /* A control that only changes colour reads flat next to cards that move.
+     One pixel of rise and a shadow is the whole gesture. */
+  .btn:not(:disabled):not([aria-disabled='true']):hover {
+    opacity: 1;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-pill);
+  }
+}
+
+/* Restated after the hover block, matching its specificity, so a press still
+   wins over the hover lift. */
+.btn:not(:disabled):not([aria-disabled='true']):active {
+  transform: scale(0.97);
+  box-shadow: none;
 }
 
 /* Touch: guarantee the 44px target without inflating the pointer layout. */
@@ -116,6 +135,11 @@
   .icon-btn--outline:hover { background: var(--be-ink); color: var(--be-paper); border-color: var(--be-ink); }
   .icon-btn--inverse:hover { background: rgba(244, 237, 227, 0.14); }
   .icon-btn--bare:hover { background: rgba(18, 16, 13, 0.06); }
+  /* Both were relying on the blanket link fade when rendered as anchors. */
+  .icon-btn--solid:hover { background: var(--be-ink-70); border-color: var(--be-ink-70); }
+  .icon-btn--ghost:hover { background: var(--be-paper); border-color: var(--border-outline); }
+
+  .icon-btn:not(:disabled):hover { opacity: 1; }
 }
 
 /* The 32px variant is used in the header and the topic filter — both
@@ -229,12 +253,18 @@
   overflow: hidden;
   /* Paints while the cover loads; the default colour when there isn't one. */
   background-color: var(--card-tint, var(--cover-fallback));
+  transition: box-shadow var(--hover-media-dur) var(--ease-out-quart);
 }
 
 .article-card__img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* The frame stays put and the photograph moves inside it — the crop opens
+     up rather than the card jumping at the pointer. */
+  transition:
+    transform var(--hover-media-dur) var(--ease-out-quart),
+    filter var(--hover-media-dur) var(--ease-out-quart);
 }
 
 .article-card__tags {
@@ -248,6 +278,16 @@
   color: var(--be-ink);
   letter-spacing: var(--tracking-tight);
   text-wrap: pretty;
+  /* The rule is always drawn, just transparent, so it fades and drops into
+     place instead of snapping on at full weight. Decoration (not a ::after
+     bar) because these titles wrap to three lines. */
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition:
+    text-decoration-color var(--hover-state-dur) var(--ease-out-quart),
+    text-underline-offset var(--hover-state-dur) var(--ease-out-quart);
 }
 
 .article-card__title--sm { font: var(--type-title-sm); }
@@ -260,9 +300,37 @@
   margin: 0;
 }
 
+/* Keyboard parity: focusing a card lights the same state as pointing at it.
+   Unguarded, because a keyboard reaches touch devices too — only the :hover
+   half sits behind the pointer query, so taps can't leave the state stuck. */
+.article-card:focus-visible .article-card__img {
+  transform: scale(var(--hover-media-scale));
+  filter: saturate(1.08) contrast(1.02);
+}
+
+.article-card:focus-visible .article-card__media {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.article-card:focus-visible .article-card__title {
+  text-decoration-color: currentColor;
+  text-underline-offset: 5px;
+}
+
 @media (hover: hover) {
   .article-card:hover { opacity: 1; }
-  .article-card:hover .article-card__title { text-decoration: underline; text-underline-offset: 3px; }
+
+  .article-card:hover .article-card__img {
+    transform: scale(var(--hover-media-scale));
+    filter: saturate(1.08) contrast(1.02);
+  }
+
+  .article-card:hover .article-card__media { box-shadow: var(--shadow-card-hover); }
+
+  .article-card:hover .article-card__title {
+    text-decoration-color: currentColor;
+    text-underline-offset: 5px;
+  }
 }
 
 /* Overlay (hero) form. On phones the caption plate sits below the image
@@ -315,43 +383,78 @@
 
 .resource-card__figure {
   position: relative;
+  container-type: inline-size;
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: var(--radius-card);
+  border-radius: 26px;
   overflow: hidden;
-  background: linear-gradient(160deg, #efe6f6, #e7dcf2);
-  box-shadow: var(--shadow-card);
-  padding: 22px;
+  background: linear-gradient(150deg, #efe8f9 0%, #e5dcf4 52%, #dcd1ef 100%);
+  border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
 .resource-card__doc {
   position: absolute;
-  inset: 22px 22px auto 22px;
-  height: 52%;
-  border-radius: 10px;
+  inset: 16px 16px auto 16px;
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
   background: var(--doc-color, var(--be-gold));
-  padding: 20px 22px;
+  padding: clamp(18px, 6.5%, 26px) clamp(16px, 6%, 24px) 0;
 }
 
 .resource-card__doc-title {
-  font: var(--type-title-sm);
-  font-weight: 700;
+  font: 700 clamp(22px, 8cqw, 30px) / 1.16 var(--font-sans);
   color: #fff;
   letter-spacing: -0.01em;
   display: block;
-  max-width: 78%;
+  max-width: 90%;
 }
 
+/* The folder front blurs a duplicate of the resource cover directly. Unlike
+   backdrop-filter, this remains reliable when the folder mask is composited. */
 .resource-card__pocket {
   position: absolute;
   inset: auto 0 0 0;
-  height: 62%;
-  background: linear-gradient(180deg, var(--be-glass-pink), var(--be-glass-lilac));
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border-top-left-radius: 40px;
-  border-top: 1px solid rgba(255, 255, 255, 0.45);
-  clip-path: polygon(0 22%, 46% 22%, 52% 0, 100% 0, 100% 100%, 0 100%);
+  height: 58%;
+  overflow: hidden;
+  --folder-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 100' preserveAspectRatio='none'%3E%3Cpath d='M0,100 L0,22 Q0,8 16,8 L60,8 C82,8 78,22 100,22 L184,22 Q200,22 200,36 L200,100 Z' fill='%23000'/%3E%3C/svg%3E");
+  -webkit-mask: var(--folder-mask) no-repeat 0 0 / 100% 100%;
+  mask: var(--folder-mask) no-repeat 0 0 / 100% 100%;
+}
+
+.resource-card__pocket-cover {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
+  background: var(--doc-color, var(--be-gold));
+  padding: clamp(18px, 6.5%, 26px) clamp(16px, 6%, 24px) 0;
+  filter: blur(38px) saturate(0.8) brightness(1.08);
+}
+
+.resource-card__pocket-cover-title {
+  display: block;
+  max-width: 90%;
+  color: #fff;
+  font: 700 clamp(22px, 8cqw, 30px) / 1.16 var(--font-sans);
+  letter-spacing: -0.01em;
+}
+
+.resource-card__pocket::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(210, 194, 241, 0.5), rgba(176, 163, 228, 0.9));
+}
+
+.resource-card__edge {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 2;
+  width: 100%;
+  height: 58%;
+  pointer-events: none;
 }
 
 .resource-card__tags { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -370,10 +473,54 @@
   margin: 0;
 }
 
+/* The figure is drawn, not photographed, so it answers with the gesture the
+   object implies: the document lifts out of its pocket. The blurred twin
+   inside the pocket has to travel the identical distance or the frosted
+   reflection slides out of register with the sheet casting it. */
+.resource-card__doc,
+.resource-card__pocket-cover {
+  transition: transform var(--hover-media-dur) var(--ease-out-quart);
+}
+
+.resource-card__figure {
+  transition: box-shadow var(--hover-media-dur) var(--ease-out-quart);
+}
+
+.resource-card__title {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  transition:
+    text-decoration-color var(--hover-state-dur) var(--ease-out-quart),
+    text-underline-offset var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.resource-card:focus-visible .resource-card__doc,
+.resource-card:focus-visible .resource-card__pocket-cover {
+  transform: translateY(-10px);
+}
+
+.resource-card:focus-visible .resource-card__figure { box-shadow: var(--shadow-card-hover); }
+
+.resource-card:focus-visible .resource-card__title {
+  text-decoration-color: currentColor;
+  text-underline-offset: 5px;
+}
+
 @media (hover: hover) {
+  .resource-card:hover { opacity: 1; }
+
+  .resource-card:hover .resource-card__doc,
+  .resource-card:hover .resource-card__pocket-cover {
+    transform: translateY(-10px);
+  }
+
+  .resource-card:hover .resource-card__figure { box-shadow: var(--shadow-card-hover); }
+
   .resource-card:hover .resource-card__title {
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    text-decoration-color: currentColor;
+    text-underline-offset: 5px;
   }
 }
 

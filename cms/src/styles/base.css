@@ -53,9 +53,15 @@ select { font: inherit; color: inherit; }
 a { color: var(--text-primary); }
 
 /* Hover is a pointer affordance, not a state touch devices can reach.
-   Guarding it stops the sticky-hover artefact on tap. */
+   Guarding it stops the sticky-hover artefact on tap.
+
+   Scoped to *unstyled* links only. This used to be a blanket `a:hover`, but
+   every card on the site is an anchor, so hovering one faded the whole card —
+   cover photo included — and the site looked like it dimmed the moment you
+   pointed at anything. Components draw their own states below; :where() keeps
+   this at zero specificity so any of them can override it freely. */
 @media (hover: hover) {
-  a:hover { opacity: 0.7; }
+  :where(a:not([class])):hover { opacity: 0.7; }
 }
 
 /* --- Focus -------------------------------------------------------------
@@ -157,6 +163,27 @@ a { color: var(--text-primary); }
 
   .article-card:hover,
   .workflows__item:hover { transform: none !important; }
+
+  /* Hover physics: the tone lift and the underline survive, the travel does
+     not. Covers hold their crop, the resource document stays in its pocket. */
+  .article-card:hover .article-card__img,
+  .article-card:focus-visible .article-card__img,
+  .workflows__feature:hover .workflows__feature-img,
+  .workflows__feature:focus-visible .workflows__feature-img,
+  .workflows__row-link:hover .workflows__row-img,
+  .workflows__row-link:focus-visible .workflows__row-img,
+  .recent-article__stage:has(.recent-article__link:hover) .recent-article__image,
+  .recent-article__stage:has(.recent-article__link:focus-visible) .recent-article__image,
+  .resource-card:hover .resource-card__doc,
+  .resource-card:hover .resource-card__pocket-cover,
+  .resource-card:focus-visible .resource-card__doc,
+  .resource-card:focus-visible .resource-card__pocket-cover,
+  .promo-banner:hover .promo-banner__art,
+  .promo-banner:focus-visible .promo-banner__art,
+  .site-footer__col-link:hover,
+  .listing__back:hover { transform: none !important; }
+
+  .site-footer__col-link::after { transition: none !important; }
 }
 
 /* --- Print -------------------------------------------------------------

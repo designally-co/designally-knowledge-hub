@@ -35,10 +35,10 @@ export default async function ResourcesPage({ params }: { params: Promise<{ lang
         <div className="card-grid">
           {items.map((it, i) => (
             <ResourceCard
-              key={it.title}
+              key={it.id}
               title={it.title}
               date={it.date}
-              tags={it.tags}
+              category={it.tags?.[0]}
               color={DOC_COLORS[i % DOC_COLORS.length]}
             />
           ))}

@@ -1,15 +1,17 @@
 import React from 'react'
 
-import { ArticleCard, Icon, SectionHeading, Tag, TopicPill } from '@/components/ds'
+import { Icon, Tag, TopicPill } from '@/components/ds'
 import { CaseStudyCarousel } from '@/components/CaseStudyCarousel'
 import { InsightsGrid } from '@/components/InsightsGrid'
 import { InsightsVideoPromo } from '@/components/InsightsVideoPromo'
 import { WorkflowsGrid } from '@/components/WorkflowsGrid'
 import { TopicsSection } from '@/components/TopicsSection'
+import { ResourcesSection } from '@/components/ResourcesSection'
 import { HeroCarousel } from '@/components/HeroCarousel'
-import { getArticlesByCategory, getLatestTags, getRecentArticles } from '@/lib/resources'
-import { CATEGORIES, TAG_OPTIONS, TAXONOMY, tagSlug } from '@/lib/tags'
-import { categoryLabel, getDictionary, isLocale, localeHref, type Locale } from '@/lib/i18n'
+import { NewsletterCta } from '@/components/NewsletterCta'
+import { getArticlesByCategory, getDownloadableFiles, getLatestTags, getRecentArticles } from '@/lib/resources'
+import { TAG_OPTIONS, TAXONOMY, tagSlug } from '@/lib/tags'
+import { getDictionary, isLocale, localeHref, type Locale } from '@/lib/i18n'
 
 /**
  * Homepage. A server component that reads the most recent published articles
@@ -28,20 +30,12 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   const caseStudies = await getArticlesByCategory('Design', 12, locale)
   const insights = await getArticlesByCategory('Creative Things', 12, locale)
   const workflows = await getArticlesByCategory('Design with AI', 4, locale)
+  const resources = await getDownloadableFiles(7, locale)
 
   // Topics pill cloud: the tags of the latest published articles (unique, newest
   // first, up to 12); fall back to the first taxonomy tags if there's no content.
   const latestTags = await getLatestTags(12, locale)
   const topicTags = latestTags.length > 0 ? latestTags : TAG_OPTIONS.slice(0, 12)
-
-  const sections = (
-    await Promise.all(
-      CATEGORIES.filter((category) => category === 'New Update').map(async (category) => ({
-        category,
-        items: await getArticlesByCategory(category, 4, locale),
-      })),
-    )
-  ).filter((s) => s.items.length > 0)
 
   return (
     <div>
@@ -153,28 +147,15 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         <TopicsSection title={dict.home.topics} locale={locale} topics={topicTags} />
       </div>
 
-      {sections.map(({ category, items: cards }) => (
-        <section
-          className="shell home-section"
-          id={`cat-${category.toLowerCase().replace(/\s+/g, '-')}`}
-          key={category}
-        >
-          <SectionHeading>{categoryLabel(category, locale)}</SectionHeading>
-          <div className="card-grid">
-            {cards.map((it) => (
-              <ArticleCard
-                key={it.href}
-                title={it.title}
-                date={it.date}
-                tags={it.tags}
-                image={it.image}
-                ratio="4 / 3"
-                href={it.href}
-              />
-            ))}
-          </div>
-        </section>
-      ))}
+      <ResourcesSection
+        items={resources}
+        title={dict.home.resources}
+        seeAllLabel={dict.home.seeAllResources}
+        seeAllHref={localeHref(locale, '/resources')}
+      />
+
+      <NewsletterCta dict={dict} />
+
     </div>
   )
 }
