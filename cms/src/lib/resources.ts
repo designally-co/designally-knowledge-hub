@@ -125,6 +125,38 @@ export async function getRecentArticles(
   )
 }
 
+/**
+ * Unique tags of the most recently published articles, newest first, capped at
+ * `count`. Feeds the Topics pill cloud so it reflects the freshest content.
+ */
+export async function getLatestTags(count = 12, locale: Locale = 'en'): Promise<string[]> {
+  return safeRead(
+    'getLatestTags',
+    async () => {
+      const payload = await getPayload({ config })
+      const { docs } = await payload.find({
+        collection: 'resources',
+        where: { and: [...publishedArticle] },
+        sort: '-publishedDate',
+        limit: 80,
+        depth: 0,
+        locale,
+      })
+      const seen: string[] = []
+      for (const r of docs) {
+        for (const tag of (r.tags ?? []) as string[]) {
+          if (tag && !seen.includes(tag)) {
+            seen.push(tag)
+            if (seen.length >= count) return seen
+          }
+        }
+      }
+      return seen
+    },
+    [],
+  )
+}
+
 /** Published articles carrying a given tag, newest first. */
 export async function getArticlesByTag(
   tag: string,

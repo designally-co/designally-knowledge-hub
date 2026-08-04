@@ -9,6 +9,12 @@
 
 /* --- Homepage category sections ---------------------------------------- */
 
+/* Hero band — the carousel plus the topics intro beneath it. Pinned to the
+   paper tone explicitly so it stays put if the page background ever moves. */
+.home-hero {
+  background: var(--be-paper);
+}
+
 .home-topics {
   display: flex;
   flex-direction: column;

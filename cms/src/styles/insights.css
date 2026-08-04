@@ -1,6 +1,6 @@
 .insights {
   padding-block: clamp(64px, 10vw, 120px);
-  background: #dce3e6;
+  background: var(--be-band-mist);
 }
 
 .insights__inner {
@@ -11,6 +11,9 @@
 }
 
 .insights__heading {
+  display: flex;
+  align-items: center;
+  gap: 0.32em;
   margin: 0 0 clamp(28px, 4vw, 48px);
   color: var(--be-ink);
   font: var(--type-display-2);

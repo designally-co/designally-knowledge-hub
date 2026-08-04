@@ -7,6 +7,7 @@
   padding-block: clamp(64px, 10vw, 120px);
   padding-left: var(--case-page-edge);
   overflow: hidden;
+  background: var(--be-band-blush);
 }
 
 .case-studies__header {
@@ -19,6 +20,9 @@
 }
 
 .case-studies__heading {
+  display: flex;
+  align-items: center;
+  gap: 0.32em;
   margin: 0;
   color: var(--be-ink);
   font: var(--type-display-2);

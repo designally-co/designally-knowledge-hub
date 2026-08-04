@@ -7,8 +7,8 @@ import { InsightsVideoPromo } from '@/components/InsightsVideoPromo'
 import { WorkflowsGrid } from '@/components/WorkflowsGrid'
 import { TopicsSection } from '@/components/TopicsSection'
 import { HeroCarousel } from '@/components/HeroCarousel'
-import { getArticlesByCategory, getRecentArticles } from '@/lib/resources'
-import { CATEGORIES, TAXONOMY, tagSlug } from '@/lib/tags'
+import { getArticlesByCategory, getLatestTags, getRecentArticles } from '@/lib/resources'
+import { CATEGORIES, TAG_OPTIONS, TAXONOMY, tagSlug } from '@/lib/tags'
 import { categoryLabel, getDictionary, isLocale, localeHref, type Locale } from '@/lib/i18n'
 
 /**
@@ -28,6 +28,11 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   const caseStudies = await getArticlesByCategory('Design', 12, locale)
   const insights = await getArticlesByCategory('Creative Things', 12, locale)
   const workflows = await getArticlesByCategory('Design with AI', 4, locale)
+
+  // Topics pill cloud: the tags of the latest published articles (unique, newest
+  // first, up to 12); fall back to the first taxonomy tags if there's no content.
+  const latestTags = await getLatestTags(12, locale)
+  const topicTags = latestTags.length > 0 ? latestTags : TAG_OPTIONS.slice(0, 12)
 
   const sections = (
     await Promise.all(
@@ -145,7 +150,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           seeAllLabel={dict.home.seeAllWorkflows}
         />
 
-        <TopicsSection title={dict.home.topics} locale={locale} />
+        <TopicsSection title={dict.home.topics} locale={locale} topics={topicTags} />
       </div>
 
       {sections.map(({ category, items: cards }) => (

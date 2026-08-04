@@ -376,6 +376,24 @@
   }
 }
 
+/* --- Section icon ------------------------------------------------------ */
+
+/* The small graphic that sits in front of a section heading. Sized in `em` so
+   it always tracks the heading's own font size. Slightly over 1em: the art is
+   square while the glyphs only fill their cap height, so matching the em box
+   exactly leaves the icon looking undersized next to the text. */
+.section-icon {
+  flex: none;
+  height: 1.2em;
+  width: auto;
+  align-self: center;
+  /* `align-self` centres the text's *line box*, but the glyphs don't fill it:
+     Newsreader sits on a 0.735/0.265 ascent/descent split with a 0.670 cap
+     height, so the visible text is centred 0.1em above the box centre and the
+     icon reads as hanging low. Lift it back onto the optical centre line. */
+  transform: translateY(-0.1em);
+}
+
 /* --- SectionHeading ---------------------------------------------------- */
 
 .section-heading {

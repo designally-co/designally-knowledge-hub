@@ -61,6 +61,7 @@ export function CaseStudyCarousel({
     >
       <div className="case-studies__header">
         <h2 id={headingId} className="case-studies__heading">
+          <img className="section-icon" src="/section-icons/case.png" alt="" aria-hidden="true" />
           {title}
         </h2>
         <div className="case-studies__controls">

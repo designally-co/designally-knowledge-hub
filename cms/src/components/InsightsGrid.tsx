@@ -18,6 +18,7 @@ export function InsightsGrid({ items, title, bannerLabel, bannerHref }: Insights
     <section className="insights" aria-labelledby="insights-heading">
       <div className="insights__inner">
         <h2 id="insights-heading" className="insights__heading">
+          <img className="section-icon" src="/section-icons/insights.png" alt="" aria-hidden="true" />
           {title}
         </h2>
 
