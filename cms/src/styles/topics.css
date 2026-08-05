@@ -51,8 +51,11 @@
   object-fit: contain;
 }
 
-/* Capped so ~12 pills settle into a tidy mound (not a sparse full-width band on
-   desktop); full width on narrower screens. */
+/* Full width of the section, not of the centred column — the heap's walls have
+   to sit at the screen edges. A max-width here would put an invisible wall
+   part-way across the screen for pills to stack against. This element is a
+   sibling of .topics__inner for exactly that reason, so no vw units or negative
+   margins are needed and it can never cause sideways overflow. */
 .topics__cloud {
   display: flex;
   flex-wrap: wrap;
@@ -60,9 +63,13 @@
   justify-content: center;
   gap: clamp(12px, 1.4vw, 18px);
   width: 100%;
-  max-width: 51rem;
   margin-top: clamp(48px, 8vw, 96px);
-  margin-inline: auto;
+}
+
+/* The static fallback still wants breathing room at the edges; the simulated
+   stage must not have any, or its floor and walls stop matching the screen. */
+.topics__cloud:not(.topics__cloud--stage) {
+  padding-inline: var(--page-gutter);
 }
 
 /* Each pill sits in a wrapper the physics sim drives. Default = resting sticker
@@ -77,6 +84,15 @@
   .topics__cloud .topic-pill--lg {
     padding: 10px 16px;
     font-size: 15px;
+  }
+
+  /* And the heap is capped at eight. Twelve pills pile 480px high on a 320px
+     screen, which is most of the viewport for a decorative index. The extras
+     stay in the markup — they are real links to real tag pages — but leave the
+     layout, and because a hidden pill measures zero wide the simulation drops
+     them too. */
+  .topics__cloud .topics__pill-drop:nth-child(n + 9) {
+    display: none;
   }
 }
 

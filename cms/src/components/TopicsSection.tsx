@@ -4,24 +4,38 @@ import React from 'react'
 
 import { TopicPill } from '@/components/ds'
 import { localeHref, type Locale } from '@/lib/i18n'
+import {
+  createWorld,
+  hashLabels,
+  MAX_THROW,
+  park,
+  SLEEP_FRAMES,
+  stepWorld,
+  STILL_PX,
+  wakeBody,
+  type Size,
+  type World,
+} from '@/lib/pillPhysics'
 import { tagSlug } from '@/lib/tags'
 
 /**
  * "Topics" — a centred index: the serif title, a row of five category icons,
  * and a cloud of white sticker pills (one per tag).
  *
- * The first time the section scrolls into view the pills rain in one by one and
- * pile up under gravity. Nothing floats: every settled pill is resting on the
- * floor of the stage or on the pills beneath it. The heap is not laid out — it
- * is whatever the simulation ends up with, so it comes out irregular and
- * hand-strewn rather than a tidy triangle. Pills rain into a band across the
- * middle of the stage, so the pile spreads and slumps instead of stacking into
- * a column.
+ * The first time the section scrolls into view the pills rain in and pile up
+ * under gravity, edge to edge across the viewport — the stage is deliberately
+ * a sibling of the centred column rather than a child of it, so there is no
+ * invisible wall part-way across the screen for pills to stack against.
  *
- * The pills stay draggable: pick one out of the heap and the rest sag into the
- * gap it left, then drop or throw it and it falls back down and settles. A
- * press that never really moves is still a plain link click through to the tag
- * page.
+ * The pile is simulated, not laid out. Pills are rigid bodies with orientation
+ * (see `@/lib/pillPhysics`), so one that lands across the end of another rotates
+ * about that contact and topples until it finds a second one, rather than
+ * balancing on the point it happened to touch. Every settled pill is resting on
+ * the floor or on the pills beneath it.
+ *
+ * They stay draggable: pick one out and the heap sags into the gap, throw it and
+ * it carries its momentum, tumbles and re-settles. A press that never really
+ * moves is still a plain link click through to the tag page.
  *
  * Progressive enhancement: no-JS / reduced-motion get the static sticker cloud.
  */
@@ -33,35 +47,11 @@ const TOPIC_ICONS = [
   '/topic-icons/megaphone.png',
 ]
 
-const GRAVITY = 2600 // px/s², tuned for a lively but natural drop
-const PAD = 8 // clear space kept between two pills
-const SPREAD = 0.82 // fraction of the stage width the pills rain into
-const RELEASE_GAP = 0.055 // seconds between one pill dropping and the next
-const SOLVER_PASSES = 36 // contact passes per frame; fewer visibly squashes the heap
 const DRAG_SLOP = 4 // px of movement before a press counts as a drag, not a click
-const FLOOR_REST = 0.16 // energy kept bouncing off the floor
-const WALL_REST = 0.34 // energy kept bouncing off the side walls
-const PAIR_REST = 0.05 // energy kept when two pills knock together
-const Y_AXIS_BIAS = 2.2 // how strongly contacts prefer to resolve vertically
-const CONTACT_FRICTION = 0.3 // how much two touching pills drag on each other
-const AIR_DRAG = 1.1 // per-second damping, so drift bleeds off instead of coasting
-const GROUND_FRICTION = 7 // per-second horizontal damping for a pill on the floor
-const MAX_THROW = 2600 // px/s, keeps a violent flick from launching a pill off-stage
-const STILL_PX = 0.35 // px a pill can drift in a frame and still count as at rest
-const SLEEP_FRAMES = 8 // consecutive still frames before the loop lets itself stop
+const MAX_AWAKE_MS = 14000 // hard cap on one continuous run of the simulation
 
-type Size = { w: number; h: number }
-
-/** A pill in the simulation. `tilt` is its resting sticker angle. */
-type Body = {
-  x: number
-  y: number
-  vx: number
-  vy: number
-  angle: number
-  tilt: number
-  releaseAt: number
-  live: boolean
+function clamp(v: number, lo: number, hi: number): number {
+  return v < lo ? lo : v > hi ? hi : v
 }
 
 export function TopicsSection({
@@ -78,7 +68,7 @@ export function TopicsSection({
 
   // Each tag becomes a pill linking to its own tag page. The small deterministic
   // tilt gives the static (no-JS / reduced-motion) cloud its scattered-sticker
-  // look; the simulation gives each pill its own resting tilt.
+  // look; in the simulation the angle is real state.
   const pills = React.useMemo(
     () => topics.map((label, i) => ({ label, rotate: ((i * 37) % 11) - 5 })),
     [topics],
@@ -91,111 +81,103 @@ export function TopicsSection({
     const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
     if (reduce) return
 
-    const els = pillRefs.current.filter((el): el is HTMLSpanElement => el != null)
-    if (els.length === 0 || typeof IntersectionObserver === 'undefined') return
-
-    // Measure the pills in flow, reserve a stage tall enough for the heap so
-    // nothing jumps, then hide them ready to drop.
-    const sizes: Size[] = els.map((el) => ({ w: el.offsetWidth, h: el.offsetHeight }))
-    bin.classList.add('topics__cloud--stage', 'topics__cloud--pending')
+    const allEls = pillRefs.current.filter((el): el is HTMLSpanElement => el != null)
+    if (allEls.length === 0 || typeof IntersectionObserver === 'undefined') return
 
     const seed = hashLabels(topics)
-    let W = bin.clientWidth
-    let H = stageHeight(sizes, W)
-    bin.style.minHeight = `${H}px`
+    // Pills the stylesheet is currently showing. Phones are capped at eight, so
+    // this is a subset of the markup, and `bodyOf` maps an element back to its
+    // body — or -1 for one that is not in the heap at this width.
+    let els: HTMLSpanElement[] = []
+    let sizes: Size[] = []
+    const bodyOf = new Int16Array(allEls.length)
 
-    const bodies = spawn(sizes, W, seed)
+    /**
+     * Measures the pills laid out in normal flow. The stage classes have to come
+     * off first: once the simulation owns them they are absolutely positioned,
+     * and a width read then is not the width they wrap at. Hidden pills measure
+     * zero and are simply left out.
+     */
+    const measure = () => {
+      // Restore exactly the classes that were set, not both: this runs before
+      // the drop as well as after it, and the two states differ.
+      const wasStage = bin.classList.contains('topics__cloud--stage')
+      const wasPhysics = bin.classList.contains('topics__cloud--physics')
+      bin.classList.remove('topics__cloud--stage', 'topics__cloud--physics')
+      els = []
+      sizes = []
+      bodyOf.fill(-1)
+      allEls.forEach((el, i) => {
+        const prev = el.style.transform
+        el.style.transform = ''
+        const w = el.offsetWidth
+        const h = el.offsetHeight
+        el.style.transform = prev
+        if (w === 0 || h === 0) return
+        bodyOf[i] = els.length
+        els.push(el)
+        sizes.push({ w, h })
+      })
+      if (wasStage) bin.classList.add('topics__cloud--stage')
+      if (wasPhysics) bin.classList.add('topics__cloud--physics')
+    }
 
+    measure()
+    if (els.length === 0) return
+    bin.classList.add('topics__cloud--stage', 'topics__cloud--pending')
+
+    let world: World = createWorld(sizes, bin.clientWidth, seed)
+    bin.style.minHeight = `${world.H}px`
+
+    const HALF_PI = Math.PI / 2
     const draw = () => {
       for (let i = 0; i < els.length; i++) {
-        const b = bodies[i]
+        const b = world.bodies[i]
         const { w, h } = sizes[i]
-        els[i].style.transform = `translate(${b.x - w / 2}px, ${b.y - h / 2}px) rotate(${b.angle}rad)`
+        // A capsule maps exactly onto itself every half turn, so folding the
+        // drawn angle into (-90°, 90°] leaves the shape identical to what the
+        // simulation is solving while keeping the label the right way up. In a
+        // tight pile a pill can genuinely come to rest past vertical, and an
+        // upside-down topic name is no use to anyone.
+        const a = (((b.angle + HALF_PI) % Math.PI) + Math.PI) % Math.PI - HALF_PI
+        els[i].style.transform = `translate(${b.x - w / 2}px, ${b.y - h / 2}px) rotate(${a}rad)`
       }
     }
 
-    // --- simulation ---
-
     let raf = 0
     let last = 0
-    let t0 = 0
     let dragIndex = -1
     let stillFrames = 0
     let started = false
-    const prevX = new Float64Array(bodies.length)
-    const prevY = new Float64Array(bodies.length)
+    let awokeAt = 0
 
     const step = (now: number) => {
       // Clamping dt keeps a backgrounded tab from resuming with one enormous
-      // step that tunnels pills straight through the floor.
-      const dt = Math.min(0.024, Math.max(0.001, (now - last) / 1000))
+      // step that throws pills straight through the floor.
+      const dt = Math.min(0.022, Math.max(0.001, (now - last) / 1000))
       last = now
-      const t = (now - t0) / 1000
 
-      let pending = false
-      for (let i = 0; i < bodies.length; i++) {
-        const b = bodies[i]
-        if (b.live) continue
-        if (t >= b.releaseAt) {
-          b.live = true
+      const drift = stepWorld(world, dt, dragIndex)
+
+      for (let i = 0; i < els.length; i++) {
+        if (world.bodies[i].live && els[i].style.opacity !== '1') {
           els[i].style.opacity = '1'
           els[i].style.pointerEvents = ''
-        } else {
-          pending = true
         }
       }
-
-      for (let i = 0; i < bodies.length; i++) {
-        const b = bodies[i]
-        if (!b.live || i === dragIndex) continue
-        prevX[i] = b.x
-        prevY[i] = b.y
-        b.vy += GRAVITY * dt
-        b.x += b.vx * dt
-        b.y += b.vy * dt
-        b.vx *= Math.exp(-AIR_DRAG * dt)
-      }
-
-      // Several passes: one is not enough to keep a stack of pills from sinking
-      // into each other under their own weight.
-      const restingV = GRAVITY * dt * 2
-      for (let p = 0; p < SOLVER_PASSES; p++) {
-        solve(bodies, sizes, W, H, dragIndex, dt, restingV)
-      }
-
-      // Stillness is measured as how far anything actually travelled over the
-      // whole frame — gravity in, contacts out — and not from velocity.
-      // Velocity lies here: a contact only passes the floor's zero up one body
-      // per pass, so pills near the top of a stack keep a stale reading long
-      // after the heap has visibly stopped, and the loop would never sleep.
-      let drift = 0
-      for (let i = 0; i < bodies.length; i++) {
-        const b = bodies[i]
-        if (!b.live || i === dragIndex) continue
-        drift = Math.max(drift, Math.abs(b.x - prevX[i]), Math.abs(b.y - prevY[i]))
-      }
-
-      for (let i = 0; i < bodies.length; i++) {
-        const b = bodies[i]
-        if (!b.live) continue
-        // A moving pill leans into its travel and rights itself as it settles.
-        const lean = clamp(b.vx * 0.0004, -0.22, 0.22)
-        b.angle += (b.tilt + lean - b.angle) * Math.min(1, dt * 9)
-      }
-
       draw()
 
-      const busy = pending || dragIndex >= 0 || drift > STILL_PX
+      const busy = dragIndex >= 0 || drift > STILL_PX
       stillFrames = busy ? 0 : stillFrames + 1
-      if (stillFrames < SLEEP_FRAMES) {
+      // Backstop. A heap that is both very crowded and very narrow can keep
+      // finding somewhere to go for longer than anyone will watch, and a loop
+      // that never sleeps is a phone battery draining behind a section nobody
+      // is looking at any more. Past this it is called finished regardless.
+      const runaway = dragIndex < 0 && now - awokeAt > MAX_AWAKE_MS
+      if (stillFrames < SLEEP_FRAMES && !runaway) {
         raf = requestAnimationFrame(step)
       } else {
-        // Park the heap: the stale velocities described above would otherwise
-        // be waiting to fire the moment someone grabs a pill and wakes it.
-        for (const b of bodies) {
-          b.vx = 0
-          b.vy = 0
-        }
+        park(world)
         raf = 0
       }
     }
@@ -203,6 +185,7 @@ export function TopicsSection({
     const wake = () => {
       if (raf || !started) return
       last = performance.now()
+      awokeAt = last
       stillFrames = 0
       raf = requestAnimationFrame(step)
     }
@@ -211,13 +194,13 @@ export function TopicsSection({
       started = true
       bin.classList.remove('topics__cloud--pending')
       bin.classList.add('topics__cloud--physics', 'topics__cloud--live')
-      els.forEach((el) => {
+      allEls.forEach((el) => {
         el.style.opacity = '0'
         el.style.pointerEvents = 'none'
       })
       draw()
-      t0 = performance.now()
-      last = t0
+      last = performance.now()
+      awokeAt = last
       stillFrames = 0
       raf = requestAnimationFrame(step)
     }
@@ -237,17 +220,21 @@ export function TopicsSection({
     let dragged = false
     let suppressClickUntil = 0
 
-    const onPointerDown = (index: number) => (ev: PointerEvent) => {
-      if (!started || pointerId !== -1 || !bodies[index].live) return
+    const onPointerDown = (elIndex: number) => (ev: PointerEvent) => {
+      // Handlers are bound to every pill in the markup, but only the ones the
+      // current width actually shows have a body to grab.
+      const index = bodyOf[elIndex]
+      if (index < 0 || !started || pointerId !== -1 || !world.bodies[index].live) return
       if (ev.button != null && ev.button !== 0) return
       const rect = bin.getBoundingClientRect()
       const px = ev.clientX - rect.left
       const py = ev.clientY - rect.top
+      const b = world.bodies[index]
 
       pointerId = ev.pointerId
       dragIndex = index
-      grabDX = bodies[index].x - px
-      grabDY = bodies[index].y - py
+      grabDX = b.x - px
+      grabDY = b.y - py
       moved = 0
       dragged = false
       lastX = px
@@ -256,8 +243,10 @@ export function TopicsSection({
       velX = 0
       velY = 0
 
-      bodies[index].vx = 0
-      bodies[index].vy = 0
+      b.vx = 0
+      b.vy = 0
+      b.omega = 0
+      wakeBody(b)
       els[index].setPointerCapture(ev.pointerId)
       wake()
     }
@@ -283,11 +272,13 @@ export function TopicsSection({
       lastY = py
       lastT = now
 
-      const b = bodies[dragIndex]
-      b.x = clamp(px + grabDX, sizes[dragIndex].w / 2, W - sizes[dragIndex].w / 2)
-      // A held pill may be lifted above the stage, but never dragged through
-      // the floor.
-      b.y = Math.min(py + grabDY, H - sizes[dragIndex].h / 2)
+      const b = world.bodies[dragIndex]
+      b.x = px + grabDX
+      b.y = Math.min(py + grabDY, world.H - b.r)
+      // The held pill carries the pointer's velocity, so it shoulders the heap
+      // aside with the weight the gesture actually has.
+      b.vx = velX
+      b.vy = velY
       wake()
     }
 
@@ -299,9 +290,15 @@ export function TopicsSection({
       const cancelled = ev.type === 'pointercancel'
       if (i >= 0) {
         els[i].classList.remove('is-dragging')
+        const b = world.bodies[i]
         if (dragged && !cancelled) {
-          bodies[i].vx = clamp(velX, -MAX_THROW, MAX_THROW)
-          bodies[i].vy = clamp(velY, -MAX_THROW, MAX_THROW)
+          b.vx = clamp(velX, -MAX_THROW, MAX_THROW)
+          b.vy = clamp(velY, -MAX_THROW, MAX_THROW)
+          // A pill flicked sideways should leave the hand spinning.
+          b.omega = clamp(velX / 900, -7, 7)
+        } else {
+          b.vx = 0
+          b.vy = 0
         }
       }
       // The click lands right after this, so the suppression window is time
@@ -324,7 +321,7 @@ export function TopicsSection({
       ev.stopPropagation()
     }
 
-    const downHandlers = els.map((el, i) => {
+    const downHandlers = allEls.map((el, i) => {
       const h = onPointerDown(i)
       el.addEventListener('pointerdown', h)
       el.addEventListener('click', onClickCapture, true)
@@ -340,33 +337,37 @@ export function TopicsSection({
         io.disconnect()
         start()
       },
-      { threshold: 0.25 },
+      { threshold: 0.2 },
     )
     io.observe(bin)
 
-    // --- resize: restate the walls and floor and let the heap re-settle into
-    // them. Width only, so mobile URL-bar height churn is ignored. ---
+    // --- resize: rebuild the stage at the new width and drop the heap again.
+    // Width only, so mobile URL-bar height churn is ignored. ---
 
     let resizeTimer = 0
     const onResize = () => {
-      if (Math.abs(bin.clientWidth - W) < 40) return
+      if (Math.abs(bin.clientWidth - world.W) < 40) return
       window.clearTimeout(resizeTimer)
       resizeTimer = window.setTimeout(() => {
-        const prevW = W
-        W = bin.clientWidth
-        H = stageHeight(sizes, W)
-        bin.style.minHeight = `${H}px`
-        const scale = prevW > 0 ? W / prevW : 1
-        for (let i = 0; i < bodies.length; i++) {
-          const b = bodies[i]
-          b.x = clamp(b.x * scale, sizes[i].w / 2, W - sizes[i].w / 2)
-          b.y = Math.min(b.y, H - sizes[i].h / 2)
-          b.vx = 0
-          b.vy = 0
+        const settled = started
+        // Crossing the phone breakpoint changes the pill sizes and how many of
+        // them are in the heap at all, so this re-measures rather than reusing.
+        for (const el of allEls) {
+          el.style.transform = ''
+          el.style.opacity = ''
+          el.style.pointerEvents = ''
         }
-        if (started) wake()
-        else draw()
-      }, 160)
+        measure()
+        if (els.length === 0) return
+        world = createWorld(sizes, bin.clientWidth, seed)
+        bin.style.minHeight = `${world.H}px`
+        if (settled) {
+          // Already on screen, so skip the rain-in and let it fall as one.
+          for (const b of world.bodies) b.live = true
+          for (const el of els) el.style.opacity = '1'
+          wake()
+        }
+      }, 180)
     }
     window.addEventListener('resize', onResize)
 
@@ -378,7 +379,7 @@ export function TopicsSection({
       window.removeEventListener('pointermove', onPointerMove)
       window.removeEventListener('pointerup', endDrag)
       window.removeEventListener('pointercancel', endDrag)
-      els.forEach((el, i) => {
+      allEls.forEach((el, i) => {
         el.removeEventListener('pointerdown', downHandlers[i])
         el.removeEventListener('click', onClickCapture, true)
         el.classList.remove('is-dragging')
@@ -410,237 +411,32 @@ export function TopicsSection({
             <img className="topics__icon" key={src} src={src} alt="" loading="lazy" decoding="async" />
           ))}
         </div>
+      </div>
 
-        <div ref={binRef} className="topics__cloud">
-          {pills.map((t, i) => (
-            <span
-              className="topics__pill-drop"
-              key={t.label}
-              ref={(el) => {
-                pillRefs.current[i] = el
-              }}
-              style={{ '--pill-rotate': `${t.rotate}deg` } as React.CSSProperties}
+      {/* Outside the centred column on purpose: the heap needs the full width of
+          the screen, with its walls at the screen edges and nowhere inside. */}
+      <div ref={binRef} className="topics__cloud">
+        {pills.map((t, i) => (
+          <span
+            className="topics__pill-drop"
+            key={t.label}
+            ref={(el) => {
+              pillRefs.current[i] = el
+            }}
+            style={{ '--pill-rotate': `${t.rotate}deg` } as React.CSSProperties}
+          >
+            <TopicPill
+              className="topics__pill"
+              size="lg"
+              rotate={t.rotate}
+              href={localeHref(locale, `/tag/${tagSlug(t.label)}`)}
+              draggable={false}
             >
-              <TopicPill
-                className="topics__pill"
-                size="lg"
-                rotate={t.rotate}
-                href={localeHref(locale, `/tag/${tagSlug(t.label)}`)}
-                draggable={false}
-              >
-                {t.label}
-              </TopicPill>
-            </span>
-          ))}
-        </div>
+              {t.label}
+            </TopicPill>
+          </span>
+        ))}
       </div>
     </section>
   )
-}
-
-/** Small deterministic PRNG, so one seed always produces the same drop. */
-function mulberry32(seed: number): () => number {
-  let a = seed >>> 0
-  return () => {
-    a = (a + 0x6d2b79f5) >>> 0
-    let t = Math.imul(a ^ (a >>> 15), 1 | a)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
-
-function hashLabels(labels: string[]): number {
-  const s = labels.join('|')
-  let h = 2166136261
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i)
-    h = Math.imul(h, 16777619)
-  }
-  return h >>> 0
-}
-
-function clamp(v: number, lo: number, hi: number): number {
-  return hi < lo ? (lo + hi) / 2 : v < lo ? lo : v > hi ? hi : v
-}
-
-/**
- * How tall the stage has to be for the finished heap. The pills land in a band
- * SPREAD wide and settle at roughly 70% packing, which gives the pile height;
- * the extra headroom is what stops a slumping heap from being squashed against
- * the ceiling, and leaves the top edge of the pile visibly ragged.
- */
-function stageHeight(sizes: Size[], W: number): number {
-  const area = sizes.reduce((a, s) => a + (s.w + PAD) * (s.h + PAD), 0)
-  const tallest = Math.max(...sizes.map((s) => s.h))
-  const band = Math.max(1, W * SPREAD)
-  // 0.6, not the ~0.75 that row-packing arithmetic suggests: pills land where
-  // they land and the settled heap keeps the gaps that leaves. Estimate tighter
-  // than this and the top of the pile pokes out through the ceiling — and
-  // nothing here clips, by design. Estimate looser and the section carries a
-  // band of dead space above the heap.
-  const pile = area / (band * 0.6)
-  return Math.round(Math.max(200, pile + tallest * 0.8))
-}
-
-/**
- * Starting state: every pill waits just above the stage and is let go on a
- * stagger, so they rain in one at a time and pile up rather than landing as one
- * slab.
- *
- * Drop positions are dealt out across the width rather than drawn independently
- * at random. Independent draws cluster, and a cluster of falling boxes does not
- * spread out the way sand would — boxes land squarely on each other and stack,
- * so the pile grows into a tower straight up out of the stage. Walking the
- * width and wrapping keeps the pills apart on the way down; the heap they
- * settle into is still whatever the collisions make of it.
- */
-function spawn(sizes: Size[], W: number, seed: number): Body[] {
-  const rand = mulberry32(seed)
-  const band = Math.max(1, W * SPREAD)
-  const left = (W - band) / 2
-
-  // One evenly spaced drop column per pill, handed out in shuffled order.
-  // Walking the width and wrapping instead would restart every row at the left
-  // edge, so the left column collects a pill from each row while the right edge
-  // gets one, and the heap settles badly lopsided. Even columns give the pile a
-  // consistent depth; the pills are far wider than the spacing, so they still
-  // collide on the way down and the result is nothing like a grid.
-  const n = sizes.length
-  const columns = sizes.map((_, i) => i)
-  for (let i = n - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1))
-    ;[columns[i], columns[j]] = [columns[j], columns[i]]
-  }
-
-  // Release order is shuffled independently, so the cloud rains in at random
-  // rather than sweeping across.
-  const slots = sizes.map((_, i) => i)
-  for (let i = n - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1))
-    ;[slots[i], slots[j]] = [slots[j], slots[i]]
-  }
-
-  return sizes.map((s, i) => ({
-    x: clamp(
-      left + ((columns[i] + 0.5) * band) / n + (rand() - 0.5) * 20,
-      s.w / 2,
-      W - s.w / 2,
-    ),
-    y: -s.h / 2 - 20 - rand() * 40,
-    vx: (rand() - 0.5) * 30,
-    vy: 0,
-    tilt: (rand() - 0.5) * 0.14,
-    angle: (rand() - 0.5) * 0.14,
-    releaseAt: slots[i] * RELEASE_GAP + rand() * 0.02,
-    live: false,
-  }))
-}
-
-/**
- * One contact pass. Overlapping pills are pushed apart along their shallower
- * axis and the part of their motion that drove them together is cancelled, so
- * a stack holds instead of sinking. Pills also collide with the side walls and
- * the floor — nothing is left hanging in mid-air. `locked` is the pill under
- * the pointer: it shoves the heap around but is never shoved itself.
- *
- * This is a position solver, so one pass only nudges each pair apart and the
- * correction has to propagate down the heap a contact at a time. Under constant
- * gravity too few passes per frame leave the pile visibly squashed, pills
- * sunk into one another — hence the pass count at the top of the file.
- */
-function solve(
-  bodies: Body[],
-  sizes: Size[],
-  W: number,
-  H: number,
-  locked: number,
-  dt: number,
-  restingV: number,
-): void {
-  const n = bodies.length
-
-  for (let i = 0; i < n; i++) {
-    if (!bodies[i].live) continue
-    for (let j = i + 1; j < n; j++) {
-      if (!bodies[j].live) continue
-      const a = bodies[i]
-      const b = bodies[j]
-      const dx = b.x - a.x
-      const dy = b.y - a.y
-      const minX = (sizes[i].w + sizes[j].w) / 2 + PAD
-      const minY = (sizes[i].h + sizes[j].h) / 2 + PAD
-      const ox = minX - Math.abs(dx)
-      const oy = minY - Math.abs(dy)
-      if (ox <= 0 || oy <= 0) continue
-
-      const iLocked = i === locked
-      const jLocked = j === locked
-      if (iLocked && jLocked) continue
-      // A locked pill carries none of the correction; the other body takes it all.
-      const wa = iLocked ? 0 : jLocked ? 1 : 0.5
-      const wb = 1 - wa
-
-      // Resolve along the shallower axis, but lean towards the vertical one.
-      // These pills are wide and flat, so a stacked pair often overlaps less
-      // horizontally than vertically; taking that literally squirts them out
-      // sideways and the heap never stops shuffling. Gravity's axis wins ties
-      // and near-ties, which is what makes a stack hold.
-      if (ox * Y_AXIS_BIAS < oy) {
-        const sign = dx < 0 ? -1 : 1
-        const push = sign * ox
-        a.x -= push * wa
-        b.x += push * wb
-        const rel = (b.vx - a.vx) * sign
-        if (rel < 0) {
-          const j2 = -rel * (1 + PAIR_REST)
-          a.vx -= j2 * sign * wa
-          b.vx += j2 * sign * wb
-        }
-        // Friction across the contact, so pills in contact stop sliding past
-        // one another instead of drifting for ever.
-        const tan = b.vy - a.vy
-        a.vy += tan * CONTACT_FRICTION * wa
-        b.vy -= tan * CONTACT_FRICTION * wb
-      } else {
-        const sign = dy < 0 ? -1 : 1
-        const push = sign * oy
-        a.y -= push * wa
-        b.y += push * wb
-        const rel = (b.vy - a.vy) * sign
-        if (rel < 0) {
-          const j2 = -rel * (1 + PAIR_REST)
-          a.vy -= j2 * sign * wa
-          b.vy += j2 * sign * wb
-        }
-        const tan = b.vx - a.vx
-        a.vx += tan * CONTACT_FRICTION * wa
-        b.vx -= tan * CONTACT_FRICTION * wb
-      }
-    }
-  }
-
-  for (let i = 0; i < n; i++) {
-    const b = bodies[i]
-    if (!b.live || i === locked) continue
-    const hw = sizes[i].w / 2
-    const hh = sizes[i].h / 2
-
-    if (b.x < hw) {
-      b.x = hw
-      if (b.vx < 0) b.vx = -b.vx * WALL_REST
-    } else if (b.x > W - hw) {
-      b.x = W - hw
-      if (b.vx > 0) b.vx = -b.vx * WALL_REST
-    }
-
-    // The floor. A pill arriving slower than a single frame of gravity has no
-    // bounce left worth showing, so it is simply parked — without that test it
-    // would buzz against the floor forever and never let the loop sleep.
-    if (b.y > H - hh) {
-      b.y = H - hh
-      if (b.vy > restingV) b.vy = -b.vy * FLOOR_REST
-      else if (b.vy > 0) b.vy = 0
-      b.vx *= Math.exp(-GROUND_FRICTION * dt)
-    }
-  }
 }
