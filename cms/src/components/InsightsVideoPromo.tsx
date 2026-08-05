@@ -6,7 +6,7 @@ import { Icon } from '@/components/ds'
  * Dark, full-bleed promo band that sits under the Insights section: a three-phone
  * image over black, then the "Follow Designally" pitch and social buttons.
  *
- * The promo artwork is a single image at `phonesSrc` (default `/Brand Promo.png`).
+ * The promo artwork is a single image at `phonesSrc` (default `/Brand Promo.webp`).
  * Set the real Instagram / Facebook URLs via `instagramHref` / `facebookHref`.
  */
 export function InsightsVideoPromo({
@@ -18,7 +18,7 @@ export function InsightsVideoPromo({
   facebookLabel = 'Facebook',
   instagramHref = '#',
   facebookHref = '#',
-  phonesSrc = '/Brand Promo.png',
+  phonesSrc = '/Brand Promo.webp',
   phonesAlt = '',
 }: {
   kicker: string
