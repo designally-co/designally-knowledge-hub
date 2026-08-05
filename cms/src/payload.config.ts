@@ -67,23 +67,27 @@ const s3Configured = Boolean(
 // and COMMIT the result. The build intentionally does NOT regenerate the map
 // (letting Vercel regenerate it risks dropping entries during its build) — the
 // committed file is the single source of truth.
-const storagePlugins = s3Configured
-  ? [
-      s3Storage({
-        collections: { media: true },
-        bucket: process.env.S3_BUCKET as string,
-        config: {
-          endpoint: process.env.S3_ENDPOINT as string,
-          region: process.env.S3_REGION || 'auto',
-          credentials: {
-            accessKeyId: process.env.S3_ACCESS_KEY_ID as string,
-            secretAccessKey: process.env.S3_SECRET_ACCESS_KEY as string,
-          },
-          forcePathStyle: true,
-        },
-      }),
-    ]
-  : []
+// The plugin is always in the config and switches itself off via `enabled`,
+// rather than being omitted when S3 is unconfigured. That keeps the generated
+// import map identical in every environment, which is the whole point: a map
+// generated with the plugin absent omits its client component, and the
+// production admin then renders blank with no error to go on.
+const storagePlugins = [
+  s3Storage({
+    enabled: s3Configured,
+    collections: { media: true },
+    bucket: process.env.S3_BUCKET || '',
+    config: {
+      endpoint: process.env.S3_ENDPOINT || '',
+      region: process.env.S3_REGION || 'auto',
+      credentials: {
+        accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
+      },
+      forcePathStyle: true,
+    },
+  }),
+]
 
 // Origins allowed to call the REST/GraphQL API from the browser AND to be
 // trusted for cookie auth (CSRF). This MUST include the admin's own production

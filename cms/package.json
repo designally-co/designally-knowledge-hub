@@ -4,6 +4,7 @@
   "description": "Designally Knowledge Hub — Payload CMS backend (Resource content model + REST/GraphQL API).",
   "type": "module",
   "scripts": {
+    "prebuild": "node scripts/assert-import-map.mjs",
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build --webpack",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
