@@ -218,7 +218,6 @@ export interface ResourceItem {
   id: string
   slug: string
   title: string
-  summary?: string
   date: string
   category: string
   color: string
@@ -229,6 +228,7 @@ export interface ResourceItem {
 }
 
 export interface ResourceDetail extends ResourceItem {
+  /** The resource's only prose. Doubles as the meta description. */
   description?: string
   fileSize?: string
   licence?: string
@@ -245,7 +245,6 @@ function toResourceItem(r: Resource, locale: Locale): ResourceItem {
     id: String(r.id),
     slug: r.slug ?? '',
     title: r.title,
-    summary: r.summary ?? undefined,
     date: formatDate(r.publishedDate, locale),
     category: r.category ?? '',
     color: preset.color,

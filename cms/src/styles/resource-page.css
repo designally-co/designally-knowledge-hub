@@ -67,13 +67,6 @@
   margin: 0;
 }
 
-.resource-page__dek {
-  font: var(--type-lede);
-  color: var(--text-secondary);
-  margin: clamp(12px, 2vw, 18px) 0 0;
-  max-width: 60ch;
-}
-
 .resource-page__actions {
   display: flex;
   flex-wrap: wrap;

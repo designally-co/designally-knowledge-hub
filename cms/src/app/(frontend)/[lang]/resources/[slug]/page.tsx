@@ -39,7 +39,8 @@ export async function generateMetadata({
   if (!resource) return { title: getDictionary(locale).resources.notFound }
   return {
     title: resource.title,
-    description: resource.summary,
+    // A resource has no dek — its description is the only prose it carries.
+    description: resource.description?.split(/\n{2,}/)[0]?.trim(),
   }
 }
 
@@ -78,7 +79,6 @@ export default async function ResourcePage({ params }: { params: Promise<Params>
             </div>
           )}
           <h1 className="resource-page__title">{resource.title}</h1>
-          {resource.summary && <p className="resource-page__dek">{resource.summary}</p>}
 
           {resource.files.length > 0 && (
             <div className="resource-page__actions">

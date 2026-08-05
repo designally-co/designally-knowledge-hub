@@ -14,7 +14,6 @@ import {
   seoField,
   stampPublishedDate,
   statusField,
-  summaryField,
   titleField,
   translateToThaiField,
 } from './shared'
@@ -62,14 +61,16 @@ export const Resources: CollectionConfig = {
   fields: [
     // ---- Main column -------------------------------------------------------
     titleField,
-    summaryField,
     {
+      // A resource has one piece of prose, not a dek and a body. There is no
+      // summary field: the card shows title, category and formats, and this is
+      // what the resource page prints.
       name: 'description',
       type: 'textarea',
       localized: true,
       admin: {
         description:
-          'The longer blurb on the resource page: what is in the download and what it is for. Plain text — a few short paragraphs.',
+          'What is in the download and what it is for. Plain text — a few short paragraphs. Also used as the search description.',
       },
     },
     {

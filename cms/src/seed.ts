@@ -80,7 +80,6 @@ const seed = async () => {
         status: 'published' as const,
         publishedDate: parseDate(card.date),
         category,
-        summary: `A free ${category.toLowerCase()} download from the Designally kit.`,
         description:
           'Placeholder copy for the seeded kit.\n\nReplace this with a real description of what is in the download and what it is for.',
       },

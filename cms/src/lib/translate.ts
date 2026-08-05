@@ -146,7 +146,10 @@ export async function translateItemToThai(args: {
     req,
     data: {
       title: th.title,
-      summary: th.summary || undefined,
+      // Articles have a summary and a body; resources have only a description.
+      // Each is written back only when the source actually had it, so neither
+      // collection is handed a field it does not define.
+      ...(source.summary !== undefined ? { summary: th.summary || undefined } : {}),
       // Only resources have a description; only articles have a body.
       ...(source.description !== undefined ? { description: th.description || undefined } : {}),
       ...(body ? { body } : {}),

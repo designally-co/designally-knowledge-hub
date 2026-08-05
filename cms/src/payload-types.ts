@@ -295,11 +295,7 @@ export interface Resource {
   id: number;
   title: string;
   /**
-   * Dek / subtitle: the one-sentence lede shown under the title, also used as the card excerpt and default meta description.
-   */
-  summary?: string | null;
-  /**
-   * The longer blurb on the resource page: what is in the download and what it is for. Plain text — a few short paragraphs.
+   * What is in the download and what it is for. Plain text — a few short paragraphs. Also used as the search description.
    */
   description?: string | null;
   /**
@@ -507,7 +503,6 @@ export interface ArticlesSelect<T extends boolean = true> {
  */
 export interface ResourcesSelect<T extends boolean = true> {
   title?: T;
-  summary?: T;
   description?: T;
   files?:
     | T
