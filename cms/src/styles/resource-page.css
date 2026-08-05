@@ -1,0 +1,129 @@
+/* --- Resource detail page ------------------------------------------------
+
+   The counterpart to the resource card. Resources carry no uploaded imagery, so
+   the hero is the same category preset the card uses — one big coloured panel
+   with the title reversed out of it. Arriving here should feel like the card
+   opening, not like a different page design.                                */
+
+.resource-page {
+  padding-block: clamp(24px, 4vw, 48px) clamp(64px, 9vw, 120px);
+}
+
+.resource-page__back {
+  display: inline-block;
+  font: var(--type-meta);
+  color: var(--text-secondary);
+  text-decoration: none;
+  margin-bottom: clamp(20px, 3vw, 36px);
+}
+
+.resource-page__back:hover,
+.resource-page__back:focus-visible {
+  color: var(--be-ink);
+}
+
+.resource-page__head {
+  display: grid;
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+}
+
+/* Two columns once there is room for the panel to sit beside the copy rather
+   than push it a screen down. */
+@media (min-width: 52em) {
+  .resource-page__head {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  }
+}
+
+.resource-page__art {
+  aspect-ratio: 1 / 1;
+  border-radius: 24px;
+  background: var(--doc-color, var(--be-gold));
+  padding: clamp(22px, 6%, 36px);
+  display: flex;
+  align-items: flex-start;
+  container-type: inline-size;
+}
+
+.resource-page__art-title {
+  font: 700 clamp(24px, 11cqw, 46px) / 1.14 var(--font-sans);
+  color: #fff;
+  letter-spacing: -0.015em;
+  max-width: 92%;
+}
+
+.resource-page__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: clamp(12px, 2vw, 18px);
+}
+
+.resource-page__title {
+  font: var(--type-display-2);
+  color: var(--be-ink);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.resource-page__dek {
+  font: var(--type-lede);
+  color: var(--text-secondary);
+  margin: clamp(12px, 2vw, 18px) 0 0;
+  max-width: 60ch;
+}
+
+.resource-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: clamp(20px, 3vw, 30px);
+}
+
+/* Definition rows rather than a table: there are only ever two or three, and
+   they should wrap on a phone instead of scrolling sideways. */
+.resource-page__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(16px, 3vw, 40px);
+  margin: clamp(24px, 3.5vw, 36px) 0 0;
+}
+
+.resource-page__meta div {
+  min-width: 0;
+}
+
+.resource-page__meta dt {
+  font: var(--type-meta);
+  color: var(--text-secondary);
+  margin: 0 0 4px;
+}
+
+.resource-page__meta dd {
+  font: var(--type-body);
+  color: var(--be-ink);
+  margin: 0;
+}
+
+.resource-page__body {
+  margin-top: clamp(48px, 7vw, 88px);
+  max-width: 68ch;
+}
+
+.resource-page__body p {
+  font: var(--type-body);
+  color: var(--be-ink);
+  margin: 0 0 1em;
+}
+
+.resource-page__section-title {
+  font: var(--type-title-md);
+  color: var(--be-ink);
+  letter-spacing: var(--tracking-tight);
+  margin: 0 0 clamp(16px, 2.5vw, 24px);
+}
+
+.resource-page__more {
+  margin-top: clamp(56px, 8vw, 104px);
+}

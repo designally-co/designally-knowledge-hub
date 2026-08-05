@@ -9,6 +9,7 @@ import sharp from 'sharp'
 
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Articles } from './collections/Articles'
 import { Resources } from './collections/Resources'
 
 const filename = fileURLToPath(import.meta.url)
@@ -126,7 +127,7 @@ export default buildConfig({
       titleSuffix: '— Designally Hub',
     },
   },
-  collections: [Resources, Media, Users],
+  collections: [Articles, Resources, Media, Users],
   editor: lexicalEditor(),
   // Bilingual content: English is the source (authored/generated); Thai is a
   // translation. Localized fields store a value per locale; `fallback` shows the

@@ -1,9 +1,10 @@
 import { getPayload } from 'payload'
 
 import config from '@/payload.config'
-import type { Media, Resource } from '@/payload-types'
+import type { Article as ArticleDoc, Media, Resource } from '@/payload-types'
 import { localeHref, type Locale } from './i18n'
 import { readingMinutes } from './readingTime'
+import { presetForCategory, type ResourceGlyph } from './resourceCategories'
 import { TAXONOMY, type Category } from './tags'
 
 /**
@@ -36,7 +37,7 @@ function formatDate(value: string | null | undefined, locale: Locale): string {
 }
 
 /** Resolve a cover image URL: uploaded Media takes precedence over an external coverUrl. */
-function coverOf(r: Resource): string | undefined {
+function coverOf(r: ArticleDoc): string | undefined {
   const img = r.coverImage
   if (img && typeof img === 'object') {
     const media = img as Media
@@ -51,7 +52,7 @@ function coverOf(r: Resource): string | undefined {
  * measure (external URL or no cover — the ratio there is just a placeholder box).
  */
 const DEFAULT_RATIO = '3 / 4'
-function ratioOf(r: Resource): string {
+function ratioOf(r: ArticleDoc): string {
   const img = r.coverImage
   if (img && typeof img === 'object') {
     const media = img as Media
@@ -60,29 +61,29 @@ function ratioOf(r: Resource): string {
   return DEFAULT_RATIO
 }
 
-/** The public path for a resource. Only articles have detail pages. */
-function hrefOf(r: Resource, locale: Locale): string {
-  return localeHref(locale, r.type === 'article' ? `/articles/${r.slug}` : '/resources')
-}
-
-/** Map a Resource to the card shape used across listings. */
-function toCard(r: Resource, locale: Locale): CarouselItem {
+/**
+ * Map an article to the card shape used across listings.
+ *
+ * An article carries exactly one tag, but the card exposes `tags` as an array:
+ * every listing component renders a row of tag pills, and a one-item array is
+ * the shape they already take. Keeping the view model plural means the singular
+ * field is a CMS concern rather than something every component has to know.
+ */
+function toCard(r: ArticleDoc, locale: Locale): CarouselItem {
   return {
     id: String(r.id),
     title: r.title,
     date: formatDate(r.publishedDate, locale),
-    tags: r.tags ?? [],
+    tags: r.tag ? [r.tag] : [],
     image: coverOf(r),
     ratio: ratioOf(r),
-    href: hrefOf(r, locale),
+    href: localeHref(locale, `/articles/${r.slug}`),
   }
 }
 
-// Base filter: published articles only.
-const publishedArticle = [
-  { status: { equals: 'published' } },
-  { type: { equals: 'article' } },
-] as const
+// Base filter: published only. Articles live in their own collection now, so
+// there is no type discriminator to filter on.
+const publishedOnly = [{ status: { equals: 'published' } }] as const
 
 /**
  * Read helper: returns a fallback instead of throwing when the DB/table isn't
@@ -114,8 +115,8 @@ export async function getRecentArticles(
     async () => {
       const payload = await getPayload({ config })
       const { docs } = await payload.find({
-        collection: 'resources',
-        where: { and: [...publishedArticle] },
+        collection: 'articles',
+        where: { and: [...publishedOnly] },
         sort: '-publishedDate',
         limit,
         depth: 1, // populate the coverImage upload relation
@@ -137,8 +138,8 @@ export async function getLatestTags(count = 12, locale: Locale = 'en'): Promise<
     async () => {
       const payload = await getPayload({ config })
       const { docs } = await payload.find({
-        collection: 'resources',
-        where: { and: [...publishedArticle] },
+        collection: 'articles',
+        where: { and: [...publishedOnly] },
         sort: '-publishedDate',
         limit: 80,
         depth: 0,
@@ -146,11 +147,10 @@ export async function getLatestTags(count = 12, locale: Locale = 'en'): Promise<
       })
       const seen: string[] = []
       for (const r of docs) {
-        for (const tag of (r.tags ?? []) as string[]) {
-          if (tag && !seen.includes(tag)) {
-            seen.push(tag)
-            if (seen.length >= count) return seen
-          }
+        const tag = r.tag as string | null | undefined
+        if (tag && !seen.includes(tag)) {
+          seen.push(tag)
+          if (seen.length >= count) return seen
         }
       }
       return seen
@@ -170,8 +170,8 @@ export async function getArticlesByTag(
     async () => {
       const payload = await getPayload({ config })
       const { docs } = await payload.find({
-        collection: 'resources',
-        where: { and: [...publishedArticle, { tags: { in: [tag] } }] },
+        collection: 'articles',
+        where: { and: [...publishedOnly, { tag: { equals: tag } }] },
         sort: '-publishedDate',
         limit,
         depth: 1,
@@ -194,8 +194,8 @@ export async function getArticlesByCategory(
     async () => {
       const payload = await getPayload({ config })
       const { docs } = await payload.find({
-        collection: 'resources',
-        where: { and: [...publishedArticle, { tags: { in: [...TAXONOMY[category]] } }] },
+        collection: 'articles',
+        where: { and: [...publishedOnly, { tag: { in: [...TAXONOMY[category]] } }] },
         sort: '-publishedDate',
         limit,
         depth: 1,
@@ -208,28 +208,137 @@ export async function getArticlesByCategory(
 }
 
 /**
- * Published downloadable files (type `template`) — the /resources listing.
- * Files have no detail page yet, so cards carry the title/tags only.
+ * A downloadable resource as the grid and its page need it.
+ *
+ * Resources take no image uploads, so there is no cover here. The artwork comes
+ * from the category preset — colour and glyph — which is why every resource in a
+ * category looks alike and no editor has to find a picture for a font.
  */
+export interface ResourceItem {
+  id: string
+  slug: string
+  title: string
+  summary?: string
+  date: string
+  category: string
+  color: string
+  glyph: ResourceGlyph
+  /** Distinct formats across the attached files, e.g. ["Figma", "PDF"]. */
+  formats: string[]
+  href: string
+}
+
+export interface ResourceDetail extends ResourceItem {
+  description?: string
+  fileSize?: string
+  licence?: string
+  files: { url: string; filename: string; format: string }[]
+}
+
+function toResourceItem(r: Resource, locale: Locale): ResourceItem {
+  const preset = presetForCategory(r.category)
+  const formats: string[] = []
+  for (const f of r.files ?? []) {
+    if (f.format && !formats.includes(f.format)) formats.push(f.format)
+  }
+  return {
+    id: String(r.id),
+    slug: r.slug ?? '',
+    title: r.title,
+    summary: r.summary ?? undefined,
+    date: formatDate(r.publishedDate, locale),
+    category: r.category ?? '',
+    color: preset.color,
+    glyph: preset.glyph,
+    formats,
+    href: localeHref(locale, `/resources/${r.slug}`),
+  }
+}
+
+/** Published downloadable resources, newest first — the /resources grid. */
 export async function getDownloadableFiles(
   limit = 60,
   locale: Locale = 'en',
-): Promise<CarouselItem[]> {
+): Promise<ResourceItem[]> {
   return safeRead(
     'getDownloadableFiles',
     async () => {
       const payload = await getPayload({ config })
       const { docs } = await payload.find({
         collection: 'resources',
-        where: {
-          and: [{ status: { equals: 'published' } }, { type: { equals: 'template' } }],
-        },
+        where: { and: [...publishedOnly] },
         sort: '-publishedDate',
         limit,
         depth: 1,
         locale,
       })
-      return docs.map((r) => toCard(r, locale))
+      return docs.map((r) => toResourceItem(r, locale))
+    },
+    [],
+  )
+}
+
+/** A single published resource by slug, or null if not found / DB unavailable. */
+export async function getResourceBySlug(
+  slug: string,
+  locale: Locale = 'en',
+): Promise<ResourceDetail | null> {
+  return safeRead(
+    'getResourceBySlug',
+    async () => {
+      const payload = await getPayload({ config })
+      const { docs } = await payload.find({
+        collection: 'resources',
+        where: { and: [{ slug: { equals: slug } }, { status: { equals: 'published' } }] },
+        limit: 1,
+        depth: 1, // populate the file upload relations
+        locale,
+      })
+      const r = docs[0]
+      if (!r) return null
+
+      const files: ResourceDetail['files'] = []
+      for (const entry of r.files ?? []) {
+        const media = entry.file
+        if (media && typeof media === 'object') {
+          const m = media as Media
+          if (m.url) {
+            files.push({
+              url: m.url,
+              filename: m.filename ?? 'download',
+              format: entry.format ?? 'Other',
+            })
+          }
+        }
+      }
+
+      return {
+        ...toResourceItem(r, locale),
+        description: r.description ?? undefined,
+        fileSize: r.fileSize ?? undefined,
+        licence: r.licence ?? undefined,
+        files,
+      }
+    },
+    null,
+  )
+}
+
+/** Every published resource slug — for generateStaticParams (SSG). */
+export async function getAllResourceSlugs(): Promise<string[]> {
+  return safeRead(
+    'getAllResourceSlugs',
+    async () => {
+      const payload = await getPayload({ config })
+      const { docs } = await payload.find({
+        collection: 'resources',
+        where: { and: [{ status: { equals: 'published' } }] },
+        limit: 1000,
+        depth: 0,
+        pagination: false,
+        select: { slug: true },
+      })
+      return docs.map((r) => r.slug).filter((x): x is string => Boolean(x))
     },
     [],
   )
@@ -244,7 +353,7 @@ export interface Article {
   image?: string
   ratio: string
   readTime?: number
-  body: Resource['body']
+  body: ArticleDoc['body']
   references: { label: string; url: string }[]
 }
 
@@ -258,13 +367,9 @@ export async function getArticleBySlug(
     async () => {
       const payload = await getPayload({ config })
       const { docs } = await payload.find({
-        collection: 'resources',
+        collection: 'articles',
         where: {
-          and: [
-            { slug: { equals: slug } },
-            { type: { equals: 'article' } },
-            { status: { equals: 'published' } },
-          ],
+          and: [{ slug: { equals: slug } }, { status: { equals: 'published' } }],
         },
         limit: 1,
         depth: 1,
@@ -279,7 +384,7 @@ export async function getArticleBySlug(
         title: r.title,
         dek: r.summary ?? undefined,
         date: formatDate(r.publishedDate, locale),
-        tags: r.tags ?? [],
+        tags: r.tag ? [r.tag] : [],
         image: coverOf(r),
         ratio: ratioOf(r),
         readTime: readingMinutes(r.body),
@@ -298,10 +403,8 @@ export async function getAllArticleSlugs(): Promise<string[]> {
     async () => {
       const payload = await getPayload({ config })
       const { docs } = await payload.find({
-        collection: 'resources',
-        where: {
-          and: [{ type: { equals: 'article' } }, { status: { equals: 'published' } }],
-        },
+        collection: 'articles',
+        where: { and: [{ status: { equals: 'published' } }] },
         limit: 1000,
         depth: 0,
         pagination: false,

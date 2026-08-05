@@ -98,7 +98,18 @@ export type Dictionary = {
     videoPromoBody: string
     videoPromoFrequency: string
   }
-  resources: { title: string; lede: string }
+  resources: {
+    title: string
+    lede: string
+    download: string
+    downloads: string
+    aboutThis: string
+    fileSize: string
+    licence: string
+    format: string
+    backToResources: string
+    notFound: string
+  }
   listing: { home: string; articles: string; emptyForTag: string }
 }
 
@@ -169,6 +180,14 @@ const en: Dictionary = {
   resources: {
     title: 'Resources',
     lede: 'Free, ready-to-use design templates and files.',
+    download: 'Download',
+    downloads: 'Files',
+    aboutThis: 'About this resource',
+    fileSize: 'Size',
+    licence: 'Licence',
+    format: 'Format',
+    backToResources: 'All resources',
+    notFound: 'Resource not found',
   },
   listing: {
     home: 'Home',
@@ -244,6 +263,14 @@ const th: Dictionary = {
   resources: {
     title: 'รีซอร์ส',
     lede: 'เทมเพลตและไฟล์ดีไซน์พร้อมใช้งาน ฟรี',
+    download: 'ดาวน์โหลด',
+    downloads: 'ไฟล์',
+    aboutThis: 'เกี่ยวกับรีซอร์สนี้',
+    fileSize: 'ขนาด',
+    licence: 'สัญญาอนุญาต',
+    format: 'รูปแบบไฟล์',
+    backToResources: 'รีซอร์สทั้งหมด',
+    notFound: 'ไม่พบรีซอร์ส',
   },
   listing: {
     home: 'หน้าแรก',

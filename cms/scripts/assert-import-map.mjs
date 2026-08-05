@@ -27,12 +27,26 @@ import { dirname, resolve } from 'node:path'
 const here = dirname(fileURLToPath(import.meta.url))
 const mapPath = resolve(here, '../src/app/(payload)/admin/importMap.js')
 
-// Client components that must be present regardless of the environment the map
-// was generated in.
+// Everything the admin needs at runtime. Checking only the S3 entry was not
+// enough: a regeneration that half-completed once left a three-line map that
+// still passed, having quietly dropped the rich-text editor and the tag field.
+// If a component is required for the admin to work, it belongs in this list.
 const REQUIRED = [
   {
     key: '@payloadcms/storage-s3/client#S3ClientUploadHandler',
     why: 's3Storage is enabled in production; without this the admin renders blank',
+  },
+  {
+    key: '@payloadcms/richtext-lexical/rsc#RscEntryLexicalField',
+    why: 'the article body is a richText field and cannot render without the Lexical editor',
+  },
+  {
+    key: '/components/admin/TagSelector#TagSelector',
+    why: "the article's tag field is a custom component",
+  },
+  {
+    key: '/components/admin/TranslateToThaiButton#TranslateToThaiButton',
+    why: 'the Translate to Thai button is mounted on both collections',
   },
 ]
 

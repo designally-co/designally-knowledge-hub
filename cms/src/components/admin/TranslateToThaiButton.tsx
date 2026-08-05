@@ -5,11 +5,13 @@ import { useDocumentInfo } from '@payloadcms/ui'
 
 /*
  * Sidebar button that (re)generates the Thai version of the current resource
- * from its English source, via POST /api/resources/:id/translate-to-thai.
+ * from its English source, via POST /api/<collection>/:id/translate-to-thai.
  * Registered as the Field component of the `translateToThai` UI field.
  */
 export function TranslateToThaiButton() {
-  const { id } = useDocumentInfo()
+  // The button is mounted on both Articles and Resources, so the target has to
+  // come from the document being edited rather than being hardcoded.
+  const { id, collectionSlug } = useDocumentInfo()
   const [state, setState] = React.useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [error, setError] = React.useState('')
 
@@ -18,7 +20,7 @@ export function TranslateToThaiButton() {
     setState('loading')
     setError('')
     try {
-      const res = await fetch(`/api/resources/${id}/translate-to-thai`, {
+      const res = await fetch(`/api/${collectionSlug}/${id}/translate-to-thai`, {
         method: 'POST',
         credentials: 'include',
       })

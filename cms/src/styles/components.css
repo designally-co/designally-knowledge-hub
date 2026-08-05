@@ -409,6 +409,19 @@
   max-width: 90%;
 }
 
+/* Category glyph, sitting bottom-right of the document panel. Resources carry
+   no uploaded artwork, so this and the panel colour are the whole visual
+   identity of a category — held back to a watermark so the title still leads. */
+.resource-card__glyph {
+  position: absolute;
+  right: clamp(14px, 6%, 22px);
+  bottom: clamp(14px, 6%, 22px);
+  width: clamp(26px, 13cqw, 44px);
+  height: clamp(26px, 13cqw, 44px);
+  color: #fff;
+  opacity: 0.42;
+}
+
 /* The folder front blurs a duplicate of the resource cover directly. Unlike
    backdrop-filter, this remains reliable when the folder mask is composited. */
 .resource-card__pocket {
@@ -471,6 +484,16 @@
   font: var(--type-meta);
   color: var(--text-secondary);
   margin: 0;
+}
+
+/* Formats the download ships in. Quieter than the date: it is reference detail,
+   not the thing you scan the grid for. */
+.resource-card__formats {
+  font: var(--type-meta);
+  color: var(--text-secondary);
+  margin: 0;
+  opacity: 0.8;
+  letter-spacing: 0.02em;
 }
 
 /* The figure is drawn, not photographed, so it answers with the gesture the

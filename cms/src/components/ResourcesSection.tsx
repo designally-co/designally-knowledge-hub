@@ -2,25 +2,19 @@ import React from 'react'
 
 import { ResourceCard } from '@/components/ds'
 import { PromoBanner } from '@/components/PromoBanner'
-import type { CarouselItem } from '@/lib/resources'
+import type { ResourceItem } from '@/lib/resources'
 
 /**
- * "Resources" — the downloadable files (fonts, Figma files, templates) as a row
- * of folder cards. Seven resources plus the browse banner fill an eight-item
- * grid; the file colours cycle so the row reads as a set. Renders nothing when
- * there are no published files.
+ * "Resources" — the downloadable files as a row of folder cards. Seven
+ * resources plus the browse banner fill an eight-item grid. Renders nothing
+ * when there are no published files.
+ *
+ * Colour and glyph come from each resource's category preset, not from its
+ * position in the row: a category has to look the same here as it does on the
+ * /resources grid and on its own page, or it stops reading as a category.
  */
-const DOC_COLORS = [
-  'var(--be-gold)',
-  'var(--be-cobalt)',
-  'var(--be-brick)',
-  'var(--be-green)',
-  'var(--be-purple)',
-  'var(--be-rust)',
-]
-
 type ResourcesSectionProps = {
-  items: CarouselItem[]
+  items: ResourceItem[]
   title: string
   seeAllLabel: string
   seeAllHref: string
@@ -40,13 +34,15 @@ export function ResourcesSection({ items, title, seeAllLabel, seeAllHref }: Reso
         </div>
 
         <div className="resources__grid">
-          {items.slice(0, 7).map((it, i) => (
+          {items.slice(0, 7).map((it) => (
             <ResourceCard
               key={it.id}
               title={it.title}
               date={it.date}
-              category={it.tags?.[0]}
-              color={DOC_COLORS[i % DOC_COLORS.length]}
+              category={it.category}
+              color={it.color}
+              glyph={it.glyph}
+              formats={it.formats}
               href={it.href}
             />
           ))}

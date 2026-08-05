@@ -67,6 +67,7 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    articles: Article;
     resources: Resource;
     media: Media;
     users: User;
@@ -77,6 +78,7 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    articles: ArticlesSelect<false> | ArticlesSelect<true>;
     resources: ResourcesSelect<false> | ResourcesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -120,10 +122,12 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Written editorial. Downloadable files belong in Resources.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resources".
+ * via the `definition` "articles".
  */
-export interface Resource {
+export interface Article {
   id: number;
   title: string;
   /**
@@ -159,32 +163,6 @@ export interface Resource {
         id?: string | null;
       }[]
     | null;
-  files?:
-    | {
-        file: number | Media;
-        format?: ('Figma' | 'PSD' | 'PDF' | 'SVG' | 'AI' | 'Sketch' | 'ZIP' | 'Other') | null;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Human-readable, e.g. "2.4 MB".
-   */
-  fileSize?: string | null;
-  /**
-   * Licence terms for the download.
-   */
-  licence?: string | null;
-  previewImages?:
-    | {
-        image: number | Media;
-        id?: string | null;
-      }[]
-    | null;
-  /**
-   * Require an email before download. Default is ungated (free).
-   */
-  gated?: boolean | null;
-  type: 'article' | 'template';
   /**
    * Draft = hidden from the public site; Published = live. Publishing is manual.
    */
@@ -195,9 +173,9 @@ export interface Resource {
    */
   slug?: string | null;
   /**
-   * Select one or two tags (grouped by category). Order does not matter.
+   * The one tag this article is filed under (grouped by category).
    */
-  tags: (
+  tag:
     | 'Branding Systems'
     | 'Visual Identity'
     | 'UX/UI'
@@ -231,8 +209,7 @@ export interface Resource {
     | 'Productivity'
     | 'Automation'
     | 'AI Design'
-    | 'Future of Design'
-  )[];
+    | 'Future of Design';
   /**
    * Uploaded cover. Preferred once real assets exist.
    */
@@ -242,7 +219,7 @@ export interface Resource {
    */
   coverUrl?: string | null;
   /**
-   * Per-resource search metadata. Falls back to title/summary.
+   * Per-item search metadata. Falls back to title/summary.
    */
   seo?: {
     metaTitle?: string | null;
@@ -250,9 +227,9 @@ export interface Resource {
     ogImage?: (number | null) | Media;
   };
   /**
-   * Related resources surfaced on the resource page.
+   * Related articles surfaced on the article page.
    */
-  related?: (number | Resource)[] | null;
+  related?: (number | Article)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -309,6 +286,79 @@ export interface Media {
   };
 }
 /**
+ * Downloadable files. Written articles belong in Articles.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resources".
+ */
+export interface Resource {
+  id: number;
+  title: string;
+  /**
+   * Dek / subtitle: the one-sentence lede shown under the title, also used as the card excerpt and default meta description.
+   */
+  summary?: string | null;
+  /**
+   * The longer blurb on the resource page: what is in the download and what it is for. Plain text — a few short paragraphs.
+   */
+  description?: string | null;
+  /**
+   * One entry per downloadable file. A resource can ship several formats — the card and page list them all.
+   */
+  files?:
+    | {
+        file: number | Media;
+        format:
+          | 'Figma'
+          | 'Sketch'
+          | 'PSD'
+          | 'AI'
+          | 'SVG'
+          | 'PDF'
+          | 'EPUB'
+          | 'OTF'
+          | 'TTF'
+          | 'WOFF'
+          | 'PNG'
+          | 'JPG'
+          | 'ZIP'
+          | 'Other';
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Draft = hidden from the public site; Published = live. Publishing is manual.
+   */
+  status: 'draft' | 'published';
+  publishedDate?: string | null;
+  /**
+   * Auto-generated from the title if left blank. Used in the public URL.
+   */
+  slug?: string | null;
+  /**
+   * What this download is. Also decides the artwork and colour on the card.
+   */
+  category: 'Templates' | 'Fonts' | 'Ebooks & Guides' | 'Wallpapers' | 'Icons';
+  /**
+   * Human-readable total, e.g. "2.4 MB".
+   */
+  fileSize?: string | null;
+  /**
+   * Licence terms for the download, e.g. "Free for personal and commercial use".
+   */
+  licence?: string | null;
+  /**
+   * Per-item search metadata. Falls back to title/summary.
+   */
+  seo?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    ogImage?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -360,6 +410,10 @@ export interface PayloadKv {
 export interface PayloadLockedDocument {
   id: number;
   document?:
+    | ({
+        relationTo: 'articles';
+        value: number | Article;
+      } | null)
     | ({
         relationTo: 'resources';
         value: number | Resource;
@@ -416,9 +470,9 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "resources_select".
+ * via the `definition` "articles_select".
  */
-export interface ResourcesSelect<T extends boolean = true> {
+export interface ArticlesSelect<T extends boolean = true> {
   title?: T;
   summary?: T;
   bodyMarkdown?: T;
@@ -430,27 +484,10 @@ export interface ResourcesSelect<T extends boolean = true> {
         url?: T;
         id?: T;
       };
-  files?:
-    | T
-    | {
-        file?: T;
-        format?: T;
-        id?: T;
-      };
-  fileSize?: T;
-  licence?: T;
-  previewImages?:
-    | T
-    | {
-        image?: T;
-        id?: T;
-      };
-  gated?: T;
-  type?: T;
   status?: T;
   publishedDate?: T;
   slug?: T;
-  tags?: T;
+  tag?: T;
   coverImage?: T;
   coverUrl?: T;
   seo?:
@@ -461,6 +498,37 @@ export interface ResourcesSelect<T extends boolean = true> {
         ogImage?: T;
       };
   related?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resources_select".
+ */
+export interface ResourcesSelect<T extends boolean = true> {
+  title?: T;
+  summary?: T;
+  description?: T;
+  files?:
+    | T
+    | {
+        file?: T;
+        format?: T;
+        id?: T;
+      };
+  status?: T;
+  publishedDate?: T;
+  slug?: T;
+  category?: T;
+  fileSize?: T;
+  licence?: T;
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        ogImage?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

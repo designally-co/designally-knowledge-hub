@@ -3,21 +3,15 @@ import { getDownloadableFiles } from '@/lib/resources'
 import { getDictionary, isLocale, type Locale } from '@/lib/i18n'
 
 /**
- * Resources — the downloadable files (fonts, Figma files, templates), i.e.
- * published resources of type `template`. Articles live on the homepage and the
- * tag pages instead.
+ * Resources — the downloadable files: templates, fonts, ebooks, wallpapers,
+ * icons. Articles are a different collection entirely and live on the homepage
+ * and the tag pages.
+ *
+ * One grid, no filtering. Colour and glyph come from each resource's category
+ * preset rather than from its position here, so the grid reads as a taxonomy
+ * instead of a rotation of brand colours.
  */
 export const revalidate = 60
-
-// Spot colours cycle so a grid of documents reads as a set, not a repetition.
-const DOC_COLORS = [
-  'var(--be-gold)',
-  'var(--be-cobalt)',
-  'var(--be-brick)',
-  'var(--be-green)',
-  'var(--be-purple)',
-  'var(--be-rust)',
-]
 
 export default async function ResourcesPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
@@ -33,13 +27,16 @@ export default async function ResourcesPage({ params }: { params: Promise<{ lang
 
       {items.length > 0 ? (
         <div className="card-grid">
-          {items.map((it, i) => (
+          {items.map((it) => (
             <ResourceCard
               key={it.id}
               title={it.title}
               date={it.date}
-              category={it.tags?.[0]}
-              color={DOC_COLORS[i % DOC_COLORS.length]}
+              category={it.category}
+              color={it.color}
+              glyph={it.glyph}
+              formats={it.formats}
+              href={it.href}
             />
           ))}
         </div>

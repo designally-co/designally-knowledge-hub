@@ -8,7 +8,8 @@
 import { getPayload } from 'payload'
 
 import config from './payload.config'
-import type { Resource } from './payload-types'
+import type { Article } from './payload-types'
+import { RESOURCE_CATEGORIES } from './lib/resourceCategories'
 // The sample content. Pure-JS ESM module, untyped by design.
 import { BE_DATA } from './seed-data.js'
 
@@ -31,56 +32,63 @@ const seed = async () => {
   const payload = await getPayload({ config })
 
   payload.logger.info('Clearing previously seeded collections…')
+  await payload.delete({ collection: 'articles', where: {} })
   await payload.delete({ collection: 'resources', where: {} })
 
-  // ---- Resources ---------------------------------------------------------
-  // Map a placeholder card into a Resource of the given type. The model carries
-  // two types only: 'article' and 'template' (Downloadable file). Tags are
-  // limited to two; extra placeholder tags are trimmed to fit.
-  const toResource = (card: RawCard, type: 'article' | 'template') => {
-    const tags = (card.tags ?? []).slice(0, 2)
-    return {
-      title: card.title,
-      type,
-      status: 'published' as const,
-      publishedDate: parseDate(card.date),
-      // data.js tags are plain strings; the values are all valid taxonomy tags.
-      tags: tags as Resource['tags'],
-      coverUrl: card.image,
-      summary: undefined,
-    }
-  }
+  // ---- Articles ----------------------------------------------------------
+  // Editorial placeholder cards become articles. An article carries exactly one
+  // tag, so the first valid placeholder tag wins; the rest are dropped.
+  const toArticle = (card: RawCard) => ({
+    title: card.title,
+    status: 'published' as const,
+    publishedDate: parseDate(card.date),
+    // data.js tags are plain strings; the values are all valid taxonomy tags.
+    tag: (card.tags ?? [])[0] as Article['tag'],
+    coverUrl: card.image,
+    summary: undefined,
+  })
 
-  // Editorial content → articles. Resources kit → templates.
   const articleCards: RawCard[] = [
     ...(BE_DATA.topInspiration ?? []),
     ...(BE_DATA.hero ? [BE_DATA.hero] : []),
     ...(BE_DATA.caseStudies ?? []),
     ...(BE_DATA.insight ?? []),
     ...(BE_DATA.workflow ? [BE_DATA.workflow] : []),
-  ]
-  const templateCards: RawCard[] = BE_DATA.resources ?? []
+  ].filter((card) => (card.tags ?? []).length > 0)
+
+  // ---- Resources ---------------------------------------------------------
+  // The placeholder resources kit has no category of its own, so one is dealt
+  // round-robin from the real taxonomy. That gives the grid at least one of
+  // every preset to look at, which is the point of seeding it at all.
+  const resourceCards: RawCard[] = BE_DATA.resources ?? []
 
   payload.logger.info(
-    `Seeding ${articleCards.length} articles and ${templateCards.length} templates…`,
+    `Seeding ${articleCards.length} articles and ${resourceCards.length} resources…`,
   )
 
   let created = 0
   for (const card of articleCards) {
-    await payload.create({ collection: 'resources', data: toResource(card, 'article') })
+    await payload.create({ collection: 'articles', data: toArticle(card) })
     created++
   }
-  for (const card of templateCards) {
-    // The resources kit stores its own spot colour in `color`, not `tint`.
-    const asTemplate = toResource({ ...card, tint: (card as any).color }, 'template')
+  for (const [i, card] of resourceCards.entries()) {
+    const category = RESOURCE_CATEGORIES[i % RESOURCE_CATEGORIES.length]
     await payload.create({
       collection: 'resources',
-      data: { ...asTemplate, gated: false },
+      data: {
+        title: card.title,
+        status: 'published' as const,
+        publishedDate: parseDate(card.date),
+        category,
+        summary: `A free ${category.toLowerCase()} download from the Designally kit.`,
+        description:
+          'Placeholder copy for the seeded kit.\n\nReplace this with a real description of what is in the download and what it is for.',
+      },
     })
     created++
   }
 
-  payload.logger.info(`✅ Seed complete: ${created} resources.`)
+  payload.logger.info(`✅ Seed complete: ${created} items.`)
   process.exit(0)
 }
 

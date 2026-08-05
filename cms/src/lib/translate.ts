@@ -2,7 +2,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { convertMarkdownToLexical, editorConfigFactory } from '@payloadcms/richtext-lexical'
 import type { Payload, PayloadRequest } from 'payload'
 
-import type { Resource } from '../payload-types'
+import type { Article } from '../payload-types'
 
 /*
  * English → Thai translation for Resources.
@@ -38,6 +38,8 @@ export function translationConfigured(): boolean {
 type Fields = {
   title: string
   summary: string
+  /** Resources only — articles carry their long copy in `bodyMarkdown`. */
+  description: string
   metaTitle: string
   metaDescription: string
   bodyMarkdown: string
@@ -79,6 +81,7 @@ async function translateFields(input: Fields): Promise<Fields> {
   return {
     title: parsed.title || input.title,
     summary: parsed.summary ?? '',
+    description: parsed.description ?? '',
     metaTitle: parsed.metaTitle ?? '',
     metaDescription: parsed.metaDescription ?? '',
     bodyMarkdown: parsed.bodyMarkdown ?? '',
@@ -86,45 +89,57 @@ async function translateFields(input: Fields): Promise<Fields> {
 }
 
 /**
- * Translate a resource's English content into Thai and save it to the `th` locale.
+ * Translate an item's English content into Thai and save it to the `th` locale.
  * `bodyMarkdown` (the English source) is NOT localized and is left untouched — the
  * Thai markdown is only an intermediate used to build the Thai Lexical body.
+ *
+ * Serves both collections. Articles carry a rich body built from markdown;
+ * resources carry a plain-text description and no body at all, so each field is
+ * translated only when the item actually has it.
  */
-export async function translateResourceToThai(args: {
+export async function translateItemToThai(args: {
   payload: Payload
+  collection: 'articles' | 'resources'
   id: number | string
   req?: PayloadRequest
 }): Promise<void> {
-  const { payload, id, req } = args
+  const { payload, collection, id, req } = args
 
   const en = (await payload.findByID({
-    collection: 'resources',
+    collection,
     id,
     locale: 'en',
     depth: 0,
     overrideAccess: true,
     req,
-  })) as Resource
+    // Both collections are read through this, and only the fields present on
+    // the one in hand are translated, so the shape is narrowed below rather
+    // than asserted to either type here.
+  })) as unknown
 
+  const source = en as Record<string, any>
   const th = await translateFields({
-    title: en.title ?? '',
-    summary: en.summary ?? '',
-    metaTitle: en.seo?.metaTitle ?? '',
-    metaDescription: en.seo?.metaDescription ?? '',
-    bodyMarkdown: en.bodyMarkdown ?? '',
+    title: source.title ?? '',
+    summary: source.summary ?? '',
+    description: source.description ?? '',
+    metaTitle: source.seo?.metaTitle ?? '',
+    metaDescription: source.seo?.metaDescription ?? '',
+    bodyMarkdown: source.bodyMarkdown ?? '',
   })
 
-  let body: Resource['body'] | undefined
+  // Articles carry a rich body; resources do not, so this stays undefined for
+  // them and the update below simply omits it.
+  let body: Article['body'] | undefined
   if (th.bodyMarkdown.trim()) {
     const editorConfig = await editorConfigFactory.default({ config: payload.config })
     body = convertMarkdownToLexical({
       editorConfig,
       markdown: th.bodyMarkdown,
-    }) as Resource['body']
+    }) as Article['body']
   }
 
   await payload.update({
-    collection: 'resources',
+    collection,
     id,
     locale: 'th',
     overrideAccess: true,
@@ -132,6 +147,8 @@ export async function translateResourceToThai(args: {
     data: {
       title: th.title,
       summary: th.summary || undefined,
+      // Only resources have a description; only articles have a body.
+      ...(source.description !== undefined ? { description: th.description || undefined } : {}),
       ...(body ? { body } : {}),
       seo: {
         metaTitle: th.metaTitle || undefined,

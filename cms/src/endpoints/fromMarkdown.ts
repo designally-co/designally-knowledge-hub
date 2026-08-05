@@ -1,19 +1,24 @@
 import { convertMarkdownToLexical, editorConfigFactory } from '@payloadcms/richtext-lexical'
 import { addDataAndFileToRequest, type PayloadHandler } from 'payload'
 
-import type { Resource } from '../payload-types'
-import { translateResourceToThai, translationConfigured } from '../lib/translate'
+import type { Article } from '../payload-types'
+import { translateItemToThai, translationConfigured } from '../lib/translate'
 
 /**
- * POST /api/resources/from-markdown
+ * POST /api/articles/from-markdown
  *
  * Integration endpoint for the Content Generator. Accepts an article with a
- * MARKDOWN body, converts it to Lexical server-side, and creates the resource.
+ * MARKDOWN body, converts it to Lexical server-side, and creates the article.
  * Auth is required (a `users` API key or a logged-in session) — same access
  * rules as a normal create.
  *
- * Body: { title, tags[1..2], bodyMarkdown?, summary?, status?, coverUrl?,
+ * Body: { title, tags[1], bodyMarkdown?, summary?, status?, coverUrl?,
  *         publishedDate?, slug?, references? }
+ *
+ * `tags` stays an ARRAY on the wire even though an article now carries exactly
+ * one tag, because that is the shape the Content Generator already sends and
+ * there is no reason to force a lockstep deploy over it. It must contain
+ * exactly one entry; the first is written to the article's `tag` field.
  */
 type Payload = {
   title?: string
@@ -40,28 +45,27 @@ export const fromMarkdownHandler: PayloadHandler = async (req) => {
   const data = (req.data ?? {}) as Payload
 
   const { title, tags, bodyMarkdown } = data
-  if (!title || !Array.isArray(tags) || tags.length < 1 || tags.length > 2) {
+  if (!title || !Array.isArray(tags) || tags.length !== 1) {
     return Response.json(
-      { error: 'Requires `title` and 1–2 `tags` (from the taxonomy).' },
+      { error: 'Requires `title` and exactly one `tag` (from the taxonomy), sent as `tags: [tag]`.' },
       { status: 400 },
     )
   }
 
-  let body: Resource['body'] | undefined
+  let body: Article['body'] | undefined
   if (bodyMarkdown && bodyMarkdown.trim()) {
     const editorConfig = await editorConfigFactory.default({ config: req.payload.config })
-    body = convertMarkdownToLexical({ editorConfig, markdown: bodyMarkdown }) as Resource['body']
+    body = convertMarkdownToLexical({ editorConfig, markdown: bodyMarkdown }) as Article['body']
   }
 
   try {
     const doc = await req.payload.create({
-      collection: 'resources',
+      collection: 'articles',
       overrideAccess: false,
       user: req.user,
       data: {
-        type: 'article',
         title,
-        tags: tags as Resource['tags'],
+        tag: tags[0] as Article['tag'],
         summary: data.summary,
         status: data.status ?? 'draft',
         coverUrl: data.coverUrl,
@@ -83,11 +87,11 @@ export const fromMarkdownHandler: PayloadHandler = async (req) => {
     let thaiTranslated = false
     if (translationConfigured()) {
       try {
-        await translateResourceToThai({ payload: req.payload, id: doc.id })
+        await translateItemToThai({ payload: req.payload, collection: 'articles', id: doc.id })
         thaiTranslated = true
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err)
-        req.payload.logger.error(`Thai auto-translation failed for resource ${doc.id}: ${message}`)
+        req.payload.logger.error(`Thai auto-translation failed for article ${doc.id}: ${message}`)
       }
     }
 
