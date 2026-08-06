@@ -11,7 +11,8 @@ import {
   getArticleBySlug,
   getRecentArticles,
 } from '@/lib/resources'
-import { tagSlug } from '@/lib/tags'
+import { categoryForTag, tagSlug } from '@/lib/tags'
+import { chromeForCategory } from '@/lib/listingChrome'
 import { getDictionary, isLocale, localeHref, tagLabel, LOCALES, type Locale } from '@/lib/i18n'
 
 /**
@@ -64,10 +65,14 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
   const [rw, rh] = article.ratio.split('/').map((n) => parseFloat(n.trim()))
   const coverRatio = rw && rh ? rw / rh : 1.5
 
+  // The masthead wears its category's band, so an article looks like it belongs
+  // to the listing it was reached from.
+  const band = chromeForCategory(categoryForTag(article.tags[0] ?? '')).tint
+
   return (
     <article
       className="article"
-      style={{ ['--cover-r' as string]: String(coverRatio) }}
+      style={{ ['--cover-r' as string]: String(coverRatio), ['--masthead-band' as string]: band }}
     >
       <div className="article__masthead">
         <header className="article__head">

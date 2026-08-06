@@ -20,16 +20,21 @@
   --cover-r: 1.5;
 }
 
-/* Hero masthead — the title block + the cover's TOP HALF on a solid tan band.
+/* Hero masthead — the title block + the cover's TOP HALF on a solid band.
    The band is the masthead's own background (full-bleed: the masthead is a
    full-width block). Its box ends at the cover's midline because the cover frame
    is only half the cover's height and the hero image overflows it downward onto
-   the paper below. The pattern sits on ::after so it can carry its own opacity. */
+   the paper below. The pattern sits on ::after so it can carry its own opacity.
+
+   The colour is the band of the category this article is filed under, set as
+   --masthead-band on the article, so arriving from a category listing keeps the
+   same field of colour instead of changing identity at the door. The tan is the
+   fallback for an article whose tag resolves to no category. */
 .article__masthead {
   position: relative;
   isolation: isolate;
   padding-top: clamp(40px, 7vw, 76px);
-  background: #ece1cd;
+  background: var(--masthead-band, #ece1cd);
 }
 
 .article__masthead::after {
@@ -209,11 +214,13 @@
 
 @media (min-width: 64em) {
   .article__layout {
-    /* TOC pinned left (at the cover's left edge), the article a readable column
-       pinned right (ending at the cover's right edge); the space between them is
-       distributed automatically. */
+    /* The pair sits centred rather than pushed to both edges. Pinning the
+       article to the cover's right edge held it against a line the reader has
+       already scrolled past, which left a canyon between the contents and the
+       prose; centring keeps the two related and puts the text near the middle
+       of the view, where it is actually read. */
     grid-template-columns: 230px minmax(0, var(--reading-measure));
-    justify-content: space-between;
+    justify-content: center;
     align-items: start;
   }
 }
