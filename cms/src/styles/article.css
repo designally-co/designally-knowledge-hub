@@ -199,7 +199,13 @@
 }
 
 /* First full-width grid row reserves the cover's overflowing bottom half (half
-   the cover's height, same 2·r box), so the TOC + article start below it. */
+   the cover's height, same 2·r box), so the TOC + article start below it.
+
+   This measures itself, so the grid has to stay as wide as the cover: it spans
+   every column, and its height is its own width over 2·r. Narrow the grid — by
+   packing the tracks with justify-content, say — and it reserves less than the
+   cover overflows, which lands the image on the prose. Centring is done with
+   empty side columns below for exactly that reason. */
 .article__layout::before {
   content: '';
   grid-column: 1 / -1;
@@ -218,11 +224,18 @@
        article to the cover's right edge held it against a line the reader has
        already scrolled past, which left a canyon between the contents and the
        prose; centring keeps the two related and puts the text near the middle
-       of the view, where it is actually read. */
-    grid-template-columns: 230px minmax(0, var(--reading-measure));
-    justify-content: center;
+       of the view, where it is actually read.
+
+       Centred with empty 1fr columns either side rather than justify-content,
+       so the grid still spans the cover's full width and the ::before spacer
+       above keeps reserving the cover's overflow. */
+    grid-template-columns:
+      minmax(0, 1fr) 230px minmax(0, var(--reading-measure)) minmax(0, 1fr);
     align-items: start;
   }
+
+  .article__toc-col { grid-column: 2; }
+  .article__main { grid-column: 3; }
 }
 
 /* TOC: hidden on mobile, a sticky rail on desktop. */
