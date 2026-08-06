@@ -28,7 +28,7 @@ export function ResourcesSection({ items, title, seeAllLabel, seeAllHref }: Reso
       <div className="resources__inner">
         <div className="resources__header">
           <h2 id="resources-heading" className="resources__heading">
-            <img className="section-icon" src="/section-icons/resources.png" alt="" aria-hidden="true" />
+            <img className="section-icon" src="/section-icons/resources.svg" alt="" aria-hidden="true" />
             {title}
           </h2>
         </div>

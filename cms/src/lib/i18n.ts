@@ -110,7 +110,32 @@ export type Dictionary = {
     backToResources: string
     notFound: string
   }
-  listing: { home: string; articles: string; emptyForTag: string }
+  listing: {
+    home: string
+    articles: string
+    /** Unit noun for the resource count. */
+    resourceUnit: string
+    emptyForTag: string
+    all: string
+    searchPlaceholder: string
+    searchLabel: string
+    /** "Showing {from}–{to} of {total} {unit}". */
+    showing: string
+    /** "No results for “{q}”." */
+    noResults: string
+    previous: string
+    next: string
+    /** aria label prefix for a page number, e.g. "Page 3". */
+    page: string
+    /**
+     * Per-category hero intro copy, keyed by category name (Design, Insights,
+     * Design with AI). EDITORIAL COPY — fill these in; an empty or missing string
+     * hides the hero description line.
+     */
+    categoryIntro: Partial<Record<string, string>>
+    /** Hero intro copy for the Resources listing. Empty hides the line. */
+    resourcesIntro: string
+  }
 }
 
 const en: Dictionary = {
@@ -167,7 +192,7 @@ const en: Dictionary = {
     seeAllInsights: 'See all insights',
     workflows: 'Workflows',
     workflowsBanner: 'Workflow',
-    seeAllWorkflows: 'See all Design with AI',
+    seeAllWorkflows: 'See all workflows',
     topics: 'Topics',
     resources: 'Resources',
     seeAllResources: 'See all resources',
@@ -192,7 +217,26 @@ const en: Dictionary = {
   listing: {
     home: 'Home',
     articles: 'articles',
+    resourceUnit: 'resources',
     emptyForTag: 'No articles with this tag yet.',
+    all: 'All',
+    searchPlaceholder: 'Search {section}…',
+    searchLabel: 'Search',
+    showing: 'Showing {from}–{to} of {total} {unit}',
+    noResults: 'No results for “{q}”.',
+    previous: 'Previous',
+    next: 'Next',
+    page: 'Page',
+    categoryIntro: {
+      Design:
+        'Honest insight, opinion and analysis on the business of being creative – from industry trends and hot takes to the conversations that matter.',
+      Insights:
+        'Fresh thinking on where design is heading – from industry shifts and new tools to the campaigns and craft worth a closer look.',
+      'Design with AI':
+        'Practical ways to design with AI – the workflows, prompts and systems for doing sharper work in less time, without losing the craft.',
+    },
+    resourcesIntro:
+      'Practical templates, guides, tools, and references to help you build better brands. Created and selected by Designally.',
   },
 }
 
@@ -250,7 +294,7 @@ const th: Dictionary = {
     seeAllInsights: 'ดูอินไซต์ทั้งหมด',
     workflows: 'เวิร์กโฟลว์',
     workflowsBanner: 'เวิร์กโฟลว์',
-    seeAllWorkflows: 'ดูดีไซน์ด้วย AI ทั้งหมด',
+    seeAllWorkflows: 'ดูเวิร์กโฟลว์ทั้งหมด',
     topics: 'หัวข้อ',
     resources: 'รีซอร์ส',
     seeAllResources: 'ดูรีซอร์สทั้งหมด',
@@ -275,7 +319,26 @@ const th: Dictionary = {
   listing: {
     home: 'หน้าแรก',
     articles: 'บทความ',
+    resourceUnit: 'รีซอร์ส',
     emptyForTag: 'ยังไม่มีบทความในแท็กนี้',
+    all: 'ทั้งหมด',
+    searchPlaceholder: 'ค้นหาใน{section}…',
+    searchLabel: 'ค้นหา',
+    showing: 'แสดง {from}–{to} จาก {total} {unit}',
+    noResults: 'ไม่พบผลลัพธ์สำหรับ “{q}”',
+    previous: 'ก่อนหน้า',
+    next: 'ถัดไป',
+    page: 'หน้า',
+    categoryIntro: {
+      Design:
+        'อินไซต์ ความคิดเห็น และบทวิเคราะห์อย่างตรงไปตรงมาเกี่ยวกับธุรกิจของงานสร้างสรรค์ – ตั้งแต่เทรนด์ในวงการและมุมมองร้อนแรง ไปจนถึงบทสนทนาที่มีความหมาย',
+      Insights:
+        'มุมมองใหม่ต่อทิศทางของงานออกแบบ – ตั้งแต่ความเปลี่ยนแปลงในวงการและเครื่องมือใหม่ ๆ ไปจนถึงแคมเปญและงานฝีมือที่ควรค่าแก่การพิจารณา',
+      'Design with AI':
+        'วิธีออกแบบด้วย AI อย่างเป็นรูปธรรม – เวิร์กโฟลว์ พรอมป์ และระบบที่ช่วยให้ทำงานได้คมชัดขึ้นในเวลาที่น้อยลง โดยไม่ละทิ้งงานฝีมือ',
+    },
+    resourcesIntro:
+      'เทมเพลต คู่มือ เครื่องมือ และแหล่งอ้างอิงที่ใช้งานได้จริง เพื่อช่วยให้คุณสร้างแบรนด์ได้ดียิ่งขึ้น สร้างและคัดสรรโดย Designally',
   },
 }
 
@@ -295,16 +358,28 @@ export function getDictionary(locale: Locale): Dictionary {
  * Grid Systems…) that Thai designers use in English, matching how the article
  * translator leaves them. Adjust here if Thai tag labels are wanted later.
  */
-const CATEGORY_LABELS_TH: Record<string, string> = {
-  Design: 'ดีไซน์',
-  'New Update': 'อัปเดตใหม่',
-  'Creative Things': 'งานสร้างสรรค์',
-  'Design with AI': 'ดีไซน์ด้วย AI',
+/*
+ * Public display names for the categories. The internal category keys stay
+ * 'Design' / 'Insights' / 'Design with AI' (they key the tag taxonomy and the
+ * URL slugs), but the site presents friendlier names: Design → Case Studies and
+ * Design with AI → Workflows. Insights uses its own name. Change a name here and
+ * it updates the header, footer, and category pages in one place.
+ */
+const CATEGORY_LABELS_EN: Record<string, string> = {
+  Design: 'Case Studies',
+  'Design with AI': 'Workflows',
+  // Insights keeps its own name (identity).
 }
 
-/** Localised label for a category (identity in English). */
+const CATEGORY_LABELS_TH: Record<string, string> = {
+  Design: 'กรณีศึกษา',
+  Insights: 'อินไซต์',
+  'Design with AI': 'เวิร์กโฟลว์',
+}
+
+/** Public display label for a category, per locale. */
 export function categoryLabel(category: string, locale: Locale): string {
-  if (locale === 'en') return category
+  if (locale === 'en') return CATEGORY_LABELS_EN[category] ?? category
   return CATEGORY_LABELS_TH[category] ?? category
 }
 

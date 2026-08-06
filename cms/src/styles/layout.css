@@ -233,6 +233,52 @@
   .site-header__actions { gap: 16px; }
 }
 
+/* Language switcher — a compact two-segment toggle. Quiet by design: a light
+   track holds a raised white chip on the active locale (so it doesn't read as a
+   second dark control beside Subscribe); the inactive one is muted. */
+.locale-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--be-ink) 7%, transparent);
+}
+
+.locale-switcher__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font: 700 12px / 1 var(--font-sans);
+  letter-spacing: 0.03em;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition:
+    background var(--hover-state-dur) var(--ease-out-quart),
+    color var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.locale-switcher__link.is-active {
+  background: var(--be-white);
+  color: var(--be-ink);
+  box-shadow: 0 1px 2px rgba(18, 16, 13, 0.14);
+}
+
+@media (hover: hover) {
+  .locale-switcher__link:not(.is-active):hover {
+    color: var(--be-ink);
+  }
+}
+
+@media (pointer: coarse) {
+  .locale-switcher__link {
+    min-height: 34px;
+  }
+}
+
 /* The Subscribe button is the primary conversion control; it survives at
    every width. Search and the menu toggle sit beside it. */
 .site-header__subscribe { display: none; }

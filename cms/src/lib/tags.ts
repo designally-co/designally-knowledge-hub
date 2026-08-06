@@ -1,16 +1,22 @@
 /**
- * The taxonomy: 4 categories (pillars) × 34 tags (directions).
+ * The taxonomy: 3 categories (pillars) × 34 tags (directions).
  *
- * Authors pick 1–2 tags from the fixed list (not free text). There is no
- * separate category field — each tag belongs to exactly one category, so a
- * resource's category is DERIVED from its tag via `categoryForTag`. The admin
- * dropdown shows every tag prefixed with its category so the grouping is clear.
+ * The pillars are Design (shown as "Case Studies"), Insights, and Design with AI
+ * (shown as "Workflows") — see `categoryLabel` in i18n for the display names.
+ * `Insights` is the merger of the former New Update and Creative Things pillars:
+ * a category is DERIVED from an article's single tag, so folding two pillars into
+ * one needed no data migration — every tag kept its value and simply rolls up to
+ * Insights now.
  *
- * Add/rename tags or categories here — this is the single source of truth for
- * the whole taxonomy (CMS options + tag pages + category sections).
+ * Authors pick one tag from the fixed list (not free text). There is no separate
+ * category field — each tag belongs to exactly one category via `categoryForTag`.
+ * The admin dropdown shows every tag prefixed with its category.
+ *
+ * Add/rename tags or categories here — this is the single source of truth for the
+ * whole taxonomy (CMS options + tag pages + category sections).
  */
 
-export const CATEGORIES = ['Design', 'New Update', 'Creative Things', 'Design with AI'] as const
+export const CATEGORIES = ['Design', 'Insights', 'Design with AI'] as const
 
 export type Category = (typeof CATEGORIES)[number]
 
@@ -28,17 +34,10 @@ export const TAXONOMY: Record<Category, readonly string[]> = {
     'Design Critique',
     'Before / After',
   ],
-  'New Update': [
-    'Industry Trends',
-    'New Technology',
-    'Marketing Shift',
-    'Consumer Behavior',
-    'Brand Launch',
-    'Product Update',
-    'Design Tools',
-    'Industry Report',
-  ],
-  'Creative Things': [
+  // Insights = former Creative Things pillar (creative directions, kept first so
+  // the homepage topic cloud still leads with them) + former New Update pillar
+  // (industry / market directions).
+  Insights: [
     'Campaign Breakdown',
     'Packaging',
     'Motion',
@@ -47,6 +46,14 @@ export const TAXONOMY: Record<Category, readonly string[]> = {
     'Brand Film',
     'Storytelling',
     'Creative Review',
+    'Industry Trends',
+    'New Technology',
+    'Marketing Shift',
+    'Consumer Behavior',
+    'Brand Launch',
+    'Product Update',
+    'Design Tools',
+    'Industry Report',
   ],
   'Design with AI': [
     'AI Workflow',
@@ -87,6 +94,16 @@ const CATEGORY_BY_SLUG: Record<string, Category> = Object.fromEntries(
 
 export function categoryFromSlug(slug: string): Category | undefined {
   return CATEGORY_BY_SLUG[slug]
+}
+
+/**
+ * Slugs of retired categories → the slug that replaced them. The New Update and
+ * Creative Things pillars merged into Insights; their old category URLs redirect
+ * so existing links and bookmarks don't 404.
+ */
+export const RETIRED_CATEGORY_SLUGS: Record<string, string> = {
+  'new-update': categorySlug('Insights'),
+  'creative-things': categorySlug('Insights'),
 }
 
 /** URL-safe slug for a tag, e.g. "UX/UI" → "ux-ui", "Strategy + AI" → "strategy-ai". */

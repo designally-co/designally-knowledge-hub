@@ -1,6 +1,8 @@
 import React from 'react'
 import {
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Search,
   Menu,
   X,
@@ -17,6 +19,8 @@ import {
    MAP when you introduce a new icon. */
 const MAP: Record<string, LucideIcon> = {
   'chevron-down': ChevronDown,
+  'chevron-left': ChevronLeft,
+  'chevron-right': ChevronRight,
   search: Search,
   menu: Menu,
   x: X,

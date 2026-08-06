@@ -1,4 +1,5 @@
 import { getPayload } from 'payload'
+import type { Where } from 'payload'
 
 import config from '@/payload.config'
 import type { Article as ArticleDoc, Media, Resource } from '@/payload-types'
@@ -208,6 +209,76 @@ export async function getArticlesByCategory(
 }
 
 /**
+ * A page of listing results: the items on this page plus the totals the pager
+ * and the "showing X–Y of Z" count need. Shared by the category, tag and
+ * resource listing pages.
+ */
+export interface Listing<T> {
+  items: T[]
+  total: number
+  totalPages: number
+  page: number
+  perPage: number
+}
+
+export interface ArticleListingOptions {
+  /** All published articles whose tag is in this category. Ignored when `tag` is set. */
+  category?: Category
+  /** A single exact tag — narrows within (or across) categories. */
+  tag?: string
+  /** Case-insensitive title search. */
+  q?: string
+  page?: number
+  perPage?: number
+  locale?: Locale
+}
+
+/**
+ * A filtered, paginated slice of published articles, newest first — the engine
+ * behind the category and tag listing pages. `tag` (exact) takes precedence over
+ * `category` (any of its tags); `q` searches the title. Returns the page's items
+ * plus totals for the pager.
+ */
+export async function getArticleListing({
+  category,
+  tag,
+  q,
+  page = 1,
+  perPage = 15,
+  locale = 'en',
+}: ArticleListingOptions): Promise<Listing<CarouselItem>> {
+  const empty: Listing<CarouselItem> = { items: [], total: 0, totalPages: 0, page, perPage }
+  return safeRead(
+    'getArticleListing',
+    async () => {
+      const payload = await getPayload({ config })
+      const where: Where[] = [...publishedOnly]
+      if (tag) where.push({ tag: { equals: tag } })
+      else if (category) where.push({ tag: { in: [...TAXONOMY[category]] } })
+      if (q?.trim()) where.push({ title: { like: q.trim() } })
+
+      const res = await payload.find({
+        collection: 'articles',
+        where: { and: where },
+        sort: '-publishedDate',
+        page,
+        limit: perPage,
+        depth: 1,
+        locale,
+      })
+      return {
+        items: res.docs.map((r) => toCard(r, locale)),
+        total: res.totalDocs,
+        totalPages: res.totalPages,
+        page: res.page ?? page,
+        perPage,
+      }
+    },
+    empty,
+  )
+}
+
+/**
  * A downloadable resource as the grid and its page need it.
  *
  * Resources take no image uploads, so there is no cover here. The artwork comes
@@ -274,6 +345,58 @@ export async function getDownloadableFiles(
       return docs.map((r) => toResourceItem(r, locale))
     },
     [],
+  )
+}
+
+export interface ResourceListingOptions {
+  /** Exact resource category (Fonts, Templates, …). */
+  category?: string
+  /** Case-insensitive title search. */
+  q?: string
+  page?: number
+  perPage?: number
+  locale?: Locale
+}
+
+/**
+ * A filtered, paginated slice of published resources, newest first — the engine
+ * behind the /resources listing page. `category` filters by the resource's own
+ * taxonomy; `q` searches the title. Returns the page's items plus totals.
+ */
+export async function getResourceListing({
+  category,
+  q,
+  page = 1,
+  perPage = 15,
+  locale = 'en',
+}: ResourceListingOptions): Promise<Listing<ResourceItem>> {
+  const empty: Listing<ResourceItem> = { items: [], total: 0, totalPages: 0, page, perPage }
+  return safeRead(
+    'getResourceListing',
+    async () => {
+      const payload = await getPayload({ config })
+      const where: Where[] = [...publishedOnly]
+      if (category) where.push({ category: { equals: category } })
+      if (q?.trim()) where.push({ title: { like: q.trim() } })
+
+      const res = await payload.find({
+        collection: 'resources',
+        where: { and: where },
+        sort: '-publishedDate',
+        page,
+        limit: perPage,
+        depth: 1,
+        locale,
+      })
+      return {
+        items: res.docs.map((r) => toResourceItem(r, locale)),
+        total: res.totalDocs,
+        totalPages: res.totalPages,
+        page: res.page ?? page,
+        perPage,
+      }
+    },
+    empty,
   )
 }
 

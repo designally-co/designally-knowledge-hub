@@ -28,7 +28,7 @@ export function WorkflowsGrid({ items, title, bannerLabel, bannerHref, seeAllLab
     <section className="workflows" aria-labelledby="workflows-heading">
       <div className="workflows__inner">
         <h2 id="workflows-heading" className="workflows__heading">
-          <img className="section-icon" src="/section-icons/workflows.png" alt="" aria-hidden="true" />
+          <img className="section-icon" src="/section-icons/workflows.svg" alt="" aria-hidden="true" />
           {title}
         </h2>
 

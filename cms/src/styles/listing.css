@@ -164,3 +164,316 @@
   color: var(--text-secondary);
   margin-top: clamp(32px, 6vw, 48px);
 }
+
+/* ======================================================================
+   Listing pages — category / tag / resources
+   Tinted hero band → filter + search controls → featured lead →
+   ratio-aware masonry → numbered pager. Reused newsletter CTA sits below,
+   the global site footer below that.
+   ====================================================================== */
+
+/* --- Hero band -------------------------------------------------------- */
+.listing-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--band, var(--be-band-blush));
+  padding-block: clamp(44px, 7vw, 96px);
+}
+
+/* Faint wave texture, echoing the homepage hero. Soft-light keeps it a tonal
+   ripple in the band rather than a visible graphic. */
+.listing-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/hero-bg-pattern.svg') no-repeat right center / cover;
+  opacity: 0.35;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.listing-hero__inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+.listing-hero__heading {
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+  margin: 0;
+  color: var(--be-ink);
+  font: var(--type-display-2);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.listing-hero__icon {
+  height: 1.02em;
+  width: auto;
+  flex: none;
+  align-self: center;
+}
+
+/* Standfirst under the hero title. A step down from the serif display in scale
+   and weight, but kept crisp (high-ink) so it stays legible on the saturated
+   colour bands. The measure is held to a short editorial line so it lands as a
+   deliberate two-to-three-line block, and `balance` evens the ragged edge. */
+.listing-hero__desc {
+  max-width: 46ch;
+  margin: clamp(16px, 2.2vw, 24px) 0 0;
+  color: color-mix(in srgb, var(--be-ink) 88%, transparent);
+  font: 700 clamp(20px, 2vw, 28px) / 1.32 var(--font-sans);
+  letter-spacing: -0.01em;
+  /* Fixed narrow measure (not `balance`) so every subtitle fills to the same
+     width and wraps to ~3 lines, rather than short copy sitting wide on 2. */
+  text-wrap: pretty;
+}
+
+/* --- Page body -------------------------------------------------------- */
+.listing-body {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding: clamp(28px, 4vw, 48px) var(--page-gutter) clamp(56px, 8vw, 96px);
+}
+
+/* --- Controls: filters + search --------------------------------------- */
+/* Two columns: the tag filters flow in a flexible first column, the search box
+   holds a fixed second column, so the search never wraps under the pills. */
+.listing-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(260px, 28vw, 360px);
+  align-items: start;
+  gap: 16px 24px;
+  margin-bottom: clamp(24px, 3vw, 36px);
+}
+
+.listing-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.listing-filter {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 15px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-outline);
+  font: var(--type-nav);
+  font-size: 14px;
+  color: var(--be-ink);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background var(--hover-state-dur) var(--ease-out-quart),
+    border-color var(--hover-state-dur) var(--ease-out-quart),
+    color var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.listing-filter--active {
+  background: var(--be-ink);
+  border-color: var(--be-ink);
+  color: var(--be-paper);
+}
+
+@media (hover: hover) {
+  .listing-filter:not(.listing-filter--active):hover {
+    border-color: var(--be-ink);
+    background: var(--be-ink);
+    color: var(--be-paper);
+  }
+}
+
+@media (pointer: coarse) {
+  .listing-filter {
+    min-height: var(--touch-target);
+  }
+}
+
+/* Secondary control — kept quiet so the filter pills stay primary: a hairline
+   field on the page (no fill, no solid button) with a muted leading search icon
+   that doubles as submit. Sharpens only on focus. */
+.listing-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-hairline);
+  background: transparent;
+  width: 100%;
+  min-width: 0;
+  transition:
+    border-color var(--hover-state-dur) var(--ease-out-quart),
+    background var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.listing-search:focus-within {
+  border-color: var(--be-ink);
+  background: var(--be-white);
+}
+
+.listing-search__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font: var(--type-meta);
+  color: var(--be-ink);
+}
+
+.listing-search__input::placeholder {
+  color: var(--text-secondary);
+}
+
+.listing-search__input:focus {
+  outline: none;
+}
+
+/* Icon-only submit — no fill, no label. */
+.listing-search__submit {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--hover-state-dur) var(--ease-out-quart);
+}
+
+@media (hover: hover) {
+  .listing-search:hover {
+    border-color: var(--border-outline);
+  }
+  .listing-search__submit:hover {
+    color: var(--be-ink);
+  }
+}
+
+/* --- Count line ------------------------------------------------------- */
+/* Sits below the pager as a quiet footer count. */
+.listing-count {
+  margin: clamp(14px, 2vw, 20px) 0 0;
+  font: var(--type-meta);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* --- Grids ------------------------------------------------------------ */
+/* Mirrors the landing page's Insights grid: one column on phones, two on small
+   screens, four on desktop with the first card spanning two columns. Every card
+   keeps its image's own aspect ratio. `--lead` (the unfiltered first page)
+   enables the wide first card. */
+.listing-grid:not(.listing-grid--uniform) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(14px, 1.4vw, 24px);
+}
+
+/* Square corners on every listing card's media — the grid reads as one crisp
+   block (matching the homepage Insights grid). */
+.listing-grid .article-card__media {
+  border-radius: 0;
+}
+
+@media (min-width: 36em) {
+  .listing-grid:not(.listing-grid--uniform) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64em) {
+  .listing-grid:not(.listing-grid--uniform) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .listing-grid--lead > :first-child {
+    grid-column: span 2;
+  }
+}
+
+/* Resources are uniform square folder cards, so they use a regular grid. */
+.listing-grid--uniform {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+  gap: clamp(22px, 2.4vw, 36px);
+}
+
+.listing-empty {
+  margin: clamp(28px, 5vw, 44px) 0;
+  font: var(--type-body-lg);
+  color: var(--text-secondary);
+}
+
+/* --- Pager ------------------------------------------------------------ */
+.listing-pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: clamp(40px, 6vw, 72px);
+}
+
+.listing-pager__list {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.listing-pager__num,
+.listing-pager__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  font: var(--type-nav);
+  font-size: 15px;
+  color: var(--be-ink);
+  text-decoration: none;
+  transition: background var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.listing-pager__num--active {
+  background: var(--be-ink);
+  color: var(--be-paper);
+}
+
+@media (hover: hover) {
+  .listing-pager__num:not(.listing-pager__num--active):hover,
+  .listing-pager__arrow:not(.listing-pager__arrow--disabled):hover {
+    background: color-mix(in srgb, var(--be-ink) 9%, transparent);
+  }
+}
+
+.listing-pager__arrow--disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.listing-pager__gap {
+  padding: 0 2px;
+  color: var(--text-secondary);
+}
+
+/* --- Small screens ---------------------------------------------------- */
+@media (max-width: 47.999em) {
+  .listing-controls {
+    grid-template-columns: 1fr;
+  }
+}

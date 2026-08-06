@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Button, IconButton, Icon } from './ds'
 import { LocaleSwitcher } from './LocaleSwitcher'
 import { CATEGORIES, TAXONOMY, TAG_OPTIONS, categorySlug, tagSlug, type Category } from '@/lib/tags'
+import { RESOURCE_CATEGORIES, resourceCategorySlug } from '@/lib/resourceCategories'
 import {
   categoryLabel,
   localeHref,
@@ -72,6 +73,38 @@ function NavPanel({ category, locale, dict }: { category: Category; locale: Loca
             <li key={tag} style={{ '--i': i } as React.CSSProperties}>
               <Link className="nav-panel__tag" href={localeHref(locale, `/tag/${tagSlug(tag)}`)}>
                 <span>{tagLabel(tag, locale)}</span>
+                <Icon name="arrow-right" size={14} />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+/* Resources reveals the same panel, but of resource categories (Fonts, Icons…)
+   linking to the filtered listing rather than tag pages. */
+function ResourcesNavPanel({ locale, dict }: { locale: Locale; dict: Dictionary }) {
+  return (
+    <div className="nav-panel" id="nav-panel-resources">
+      <div className="shell nav-panel__inner">
+        <div className="nav-panel__rail">
+          <span className="nav-panel__title">{dict.nav.resources}</span>
+          <Link className="nav-panel__all" href={localeHref(locale, '/resources')}>
+            {dict.nav.viewAll}
+            <Icon name="arrow-right" size={16} />
+          </Link>
+        </div>
+
+        <ul className="nav-panel__tags">
+          {RESOURCE_CATEGORIES.map((category, i) => (
+            <li key={category} style={{ '--i': i } as React.CSSProperties}>
+              <Link
+                className="nav-panel__tag"
+                href={localeHref(locale, `/resources?cat=${resourceCategorySlug(category)}`)}
+              >
+                <span>{category}</span>
                 <Icon name="arrow-right" size={14} />
               </Link>
             </li>
@@ -197,7 +230,8 @@ function Drawer({ onClose, returnFocusTo, locale, dict }: DrawerProps) {
 
 export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const [drawerOpen, setDrawerOpen] = React.useState(false)
-  const [openCategory, setOpenCategory] = React.useState<Category | null>(null)
+  // The open panel: a category, or Resources (its own panel of resource kinds).
+  const [openCategory, setOpenCategory] = React.useState<Category | 'resources' | null>(null)
   const toggleRef = React.useRef<HTMLButtonElement>(null)
   const navRef = React.useRef<HTMLDivElement>(null)
   const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -209,7 +243,7 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
     }
   }
 
-  const scheduleOpen = (category: Category) => {
+  const scheduleOpen = (category: Category | 'resources') => {
     clearTimer()
     timer.current = setTimeout(() => setOpenCategory(category), OPEN_DELAY)
   }
@@ -269,12 +303,17 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
               )
             })}
 
-            {/* Resources has no sub-tags — a plain link, no panel. */}
+            {/* Resources reveals a panel of resource categories, like the others. */}
             <Link
-              className="site-nav__link"
+              className={['site-nav__link', openCategory === 'resources' ? 'is-open' : '']
+                .filter(Boolean)
+                .join(' ')}
               href={localeHref(locale, '/resources')}
-              onMouseEnter={scheduleClose}
-              onFocus={closeNow}
+              aria-expanded={openCategory === 'resources'}
+              aria-controls="nav-panel-resources"
+              onMouseEnter={() => scheduleOpen('resources')}
+              onFocus={() => setOpenCategory('resources')}
+              onClick={closeNow}
             >
               {dict.nav.resources}
             </Link>
@@ -302,7 +341,11 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
 
         {openCategory && (
           <div onMouseEnter={clearTimer} onMouseLeave={scheduleClose}>
-            <NavPanel category={openCategory} locale={locale} dict={dict} />
+            {openCategory === 'resources' ? (
+              <ResourcesNavPanel locale={locale} dict={dict} />
+            ) : (
+              <NavPanel category={openCategory} locale={locale} dict={dict} />
+            )}
           </div>
         )}
       </header>

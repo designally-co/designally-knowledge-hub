@@ -28,7 +28,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   const items = await getRecentArticles(10, locale)
   const recentArticle = items[0]
   const caseStudies = await getArticlesByCategory('Design', 12, locale)
-  const insights = await getArticlesByCategory('Creative Things', 12, locale)
+  const insights = await getArticlesByCategory('Insights', 12, locale)
   const workflows = await getArticlesByCategory('Design with AI', 4, locale)
   const resources = await getDownloadableFiles(7, locale)
 
@@ -51,7 +51,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
 
           <div className="home-topics__list">
             <nav className="home-topics__links" aria-label={dict.home.topicsLabel}>
-              {TAXONOMY['Creative Things'].map((topic) => (
+              {TAXONOMY['Insights'].slice(0, 8).map((topic) => (
                 <TopicPill
                   className="home-topics__pill"
                   href={localeHref(locale, `/tag/${tagSlug(topic)}`)}
@@ -63,7 +63,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
               ))}
               <TopicPill
                 className="home-topics__pill"
-                href={localeHref(locale, '/category/creative-things')}
+                href={localeHref(locale, '/category/insights')}
                 size="md"
               >
                 {dict.home.allTopics}
@@ -123,7 +123,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         items={insights}
         title={dict.home.insights}
         bannerLabel={dict.home.seeAllInsights}
-        bannerHref={localeHref(locale, '/category/creative-things')}
+        bannerHref={localeHref(locale, '/category/insights')}
       />
 
       <InsightsVideoPromo
