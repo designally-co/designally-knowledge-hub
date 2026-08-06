@@ -139,9 +139,13 @@
   flex-wrap: wrap;
 }
 
+/* Ink at 78% rather than --text-secondary. The secondary grey was set when this
+   band was always the pale tan; against the category colours it drops to about
+   2.4:1, which fails at any size. Mixing down from ink instead keeps the line
+   quieter than the title while holding 6.3:1 or better on every band. */
 .article__meta {
   font: var(--type-meta);
-  color: var(--text-secondary);
+  color: color-mix(in srgb, var(--be-ink) 78%, transparent);
   margin: 0;
 }
 
