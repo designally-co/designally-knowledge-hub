@@ -109,6 +109,14 @@ export type Dictionary = {
     format: string
     backToResources: string
     notFound: string
+    /** Heading above the file list. */
+    filesHeading: string
+    /** Shown when an admin has published a resource with nothing attached. */
+    noFiles: string
+    /** Sub-line for the empty state. */
+    noFilesNote: string
+    /** Related row heading. */
+    moreLikeThis: string
   }
   listing: {
     home: string
@@ -213,6 +221,10 @@ const en: Dictionary = {
     format: 'Format',
     backToResources: 'All resources',
     notFound: 'Resource not found',
+    filesHeading: 'In this download',
+    noFiles: 'No files attached yet',
+    noFilesNote: 'This resource is published but nothing has been uploaded to it. Check back shortly.',
+    moreLikeThis: 'More like this',
   },
   listing: {
     home: 'Home',
@@ -315,6 +327,10 @@ const th: Dictionary = {
     format: 'รูปแบบไฟล์',
     backToResources: 'รีซอร์สทั้งหมด',
     notFound: 'ไม่พบรีซอร์ส',
+    filesHeading: 'ไฟล์ในชุดนี้',
+    noFiles: 'ยังไม่มีไฟล์แนบ',
+    noFilesNote: 'รีซอร์สนี้เผยแพร่แล้วแต่ยังไม่ได้อัปโหลดไฟล์ กรุณากลับมาตรวจสอบอีกครั้ง',
+    moreLikeThis: 'รีซอร์สที่คล้ายกัน',
   },
   listing: {
     home: 'หน้าแรก',

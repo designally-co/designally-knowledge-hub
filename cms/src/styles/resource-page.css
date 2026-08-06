@@ -1,56 +1,54 @@
 /* --- Resource detail page ------------------------------------------------
 
    The counterpart to the resource card. Resources carry no uploaded imagery, so
-   the hero is the same category preset the card uses — one big coloured panel
-   with the title reversed out of it. Arriving here should feel like the card
-   opening, not like a different page design.                                */
+   the artwork is the same folder the card uses (ResourceFigure) — arriving here
+   is that card opening, not a different page design.
+
+   One grid holds the whole page: a sticky rail carrying the artwork and the
+   files, and a reading column beside it. It was three misaligned blocks before
+   — artwork left, title far right, prose back at the left gutter — which left
+   an L-shaped hole down the middle of the page and pushed the download out of
+   view exactly when someone was reading the description of it.
+
+   No colour band: the article page earns one because its cover overflows the
+   band's edge and needs a field to sit in. A resource has no cover, so a band
+   here would only compete with artwork that is already a slab of category
+   colour.                                                                    */
 
 .resource-page {
-  padding-block: clamp(24px, 4vw, 48px) clamp(64px, 9vw, 120px);
+  padding-bottom: 0;
 }
 
-.resource-page__back {
-  display: inline-block;
-  font: var(--type-meta);
-  color: var(--text-secondary);
-  text-decoration: none;
-  margin-bottom: clamp(20px, 3vw, 36px);
-}
-
-.resource-page__back:hover,
-.resource-page__back:focus-visible {
-  color: var(--be-ink);
-}
-
-.resource-page__head {
+.resource-layout {
+  padding-block: clamp(28px, 4.5vw, 64px) clamp(40px, 6vw, 80px);
   display: grid;
-  gap: clamp(24px, 4vw, 56px);
+  gap: clamp(28px, 4vw, 64px);
   align-items: start;
 }
 
-/* Two columns once there is room for the panel to sit beside the copy rather
-   than push it a screen down. */
-@media (min-width: 52em) {
-  .resource-page__head {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+@media (min-width: 60em) {
+  .resource-layout {
+    /* The rail is exactly the artwork's width, so the two columns share one
+       clean edge instead of the artwork floating inside a wider track. */
+    grid-template-columns: 340px minmax(0, 1fr);
+  }
+
+  .resource-aside {
+    position: sticky;
+    top: 96px;
   }
 }
 
-.resource-page__art {
-  aspect-ratio: 1 / 1;
-  border-radius: 24px;
-  background: var(--doc-color, var(--be-gold));
-  padding: clamp(22px, 6%, 36px);
-  display: flex;
-  align-items: flex-start;
-  container-type: inline-size;
+.resource-aside {
+  min-width: 0;
 }
 
-.resource-page__art-title {
-  font: 700 clamp(24px, 11cqw, 46px) / 1.14 var(--font-sans);
-  color: #fff;
-  letter-spacing: -0.015em;
-  max-width: 92%;
+.resource-aside__art {
+  width: 100%;
+}
+
+.resource-main {
+  min-width: 0;
 }
 
 .resource-page__tags {
@@ -65,50 +63,195 @@
   color: var(--be-ink);
   letter-spacing: -0.02em;
   margin: 0;
+  text-wrap: pretty;
 }
 
-.resource-page__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: clamp(20px, 3vw, 30px);
-}
-
-/* Definition rows rather than a table: there are only ever two or three, and
-   they should wrap on a phone instead of scrolling sideways. */
-.resource-page__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(16px, 3vw, 40px);
-  margin: clamp(24px, 3.5vw, 36px) 0 0;
-}
-
-.resource-page__meta div {
-  min-width: 0;
-}
-
-.resource-page__meta dt {
+.resource-page__date {
   font: var(--type-meta);
-  color: var(--text-secondary);
-  margin: 0 0 4px;
+  color: color-mix(in srgb, var(--be-ink) 68%, transparent);
+  margin: clamp(10px, 1.5vw, 14px) 0 0;
 }
 
-.resource-page__meta dd {
-  font: var(--type-body);
+/* --- Download card ------------------------------------------------------
+   The object the page exists to hand over: a heading that names the act, the
+   files, and the terms they come under — one card rather than a panel with the
+   licence floating below it. */
+.resource-dl {
+  margin-top: clamp(16px, 2vw, 22px);
+  padding: clamp(15px, 2vw, 18px);
+  border-radius: var(--radius-card);
+  background: var(--be-white);
+  box-shadow: var(--shadow-card);
+}
+
+.resource-dl__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.resource-dl__title {
+  font: var(--type-title-sm);
+  color: var(--be-ink);
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+}
+
+.resource-dl__count {
+  flex: none;
+  font: var(--type-meta);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.resource-dl__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Outlined, not filled. An outline reads as pressable on its own, and several
+   of them stacked in a narrow rail stay quiet next to the artwork — which a
+   column of solid ink pills did not. */
+.resource-dl__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px 9px 9px;
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  color: var(--be-ink);
+  transition:
+    border-color var(--hover-state-dur) var(--ease-out-quart),
+    background var(--hover-state-dur) var(--ease-out-quart);
+}
+
+/* The file's own type, so a row is identifiable before it is read. The tile is
+   drawn art (FileTypeIcon), so it carries its own colour — nothing to inherit. */
+.resource-dl__ftype {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filetype { display: block; }
+
+.resource-dl__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font: var(--type-meta);
+  color: var(--be-ink);
+  overflow-wrap: anywhere;
+}
+
+.resource-dl__disc {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: var(--be-ink);
+  background: color-mix(in srgb, var(--be-ink) 7%, transparent);
+  transition:
+    background var(--hover-state-dur) var(--ease-out-quart),
+    color var(--hover-state-dur) var(--ease-out-quart),
+    transform var(--hover-state-dur) var(--ease-out-quart);
+}
+
+@media (hover: hover) {
+  .resource-dl__row:hover {
+    opacity: 1;
+    border-color: var(--be-ink);
+    background: color-mix(in srgb, var(--be-ink) 4%, transparent);
+  }
+
+  /* The glyph fills and moves the way the file does. */
+  .resource-dl__row:hover .resource-dl__disc {
+    background: var(--be-ink);
+    color: var(--be-paper);
+    transform: translateY(2px);
+  }
+}
+
+.resource-dl__row:focus-visible {
+  outline: 2px solid var(--be-ink);
+  outline-offset: 2px;
+}
+
+.resource-dl__row:active { transform: scale(0.995); }
+
+@media (pointer: coarse) {
+  .resource-dl__row { min-height: var(--touch-target); }
+}
+
+/* Terms, inside the card and hairline-separated from the files. */
+.resource-dl__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-hairline);
+}
+
+.resource-dl__facts div { min-width: 0; }
+
+.resource-dl__facts dt {
+  font: var(--type-meta);
+  font-size: 11.5px;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 2px;
+}
+
+.resource-dl__facts dd {
+  font: var(--type-meta);
   color: var(--be-ink);
   margin: 0;
 }
 
+.resource-dl--empty {
+  background: color-mix(in srgb, var(--be-ink) 4%, transparent);
+  box-shadow: none;
+}
+
+.resource-dl__note {
+  font: var(--type-meta);
+  color: var(--text-secondary);
+  margin: 6px 0 0;
+}
+
+/* --- Prose ------------------------------------------------------------- */
 .resource-page__body {
-  margin-top: clamp(48px, 7vw, 88px);
-  max-width: 68ch;
+  margin-top: clamp(28px, 4vw, 44px);
+  max-width: 64ch;
+}
+
+.resource-page__label {
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 clamp(12px, 1.6vw, 16px);
 }
 
 .resource-page__body p {
-  font: var(--type-body);
+  font: var(--type-body-lg);
   color: var(--be-ink);
   margin: 0 0 1em;
 }
+
+.resource-page__body p:last-child { margin-bottom: 0; }
 
 .resource-page__section-title {
   font: var(--type-title-md);
@@ -117,6 +260,9 @@
   margin: 0 0 clamp(16px, 2.5vw, 24px);
 }
 
+/* Related sits full width below the grid, with a rule to close the reading
+   column off rather than letting the two run together. */
 .resource-page__more {
-  margin-top: clamp(56px, 8vw, 104px);
+  padding-block: clamp(40px, 6vw, 72px) clamp(56px, 8vw, 96px);
+  border-top: 1px solid var(--border-hairline);
 }

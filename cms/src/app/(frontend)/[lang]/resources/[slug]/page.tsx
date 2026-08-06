@@ -1,22 +1,27 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-import { ResourceCard, Tag } from '@/components/ds'
+import { FileTypeIcon, Icon, ResourceCard, ResourceFigure, Tag } from '@/components/ds'
+import { NewsletterCta } from '@/components/NewsletterCta'
 import {
   getAllResourceSlugs,
   getDownloadableFiles,
   getResourceBySlug,
 } from '@/lib/resources'
-import { getDictionary, isLocale, localeHref, LOCALES, type Locale } from '@/lib/i18n'
+import { getDictionary, isLocale, LOCALES, type Locale } from '@/lib/i18n'
 
 /**
  * Resource detail page. SSG per (locale, slug); ISR revalidates; dynamicParams
  * lets a newly published slug render on first request and then cache.
  *
  * There is no cover image here and there never will be — resources take no
- * uploads. The hero is the category preset (colour + glyph), the same artwork
- * the card in the grid uses, so arriving on this page feels like the card
- * opening rather than a different design.
+ * uploads. The hero is the folder artwork the grid card uses (ResourceFigure),
+ * on the same lilac band the listing sits on, so arriving feels like that card
+ * opening rather than landing on a different design.
+ *
+ * The page exists to hand over files, so the download panel is the subject: it
+ * sits beside the artwork, above the prose, and names every file rather than
+ * repeating one unlabelled button per attachment.
  */
 export const revalidate = 60
 export const dynamicParams = true
@@ -57,86 +62,117 @@ export default async function ResourcePage({ params }: { params: Promise<Params>
     .filter((r) => r.slug !== resource.slug && r.category === resource.category)
     .slice(0, 3)
 
+  const files = resource.files
+  // No format row: every file is listed by name below, extension and all, so
+  // stating the format again only repeats what the reader can already see.
+  const facts = [
+    resource.fileSize && { label: dict.resources.fileSize, value: resource.fileSize },
+    resource.licence && { label: dict.resources.licence, value: resource.licence },
+  ].filter(Boolean) as { label: string; value: string }[]
+
   return (
-    <div className="shell resource-page">
-      <a className="resource-page__back" href={localeHref(locale, '/resources')}>
-        ← {dict.resources.backToResources}
-      </a>
+    <div className="resource-page">
+      <div className="shell resource-layout">
+        {/* The rail holds the artwork and the files. It is sticky, so the
+            download stays reachable while the description is read — the whole
+            reason someone opened this page should never scroll away. */}
+        <aside className="resource-aside">
+          <ResourceFigure
+            className="resource-aside__art"
+            title={resource.title}
+            color={resource.color}
+            glyph={resource.glyph}
+          />
 
-      <header className="resource-page__head">
-        <div
-          className="resource-page__art"
-          style={{ '--doc-color': resource.color } as React.CSSProperties}
-          aria-hidden="true"
-        >
-          <span className="resource-page__art-title">{resource.title}</span>
-        </div>
+          {/* One card holds the whole transaction: what you get, the files
+              themselves, and the terms. The facts used to sit outside it, which
+              left the licence describing a download it wasn't attached to. */}
+          {files.length > 0 ? (
+            <div className="resource-dl">
+              <div className="resource-dl__head">
+                <h2 className="resource-dl__title">{dict.resources.download}</h2>
+                {files.length > 1 && (
+                  <span className="resource-dl__count">
+                    {files.length} {dict.resources.downloads.toLowerCase()}
+                  </span>
+                )}
+              </div>
 
-        <div className="resource-page__intro">
+              <ul className="resource-dl__list">
+                {files.map((f) => (
+                  <li key={f.url}>
+                    {/* The row is the control, outlined rather than filled: it
+                        has to read as pressable without stacking into a wall of
+                        black beside the artwork. */}
+                    <a
+                      className="resource-dl__row"
+                      href={f.url}
+                      download={f.filename}
+                      rel="nofollow"
+                      aria-label={`${dict.resources.download}: ${f.filename}`}
+                    >
+                      <span className="resource-dl__ftype">
+                        <FileTypeIcon filename={f.filename} />
+                      </span>
+                      <span className="resource-dl__name">{f.filename}</span>
+                      <span className="resource-dl__disc" aria-hidden="true">
+                        <Icon name="download" size={15} strokeWidth={1.9} />
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+
+              {facts.length > 0 && (
+                <dl className="resource-dl__facts">
+                  {facts.map((f) => (
+                    <div key={f.label}>
+                      <dt>{f.label}</dt>
+                      <dd>{f.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
+            </div>
+          ) : (
+            /* Published with nothing attached. Saying so is better than a
+               download page that silently shows no way to download. */
+            <div className="resource-dl resource-dl--empty">
+              <h2 className="resource-dl__title">{dict.resources.noFiles}</h2>
+              <p className="resource-dl__note">{dict.resources.noFilesNote}</p>
+            </div>
+          )}
+
+        </aside>
+
+        <div className="resource-main">
           {resource.category && (
             <div className="resource-page__tags">
               <Tag>{resource.category}</Tag>
             </div>
           )}
           <h1 className="resource-page__title">{resource.title}</h1>
+          {resource.date && <p className="resource-page__date">{resource.date}</p>}
 
-          {resource.files.length > 0 && (
-            <div className="resource-page__actions">
-              {resource.files.map((f) => (
-                <a
-                  key={f.url}
-                  className="btn btn--primary"
-                  href={f.url}
-                  download={f.filename}
-                  rel="nofollow"
-                >
-                  {dict.resources.download}
-                  {resource.files.length > 1 ? ` · ${f.format}` : ''}
-                </a>
-              ))}
-            </div>
+          {resource.description && (
+            <section className="resource-page__body">
+              <h2 className="resource-page__label">{dict.resources.aboutThis}</h2>
+              {resource.description
+                .split(/\n{2,}/)
+                .map((para) => para.trim())
+                .filter(Boolean)
+                .map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+            </section>
           )}
-
-          <dl className="resource-page__meta">
-            {resource.formats.length > 0 && (
-              <div>
-                <dt>{dict.resources.format}</dt>
-                <dd>{resource.formats.join(', ')}</dd>
-              </div>
-            )}
-            {resource.fileSize && (
-              <div>
-                <dt>{dict.resources.fileSize}</dt>
-                <dd>{resource.fileSize}</dd>
-              </div>
-            )}
-            {resource.licence && (
-              <div>
-                <dt>{dict.resources.licence}</dt>
-                <dd>{resource.licence}</dd>
-              </div>
-            )}
-          </dl>
         </div>
-      </header>
-
-      {resource.description && (
-        <section className="resource-page__body">
-          <h2 className="resource-page__section-title">{dict.resources.aboutThis}</h2>
-          {resource.description
-            .split(/\n{2,}/)
-            .map((para) => para.trim())
-            .filter(Boolean)
-            .map((para, i) => (
-              <p key={i}>{para}</p>
-            ))}
-        </section>
-      )}
+      </div>
 
       {others.length > 0 && (
-        <section className="resource-page__more">
-          <h2 className="resource-page__section-title">{dict.resources.title}</h2>
-          <div className="card-grid">
+        <section className="shell resource-page__more">
+          <h2 className="resource-page__section-title">{dict.resources.moreLikeThis}</h2>
+          <div className="listing-grid listing-grid--uniform">
             {others.map((r) => (
               <ResourceCard
                 key={r.id}
@@ -152,6 +188,8 @@ export default async function ResourcePage({ params }: { params: Promise<Params>
           </div>
         </section>
       )}
+
+      <NewsletterCta dict={dict} />
     </div>
   )
 }

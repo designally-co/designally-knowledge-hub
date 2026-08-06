@@ -8,6 +8,8 @@ export { Tag } from './Tag'
 export { TopicPill } from './TopicPill'
 export { ArticleCard } from './ArticleCard'
 export { ResourceCard } from './ResourceCard'
+export { ResourceFigure, type ResourceGlyphName } from './ResourceFigure'
+export { FileTypeIcon, fileKindFor } from './FileTypeIcon'
 export { SectionHeading } from './SectionHeading'
 
 // Behaviour, reusable across content types (still plain JS, unused until Phase 2).

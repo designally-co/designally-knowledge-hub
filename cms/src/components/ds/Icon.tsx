@@ -1,5 +1,6 @@
 import React from 'react'
 import {
+  ArrowDownToLine,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -18,6 +19,7 @@ import {
    the glyphs the site uses are imported, so the bundle stays small — add to
    MAP when you introduce a new icon. */
 const MAP: Record<string, LucideIcon> = {
+  download: ArrowDownToLine,
   'chevron-down': ChevronDown,
   'chevron-left': ChevronLeft,
   'chevron-right': ChevronRight,
