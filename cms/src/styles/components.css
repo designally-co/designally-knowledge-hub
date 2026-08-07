@@ -392,11 +392,17 @@
   border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
+/* The panel is inset from the folder in container units, so the cover keeps its
+   share of the tile at any size. A flat 16px was ~5% of the detail page's hero
+   but ~10% of a 161px card, which is why the folder looked right on a phone
+   while the cover inside it looked shrunken. `min()` holds the old value at the
+   sizes where it was already correct and only steps down on small tiles. */
 .resource-card__doc {
+  --doc-inset: min(6cqw, 16px);
   position: absolute;
-  inset: 16px 16px auto 16px;
+  inset: var(--doc-inset) var(--doc-inset) auto var(--doc-inset);
   aspect-ratio: 1 / 1;
-  border-radius: 18px;
+  border-radius: min(7cqw, 18px);
   background: var(--doc-color, var(--be-gold));
   padding: clamp(18px, 6.5%, 26px) clamp(16px, 6%, 24px) 0;
 }
