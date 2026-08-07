@@ -3,9 +3,10 @@
 import React from 'react'
 import Link from 'next/link'
 
-import { Button, IconButton, Icon } from './ds'
+import { Button, Icon } from './ds'
 import { LocaleSwitcher } from './LocaleSwitcher'
-import { CATEGORIES, TAXONOMY, TAG_OPTIONS, categorySlug, tagSlug, type Category } from '@/lib/tags'
+import { HeaderSearch, DrawerSearch } from './HeaderSearch'
+import { CATEGORIES, TAXONOMY, categorySlug, tagSlug, type Category } from '@/lib/tags'
 import { RESOURCE_CATEGORIES, resourceCategorySlug } from '@/lib/resourceCategories'
 import {
   categoryLabel,
@@ -32,8 +33,6 @@ const WORDMARK = 'Designally'
 function categoryAnchor(category: Category, locale: Locale): string {
   return localeHref(locale, `/category/${categorySlug(category)}`)
 }
-
-const DRAWER_TOPICS = TAG_OPTIONS.slice(0, 8)
 
 // Hover intent. Opening is near-instant; closing lags so the cursor can cross
 // the gap between the trigger row and the panel without dismissing it.
@@ -183,42 +182,43 @@ function Drawer({ onClose, returnFocusTo, locale, dict }: DrawerProps) {
           </button>
         </div>
 
-        <nav aria-label={dict.nav.menu}>
-          <ul className="drawer__list">
-            {CATEGORIES.map((item) => (
-              <li key={item}>
-                <Link className="drawer__link" href={categoryAnchor(item, locale)} onClick={onClose}>
-                  {categoryLabel(item, locale)}
+        {/* Search and the language switcher live here below the nav breakpoint
+            rather than in the bar: the phone header has room for the wordmark,
+            Subscribe and the menu, and this is the menu. */}
+        <DrawerSearch locale={locale} dict={dict} onNavigate={onClose}>
+          <nav aria-label={dict.nav.menu}>
+            <ul className="drawer__list">
+              {CATEGORIES.map((item) => (
+                <li key={item}>
+                  <Link
+                    className="drawer__link"
+                    href={categoryAnchor(item, locale)}
+                    onClick={onClose}
+                  >
+                    {categoryLabel(item, locale)}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link
+                  className="drawer__link"
+                  href={localeHref(locale, '/resources')}
+                  onClick={onClose}
+                >
+                  {dict.nav.resources}
                 </Link>
               </li>
-            ))}
-            <li>
-              <Link className="drawer__link" href={localeHref(locale, '/resources')} onClick={onClose}>
-                {dict.nav.resources}
-              </Link>
-            </li>
-          </ul>
-        </nav>
+            </ul>
+          </nav>
 
-        <p className="drawer__label">{dict.nav.topics}</p>
-        <div className="drawer__topics">
-          {DRAWER_TOPICS.map((t) => (
-            <Link
-              key={t}
-              className="topic-chip"
-              href={localeHref(locale, `/tag/${tagSlug(t)}`)}
-              onClick={onClose}
-            >
-              {tagLabel(t, locale)}
-            </Link>
-          ))}
-        </div>
+          <Button href="#newsletter" className="drawer__cta" onClick={onClose}>
+            {dict.nav.subscribe}
+          </Button>
 
-        <Button href={localeHref(locale, '/')} className="drawer__cta" onClick={onClose}>
-          {dict.nav.subscribe}
-        </Button>
-
-        <LocaleSwitcher locale={locale} className="drawer__locale" />
+          {/* Opens downward, into room the drawer makes for it — upward it would
+              open straight across the Subscribe button above. */}
+          <LocaleSwitcher locale={locale} className="drawer__locale" />
+        </DrawerSearch>
       </div>
     </>
   )
@@ -319,13 +319,16 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
             </Link>
           </nav>
 
+          {/* Left to right: search, Subscribe, language. */}
           <div className="site-header__actions">
-            <LocaleSwitcher locale={locale} className="site-header__locale" />
-            <Button size="sm" href={localeHref(locale, '/')} className="site-header__subscribe">
+            <HeaderSearch locale={locale} dict={dict} />
+            {/* Subscribe scrolls to the newsletter band rather than routing:
+                every content page carries one, and there is no provider behind
+                the form yet to send anyone to. */}
+            <Button size="sm" href="#newsletter" className="site-header__subscribe">
               {dict.nav.subscribe}
             </Button>
-            {/* TODO: wire search once a search route exists. */}
-            <IconButton icon="search" variant="bare" size="sm" label="Search" />
+            <LocaleSwitcher locale={locale} className="site-header__locale" />
             <button
               type="button"
               className="menu-toggle"

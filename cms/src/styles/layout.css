@@ -233,50 +233,129 @@
   .site-header__actions { gap: 16px; }
 }
 
-/* Language switcher — a compact two-segment toggle. Quiet by design: a light
-   track holds a raised white chip on the active locale (so it doesn't read as a
-   second dark control beside Subscribe); the inactive one is muted. */
+/* Language switcher — the current locale and a caret, opening a small menu.
+   No track and no filled chip: with only two languages a segmented toggle
+   spends the width of both to say what one word says, and reads as a second
+   control competing with Subscribe. Quiet until asked. */
 .locale-switcher {
+  position: relative;
   display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 3px;
-  border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--be-ink) 7%, transparent);
 }
 
-.locale-switcher__link {
+.locale-switcher__trigger {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-width: 32px;
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
+  gap: 5px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
   font: 700 12px / 1 var(--font-sans);
   letter-spacing: 0.03em;
   color: var(--text-secondary);
-  text-decoration: none;
-  transition:
-    background var(--hover-state-dur) var(--ease-out-quart),
-    color var(--hover-state-dur) var(--ease-out-quart);
-}
-
-.locale-switcher__link.is-active {
-  background: var(--be-white);
-  color: var(--be-ink);
-  box-shadow: 0 1px 2px rgba(18, 16, 13, 0.14);
+  transition: color var(--hover-state-dur) var(--ease-out-quart);
 }
 
 @media (hover: hover) {
-  .locale-switcher__link:not(.is-active):hover {
+  .locale-switcher__trigger:hover {
     color: var(--be-ink);
   }
 }
 
-@media (pointer: coarse) {
-  .locale-switcher__link {
-    min-height: 34px;
+.locale-switcher__trigger[aria-expanded='true'] {
+  color: var(--be-ink);
+}
+
+/* The caret points at where the menu went. */
+.locale-switcher__caret {
+  transition: transform var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.locale-switcher__trigger[aria-expanded='true'] .locale-switcher__caret {
+  transform: rotate(180deg);
+}
+
+.locale-switcher--up .locale-switcher__trigger[aria-expanded='true'] .locale-switcher__caret {
+  transform: rotate(-180deg);
+}
+
+.locale-switcher__menu {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 136px;
+  padding: 6px;
+  border-radius: 14px;
+  background: var(--be-white);
+  border: 1px solid var(--border-hairline);
+  box-shadow: var(--shadow-card);
+  animation: locale-menu-in 0.16s var(--ease-out-quart) both;
+}
+
+/* Set when a right-anchored menu would have opened off the left of the screen —
+   see the measurement in LocaleSwitcher. */
+.locale-switcher__menu--start {
+  right: auto;
+  left: 0;
+}
+
+/* Opens away from the edge it sits against — the footer and the foot of the
+   drawer have nothing below them to open into. */
+.locale-switcher--up .locale-switcher__menu {
+  top: auto;
+  bottom: calc(100% + 8px);
+  animation-name: locale-menu-in-up;
+}
+
+@keyframes locale-menu-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes locale-menu-in-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.locale-switcher__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  font: 600 13px / 1 var(--font-sans);
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: background var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.locale-switcher__option.is-active {
+  color: var(--be-ink);
+}
+
+@media (hover: hover) {
+  .locale-switcher__option:hover {
+    color: var(--be-ink);
+    background: color-mix(in srgb, var(--be-ink) 6%, transparent);
   }
+}
+
+.locale-switcher__option:focus-visible {
+  outline: 2px solid var(--be-ink);
+  outline-offset: -2px;
+}
+
+@media (pointer: coarse) {
+  .locale-switcher__trigger { min-height: var(--touch-target); }
+  .locale-switcher__option { min-height: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .locale-switcher__menu { animation: none; }
+  .locale-switcher__caret { transition: none; }
 }
 
 /* The Subscribe button is the primary conversion control; it survives at
@@ -383,22 +462,21 @@
   }
 }
 
-.drawer__label {
-  font: var(--type-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin: 0 0 16px;
+.drawer__cta { width: 100%; margin-top: 24px; }
+
+/* Pulled left by the trigger's own padding, so the label lines up with the nav
+   above it. Which edge its menu hangs from is measured, not declared. */
+.drawer__locale {
+  margin-top: 24px;
+  margin-left: -8px;
 }
 
-.drawer__topics {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 32px;
+/* Last thing in the drawer, and its menu opens down into space the drawer does
+   not otherwise have — so the drawer grows while the menu is open rather than
+   clipping it against its own scroll edge. */
+.drawer:has(.drawer__locale .locale-switcher__menu) {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 128px);
 }
-
-.drawer__cta { width: 100%; }
 
 /* --- Footer ------------------------------------------------------------ */
 
@@ -406,8 +484,30 @@
    mural shows through behind the tagline and the columns sit on near-solid ochre. */
 .site-footer {
   position: relative;
+  /* On a wide, short footer the band is taller than the footer and hung past
+     the end of the page, adding dead scroll below it. What it loses to the clip
+     is the part the wash has already turned to flat ochre. */
+  overflow: hidden;
   color: var(--text-on-dark);
   background-color: #a76a00;
+}
+
+/* The mural, always at its own proportions. It used to be a `cover` background
+   on the footer itself, which filled the box by cropping: on a phone — a tall,
+   narrow footer — that scaled the image to the height and cut away four fifths
+   of its width, leaving a zoomed sliver of the room.
+
+   It is a band with the source's aspect-ratio instead, so the whole scene reads
+   at every width and the footer's own height stops mattering. The wash rides on
+   the band rather than on the footer, which is what makes the bottom edge
+   disappear: its 60% stop is 60% of the mural, so the image has resolved to the
+   base ochre before it ends. Sized to the footer, that stop landed at 22% of
+   the mural on a phone and left a visible cut. */
+.site-footer::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  aspect-ratio: 1200 / 807;
   background-image: linear-gradient(
       to bottom,
       rgba(108, 69, 0, 0.6) 0%,
@@ -417,9 +517,11 @@
   background-size: cover;
   background-position: center top;
   background-repeat: no-repeat;
+  pointer-events: none;
 }
 
 .site-footer__inner {
+  position: relative;
   padding-top: clamp(72px, 12vw, 150px);
   padding-bottom: calc(40px + env(safe-area-inset-bottom));
 }
@@ -575,14 +677,223 @@
   margin: 0;
 }
 
+/* On the ochre ground the trigger is light-on-dark; the menu it opens stays a
+   white card, so the options read the same everywhere they appear. */
 .site-footer__locale {
+  flex: none;
+}
+
+.site-footer__locale .locale-switcher__trigger {
+  color: color-mix(in srgb, var(--text-on-dark) 80%, transparent);
+  font-size: 13px;
+}
+
+@media (hover: hover) {
+  .site-footer__locale .locale-switcher__trigger:hover {
+    color: var(--text-on-dark);
+  }
+}
+
+.site-footer__locale .locale-switcher__trigger[aria-expanded='true'] {
+  color: var(--text-on-dark);
+}
+
+/* The base row keeps the switcher hard right at every width the site supports,
+   so the menu stays right-anchored — it opens inward, away from the edge. */
+
+/* Search lives in the actions cluster but belongs to the nav set, so it wears
+   .site-nav__link and only needs its glyph centred. The inherited ::after spans
+   the link box, which for an icon-only link is the glyph's own width — a short
+   rule that wipes in exactly like the four beside it. */
+.site-header__search {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (pointer: coarse) {
+  .site-header__search {
+    min-height: var(--touch-target);
+    min-width: var(--touch-target);
+  }
+}
+
+/* --- Header search ------------------------------------------------------
+   The glyph opens into a field in place and its findings drop into a panel
+   under the header — the same gesture the category links make, so search is
+   part of the masthead rather than a page you get sent to. */
+.header-search {
+  display: flex;
+  align-items: center;
+}
+
+/* Only the field is a bordered object; the closed state is the bare nav glyph,
+   which is why nothing here restyles .site-header__search. */
+.header-search__field {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  width: clamp(190px, 34vw, 320px);
+  padding: 7px 8px 7px 13px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--be-ink);
   background: var(--be-white);
+  animation: header-search-in 0.24s var(--ease-out-quart) both;
+}
+
+@keyframes header-search-in {
+  from { opacity: 0; transform: scaleX(0.88); transform-origin: right center; }
+  to { opacity: 1; transform: scaleX(1); }
+}
+
+.header-search__glyph { color: var(--text-secondary); flex: none; }
+
+.header-search__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font: var(--type-meta);
   color: var(--be-ink);
-  border-radius: 10px;
-  padding: 8px 14px;
-  font: 700 14px/1 var(--font-sans);
+}
+
+.header-search__input::placeholder { color: var(--text-secondary); }
+.header-search__input:focus { outline: none; }
+
+.header-search__close {
   flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color var(--hover-state-dur) var(--ease-out-quart);
+}
+
+@media (hover: hover) {
+  .header-search__close:hover { color: var(--be-ink); }
+}
+
+/* Full-bleed under the header, matching .nav-panel. */
+.search-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  background: var(--surface-raised);
+  border-top: 1px solid var(--border-hairline);
+  border-bottom: 1px solid var(--border-hairline);
+  box-shadow: var(--shadow-card);
+  animation: nav-panel-in 0.24s var(--ease-out-quart) both;
+  max-height: min(70vh, 560px);
+  overflow-y: auto;
+}
+
+.search-panel__inner {
+  display: grid;
+  gap: clamp(20px, 3vw, 36px);
+  padding-block: clamp(20px, 2.6vw, 32px);
+}
+
+@media (min-width: 48em) {
+  .search-panel__inner { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+}
+
+.search-panel__label {
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 0 0 10px;
+}
+
+.search-panel__list { list-style: none; margin: 0; padding: 0; }
+
+.search-panel__hit {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 10px;
+  margin-inline: -10px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.search-panel__hit-title {
+  font: var(--type-body-sm);
+  font-weight: 600;
+  color: var(--be-ink);
+  text-wrap: pretty;
+}
+
+.search-panel__hit-meta { font: var(--type-meta); color: var(--text-secondary); }
+
+@media (hover: hover) {
+  .search-panel__hit:hover { opacity: 1; background: color-mix(in srgb, var(--be-ink) 5%, transparent); }
+}
+
+.search-panel__hit:focus-visible {
+  outline: 2px solid var(--be-ink);
+  outline-offset: 2px;
+}
+
+.search-panel__note {
+  grid-column: 1 / -1;
+  font: var(--type-body-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header-search__field,
+  .search-panel { animation: none; }
+}
+
+/* Below the nav breakpoint search and the language switcher leave the bar and
+   join the drawer, with the rest of the navigation. An open 190px field could
+   not share 375px with the wordmark, the locale toggle and the menu button —
+   the toggle was the piece pushed off the edge — and the drawer is where a
+   phone already looks for everything else the bar cannot hold. */
+@media (max-width: 63.999em) {
+  .header-search,
+  .site-header__locale {
+    display: none;
+  }
+}
+
+/* --- Drawer search ------------------------------------------------------
+   Already open: there is no glyph to press, because the drawer is somewhere
+   you went on purpose. Not autofocused, though — raising the keyboard over
+   the menu you just asked for would be its own kind of rude. */
+.drawer-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 10px 10px 14px;
+  margin-bottom: 28px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-outline);
+  background: var(--be-white);
+}
+
+.drawer-search:focus-within {
+  border-color: var(--be-ink);
+}
+
+.drawer-search .header-search__input {
+  min-height: 24px;
+}
+
+/* The hits stand where the menu was: you asked for them, so they should not sit
+   below a screen of navigation. Clearing the field brings the menu back. */
+.drawer-search__results {
+  display: grid;
+  gap: 28px;
 }

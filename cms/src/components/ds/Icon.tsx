@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   ArrowDownToLine,
+  Check,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -20,6 +21,7 @@ import {
    MAP when you introduce a new icon. */
 const MAP: Record<string, LucideIcon> = {
   download: ArrowDownToLine,
+  check: Check,
   'chevron-down': ChevronDown,
   'chevron-left': ChevronLeft,
   'chevron-right': ChevronRight,

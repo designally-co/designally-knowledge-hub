@@ -28,7 +28,7 @@ export function NewsletterCta({
 }: NewsletterCtaProps) {
   const c = dict.cta
   return (
-    <section className="cta" aria-labelledby="cta-title">
+    <section className="cta" id="newsletter" aria-labelledby="cta-title">
       <div className="shell cta__inner">
         <div className="cta__lead">
           <img

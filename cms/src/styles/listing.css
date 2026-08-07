@@ -477,3 +477,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Anchor target for the header's Subscribe control. The header is sticky, so
+   without this the band lands underneath it. */
+.cta {
+  scroll-margin-top: 96px;
+}

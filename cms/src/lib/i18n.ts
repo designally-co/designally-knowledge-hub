@@ -144,6 +144,18 @@ export type Dictionary = {
     /** Hero intro copy for the Resources listing. Empty hides the line. */
     resourcesIntro: string
   }
+  search: {
+    title: string
+    /** Placeholder + label for the search field. */
+    placeholder: string
+    label: string
+    /** Shown before anything has been searched for. */
+    prompt: string
+    /** "Nothing found for “{q}”." */
+    empty: string
+    articles: string
+    resources: string
+  }
 }
 
 const en: Dictionary = {
@@ -250,6 +262,15 @@ const en: Dictionary = {
     resourcesIntro:
       'Practical templates, guides, tools, and references to help you build better brands. Created and selected by Designally.',
   },
+  search: {
+    title: 'Search',
+    placeholder: 'Search articles and resources…',
+    label: 'Search',
+    prompt: 'Search across every article and resource on the hub.',
+    empty: 'Nothing found for “{q}”.',
+    articles: 'Articles',
+    resources: 'Resources',
+  },
 }
 
 const th: Dictionary = {
@@ -355,6 +376,15 @@ const th: Dictionary = {
     },
     resourcesIntro:
       'เทมเพลต คู่มือ เครื่องมือ และแหล่งอ้างอิงที่ใช้งานได้จริง เพื่อช่วยให้คุณสร้างแบรนด์ได้ดียิ่งขึ้น สร้างและคัดสรรโดย Designally',
+  },
+  search: {
+    title: 'ค้นหา',
+    placeholder: 'ค้นหาบทความและรีซอร์ส…',
+    label: 'ค้นหา',
+    prompt: 'ค้นหาจากบทความและรีซอร์สทั้งหมดในฮับ',
+    empty: 'ไม่พบผลลัพธ์สำหรับ “{q}”',
+    articles: 'บทความ',
+    resources: 'รีซอร์ส',
   },
 }
 

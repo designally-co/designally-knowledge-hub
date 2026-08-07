@@ -41,15 +41,28 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
             <p className="site-footer__mark">Designally</p>
             <p className="site-footer__blurb">{dict.footer.blurb}</p>
             <p className="site-footer__label site-footer__label--social">{dict.footer.social}</p>
+            {/* Only channels with a real destination. The TikTok icon was
+                removed rather than left pointing at "#": an icon that goes
+                nowhere costs more trust than a missing one. Add it back with
+                the account URL. */}
             <div className="site-footer__social">
-              <a className="site-footer__social-link" href="#" aria-label="Facebook">
+              <a
+                className="site-footer__social-link"
+                href="https://www.facebook.com/designallyco/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Designally on Facebook"
+              >
                 <Icon name="facebook" size={18} />
               </a>
-              <a className="site-footer__social-link" href="#" aria-label="Instagram">
+              <a
+                className="site-footer__social-link"
+                href="https://www.instagram.com/designally.co/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Designally on Instagram"
+              >
                 <Icon name="instagram" size={18} />
-              </a>
-              <a className="site-footer__social-link" href="#" aria-label="TikTok">
-                <Icon name="music" size={18} />
               </a>
             </div>
           </div>
@@ -90,7 +103,7 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
           <p className="site-footer__fineprint">
             © {new Date().getFullYear()} Designally. {dict.footer.rights}
           </p>
-          <LocaleSwitcher locale={locale} className="site-footer__locale" />
+          <LocaleSwitcher locale={locale} placement="up" className="site-footer__locale" />
         </div>
       </div>
     </footer>
