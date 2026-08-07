@@ -183,34 +183,42 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Full-row hit area, but the label and its arrow stay together on the left —
-   space-between would strand the arrow at the far edge of a ~300px column,
-   reading as unrelated to the text. */
+/* The row is the hit area, so it runs the full column width. */
 .nav-panel__tag {
   display: flex;
   align-items: center;
-  gap: 6px;
   padding-block: 7px;
   font: var(--type-body-sm);
   color: var(--be-ink);
   text-decoration: none;
 }
 
-/* The arrow is the affordance; it stays out of the way until the row is live. */
-.nav-panel__tag svg {
-  opacity: 0;
-  transform: translateX(-4px);
-  transition:
-    opacity 0.22s var(--ease-out-quart),
-    transform 0.22s var(--ease-out-quart);
-  flex: none;
+/* The underline belongs to the label, not the row: anchored to the link box it
+   would draw a rule across ~300px of empty column beside a two-word tag. The
+   span is already sized to the text, so it hosts the same left-anchored wipe
+   the header links and article headings use — one hover language across the
+   masthead rather than a rule up top and an arrow one level down. */
+.nav-panel__tag > span {
+  position: relative;
 }
 
-.nav-panel__tag:focus-visible svg { opacity: 1; transform: translateX(0); }
+.nav-panel__tag > span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1.5px;
+  background: var(--be-ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.28s var(--ease-out-quart);
+}
+
+.nav-panel__tag:focus-visible > span::after { transform: scaleX(1); }
 
 @media (hover: hover) {
-  .nav-panel__tag:hover { color: var(--be-ink); }
-  .nav-panel__tag:hover svg { opacity: 1; transform: translateX(0); }
+  .nav-panel__tag:hover > span::after { transform: scaleX(1); }
 }
 
 /* Motion is decoration here; the reveal itself must never be suppressed. */
@@ -218,7 +226,7 @@
   .nav-panel,
   .nav-panel__tags li { animation: none; }
   .site-nav__link::after,
-  .nav-panel__tag svg,
+  .nav-panel__tag > span::after,
   .nav-panel__all svg { transition: none; }
 }
 

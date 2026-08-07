@@ -72,7 +72,6 @@ function NavPanel({ category, locale, dict }: { category: Category; locale: Loca
             <li key={tag} style={{ '--i': i } as React.CSSProperties}>
               <Link className="nav-panel__tag" href={localeHref(locale, `/tag/${tagSlug(tag)}`)}>
                 <span>{tagLabel(tag, locale)}</span>
-                <Icon name="arrow-right" size={14} />
               </Link>
             </li>
           ))}
@@ -104,7 +103,6 @@ function ResourcesNavPanel({ locale, dict }: { locale: Locale; dict: Dictionary 
                 href={localeHref(locale, `/resources?cat=${resourceCategorySlug(category)}`)}
               >
                 <span>{category}</span>
-                <Icon name="arrow-right" size={14} />
               </Link>
             </li>
           ))}
