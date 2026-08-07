@@ -46,6 +46,10 @@ next-env.d.ts
 *.db
 *.db-shm
 *.db-wal
+# Snapshots taken before a migration are the same database under another
+# extension, so *.db does not cover them: designally-hub.db.pre-i18n.bak ends
+# in .bak, not .db.
+*.bak
 
 # Playwright
 node_modules/
