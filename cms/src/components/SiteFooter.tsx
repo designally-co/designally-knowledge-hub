@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 
 import { Icon } from './ds'
+import { FooterNavGroup } from './FooterNavGroup'
 import { LocaleSwitcher } from './LocaleSwitcher'
 import { CATEGORIES, TAG_OPTIONS, categorySlug, tagSlug } from '@/lib/tags'
 import {
@@ -67,8 +68,7 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
             </div>
           </div>
 
-          <nav aria-label={dict.footer.explore}>
-            <p className="site-footer__label">{dict.footer.explore}</p>
+          <FooterNavGroup label={dict.footer.explore}>
             <ul className="site-footer__col-list">
               {CATEGORIES.map((c) => (
                 <li key={c}>
@@ -83,10 +83,9 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
                 </Link>
               </li>
             </ul>
-          </nav>
+          </FooterNavGroup>
 
-          <nav aria-label={dict.footer.topics}>
-            <p className="site-footer__label">{dict.footer.topics}</p>
+          <FooterNavGroup label={dict.footer.topics}>
             <ul className="site-footer__col-list">
               {FOOTER_TOPICS.map((t) => (
                 <li key={t}>
@@ -96,7 +95,7 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
                 </li>
               ))}
             </ul>
-          </nav>
+          </FooterNavGroup>
         </div>
 
         <div className="site-footer__base">

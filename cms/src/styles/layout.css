@@ -662,6 +662,111 @@
   }
 }
 
+/* --- Footer link groups -------------------------------------------------
+   Two columns on a wide footer, two tappable rows on a phone. The heading and
+   the toggle are both in the markup; the breakpoint shows exactly one, so the
+   other leaves the accessibility tree with it. */
+.footer-group__heading {
+  display: none;
+}
+
+.footer-group__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 20px 0;
+  border: 0;
+  background: none;
+  color: var(--text-on-dark);
+  font: 700 clamp(20px, 5.4vw, 26px) / 1.2 var(--font-sans);
+  letter-spacing: var(--tracking-tight);
+  text-align: left;
+  cursor: pointer;
+}
+
+/* A rule between the rows, not around them — the group above already ends on
+   one, and a box drawn around each would be more furniture than the two rows
+   are worth. */
+.footer-group + .footer-group .footer-group__toggle {
+  border-top: 1px solid rgba(244, 237, 227, 0.35);
+}
+
+.footer-group__caret {
+  flex: none;
+  transition: transform var(--duration-base, 0.28s) var(--ease-out-quart);
+}
+
+.footer-group__toggle[aria-expanded='true'] .footer-group__caret {
+  transform: rotate(180deg);
+}
+
+/* 0fr to 1fr, so the list can open to whatever height it needs without that
+   height being written down anywhere. */
+.footer-group__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.32s var(--ease-out-quart);
+}
+
+.footer-group__panel-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.footer-group__panel.is-open {
+  grid-template-rows: 1fr;
+}
+
+.footer-group__panel.is-open .footer-group__panel-inner {
+  padding-bottom: 24px;
+}
+
+@media (min-width: 36em) {
+  .footer-group__heading { display: block; }
+  .footer-group__toggle { display: none; }
+
+  .footer-group__panel {
+    grid-template-rows: 1fr;
+    transition: none;
+  }
+
+  .footer-group__panel-inner { overflow: visible; }
+  .footer-group__panel.is-open .footer-group__panel-inner { padding-bottom: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-group__panel { transition: none; }
+  .footer-group__caret { transition: none; }
+}
+
+/* On a phone the collapsed lists come first and the identity closes the
+   footer, centred: wordmark, what the Hub is, then the accounts. */
+@media (max-width: 35.999em) {
+  .site-footer__cols { gap: 0; }
+
+  .site-footer__masthead {
+    order: 1;
+    margin-top: 44px;
+    text-align: center;
+  }
+
+  .site-footer__blurb { margin-inline: auto; }
+
+  .site-footer__label--social {
+    margin-top: clamp(28px, 5vw, 40px);
+  }
+
+  .site-footer__social { justify-content: center; }
+
+  .site-footer__base {
+    flex-direction: column;
+    gap: 14px;
+    text-align: center;
+  }
+}
+
 .site-footer__base {
   display: flex;
   flex-wrap: wrap;
