@@ -126,6 +126,15 @@ export default buildConfig({
     meta: {
       titleSuffix: '— Designally Hub',
     },
+    // The Designally design system is a light system: the page is parchment,
+    // the things on it are white, and depth comes from a hairline rather than
+    // a shadow. It does have a dark Field, but the system reserves that for a
+    // moment of drama on one screen — it is not a second theme for a whole
+    // product, and there are no dark values issued for cards, inputs or tables
+    // to be built from. Payload's dark mode inverts its own elevation ramp, so
+    // leaving the toggle on shipped an admin whose sidebar went dark while the
+    // document stayed light and the text disappeared into it.
+    theme: 'light',
   },
   collections: [Articles, Resources, Media, Users],
   editor: lexicalEditor(),

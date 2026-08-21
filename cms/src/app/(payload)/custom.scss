@@ -1,0 +1,580 @@
+/* =============================================================================
+   Designally — Payload admin theme
+
+   The CMS is where the Hub is written, and until now it was stock Payload: a
+   grey product with no relation to anything else Designally ships. This brings
+   it onto the design system in designally-platform/DESIGN.md — the 2026 CI
+   colour, its three typefaces, and the chassis underneath: the parchment
+   inversion, borders instead of shadows, one accent meaning "act here", and
+   the Thai leading rule.
+
+   HOW IT WORKS. Payload themes through two CSS ramps: `--color-base-0…1000`
+   (a neutral scale) and `--theme-elevation-*`, which maps onto it and inverts
+   in dark mode. Everything else — page, text, inputs, borders — derives from
+   those. So the ramp is replaced here rather than the components: restyling
+   `.btn`, `.table`, `.nav` one by one would leave every surface this file
+   never thought of still grey. Component rules below are only for the places a
+   ramp cannot reach — the accent, the pill, the shadows, the focus ring.
+
+   Payload wraps its own rules in `@layer payload-default`. Unlayered CSS beats
+   layered CSS regardless of specificity, so this file wins without `!important`
+   and without selector arms races. Do not add a layer to it.
+
+   WHAT IS DELIBERATELY NOT TAKEN. The system's 17px body: it is calibrated for
+   a survey answered on a phone and a worklist of a dozen rows, and this is a
+   CMS with dense tables and a sidebar. Reading size is applied where reading
+   happens — the editor, field values — and Payload's own scale carries the
+   chrome. `--base-body-size` is left alone; it is a divisor in Payload's
+   `calc()`, so "raising" it shrinks the entire admin.
+   ========================================================================== */
+
+/* The system self-hosts these through next/font and says so, at length: a CSS
+   @import is serialised, and the survey is answered on a phone on a poor
+   connection. That argument is about the survey. This is an internal tool
+   behind a login on a desktop, and the alternative here is editing
+   (payload)/layout.tsx, which is generated and marked DO NOT MODIFY. If the
+   admin ever wants the same treatment, the fix is a font provider registered
+   through `admin.components.providers`, not an edit to that file. */
+@import url('https://fonts.googleapis.com/css2?family=Zalando+Sans:wght@400;600;700&family=Poppins:wght@300;400;600;700&family=IBM+Plex+Sans+Thai:wght@400;600;700&display=swap');
+
+:root {
+  /* ---- the five CI colours, exactly as the system issues them ---------- */
+  --da-orange: #ef6148;
+  --da-charcoal: #1b1d23;
+  --da-steel: #112d4a;
+  --da-warm-white: #f3f3f3;
+  --da-stone: #aaaaaa;
+
+  /* Action. White on Designally Orange measures 3.24:1 — under the 4.5 a
+     17px label owes. The system crosses that floor knowingly and records it
+     rather than arguing it: the brand rule is a white label on the orange.
+     The hover exists partly to pay for it — `--da-orange-deep` takes the same
+     label to 4.27:1, so the control under the pointer is the legible one.
+
+     Everything this token touches in the admin is a fill or a border. Orange
+     never carries small text here; `--da-orange-mark` is the value to use if
+     something ever has to be read rather than recognised. */
+  --da-orange-deep: #d9482d;
+  --da-orange-mark: #c73f29; /* legal as text/line on light: 4.54:1 */
+  --da-orange-tint: #fff0ec;
+
+  /* Focus is steel, never orange. An orange ring reads as the Cut. */
+  --da-focus: var(--da-steel);
+
+  /* Ink ramp, hued toward the steel field. */
+  --da-ink: var(--da-charcoal);
+  --da-ink-2: #262a30;
+  --da-ink-3: #53575e;
+  --da-ink-4: #797d85;
+
+  /* The Edge. */
+  --da-hairline: #cecfd3; /* card and input borders */
+  --da-divider: #e6e8eb; /* internal dividers */
+
+  /* Semantic tones. */
+  --da-affirm: #107f54;
+  --da-caution: #a06000;
+  --da-critical: #d32830;
+
+  /* Motion. No bounce, no spring. */
+  --da-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --da-dur-state: 0.3s;
+  --da-dur-feedback: 0.18s;
+
+  /* =========================================================================
+     Payload's neutral ramp, replaced.
+
+     Payload ships a pure grey ramp (base-0 white → base-1000 black). These are
+     the system's own neutrals interpolated across the same 21 steps, so every
+     Payload surface picks up the charcoal hue without knowing anything changed.
+     The named system values land on the steps that matter: the page at 100,
+     the divider at 150 (Payload derives `--theme-border-color` from it), the
+     hairline at 200, and charcoal at 900.
+     ====================================================================== */
+  --color-base-0: #ffffff; /* --canvas: cards, inputs, sheets */
+  --color-base-50: #fafaf9; /* --pearl */
+  --color-base-100: #f3f3f3; /* --warm-white: the page */
+  --color-base-150: #e6e8eb; /* --divider  → --theme-border-color */
+  --color-base-200: #cecfd3; /* --hairline */
+  --color-base-250: #bcc0c6;
+  --color-base-300: #a9adb4; /* --stone, hued */
+  --color-base-350: #979ba3;
+  --color-base-400: #8b8f97;
+  --color-base-450: #83878f;
+  --color-base-500: #797d85; /* --ink-4: placeholders */
+  --color-base-550: #6b6f77;
+  --color-base-600: #5f636b;
+  --color-base-650: #53575e; /* --ink-3: the hover line, secondary text */
+  --color-base-700: #494d54;
+  --color-base-750: #3d4148;
+  --color-base-800: #33373d;
+  --color-base-850: #262a30; /* --ink-2 */
+  --color-base-900: #1b1d23; /* --charcoal: all display type */
+  --color-base-950: #0b0d12; /* the dark Field */
+  --color-base-1000: #000000;
+
+  /* Semantic ramps. Payload's "success" is a blue it also uses for the focus
+     outline; both jobs are re-pointed below. Only the steps Payload actually
+     reads are set — the rest keep their own scale and are never seen. */
+  --color-success-500: var(--da-affirm);
+  --color-success-600: var(--da-affirm);
+  --color-error-500: var(--da-critical);
+  --color-error-600: #b0202a;
+  --color-warning-500: var(--da-caution);
+  --color-warning-600: var(--da-caution);
+
+  /* Type. Zalando Sans for display, headings and every UI label; Poppins for
+     Latin body; IBM Plex Sans Thai for Thai in both roles, because Zalando has
+     no Thai glyphs whatever its readme says. The fallback is per codepoint, so
+     a bilingual string resolves inside one run of text — never wrap Thai in
+     its own element to "help" it. */
+  --font-body: 'Poppins', 'IBM Plex Sans Thai', system-ui, sans-serif;
+  --font-display: 'Zalando Sans', 'IBM Plex Sans Thai', system-ui, sans-serif;
+  --font-serif: 'Zalando Sans', 'IBM Plex Sans Thai', system-ui, sans-serif;
+  --font-mono: 'SF Mono', Menlo, Consolas, Monaco, monospace;
+
+  /* Radii. The pill is the action signal, so it belongs to buttons and chips
+     and to nothing you type into: a pill field reads as a button that happens
+     to hold text. Inputs take the card radii instead. */
+  --style-radius-s: 8px;
+  --style-radius-m: 11px;
+  --style-radius-l: 18px;
+
+  /* Focus, everywhere Payload draws it. */
+  --accessibility-outline: 2px solid var(--da-focus);
+  --accessibility-outline-offset: 2px;
+}
+
+/* The parchment inversion: the page is warm white and the things on it are
+   white. Payload ships both as `--color-base-0`, which flattens the two into
+   one surface and leaves cards to be found by their shadow. */
+html,
+body,
+.template-default,
+.template-minimal {
+  --theme-bg: var(--da-warm-white);
+  background-color: var(--da-warm-white);
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 400;
+  /* The system's Latin body tracking is 0: Poppins is a geometric sans with
+     wide sidebearings and does not want SF Pro's optical tracking, and negative
+     tracking on any bilingual line collapses Thai tone marks. */
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Display type is Zalando, at the system's -0.03em. Weights are 300/400/600/700
+   — 500 is deliberately absent from the system, so nothing here asks for it. */
+h1,
+h2,
+h3,
+h4,
+h5,
+.step-nav,
+.nav__label,
+.field-label,
+.btn,
+.doc-header__title {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: var(--da-ink);
+  font-weight: 600;
+  /* The Thai leading rule. A line that can hold Thai and stands alone takes a
+     minimum of 1.25 — the ink of a four-level stack measures ~1.20× the font
+     size, and a heading has no next line to clear. Article and resource titles
+     in this admin are Thai as often as not. */
+  line-height: 1.25;
+}
+
+/* Paragraphs are the other half of that rule: reading a four-level script
+   densely is hard, and one line's lower vowel must clear the next line's tone
+   mark. 1.6 is the floor, 1.7 when the paragraph is Thai. */
+p,
+.field-description,
+.rich-text p {
+  line-height: 1.6;
+}
+
+/* Field labels — small, quiet, and not competing with the value under them. */
+.field-label {
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0;
+  color: var(--da-ink-3);
+}
+
+/* =============================================================================
+   Buttons
+   ========================================================================== */
+
+/* The pill is the action signal. */
+.btn {
+  border-radius: 9999px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    border-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease),
+    transform var(--da-dur-feedback) var(--da-ease);
+}
+
+/* Apple's system-wide press state, which the system adopts wholesale. It
+   matters most on touch, where there is no hover and the only other feedback
+   for a tap is the screen changing. */
+.btn:active {
+  transform: scale(0.95);
+}
+
+/* Primary — the one accented action in a region. Payload drives its buttons
+   through four locals, so re-pointing those themes every primary button in the
+   admin at once, including ones this file has never seen. */
+.btn--style-primary {
+  --color: #ffffff;
+  --bg-color: var(--da-orange);
+  --hover-bg: var(--da-orange-deep);
+  --hover-color: #ffffff;
+}
+
+/* Secondary is the ghost pill: transparent, ink label, hairline ring. Hover
+   darkens the line and nothing else — the accent means "this needs you" or
+   "you chose this", and pointing at something is neither. */
+.btn--style-secondary {
+  --color: var(--da-ink);
+  --bg-color: transparent;
+  --hover-bg: transparent;
+  --hover-color: var(--da-ink);
+  border: 1px solid var(--da-hairline);
+}
+
+@media (hover: hover) {
+  .btn--style-secondary:hover {
+    border-color: var(--da-ink-3);
+  }
+}
+
+/* Payload's "pill" style is its chip — filter tags, array controls. Same
+   shape, quieter ground. */
+.btn--style-pill {
+  --bg-color: var(--da-warm-white);
+  --color: var(--da-ink-2);
+  --hover-bg: var(--da-divider);
+  --hover-color: var(--da-ink);
+}
+
+/* =============================================================================
+   Inputs — not pills, and bounded by a hairline
+   ========================================================================== */
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='date'],
+textarea,
+.rs__control,
+.textarea-outer,
+.input-wrapper > input,
+.code-editor {
+  border-radius: var(--style-radius-m);
+  border-color: var(--da-hairline);
+  background-color: #ffffff;
+  font-family: var(--font-body);
+  /* Payload sinks its inputs with `0 2px 2px -1px rgba(0,0,0,.1)`. In this
+     system an input is bounded by the Edge and by nothing else — the hairline
+     above is the whole boundary. */
+  box-shadow: none;
+  transition: border-color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  input[type='text']:hover,
+  input[type='email']:hover,
+  input[type='password']:hover,
+  input[type='number']:hover,
+  textarea:hover,
+  .rs__control:hover {
+    border-color: var(--da-ink-3);
+  }
+}
+
+/* Focus is steel, on every control, and it is the one exception to the
+   no-shadow rule below — a ring is how a keyboard user is told where they are. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible,
+.rs__control--is-focused {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+  border-color: var(--da-focus);
+}
+
+::placeholder {
+  color: var(--da-ink-4);
+}
+
+/* =============================================================================
+   Surfaces — borders instead of shadows
+   ========================================================================== */
+
+/* "Never place a shadow on a card, a button, a panel or text." Depth here comes
+   from surface change (white on parchment) and from the hairline, and from
+   nothing else. The focus ring above is the single exception and is re-asserted
+   after this, because it is drawn with `outline`, not `box-shadow`. */
+.card,
+.collection-list,
+.table,
+.doc-header,
+.doc-controls,
+.list-controls,
+.login__form,
+.popup__content,
+.drawer__content,
+.dashboard__card {
+  box-shadow: none;
+}
+
+.card,
+.login__form,
+.dashboard__card {
+  background-color: #ffffff;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-l);
+}
+
+/* Floating surfaces — the rich-text link editor, popovers, tooltips, drawers.
+   These are the ones a shadow reset by class list always misses, because they
+   are mounted on demand and never present when you audit the page. They get
+   the same treatment as a card: white, one hairline, no shadow. */
+.link-editor,
+.popup__content,
+.tooltip,
+.drawer__content,
+.relationship-add-new__add-button {
+  box-shadow: none;
+}
+
+.link-editor,
+.popup__content,
+.drawer__content {
+  background-color: #ffffff;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-m);
+}
+
+/* Rows carry their own padding; the container carries the border and radius. */
+.table {
+  background-color: #ffffff;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-l);
+  overflow: hidden;
+}
+
+.table td,
+.table th {
+  border-color: var(--da-divider);
+}
+
+.table th {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--da-ink-3);
+  letter-spacing: 0;
+}
+
+/* The sidebar keeps the page's own parchment and is separated by the Edge, not
+   by a shadow or a second tone. The dark Field exists in this system, but it is
+   reserved for a moment of drama and a CMS sidebar is not one. */
+.nav {
+  background-color: var(--da-warm-white);
+  border-right: 1px solid var(--da-hairline);
+}
+
+.nav__link {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--da-ink-2);
+  border-radius: var(--style-radius-s);
+  transition: background-color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .nav__link:hover {
+    background-color: var(--da-divider);
+    color: var(--da-ink);
+  }
+}
+
+/* There is deliberately no active/current state here. Payload renders its nav
+   links with nothing to hook one on — no `aria-current`, no active class, no
+   indicator element — so a rule for it would be CSS that never fires while
+   implying the sidebar tells you where you are. It does not; the breadcrumb
+   above the document does. Giving the nav a real current state means replacing
+   Payload's Nav through `admin.components`, which is an importMap change and
+   carries the blank-admin risk documented in payload.config.ts. */
+
+/* =============================================================================
+   The mark
+
+   Payload draws its own logo on the login screen and its icon in the sidebar.
+   Both are replaced here with the Designally mark — the D. in its disc, which
+   is the approved lockup. It is deliberately NOT the word "Designally" set in
+   caps: the platform retired that wordmark on 19 August 2026 precisely because
+   it was not an approved lockup, and reintroducing it in a second product is
+   the drift that decision existed to stop.
+
+   Done in CSS rather than through `admin.components.graphics`, on purpose.
+   A custom component has to appear in the committed `admin/importMap.js`, and
+   this repo's payload.config.ts documents what happens when that file is
+   regenerated in an environment where S3 is unconfigured: the production admin
+   renders blank with no error to go on. A background-image costs nothing and
+   cannot take the admin down.
+   ========================================================================== */
+
+/* Payload draws its mark in three places: the login card, the sidebar header,
+   and the breadcrumb's home link. All three, or the product is half-rebranded. */
+svg.graphic-logo,
+svg.graphic-icon,
+.nav__header-content svg {
+  display: none;
+}
+
+.login__brand,
+.nav__header-content,
+.step-nav__home {
+  /* The disc is the mark's own container — 56% of the diameter, which is the
+     geometry the platform measured rather than a second set of numbers. */
+  display: inline-grid;
+  place-items: center;
+  background-color: var(--da-orange);
+  background-image: url('/designally-mark.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 56%;
+  border-radius: 9999px;
+  flex: none;
+}
+
+.login__brand {
+  width: 64px;
+  height: 64px;
+}
+
+.nav__header-content {
+  width: 34px;
+  height: 34px;
+}
+
+/* In the breadcrumb the mark is a link, so it also has to stop being one
+   typographically — no underline, no link colour bleeding onto a disc. */
+.step-nav__home {
+  width: 26px;
+  height: 26px;
+  text-decoration: none;
+}
+
+/* =============================================================================
+   Reading and writing
+   ========================================================================== */
+
+/* The editor is the one surface in this admin where somebody reads at length,
+   so it takes the system's reading size rather than Payload's chrome size.
+   1.6 leading, because an article body here is bilingual more often than not. */
+.rich-text,
+.rich-text-lexical,
+.lexical-editor {
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--da-ink);
+}
+
+.rich-text h1,
+.rich-text h2,
+.rich-text h3,
+.rich-text-lexical h1,
+.rich-text-lexical h2,
+.rich-text-lexical h3 {
+  font-family: var(--font-display);
+}
+
+/* Step nav — the breadcrumb over every document. One colour per line: the
+   system forbids a greyed closing phrase, so the trail is one ink and the
+   current page is told apart by weight. */
+.step-nav {
+  color: var(--da-ink-3);
+}
+
+.step-nav a {
+  color: var(--da-ink-3);
+}
+
+@media (hover: hover) {
+  .step-nav a:hover {
+    color: var(--da-ink);
+  }
+}
+
+/* A text link is the accent in this system — but in the orange that is legal
+   as text on a light ground (4.54:1), never the CI orange, which is 3.24:1 and
+   cannot be read. */
+a {
+  color: var(--da-orange-mark);
+}
+
+/* Except in a list, which is the whole of this admin's working surface. Ten
+   article titles are not ten actions: they are the content, and colouring them
+   all spends the accent on a column where nothing "needs you" — the ten-percent
+   ceiling is about proportion of surface, and a table of links is most of it.
+   They are ink, and the row tells you it is a link the way the rest of this
+   system does: the line darkens under the pointer. */
+.table a,
+.collection-list a,
+.row-label,
+.pill a {
+  color: var(--da-ink);
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  .table a:hover,
+  .collection-list a:hover {
+    color: var(--da-ink);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+}
+
+/* =============================================================================
+   Motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .nav__link,
+  input,
+  textarea,
+  .rs__control {
+    transition: none;
+  }
+
+  .btn:active {
+    transform: none;
+  }
+}
