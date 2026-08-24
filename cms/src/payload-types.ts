@@ -358,6 +358,8 @@ export interface Resource {
   createdAt: string;
 }
 /**
+ * Accounts are created automatically the first time someone signs in with a Designally Google account. There is nothing to add here by hand.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
