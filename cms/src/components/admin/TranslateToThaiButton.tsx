@@ -36,7 +36,11 @@ export function TranslateToThaiButton() {
   }
 
   return (
-    <div style={{ marginBlock: '0.75rem' }}>
+    // Classed so the rail can put it on a panel like every other block. A
+    // custom Field replaces Payload's `.field-type` wrapper entirely, so
+    // without a hook of its own this one had nothing for the panel rule to
+    // match and sat bare on the sheet.
+    <div className="da-thai">
       <p style={{ fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.06em', opacity: 0.6, margin: '0 0 6px' }}>
         Thai translation
       </p>
