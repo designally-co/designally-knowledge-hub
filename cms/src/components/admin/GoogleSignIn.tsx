@@ -7,11 +7,9 @@ import './GoogleSignIn.css'
 /**
  * "Continue with Google" above Payload's login form.
  *
- * Rendered through `admin.components.beforeLogin`, so the email/password form
- * is still underneath it. That is deliberate for this stage: until Google
- * sign-in has actually been used against production, removing the other way in
- * would mean a misconfigured OAuth client locks everyone out of the CMS. The
- * form goes in a second, separate change.
+ * Rendered through `admin.components.beforeLogin`. The email/password form that
+ * used to sit under it is hidden — see the login rules in custom.scss for why
+ * it is hidden rather than disabled.
  *
  * The mark and the wording match Content Studio's sign-in, which took them from
  * the platform, so the three products introduce themselves the same way.
@@ -47,10 +45,6 @@ export const GoogleSignIn: React.FC = () => {
       </a>
 
       <p className="da-sso__note">Designally accounts only.</p>
-
-      <div className="da-sso__or">
-        <span>or sign in with a password</span>
-      </div>
     </div>
   )
 }

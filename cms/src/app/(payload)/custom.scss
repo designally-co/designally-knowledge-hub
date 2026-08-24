@@ -1062,3 +1062,35 @@ html {
 .document-fields__sidebar-fields .field-type.row .render-fields > * + * {
   margin-block-start: 0.75rem;
 }
+
+
+/* -----------------------------------------------------------------------------
+   Sign-in is Google only
+
+   The email/password form is gone from the screen: `/admin` is for Designally
+   accounts, and a second way in that nobody is meant to use is a second way in
+   to get wrong.
+
+   HIDDEN, NOT DISABLED, and the distinction is load-bearing. Payload registers
+   its JWT cookie strategy only when the local strategy is enabled:
+
+       if (!collection.auth.disableLocalStrategy && !jwtStrategyEnabled) { … }
+                                    — payload/dist/index.js
+
+   Google sign-in issues a Payload cookie and relies on exactly that strategy to
+   read it back, so `disableLocalStrategy: true` would not tighten this screen —
+   it would lock everybody out of the CMS, Google included. The API-key strategy
+   Content Studio publishes with is registered separately and is unaffected
+   either way.
+
+   What that leaves is a password endpoint with no form in front of it, which is
+   also the recovery path if the OAuth client is ever misconfigured in
+   production: POST /api/users/login still works.
+   -------------------------------------------------------------------------- */
+
+.login__form,
+.login .form-submit,
+.login__form + a,
+.login a[href*="forgot"] {
+  display: none;
+}

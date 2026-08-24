@@ -1,6 +1,5 @@
-import { getFieldsToSign, jwtSign } from 'payload'
-import { generatePayloadCookie } from 'payload/shared'
-import { getPayload } from 'payload'
+import { createLocalReq, getFieldsToSign, getPayload, jwtSign } from 'payload'
+import { addSessionToUser, generatePayloadCookie } from 'payload/shared'
 import { NextResponse } from 'next/server'
 
 import config from '@payload-config'
@@ -102,9 +101,25 @@ export async function GET(req: Request) {
   /* Hand over to Payload. From here the session is an ordinary Payload session
      — same cookie, same expiry, same everything a password login produces. */
   const collectionConfig = payload.collections.users.config
+
+  /* A SESSION ROW, not just a token. Payload 3 defaults `auth.useSessions` to
+     true, and its JWT strategy then refuses any token whose `sid` claim does
+     not match a session stored on the user — so a correctly signed token with
+     no `sid` authenticates as nobody, silently. That was this route's second
+     bug, and it presents identically to the first: sign-in completes, the
+     redirect lands, and you are still logged out. */
+  const localReq = await createLocalReq({}, payload)
+  const { sid } = await addSessionToUser({
+    collectionConfig,
+    payload,
+    req: localReq,
+    user: user as Parameters<typeof addSessionToUser>[0]['user'],
+  })
+
   const fieldsToSign = getFieldsToSign({
     collectionConfig,
     email,
+    sid,
     user: { ...user, collection: 'users' } as Parameters<typeof getFieldsToSign>[0]['user'],
   })
 
@@ -131,7 +146,30 @@ export async function GET(req: Request) {
      already had a session simply stayed logged in under the old one. It was
      only caught by reading the session's own expiry and finding it predated
      the Google round trip. */
-  const res = NextResponse.redirect(`${origin}/admin`)
+  /* A PAGE, NOT A REDIRECT — and this is the subtle one.
+
+     Payload's `extractJWT` refuses a cookie on a request whose
+     `Sec-Fetch-Site` is `cross-site`. Redirecting straight to /admin from here
+     keeps the browser inside the navigation Google started, so that header is
+     `cross-site` all the way through the redirect chain: the cookie is set
+     correctly, then discarded on the very next request, and the admin bounces
+     to the login screen. Measured — the same token authenticates under
+     `same-origin` and `none`, and is rejected under `cross-site`.
+
+     So the hand-off is a document served from this origin which then navigates
+     itself. That second navigation is initiated by this page, making it
+     `same-origin`, and the cookie is accepted. The meta refresh is the
+     fallback for a browser with scripting disabled. */
+  const html = `<!doctype html><meta charset="utf-8">
+<meta http-equiv="refresh" content="0;url=/admin">
+<title>Signing in…</title>
+<p style="font:14px/1.5 system-ui;padding:2rem">Signing in… <a href="/admin">continue</a></p>
+<script>location.replace('/admin')</script>`
+
+  const res = new NextResponse(html, {
+    status: 200,
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  })
   res.headers.append('Set-Cookie', cookie)
   res.headers.append(
     'Set-Cookie',
