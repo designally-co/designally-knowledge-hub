@@ -6,6 +6,7 @@ import { slugField } from '../fields/slug'
 import { TAG_SELECT_OPTIONS } from '../lib/tags'
 import {
   publishedOrEditor,
+  railHeading,
   publishedDateField,
   seoField,
   stampPublishedDate,
@@ -89,12 +90,34 @@ export const Articles: CollectionConfig = {
         { name: 'url', type: 'text', required: true },
       ],
     },
+    {
+      name: 'related',
+      type: 'relationship',
+      relationTo: 'articles',
+      hasMany: true,
+      admin: { description: 'Related articles surfaced on the article page.' },
+    },
+    // Last in the column, because it is the part of the page that falls back on
+    // its own: with nothing filled in, the title and summary above stand in for
+    // it. Position is the whole of the hierarchy here.
+    //
+    // It is NOT wrapped in a `collapsible` to give it a fold. That was tried:
+    // Payload 3.86 renders a collapsible containing a named group completely
+    // empty — no inputs, nothing to expand — verified in a clean tab, so it was
+    // not stale dev state. The alternative, collapsing the group by unnaming
+    // it, would move `seo.metaTitle` and its two siblings to the top level.
+    // That is a migration, in exchange for a fold.
+    seoField,
 
-    // ---- Sidebar -----------------------------------------------------------
+    // ---- The rail ----------------------------------------------------------
+    // Grouped by the question each answers. Order is the order the questions
+    // get asked: is it going out, where does it belong, what does it look like.
+    railHeading('railPublishing', 'Publishing'),
     statusField,
-    translateToThaiField,
     publishedDateField,
     ...slugField('title'),
+
+    railHeading('railFiling', 'Filing'),
     {
       // Exactly one tag. The tag determines the article's category (each tag
       // belongs to exactly one), so a second tag would make the category
@@ -114,30 +137,32 @@ export const Articles: CollectionConfig = {
     },
 
     // ---- Cover / imagery ---------------------------------------------------
+    // In the rail, not the main column. A cover is not part of the text and was
+    // sitting between the references and the SEO group, which is neither where
+    // you write it nor where you look for it.
+    railHeading('railCover', 'Cover'),
     {
       name: 'coverImage',
       type: 'upload',
       relationTo: 'media',
-      admin: { description: 'Uploaded cover. Preferred once real assets exist.' },
+      admin: {
+        position: 'sidebar',
+        description: 'Uploaded cover. Preferred once real assets exist.',
+      },
     },
     {
       name: 'coverUrl',
       type: 'text',
       admin: {
+        position: 'sidebar',
         description:
           'External cover URL (placeholder Unsplash imagery). Used when no coverImage is set. With no cover at all, a default colour is shown. The aspect ratio comes from the uploaded image.',
       },
     },
 
-    seoField,
-
-    {
-      name: 'related',
-      type: 'relationship',
-      relationTo: 'articles',
-      hasMany: true,
-      admin: { description: 'Related articles surfaced on the article page.' },
-    },
+    // Last in the rail: an action, not a property of the document. Everything
+    // above describes what the article is; this one does something to it.
+    translateToThaiField,
 
     // NOTE: there are deliberately no "Thai" and "Summary" columns here.
     // Content Studio translates and writes the dek as part of publishing, so

@@ -740,3 +740,106 @@ html {
 .btn--style-icon-label .btn__label {
   color: var(--da-ink-3);
 }
+
+/* =============================================================================
+   The editor
+
+   Payload gives every field the same weight in one long column, which is right
+   for a settings screen and wrong for a document: the title, the dek and the
+   body are the thing being made, and the other nine controls are decisions
+   about it. Those decisions moved to the rail (see Articles.ts); what is left
+   here is making the three that remain look like a document.
+
+   All of it is CSS against Payload's own selectors — `#field-title`,
+   `#field-summary`, and the `data-field-path` the lexical field publishes. No
+   component, so no importMap entry and none of the blank-admin risk.
+   ========================================================================== */
+
+/* The two labels above the masthead shrink to eyebrows. They still exist for
+   anyone navigating by label, but they stop competing with the words they
+   introduce. */
+.field-type:has(#field-title) .field-label,
+.field-type:has(#field-summary) .field-label {
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--da-ink-3);
+}
+
+/* Title. A box around a headline makes it a form row; a rule under it makes it
+   a headline you can type into. The rule is what keeps it discoverable — it
+   still reads as a field, just not as an input box. */
+#field-title {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  /* 28px, so the system's ≥1.25 floor for a single line that can hold Thai
+     applies rather than the 44px absolute one that starts above 32px. */
+  line-height: 1.3;
+  color: var(--da-ink);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  border-block-end: 1px solid var(--da-divider);
+  padding-inline: 0;
+  padding-block: 0.25rem 0.5rem;
+}
+
+/* The dek, at reading size. 1.7 rather than 1.6 because this field is
+   localized and the Thai leading rule is the higher of the two.
+   The white box and its 11px radius live on Payload's `.textarea-outer`
+   wrapper, not on the textarea, so clearing the textarea's own border leaves
+   the box exactly where it was — the wrapper has to be cleared too. */
+.field-type.textarea:has(#field-summary) .textarea-outer {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+#field-summary {
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  color: var(--da-ink-2);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  border-block-end: 1px solid var(--da-divider);
+  padding-inline: 0;
+  padding-block: 0.25rem 0.625rem;
+  min-block-size: 5rem;
+}
+
+@media (hover: hover) {
+  #field-title:hover,
+  #field-summary:hover {
+    border-block-end-color: var(--da-hairline);
+  }
+}
+
+/* Removing the border removed what Payload was using to show focus, so focus
+   is stated explicitly here — the steel ring the rest of the admin uses. */
+#field-title:focus,
+#field-summary:focus {
+  border-block-end-color: var(--da-ink);
+  box-shadow: none;
+}
+
+#field-title:focus-visible,
+#field-summary:focus-visible {
+  outline: var(--accessibility-outline);
+  outline-offset: 4px;
+}
+
+/* Body — the surface this screen exists for. Measured, not full-bleed: the
+   column runs to about 84 characters at this width, which is past the point
+   where the eye reliably finds the next line. */
+[data-field-path='body'] .ContentEditable__root {
+  max-inline-size: 68ch;
+  font-size: 1.0625rem;
+  line-height: 1.7;
+}

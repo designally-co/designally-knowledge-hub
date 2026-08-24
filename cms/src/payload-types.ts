@@ -164,6 +164,18 @@ export interface Article {
       }[]
     | null;
   /**
+   * Related articles surfaced on the article page.
+   */
+  related?: (number | Article)[] | null;
+  /**
+   * Per-item search metadata. Falls back to title/summary.
+   */
+  seo?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    ogImage?: (number | null) | Media;
+  };
+  /**
    * Draft = hidden from the public site; Published = live. Publishing is manual.
    */
   status: 'draft' | 'published';
@@ -218,18 +230,6 @@ export interface Article {
    * External cover URL (placeholder Unsplash imagery). Used when no coverImage is set. With no cover at all, a default colour is shown. The aspect ratio comes from the uploaded image.
    */
   coverUrl?: string | null;
-  /**
-   * Per-item search metadata. Falls back to title/summary.
-   */
-  seo?: {
-    metaTitle?: string | null;
-    metaDescription?: string | null;
-    ogImage?: (number | null) | Media;
-  };
-  /**
-   * Related articles surfaced on the article page.
-   */
-  related?: (number | Article)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -480,12 +480,7 @@ export interface ArticlesSelect<T extends boolean = true> {
         url?: T;
         id?: T;
       };
-  status?: T;
-  publishedDate?: T;
-  slug?: T;
-  tag?: T;
-  coverImage?: T;
-  coverUrl?: T;
+  related?: T;
   seo?:
     | T
     | {
@@ -493,7 +488,12 @@ export interface ArticlesSelect<T extends boolean = true> {
         metaDescription?: T;
         ogImage?: T;
       };
-  related?: T;
+  status?: T;
+  publishedDate?: T;
+  slug?: T;
+  tag?: T;
+  coverImage?: T;
+  coverUrl?: T;
   updatedAt?: T;
   createdAt?: T;
 }
