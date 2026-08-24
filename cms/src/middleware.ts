@@ -27,5 +27,9 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!admin|api|_next/static|_next/image|favicon.ico|.*\\..*).*)'],
+  // `auth` is excluded along with the admin and the API: /auth/google and its
+  // callback are sign-in routes, not pages, and without this they get rewritten
+  // to /en/auth/google and 404 — the locale segment happily swallows anything
+  // that is not listed here.
+  matcher: ['/((?!admin|api|auth|_next/static|_next/image|favicon.ico|.*\\..*).*)'],
 }

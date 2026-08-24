@@ -124,6 +124,10 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     components: {
+      // "Continue with Google" above the login form. The form stays for now:
+      // until Google sign-in has been used against production, removing the
+      // other way in would let a misconfigured OAuth client lock everyone out.
+      beforeLogin: ['/components/admin/GoogleSignIn#GoogleSignIn'],
       views: {
         // Replaces Payload's grid of one-card-per-collection. That grid is a
         // table of contents, and the sidebar is already the table of contents;
