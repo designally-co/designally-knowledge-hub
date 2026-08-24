@@ -578,3 +578,105 @@ a {
     transform: none;
   }
 }
+
+/* =============================================================================
+   Reading size
+
+   Payload sets `html { font-size: 13px }` — a hard value, not derived from its
+   own `--base-body-size`, which is why overriding that variable does nothing.
+   Everything else in the admin is sized in rem off it, so this one line scales
+   the whole product.
+
+   13px is small for a surface people read and write in for an hour at a time,
+   and it is four steps below the system's body size. This does not go to 17:
+   that is calibrated for a survey on a phone and a worklist of a dozen rows,
+   and a CMS with dense tables at 17px root would need a different layout, not
+   a bigger one. 15px is the step that makes the admin comfortable while its
+   own proportions still hold.
+
+   Line-height comes with it. Payload pins 20px, which at 15px would fall to
+   1.33; 1.5 keeps single lines clear of the 1.25 floor a line holding Thai
+   needs, and this admin's titles are Thai as often as not.
+   ========================================================================== */
+html {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* =============================================================================
+   Labels that were too faint to read
+
+   Payload picks mid-ramp steps for its small chrome labels, which on the
+   parchment page land under the contrast floor: the sidebar's group headings
+   at 2.92:1 and the locale label at 3.72:1, both needing 4.5. They were faint
+   before this theme too — the stock ramp put them at a similar luminance — so
+   this is an inherited defect rather than one the recolour introduced, but it
+   is one worth not shipping now that it has been measured.
+
+   Secondary text in this system is `--ink-3`, which puts both at 6.5:1.
+   ========================================================================== */
+.nav-group__label,
+.localizer-button__label {
+  color: var(--da-ink-3);
+}
+
+/* The sidebar's group headings are the only thing that names a section, so
+   they take the label treatment the rest of the system uses for that job
+   rather than sitting as quiet body text. */
+.nav-group__label {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* The mark on the login screen sat at the form's left edge — Payload's brand
+   block is a plain box, and giving it a 64px square left it aligned to the
+   start of a 480px card. The door is a centred composition in this system;
+   this is the same lockup the Content Studio sign-in page uses. */
+.login__brand {
+  /* `display: grid`, not the `inline-grid` the three mark slots share above.
+     An inline-level box sits on a text line and ignores `margin-inline: auto`,
+     which is why centring it did nothing the first time. The sidebar and
+     breadcrumb marks stay inline, because there they sit beside other things. */
+  display: grid;
+  margin-inline: auto;
+}
+
+/* =============================================================================
+   Muted text that was under the floor
+
+   Payload draws its explanatory text from the middle of the ramp — #8b8f97 for
+   field descriptions, #797d85 for document meta and upload prompts — and on
+   the parchment page those measure 2.92:1 and 3.72:1 against a floor of 4.5.
+   The editor alone had twenty instances, nine of them field descriptions,
+   which is most of the guidance in the product.
+
+   Fixed by role rather than by darkening the ramp: those steps also carry
+   icons, disabled states and borders, where the current weight is right and
+   darkening them would make the chrome heavier to fix a text problem.
+   `--ink-3` is what this system gives secondary text, and it lands at 6.54:1.
+   ========================================================================== */
+.field-description,
+.doc-controls__label,
+.upload__dragAndDropText,
+.upload__dropzoneContent__orText,
+.tag-selector__tab,
+.tag-selector__hint {
+  color: var(--da-ink-3);
+}
+
+/* `.btn__label` on the primary action is deliberately left alone. White on
+   Designally Orange is 3.24:1 and under the floor, and it is the one crossing
+   the system makes on purpose: the brand rule is a white label on the orange,
+   and the hover darkens to --da-orange-deep, which takes the same label to
+   4.27:1 — so the control under the pointer is the legible one. */
+
+/* The "Add Reference" style of button — an icon beside a quiet label, used to
+   grow an array field — took its label from the same mid-ramp grey, at 2.92:1.
+   Scoped to that variant so it cannot reach `.btn--style-primary`, whose white
+   label on the orange is the one crossing this theme keeps on purpose. */
+.btn--style-icon-label .btn__label {
+  color: var(--da-ink-3);
+}
