@@ -1,121 +1,209 @@
-/* Custom tag field for the Payload admin. Uses Payload theme variables so it
-   works in both light and dark admin themes. */
+/* =============================================================================
+   Tag — one per article
+
+   Tokens from custom.scss. Unlayered, like the rest of this theme, so it beats
+   Payload's `@layer payload-default` without an !important.
+
+   The whole job of this file is to make a single choice look like a single
+   choice: a radio mark inside every option, one filled state, and no control
+   anywhere that offers to remove the selection — the field is required, so
+   there is no valid empty state to offer.
+   ========================================================================== */
 
 .tag-selector {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-.tag-selector__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  gap: 0.625rem;
 }
 
 .tag-selector__label {
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
   font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--theme-elevation-800);
+  color: var(--da-ink-2);
 }
 
-.tag-selector__count {
-  font-size: 0.78rem;
-  color: var(--theme-elevation-500);
-  font-variant-numeric: tabular-nums;
+/* ---- the choice, stated ---------------------------------------------------*/
+
+.tag-selector__current {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--da-ink-3);
+  margin: 0;
+  padding: 0.5rem 0.625rem;
+  background-color: var(--da-warm-white);
+  border-radius: var(--style-radius-s);
 }
 
-.tag-selector__count.is-max {
-  color: var(--theme-success-500);
+.tag-selector__current strong {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--da-ink);
 }
 
-.tag-selector__selected {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+/* Required and unset is a thing to fix, so it takes the accent — the same
+   accent the dashboard uses for work that is waiting. */
+.tag-selector__current--empty {
+  color: var(--da-orange-mark);
+  background-color: var(--da-orange-tint);
 }
+
+/* ---- category filter ------------------------------------------------------*/
 
 .tag-selector__tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  border-bottom: 1px solid var(--theme-elevation-150);
-  padding-bottom: 8px;
+  gap: 0.25rem;
+  border-block-end: 1px solid var(--da-divider);
+  padding-block-end: 0.5rem;
 }
 
 .tag-selector__tab {
-  border: none;
+  position: relative;
+  border: 0;
   background: none;
   cursor: pointer;
-  font-size: 0.76rem;
-  padding: 4px 9px;
-  border-radius: 4px;
-  color: var(--theme-elevation-500);
-  transition: background 0.12s ease, color 0.12s ease;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--style-radius-s);
+  color: var(--da-ink-3);
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
 }
 
 .tag-selector__tab:hover {
-  background: var(--theme-elevation-100);
-  color: var(--theme-elevation-800);
+  background-color: var(--da-divider);
+  color: var(--da-ink);
 }
 
 .tag-selector__tab.is-active {
-  background: var(--theme-elevation-150);
-  color: var(--theme-elevation-1000);
+  background-color: var(--da-divider);
+  color: var(--da-ink);
   font-weight: 600;
 }
 
-.tag-selector__chips {
+/* Marks the category holding the current tag, so switching tabs never loses
+   track of where the selection actually lives. */
+.tag-selector__tab-dot {
+  display: inline-block;
+  inline-size: 4px;
+  block-size: 4px;
+  border-radius: 999px;
+  background-color: var(--da-orange-mark);
+  margin-inline-start: 0.375rem;
+  vertical-align: 0.35em;
+}
+
+/* ---- the options ----------------------------------------------------------*/
+
+.tag-selector__options {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 0.375rem;
 }
 
-.tag-chip {
+.tag-opt {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--theme-elevation-200);
-  background: var(--theme-elevation-50);
-  color: var(--theme-elevation-800);
+  gap: 0.4375rem;
+  border: 1px solid var(--da-hairline);
+  background-color: #ffffff;
+  color: var(--da-ink-2);
   border-radius: 999px;
-  padding: 4px 11px;
-  font-size: 0.78rem;
-  line-height: 1.25;
+  padding: 0.3125rem 0.6875rem 0.3125rem 0.5rem;
+  font-size: 0.78125rem;
+  line-height: 1.3;
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease,
-    opacity 0.12s ease;
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    border-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
 }
 
-.tag-chip:hover:not(:disabled) {
-  border-color: var(--theme-elevation-400);
+/* Visually hidden, NOT `display: none` — the input still has to be focusable
+   and arrow-navigable, because that keyboard behaviour is the browser's and
+   the reason these are real radios in the first place. */
+.tag-opt__input {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
-.tag-chip--on {
-  background: var(--theme-elevation-1000);
-  color: var(--theme-elevation-0);
-  border-color: var(--theme-elevation-1000);
+/* The radio mark. This is the part that stops the row reading as a set of
+   independent toggles — a ring that fills, one at a time.
+
+   The ring is `--da-ink-4`, not the `--da-hairline` every other input border
+   in this admin uses. Hairline measures 1.56:1 on white, and this ring is not
+   decoration: it is the only thing that says "this is a radio and it is not
+   the chosen one", which is exactly the visual information WCAG 1.4.11 puts a
+   3:1 floor under. Ink-4 measures 4.13:1. The pill's own border stays on the
+   hairline, because the ring and the label already identify the control and
+   the border is only its edge. */
+.tag-opt__mark {
+  inline-size: 11px;
+  block-size: 11px;
+  border-radius: 999px;
+  border: 1px solid var(--da-ink-4);
+  background-color: #ffffff;
+  flex-shrink: 0;
+  transition:
+    border-color var(--da-dur-feedback) var(--da-ease),
+    box-shadow var(--da-dur-feedback) var(--da-ease);
 }
 
-.tag-chip:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
+@media (hover: hover) {
+  .tag-opt:hover {
+    border-color: var(--da-ink-4);
+  }
+
+  .tag-opt:hover .tag-opt__mark {
+    border-color: var(--da-ink-3);
+  }
 }
 
-.tag-chip__x {
-  margin-left: 6px;
-  font-size: 0.95rem;
-  line-height: 1;
-  opacity: 0.75;
+.tag-opt--on {
+  background-color: var(--da-ink);
+  border-color: var(--da-ink);
+  color: #ffffff;
 }
+
+.tag-opt--on .tag-opt__mark {
+  border-color: #ffffff;
+  /* The filled centre, drawn with an inset ring so there is no extra element
+     to position inside an 11px circle. */
+  box-shadow: inset 0 0 0 2.5px var(--da-ink);
+  background-color: #ffffff;
+}
+
+/* Focus lands on the hidden input, so the ring has to be drawn on the label
+   that stands in for it. */
+.tag-opt:has(.tag-opt__input:focus-visible) {
+  outline: var(--accessibility-outline);
+  outline-offset: 2px;
+}
+
+/* ---- footnotes ------------------------------------------------------------*/
 
 .tag-selector__hint {
-  font-size: 0.72rem;
-  color: var(--theme-elevation-450);
-  margin: 2px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--da-ink-3);
+  margin: 0;
 }
 
 .tag-selector__error {
-  font-size: 0.74rem;
-  color: var(--theme-error-500);
-  margin: 2px 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--da-critical);
+  margin: 0;
 }
