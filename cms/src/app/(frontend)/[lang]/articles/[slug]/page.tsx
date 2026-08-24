@@ -38,9 +38,31 @@ export async function generateMetadata({
   const locale: Locale = isLocale(lang) ? lang : 'en'
   const article = await getArticleBySlug(slug, locale)
   if (!article) return { title: 'Article not found' }
+
+  /* The share card. Until now the page emitted a title and a description and
+     nothing else, so an article pasted into Slack, LINE or LinkedIn arrived as
+     a bare link — no picture, no headline. The image is the article's own
+     cover unless the SEO panel overrides it; `shareImage` resolves that, and
+     `metadataBase` in the layout makes an uploaded cover's relative path
+     absolute, which a crawler needs. */
+  const image = article.shareImage
   return {
     title: article.title,
     description: article.dek,
+    openGraph: {
+      type: 'article',
+      title: article.title,
+      description: article.dek,
+      ...(image ? { images: [{ url: image }] } : {}),
+    },
+    twitter: {
+      // The wide card, since there is a real image to fill it. Without this the
+      // same image is served in a small square beside the text.
+      card: image ? 'summary_large_image' : 'summary',
+      title: article.title,
+      description: article.dek,
+      ...(image ? { images: [image] } : {}),
+    },
   }
 }
 

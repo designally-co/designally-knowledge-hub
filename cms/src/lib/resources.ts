@@ -48,6 +48,23 @@ function coverOf(r: ArticleDoc): string | undefined {
 }
 
 /**
+ * The picture a share card should use: the SEO override when one is set,
+ * otherwise the cover. A cover IS a share image — it is already the article's
+ * own picture, sized for a hero — so making someone choose a second one for
+ * every article would be a field that is only ever filled with the same value.
+ * The override exists for the cases where the two genuinely differ: a cover
+ * that is mostly texture, or one whose subject sits where a 1.91:1 card crops.
+ */
+function shareImageOf(r: ArticleDoc): string | undefined {
+  const og = r.seo?.ogImage
+  if (og && typeof og === 'object') {
+    const media = og as Media
+    if (media.url) return media.url
+  }
+  return coverOf(r)
+}
+
+/**
  * Cover aspect ratio, e.g. "1200 / 800". Taken from the uploaded image's real
  * dimensions. Falls back to a portrait default when there's no upload to
  * measure (external URL or no cover — the ratio there is just a placeholder box).
@@ -477,6 +494,8 @@ export interface Article {
   readTime?: number
   body: ArticleDoc['body']
   references: { label: string; url: string }[]
+  /** For the social share card. Falls back to `image`. */
+  shareImage?: string
 }
 
 /** A single published article by slug, or null if not found / DB unavailable. */
@@ -508,6 +527,7 @@ export async function getArticleBySlug(
         date: formatDate(r.publishedDate, locale),
         tags: r.tag ? [r.tag] : [],
         image: coverOf(r),
+        shareImage: shareImageOf(r),
         ratio: ratioOf(r),
         readTime: readingMinutes(r.body),
         body: r.body ?? null,

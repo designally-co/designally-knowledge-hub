@@ -755,84 +755,31 @@ html {
    component, so no importMap entry and none of the blank-admin risk.
    ========================================================================== */
 
-/* The two labels above the masthead shrink to eyebrows. They still exist for
-   anyone navigating by label, but they stop competing with the words they
-   introduce. */
-.field-type:has(#field-title) .field-label,
-.field-type:has(#field-summary) .field-label {
-  font-family: var(--font-display);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--da-ink-3);
-}
+/* The title and the deck are ordinary inputs.
 
-/* Title. A box around a headline makes it a form row; a rule under it makes it
-   a headline you can type into. The rule is what keeps it discoverable — it
-   still reads as a field, just not as an input box. */
+   They were briefly a masthead — the title borderless at 28px display weight
+   with a rule under it instead of a box — on the argument that a document's
+   head should not look like a form row. It reads well and it is not what was
+   asked for: the wireframe draws both as plain labelled fields, and a title
+   that behaves differently from every other input is one more thing to learn.
+
+   What is kept is the panel each sits on and the reading size on the deck,
+   since that field holds a sentence someone has to read back. */
 #field-title {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  /* 28px, so the system's ≥1.25 floor for a single line that can hold Thai
-     applies rather than the 44px absolute one that starts above 32px. */
-  line-height: 1.3;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
   color: var(--da-ink);
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  border-block-end: 1px solid var(--da-divider);
-  padding-inline: 0;
-  padding-block: 0.25rem 0.5rem;
 }
 
-/* The dek, at reading size. 1.7 rather than 1.6 because this field is
-   localized and the Thai leading rule is the higher of the two.
-   The white box and its 11px radius live on Payload's `.textarea-outer`
-   wrapper, not on the textarea, so clearing the textarea's own border leaves
-   the box exactly where it was — the wrapper has to be cleared too. */
-.field-type.textarea:has(#field-summary) .textarea-outer {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-}
-
+/* 1.7 rather than 1.6: the field is localized and the Thai leading rule is the
+   higher of the two. */
 #field-summary {
   font-family: var(--font-body);
-  font-size: 1.0625rem;
+  font-size: 0.9375rem;
   line-height: 1.7;
   color: var(--da-ink-2);
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  border-block-end: 1px solid var(--da-divider);
-  padding-inline: 0;
-  padding-block: 0.25rem 0.625rem;
-  min-block-size: 5rem;
-}
-
-@media (hover: hover) {
-  #field-title:hover,
-  #field-summary:hover {
-    border-block-end-color: var(--da-hairline);
-  }
-}
-
-/* Removing the border removed what Payload was using to show focus, so focus
-   is stated explicitly here — the steel ring the rest of the admin uses. */
-#field-title:focus,
-#field-summary:focus {
-  border-block-end-color: var(--da-ink);
-  box-shadow: none;
-}
-
-#field-title:focus-visible,
-#field-summary:focus-visible {
-  outline: var(--accessibility-outline);
-  outline-offset: 4px;
+  min-block-size: 4.5rem;
 }
 
 /* Body — the surface this screen exists for. Measured, not full-bleed: the
@@ -1015,16 +962,34 @@ html {
   color: var(--da-ink-2);
 }
 
-/* The masthead rules meet the panel rather than floating inside it. */
-#field-title,
-#field-summary {
-  border-block-end-color: var(--da-hairline);
-}
-
 /* The body is the panel — its editor surface should not draw a second one. */
 [data-field-path='body'] .rich-text-lexical__editor,
 [data-field-path='body'] .ContentEditable__root {
   background-color: transparent;
+}
+
+/* ---- the masthead, as one panel ------------------------------------------ */
+
+/* Title and deck are one box: a headline and the sentence under it are one
+   thought, and two panels put a seam through the middle of it. Same weld as
+   the cover below — the first loses its bottom corners and margin, the second
+   its top corners.
+
+   `:has()` is correct here, unlike on the cover. For a text or textarea field
+   Payload puts the id on the INPUT, so `#field-title` really is a descendant
+   of the `.field-type`; for an upload it puts the id on the `.field-type`
+   itself, which is why the cover rules had to drop `:has()` entirely. */
+.document-fields__fields > .field-type:has(#field-title) {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+  padding-block-end: 0.5rem;
+}
+
+.document-fields__fields > .field-type:has(#field-title) + .field-type {
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+  margin-block-start: 0;
+  padding-block-start: 0;
 }
 
 /* ---- the cover, as one continuous panel ---------------------------------- */
