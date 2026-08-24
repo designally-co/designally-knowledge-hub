@@ -34,10 +34,10 @@ export const Articles: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    // A triage order: what it is, whether it is live, where it is filed, and
-    // then the two things that are most often left undone. Last edited closes
-    // the row because it answers "where was I", not "what needs doing".
-    defaultColumns: ['title', 'status', 'tag', 'thaiState', 'summaryState', 'updatedAt'],
+    // A triage order: what it is, whether it is live, where it is filed, when
+    // it went out, and when it was last touched. Last edited closes the row
+    // because it answers "where was I", not "what needs doing".
+    defaultColumns: ['title', 'status', 'tag', 'publishedDate', 'updatedAt'],
     group: 'Content',
     description: 'Written editorial. Downloadable files belong in Resources.',
   },
@@ -139,30 +139,12 @@ export const Articles: CollectionConfig = {
       admin: { description: 'Related articles surfaced on the article page.' },
     },
 
-    // ---- List-only columns -------------------------------------------------
-    // Two questions the stored row cannot answer on its own. `ui` fields carry
-    // no data and add nothing to the schema — they exist purely as a slot for a
-    // cell, so neither of these is a migration. Both are list-only: `disableListColumn`
-    // is not set, but `Field` is absent, so they never appear in the editor.
-    {
-      name: 'thaiState',
-      type: 'ui',
-      label: 'Thai',
-      admin: {
-        components: {
-          Cell: '/components/admin/ListCells#ThaiCell',
-        },
-      },
-    },
-    {
-      name: 'summaryState',
-      type: 'ui',
-      label: 'Summary',
-      admin: {
-        components: {
-          Cell: '/components/admin/ListCells#SummaryCell',
-        },
-      },
-    },
+    // NOTE: there are deliberately no "Thai" and "Summary" columns here.
+    // Content Studio translates and writes the dek as part of publishing, so
+    // for the articles that arrive that way both are filled by the time anyone
+    // opens this list — two columns that would read "Yes / Yes" down every row
+    // and cost width on all of them. The dashboard still watches for both,
+    // because an article written by hand in this admin has neither done for it,
+    // and those sections hide themselves when there is nothing to report.
   ],
 }

@@ -64,31 +64,6 @@
   color: var(--da-ink-3);
 }
 
-/* ---- flags --------------------------------------------------------------- */
-
-.da-flag {
-  font-family: var(--font-display);
-  font-size: 0.8125rem;
-  white-space: nowrap;
-}
-
-.da-flag--missing {
-  font-weight: 600;
-  color: var(--da-orange-mark);
-}
-
-.da-flag--ok {
-  font-weight: 400;
-  color: var(--da-ink-3);
-}
-
-/* Holds the row height steady for the moment before the answer arrives, so the
-   table does not jump as the flags resolve. */
-.da-flag--pending {
-  display: inline-block;
-  min-inline-size: 3ch;
-}
-
 .da-cell-empty {
   color: var(--da-ink-3);
 }

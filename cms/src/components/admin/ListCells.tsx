@@ -4,7 +4,6 @@ import React from 'react'
 
 import { CATEGORY_CHROME } from '../../lib/listingChrome'
 import { categoryForTag } from '../../lib/tags'
-import { useArticleFlags } from './articleFlags'
 import './ListCells.css'
 
 /**
@@ -71,36 +70,11 @@ export const TagCell: React.FC<CellProps> = ({ cellData }) => {
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/* Thai / Summary                                                              */
-/* -------------------------------------------------------------------------- */
-
-/** Shared shape: a quiet word when it is fine, the accent when it is not. */
-const FlagMark: React.FC<{ missing: boolean; ready: boolean; label: string; ok: string }> = ({
-  missing,
-  ready,
-  label,
-  ok,
-}) => {
-  /* Deliberately blank until the answer is known. A dash would read as "none",
-     and guessing "fine" for a beat before flipping to "Missing" is worse than
-     saying nothing for that beat. */
-  if (!ready) return <span className="da-flag da-flag--pending" aria-hidden="true" />
-  if (missing) return <span className="da-flag da-flag--missing">{label}</span>
-  return <span className="da-flag da-flag--ok">{ok}</span>
-}
-
-export const ThaiCell: React.FC<CellProps> = ({ rowData }) => {
-  const { ready, flags } = useArticleFlags(rowData?.id)
-
-  /* A draft is not live, so it cannot be live-and-wrong. Saying "Missing" here
-     would be technically true and practically noise. */
-  if (rowData?.status !== 'published') return <span className="da-cell-empty">—</span>
-
-  return <FlagMark label="Missing" missing={Boolean(flags?.thaiMissing)} ok="Yes" ready={ready} />
-}
-
-export const SummaryCell: React.FC<CellProps> = ({ rowData }) => {
-  const { ready, flags } = useArticleFlags(rowData?.id)
-  return <FlagMark label="Missing" missing={Boolean(flags?.summaryMissing)} ok="Yes" ready={ready} />
-}
+/*
+ * There were Thai and Summary cells here. They are gone, along with the
+ * per-table `locale=all` fetch that fed them: Content Studio translates and
+ * writes the dek as it publishes, so for articles arriving that way both
+ * columns read "Yes" down every row — width spent to say nothing. The
+ * dashboard still checks both, since an article written by hand here gets
+ * neither done for it, and those sections disappear when they are empty.
+ */

@@ -25,8 +25,6 @@ import { StatusCell as StatusCell_07f513c68167caf320c51b8dc6c45309 } from '../..
 import { TranslateToThaiButton as TranslateToThaiButton_c8d0b70ea2b3169c421567a646db02b1 } from '../../../components/admin/TranslateToThaiButton'
 import { TagCell as TagCell_07f513c68167caf320c51b8dc6c45309 } from '../../../components/admin/ListCells'
 import { TagSelector as TagSelector_b09dda2c9bdc83427116784ee19fdaeb } from '../../../components/admin/TagSelector'
-import { ThaiCell as ThaiCell_07f513c68167caf320c51b8dc6c45309 } from '../../../components/admin/ListCells'
-import { SummaryCell as SummaryCell_07f513c68167caf320c51b8dc6c45309 } from '../../../components/admin/ListCells'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { Dashboard as Dashboard_16b88e9b8c48e393fa86591406efd08f } from '../../../components/admin/Dashboard'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -60,8 +58,6 @@ export const importMap = {
   "/components/admin/TranslateToThaiButton#TranslateToThaiButton": TranslateToThaiButton_c8d0b70ea2b3169c421567a646db02b1,
   "/components/admin/ListCells#TagCell": TagCell_07f513c68167caf320c51b8dc6c45309,
   "/components/admin/TagSelector#TagSelector": TagSelector_b09dda2c9bdc83427116784ee19fdaeb,
-  "/components/admin/ListCells#ThaiCell": ThaiCell_07f513c68167caf320c51b8dc6c45309,
-  "/components/admin/ListCells#SummaryCell": SummaryCell_07f513c68167caf320c51b8dc6c45309,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "/components/admin/Dashboard#Dashboard": Dashboard_16b88e9b8c48e393fa86591406efd08f,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
