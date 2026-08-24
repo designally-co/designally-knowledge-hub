@@ -936,23 +936,6 @@ html {
    large target it should have.
    -------------------------------------------------------------------------- */
 
-/* Visually hidden, not removed: the rail heading and the two buttons make the
-   subject obvious on sight, but a screen reader still needs the field named. */
-.document-fields__sidebar .field-type.upload > .field-label {
-  position: absolute;
-  inline-size: 1px;
-  block-size: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
-/* The dropzone stops being a box. It is still a dropzone — the element and its
-   handlers are untouched, so dragging a file onto it works exactly as before;
-   what goes is the dotted border advertising it, which cost 128px of rail to
-   promote the one route into the field that needs no promoting. */
 .field-type.upload .dropzone {
   border: 0;
   padding: 0;
@@ -974,15 +957,115 @@ html {
   display: none;
 }
 
-/* Closes the gap so the URL input reads as the next line of the same section
-   rather than as the start of another one. */
-.document-fields__sidebar .field-type.upload {
-  margin-block-end: 0.625rem;
+/* -----------------------------------------------------------------------------
+   The editor, block by block
+
+   Inside each sheet, every block sits on its own inset panel: the page's own
+   warm white, on the white card, so a block reads as recessed into the sheet
+   rather than as another object on top of it. No new colour — the panel is the
+   Field showing through.
+
+   One block, one question. The sheet says "this is the article"; the panel says
+   "this is one part of it".
+   -------------------------------------------------------------------------- */
+
+.document-fields__main .document-fields__fields > .field-type,
+.document-fields__sidebar-fields .render-fields > .field-type {
+  background-color: var(--da-warm-white);
+  border-radius: var(--style-radius-m);
+  padding: 0.875rem 1rem 1rem;
 }
 
-.document-fields__sidebar .field-type.upload + .field-type .field-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--da-ink-3);
-  margin-block-end: 0.25rem;
+.document-fields__main .document-fields__fields > .field-type + .field-type {
+  margin-block-start: 0.75rem;
+}
+
+.document-fields__sidebar-fields .render-fields > .field-type + .field-type {
+  margin-block-start: 0.625rem;
+}
+
+/* A panel already carries the recess, so the fields it holds do not need one of
+   their own; a white input inside a warm-white panel inside a white sheet is
+   three surfaces to say one thing. Only what you type into keeps its own
+   ground. */
+.document-fields__main .document-fields__fields > .field-type > .field-label {
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--da-ink-2);
+}
+
+/* The masthead pair reads as one block, so their rules meet the panel rather
+   than floating inside it. */
+#field-title,
+#field-summary {
+  border-block-end-color: var(--da-hairline);
+}
+
+/* The body is the panel — its editor surface should not draw a second one. */
+[data-field-path='body'] .rich-text-lexical__editor,
+[data-field-path='body'] .ContentEditable__root {
+  background-color: transparent;
+}
+
+/* ---- the cover, as one continuous panel ---------------------------------- */
+
+/* Two fields, one question, so the two panels are welded into one: the upload
+   loses its bottom corners and margin, the URL loses its top corners, and the
+   join is invisible. */
+.document-fields__fields > .field-type.upload:has(#field-coverImage) {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+  padding-block-end: 0.75rem;
+}
+
+.document-fields__fields > .field-type.upload:has(#field-coverImage) + .field-type {
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+  margin-block-start: 0;
+  padding-block-start: 0;
+}
+
+/* In the main column the cover gets room to be looked at. This overrides the
+   compaction above, which stays in force for the SEO og-image — that one is a
+   sharing thumbnail in a metadata block, not the article's own picture. */
+.field-type.upload:has(#field-coverImage) .dropzone {
+  min-block-size: 14rem;
+  display: grid;
+  place-items: center;
+  background-color: #ffffff;
+  border: 1px dashed var(--da-ink-4);
+  border-radius: var(--style-radius-m);
+}
+
+.field-type.upload:has(#field-coverImage) .upload__dropzoneContent__buttons {
+  justify-content: center;
+}
+
+/* Once a file is chosen the dropzone gives way to Payload's preview card; it
+   sits on the panel as the object it is. */
+.field-type.upload:has(#field-coverImage) .upload__wrap {
+  background-color: #ffffff;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-m);
+  overflow: hidden;
+}
+
+/* ---- the rail ------------------------------------------------------------ */
+
+/* Status and its date are one question in two parts, so they share a panel. A
+   `row` in a rail this narrow stacks rather than sitting side by side, which is
+   what is wanted — the grouping is the point, not the axis. */
+.document-fields__sidebar-fields .render-fields > .field-type.row {
+  display: block;
+}
+
+.document-fields__sidebar-fields .field-type.row > * + * {
+  margin-block-start: 0.75rem;
+}
+
+/* Nested fields inside a rail panel are already inside the recess. */
+.document-fields__sidebar-fields .field-type.row .field-type {
+  background: none;
+  padding: 0;
 }

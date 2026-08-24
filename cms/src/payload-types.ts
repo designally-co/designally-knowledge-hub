@@ -135,6 +135,11 @@ export interface Article {
    */
   summary?: string | null;
   bodyMarkdown?: string | null;
+  coverImage?: (number | null) | Media;
+  /**
+   * Used only when no image is set.
+   */
+  coverUrl?: string | null;
   /**
    * Open with 2–3 sentences, then 3–6 H2 sections.
    */
@@ -164,7 +169,7 @@ export interface Article {
       }[]
     | null;
   /**
-   * Shown at the foot of the article.
+   * Up to four, shown at the foot of the article.
    */
   related?: (number | Article)[] | null;
   /**
@@ -180,10 +185,6 @@ export interface Article {
    */
   status: 'draft' | 'published';
   publishedDate?: string | null;
-  /**
-   * Auto-filled from the title. Used in the URL.
-   */
-  slug?: string | null;
   /**
    * One tag per article; it sets the category.
    */
@@ -222,11 +223,10 @@ export interface Article {
     | 'Automation'
     | 'AI Design'
     | 'Future of Design';
-  coverImage?: (number | null) | Media;
   /**
-   * Used only when no image is set.
+   * Auto-filled from the title. Used in the URL.
    */
-  coverUrl?: string | null;
+  slug?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -469,6 +469,8 @@ export interface ArticlesSelect<T extends boolean = true> {
   title?: T;
   summary?: T;
   bodyMarkdown?: T;
+  coverImage?: T;
+  coverUrl?: T;
   body?: T;
   references?:
     | T
@@ -487,10 +489,8 @@ export interface ArticlesSelect<T extends boolean = true> {
       };
   status?: T;
   publishedDate?: T;
-  slug?: T;
   tag?: T;
-  coverImage?: T;
-  coverUrl?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }

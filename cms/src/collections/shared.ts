@@ -73,23 +73,6 @@ export const translateToThaiField: Field = {
   },
 }
 
-/**
- * A heading in the editor's right rail. Purely presentational: `ui` fields hold
- * no data, so adding one is not a schema change and there is nothing to
- * migrate. The name only has to be unique within the collection.
- */
-export const railHeading = (name: string, label: string): Field => ({
-  name,
-  type: 'ui',
-  label,
-  admin: {
-    position: 'sidebar',
-    components: {
-      Field: '/components/admin/RailHeading#RailHeading',
-    },
-  },
-})
-
 export const seoField: Field = {
   type: 'group',
   name: 'seo',
@@ -113,6 +96,9 @@ export const summaryField: Field = {
   name: 'summary',
   type: 'textarea',
   localized: true,
+  // "Deck" is what this is called in the trade and on the wireframe; the field
+  // name stays `summary`, because renaming it would be a migration for a word.
+  label: 'Deck',
   admin: {
     description:
       'One-sentence lede. Also the card excerpt.',

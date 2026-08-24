@@ -1,0 +1,249 @@
+/* =============================================================================
+   Related — four slots
+
+   Tokens from custom.scss. Unlayered, like everything in this theme.
+   The block sits on an inset panel drawn by the editor rules, so the slots
+   themselves are white objects on that panel rather than panels again.
+   ========================================================================== */
+
+.rel__label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--da-ink);
+}
+
+.rel__hint {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--da-ink-3);
+  margin: 0.125rem 0 0.875rem;
+}
+
+.rel__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 60em) {
+  .rel__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.rel__slot {
+  position: relative;
+  border-radius: var(--style-radius-m);
+  /* The proportion of the cards the published page lays out, so the choice is
+     made at roughly the shape it will be seen at. */
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+
+.rel__slot--filled {
+  background-color: var(--da-ink);
+}
+
+.rel__cover {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rel__cover--none {
+  background-color: var(--da-ink-2);
+}
+
+/* The headline over its own cover. A scrim rather than a solid band: the cover
+   is the thing being recognised and a bar across it hides the half that does
+   the recognising. */
+.rel__title {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  padding: 2rem 0.625rem 0.625rem;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #ffffff;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.82), rgb(0 0 0 / 0.55) 55%, transparent);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rel__remove {
+  position: absolute;
+  inset-block-start: 0.375rem;
+  inset-inline-end: 0.375rem;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  background-color: rgb(255 255 255 / 0.92);
+  color: var(--da-ink);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background-color var(--da-dur-feedback) var(--da-ease);
+}
+
+.rel__remove:hover {
+  background-color: #ffffff;
+}
+
+.rel__remove:focus-visible {
+  outline: var(--accessibility-outline);
+  outline-offset: 2px;
+}
+
+/* ---- empty slot ---------------------------------------------------------- */
+
+.rel__slot--empty {
+  /* A dashed edge is the one place this theme uses anything but a solid line:
+     it is what says "nothing here yet" without drawing an object. */
+  border: 1px dashed var(--da-ink-4);
+  background-color: #ffffff;
+}
+
+.rel__add {
+  inline-size: 100%;
+  block-size: 100%;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--da-ink-3);
+  transition: background-color var(--da-dur-feedback) var(--da-ease);
+}
+
+.rel__add:hover {
+  background-color: var(--da-warm-white);
+  color: var(--da-ink);
+}
+
+.rel__add:focus-visible {
+  outline: var(--accessibility-outline);
+  outline-offset: -2px;
+}
+
+.rel__plus {
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  border-radius: 999px;
+  background-color: var(--da-divider);
+  color: var(--da-ink);
+  font-size: 1.25rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+
+.rel__add-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* ---- picker -------------------------------------------------------------- */
+
+.rel__picker {
+  margin-block-start: 0.875rem;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-m);
+  background-color: #ffffff;
+  padding: 0.75rem;
+}
+
+.rel__search {
+  inline-size: 100%;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-s);
+  background-color: #ffffff;
+  color: var(--da-ink);
+}
+
+.rel__search:focus-visible {
+  outline: var(--accessibility-outline);
+  outline-offset: 1px;
+}
+
+.rel__state {
+  font-size: 0.8125rem;
+  color: var(--da-ink-3);
+  margin: 0.75rem 0 0.25rem;
+}
+
+.rel__options {
+  list-style: none;
+  margin: 0.625rem 0 0;
+  padding: 0;
+  max-block-size: 17rem;
+  overflow-y: auto;
+}
+
+.rel__options > li + li {
+  border-block-start: 1px solid var(--da-divider);
+}
+
+.rel__option {
+  inline-size: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.4375rem 0.375rem;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  text-align: start;
+  border-radius: var(--style-radius-s);
+  transition: background-color var(--da-dur-feedback) var(--da-ease);
+}
+
+.rel__option:hover {
+  background-color: var(--da-warm-white);
+}
+
+.rel__option:focus-visible {
+  outline: var(--accessibility-outline);
+  outline-offset: -2px;
+}
+
+.rel__option-thumb {
+  inline-size: 2.5rem;
+  block-size: 1.875rem;
+  border-radius: var(--style-radius-s);
+  object-fit: cover;
+  flex-shrink: 0;
+  background-color: var(--da-divider);
+  display: block;
+}
+
+.rel__option-title {
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--da-ink-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

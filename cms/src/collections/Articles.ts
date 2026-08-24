@@ -6,7 +6,6 @@ import { slugField } from '../fields/slug'
 import { TAG_SELECT_OPTIONS } from '../lib/tags'
 import {
   publishedOrEditor,
-  railHeading,
   publishedDateField,
   seoField,
   stampPublishedDate,
@@ -61,7 +60,10 @@ export const Articles: CollectionConfig = {
     beforeChange: stampPublishedDate,
   },
   fields: [
-    // ---- Main column -------------------------------------------------------
+    // ---- The document ------------------------------------------------------
+    // Reading order, and the order the article is made in: what it is called,
+    // what it promises, what it looks like, what it says, where that came from,
+    // what to read next, and how it is described to a search engine.
     titleField,
     summaryField,
     {
@@ -71,14 +73,30 @@ export const Articles: CollectionConfig = {
       type: 'textarea',
       admin: { hidden: true },
     },
+
+    // The cover, in the main column. It was briefly in the rail on the argument
+    // that it is not part of the text; it is part of the article, it is the
+    // largest thing on the published page, and at rail width there is nowhere
+    // to actually look at it. Uploading, choosing from the library and pasting
+    // a URL stay one block — see the cover rules in custom.scss.
+    {
+      name: 'coverImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Cover image',
+    },
+    {
+      name: 'coverUrl',
+      type: 'text',
+      label: 'Or paste a URL',
+      admin: { description: 'Used only when no image is set.' },
+    },
+
     {
       name: 'body',
       type: 'richText',
       localized: true,
-      admin: {
-        description:
-          'Open with 2–3 sentences, then 3–6 H2 sections.',
-      },
+      admin: { description: 'Open with 2\u20133 sentences, then 3\u20136 H2 sections.' },
     },
     {
       name: 'references',
@@ -91,37 +109,46 @@ export const Articles: CollectionConfig = {
       ],
     },
     {
+      // Four slots, shown as cards with their covers, because what you are
+      // choosing between is articles rather than rows of text. Four is the
+      // number the published page lays out.
       name: 'related',
       type: 'relationship',
       relationTo: 'articles',
       hasMany: true,
-      admin: { description: 'Shown at the foot of the article.' },
+      label: 'Related',
+      admin: {
+        description: 'Up to four, shown at the foot of the article.',
+        components: {
+          Field: '/components/admin/RelatedPicker#RelatedPicker',
+        },
+      },
     },
-    // Last in the column, because it is the part of the page that falls back on
-    // its own: with nothing filled in, the title and summary above stand in for
-    // it. Position is the whole of the hierarchy here.
+    // Last in the column: the part of the page that falls back on its own,
+    // since with nothing filled in the title and deck above stand in for it.
     //
-    // It is NOT wrapped in a `collapsible` to give it a fold. That was tried:
+    // NOT wrapped in a `collapsible` to give it a fold. That was tried:
     // Payload 3.86 renders a collapsible containing a named group completely
-    // empty — no inputs, nothing to expand — verified in a clean tab, so it was
-    // not stale dev state. The alternative, collapsing the group by unnaming
-    // it, would move `seo.metaTitle` and its two siblings to the top level.
-    // That is a migration, in exchange for a fold.
+    // empty \u2014 no inputs, nothing to expand \u2014 verified in a clean tab. The
+    // alternative, collapsing the group by unnaming it, would move
+    // `seo.metaTitle` and its two siblings to the top level. That is a
+    // migration, in exchange for a fold.
     seoField,
 
     // ---- The rail ----------------------------------------------------------
-    // Grouped by the question each answers. Order is the order the questions
-    // get asked: is it going out, where does it belong, what does it look like.
-    railHeading('railPublishing', 'Publishing'),
-    statusField,
-    publishedDateField,
-    ...slugField('title'),
-
-    railHeading('railFiling', 'Filing'),
+    // Panels, one question each. Status and its date are one question asked in
+    // two parts, so they share a row; the tag and the slug stand alone. There
+    // are no section headings: with one field to a panel the field's own label
+    // is the heading, and a second one above it just repeats the word.
+    {
+      type: 'row',
+      admin: { position: 'sidebar' },
+      fields: [statusField, publishedDateField],
+    },
     {
       // Exactly one tag. The tag determines the article's category (each tag
       // belongs to exactly one), so a second tag would make the category
-      // ambiguous — which is why this is a single value rather than a list.
+      // ambiguous \u2014 which is why this is a single value rather than a list.
       name: 'tag',
       type: 'select',
       options: TAG_SELECT_OPTIONS,
@@ -135,45 +162,18 @@ export const Articles: CollectionConfig = {
         },
       },
     },
+    ...slugField('title'),
 
-    // ---- Cover / imagery ---------------------------------------------------
-    // In the rail, not the main column. A cover is not part of the text and was
-    // sitting between the references and the SEO group, which is neither where
-    // you write it nor where you look for it.
-    // One section, not two fields. Uploading, choosing from the library and
-    // pasting a URL are three ways to answer one question, and stacked as two
-    // separate labelled fields with a description each they took 278px of rail
-    // to ask it. The "Cover" heading above names the whole thing, so
-    // `coverImage` carries no visible label of its own (it keeps one for a
-    // screen reader — see custom.scss) and `coverUrl` is relabelled to read as
-    // the third option rather than as a second subject.
-    railHeading('railCover', 'Cover'),
-    {
-      name: 'coverImage',
-      type: 'upload',
-      relationTo: 'media',
-      admin: { position: 'sidebar' },
-    },
-    {
-      name: 'coverUrl',
-      type: 'text',
-      label: 'Or paste a URL',
-      admin: {
-        position: 'sidebar',
-        description: 'Used only when no image is set.',
-      },
-    },
-
-    // Last in the rail: an action, not a property of the document. Everything
-    // above describes what the article is; this one does something to it.
+    // An action rather than a property: everything above describes what the
+    // article is, this one does something to it.
     translateToThaiField,
 
-    // NOTE: there are deliberately no "Thai" and "Summary" columns here.
+    // NOTE: there are deliberately no "Thai" and "Summary" columns in the list.
     // Content Studio translates and writes the dek as part of publishing, so
     // for the articles that arrive that way both are filled by the time anyone
-    // opens this list — two columns that would read "Yes / Yes" down every row
-    // and cost width on all of them. The dashboard still watches for both,
-    // because an article written by hand in this admin has neither done for it,
-    // and those sections hide themselves when there is nothing to report.
+    // opens it \u2014 two columns that would read "Yes / Yes" down every row and
+    // cost width on all of them. The dashboard still watches for both, because
+    // an article written by hand here has neither done for it, and those
+    // sections hide themselves when there is nothing to report.
   ],
 }
