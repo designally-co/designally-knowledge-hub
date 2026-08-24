@@ -131,12 +131,12 @@ export interface Article {
   id: number;
   title: string;
   /**
-   * Dek / subtitle: the one-sentence lede shown under the title, also used as the card excerpt and default meta description.
+   * One-sentence lede. Also the card excerpt.
    */
   summary?: string | null;
   bodyMarkdown?: string | null;
   /**
-   * Rich body. Opens with a 2–3 sentence introduction (no heading), then 3–6 H2 sections (H3 only when a section has separate parts).
+   * Open with 2–3 sentences, then 3–6 H2 sections.
    */
   body?: {
     root: {
@@ -154,7 +154,7 @@ export interface Article {
     [k: string]: unknown;
   } | null;
   /**
-   * Structured reference list shown at the end of the article.
+   * Sources, listed at the end.
    */
   references?:
     | {
@@ -164,11 +164,11 @@ export interface Article {
       }[]
     | null;
   /**
-   * Related articles surfaced on the article page.
+   * Shown at the foot of the article.
    */
   related?: (number | Article)[] | null;
   /**
-   * Per-item search metadata. Falls back to title/summary.
+   * Falls back to the title and summary.
    */
   seo?: {
     metaTitle?: string | null;
@@ -176,16 +176,16 @@ export interface Article {
     ogImage?: (number | null) | Media;
   };
   /**
-   * Draft = hidden from the public site; Published = live. Publishing is manual.
+   * Draft is hidden from the public site.
    */
   status: 'draft' | 'published';
   publishedDate?: string | null;
   /**
-   * Auto-generated from the title if left blank. Used in the public URL.
+   * Auto-filled from the title. Used in the URL.
    */
   slug?: string | null;
   /**
-   * The one tag this article is filed under (grouped by category).
+   * One tag per article; it sets the category.
    */
   tag:
     | 'Branding Systems'
@@ -223,11 +223,11 @@ export interface Article {
     | 'AI Design'
     | 'Future of Design';
   /**
-   * Uploaded cover. Preferred once real assets exist.
+   * Preferred over a URL.
    */
   coverImage?: (number | null) | Media;
   /**
-   * External cover URL (placeholder Unsplash imagery). Used when no coverImage is set. With no cover at all, a default colour is shown. The aspect ratio comes from the uploaded image.
+   * Used when no cover image is set.
    */
   coverUrl?: string | null;
   updatedAt: string;
@@ -323,12 +323,12 @@ export interface Resource {
       }[]
     | null;
   /**
-   * Draft = hidden from the public site; Published = live. Publishing is manual.
+   * Draft is hidden from the public site.
    */
   status: 'draft' | 'published';
   publishedDate?: string | null;
   /**
-   * Auto-generated from the title if left blank. Used in the public URL.
+   * Auto-filled from the title. Used in the URL.
    */
   slug?: string | null;
   /**
@@ -344,7 +344,7 @@ export interface Resource {
    */
   licence?: string | null;
   /**
-   * Per-item search metadata. Falls back to title/summary.
+   * Falls back to the title and summary.
    */
   seo?: {
     metaTitle?: string | null;

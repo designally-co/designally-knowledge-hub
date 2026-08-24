@@ -77,14 +77,14 @@ export const Articles: CollectionConfig = {
       localized: true,
       admin: {
         description:
-          'Rich body. Opens with a 2–3 sentence introduction (no heading), then 3–6 H2 sections (H3 only when a section has separate parts).',
+          'Open with 2–3 sentences, then 3–6 H2 sections.',
       },
     },
     {
       name: 'references',
       type: 'array',
       labels: { singular: 'Reference', plural: 'References' },
-      admin: { description: 'Structured reference list shown at the end of the article.' },
+      admin: { description: 'Sources, listed at the end.' },
       fields: [
         { name: 'label', type: 'text', required: true },
         { name: 'url', type: 'text', required: true },
@@ -95,7 +95,7 @@ export const Articles: CollectionConfig = {
       type: 'relationship',
       relationTo: 'articles',
       hasMany: true,
-      admin: { description: 'Related articles surfaced on the article page.' },
+      admin: { description: 'Shown at the foot of the article.' },
     },
     // Last in the column, because it is the part of the page that falls back on
     // its own: with nothing filled in, the title and summary above stand in for
@@ -128,7 +128,7 @@ export const Articles: CollectionConfig = {
       required: true,
       admin: {
         position: 'sidebar',
-        description: 'The one tag this article is filed under (grouped by category).',
+        description: 'One tag per article; it sets the category.',
         components: {
           Field: '/components/admin/TagSelector#TagSelector',
           Cell: '/components/admin/ListCells#TagCell',
@@ -147,7 +147,7 @@ export const Articles: CollectionConfig = {
       relationTo: 'media',
       admin: {
         position: 'sidebar',
-        description: 'Uploaded cover. Preferred once real assets exist.',
+        description: 'Preferred over a URL.',
       },
     },
     {
@@ -155,8 +155,7 @@ export const Articles: CollectionConfig = {
       type: 'text',
       admin: {
         position: 'sidebar',
-        description:
-          'External cover URL (placeholder Unsplash imagery). Used when no coverImage is set. With no cover at all, a default colour is shown. The aspect ratio comes from the uploaded image.',
+        description: 'Used when no cover image is set.',
       },
     },
 

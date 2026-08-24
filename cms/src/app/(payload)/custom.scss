@@ -843,3 +843,81 @@ html {
   font-size: 1.0625rem;
   line-height: 1.7;
 }
+
+/* -----------------------------------------------------------------------------
+   The editor as card sheets
+
+   The platform's chassis: the page is the warm-white Field and the things on it
+   are white cards inside the Edge, at --r-lg. Payload lays a document out as one
+   undifferentiated column of fields on the page itself, so there is nothing to
+   tell the document apart from the decisions about it. Two sheets do that — the
+   document on the left, everything that describes it on the right — and the rail
+   headings already inside the second one divide it.
+
+   The platform learned this on its own question cards and wrote it down: "most
+   of the top of every card was preamble — twenty-one times over, and two of the
+   four were metadata rather than the question." The same was true here, so the
+   preamble goes first.
+   -------------------------------------------------------------------------- */
+
+/* The document's title, set as a heading directly above a Title field holding
+   the identical words — with the breadcrumb naming it a third time. On the
+   create screen it is worse than redundant: it reads "[Untitled]". The
+   breadcrumb carries the context in both states.
+
+   Only the title. Hiding `.doc-header__header` outright also took the Edit/API
+   tabs down with it, which live in the same row — the API view is a real tool,
+   not chrome. */
+.doc-header__title {
+  display: none;
+}
+
+/* The collection's description belongs to the list, where you are choosing what
+   to open. Repeating it on every document tells someone already editing an
+   article what articles are for. */
+.doc-header__after-header .custom-view-description {
+  display: none;
+}
+
+/* Hiding the text left its row behind — 36px of empty band between the tabs
+   and the document. Collapsed only when the description was the whole of its
+   contents, so a view that puts something else there keeps its row. */
+.doc-header__after-header:has(> .custom-view-description:only-child) {
+  display: none;
+}
+
+.doc-header {
+  padding-block-end: 0.875rem;
+}
+
+/* The two sheets. */
+.document-fields__main .render-fields.document-fields__fields,
+.document-fields__sidebar-fields .render-fields {
+  background-color: #ffffff;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-l);
+}
+
+.document-fields__main .render-fields.document-fields__fields {
+  padding: 1.75rem 2rem 2rem;
+}
+
+.document-fields__sidebar-fields .render-fields {
+  padding: 1.25rem 1.25rem 1.5rem;
+}
+
+/* The SEO group came with 40px/60px of its own padding and negative side
+   margins — Payload bleeds a top-level group out to the gutter edge, which
+   inside a sheet means it hangs 60px past the card's own border on the left
+   and 46px on the right. Both are cancelled, so it sits in the sheet like
+   every other block.
+
+   Its rule was `--da-warm-white`, drawn on the page; on a white card that is
+   the same colour as the card and the division disappears. It takes the
+   divider instead. */
+.group-field--top-level {
+  padding: 1.5rem 0 0;
+  margin-block-start: 0.5rem;
+  margin-inline: 0;
+  border-block-start-color: var(--da-divider);
+}

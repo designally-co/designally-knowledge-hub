@@ -43,7 +43,7 @@ export const statusField: Field = {
   ],
   admin: {
     position: 'sidebar',
-    description: 'Draft = hidden from the public site; Published = live. Publishing is manual.',
+    description: 'Draft is hidden from the public site.',
     components: {
       // Shared by Articles and Resources on purpose: "draft" should look the
       // same wherever it appears, or the reader has to learn two vocabularies.
@@ -94,7 +94,7 @@ export const seoField: Field = {
   type: 'group',
   name: 'seo',
   label: 'SEO',
-  admin: { description: 'Per-item search metadata. Falls back to title/summary.' },
+  admin: { description: 'Falls back to the title and summary.' },
   fields: [
     { name: 'metaTitle', type: 'text', localized: true },
     { name: 'metaDescription', type: 'textarea', localized: true },
@@ -115,6 +115,6 @@ export const summaryField: Field = {
   localized: true,
   admin: {
     description:
-      'Dek / subtitle: the one-sentence lede shown under the title, also used as the card excerpt and default meta description.',
+      'One-sentence lede. Also the card excerpt.',
   },
 }
