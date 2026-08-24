@@ -159,7 +159,16 @@ export async function Dashboard({ payload, user }: DashboardProps) {
       title: 'Needs a summary',
       note: 'Live without a dek, so cards and search results have nothing to show.',
       rows: incomplete,
-      href: `${articlesURL}?where[summary][exists]=false`,
+      // Both halves of the rule, or the count here and the count over there
+      // disagree. This section is published-only — a draft with no summary is
+      // already listed under Drafts waiting and is not live to be thin — so the
+      // link has to say `status = published` too. Filtering on the summary
+      // alone returns the drafts as well, which an authenticated admin can see:
+      // 23 in the list against 22 here, and a dashboard that cannot be
+      // reconciled with the list it links to is a dashboard nobody trusts.
+      href:
+        `${articlesURL}?where[and][0][summary][exists]=false` +
+        `&where[and][1][status][equals]=published`,
     },
   ].filter((s) => s.rows.length > 0)
 

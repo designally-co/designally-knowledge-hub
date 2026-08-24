@@ -44,6 +44,11 @@ export const statusField: Field = {
   admin: {
     position: 'sidebar',
     description: 'Draft = hidden from the public site; Published = live. Publishing is manual.',
+    components: {
+      // Shared by Articles and Resources on purpose: "draft" should look the
+      // same wherever it appears, or the reader has to learn two vocabularies.
+      Cell: '/components/admin/ListCells#StatusCell',
+    },
   },
 }
 

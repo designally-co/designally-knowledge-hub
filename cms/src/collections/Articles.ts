@@ -34,7 +34,10 @@ export const Articles: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'tag', 'status', 'publishedDate'],
+    // A triage order: what it is, whether it is live, where it is filed, and
+    // then the two things that are most often left undone. Last edited closes
+    // the row because it answers "where was I", not "what needs doing".
+    defaultColumns: ['title', 'status', 'tag', 'thaiState', 'summaryState', 'updatedAt'],
     group: 'Content',
     description: 'Written editorial. Downloadable files belong in Resources.',
   },
@@ -105,6 +108,7 @@ export const Articles: CollectionConfig = {
         description: 'The one tag this article is filed under (grouped by category).',
         components: {
           Field: '/components/admin/TagSelector#TagSelector',
+          Cell: '/components/admin/ListCells#TagCell',
         },
       },
     },
@@ -133,6 +137,32 @@ export const Articles: CollectionConfig = {
       relationTo: 'articles',
       hasMany: true,
       admin: { description: 'Related articles surfaced on the article page.' },
+    },
+
+    // ---- List-only columns -------------------------------------------------
+    // Two questions the stored row cannot answer on its own. `ui` fields carry
+    // no data and add nothing to the schema — they exist purely as a slot for a
+    // cell, so neither of these is a migration. Both are list-only: `disableListColumn`
+    // is not set, but `Field` is absent, so they never appear in the editor.
+    {
+      name: 'thaiState',
+      type: 'ui',
+      label: 'Thai',
+      admin: {
+        components: {
+          Cell: '/components/admin/ListCells#ThaiCell',
+        },
+      },
+    },
+    {
+      name: 'summaryState',
+      type: 'ui',
+      label: 'Summary',
+      admin: {
+        components: {
+          Cell: '/components/admin/ListCells#SummaryCell',
+        },
+      },
     },
   ],
 }

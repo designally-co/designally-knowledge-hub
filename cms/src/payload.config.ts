@@ -136,6 +136,11 @@ export default buildConfig({
     meta: {
       titleSuffix: '— Designally Hub',
     },
+    // Payload's default renders "August 5th 2026, 5:30 PM", which wraps to two
+    // lines in a list column and doubles the height of every row. Editorial
+    // work is filed by day, never by minute, so the clock is noise here. Set
+    // globally rather than per field so every date in the admin agrees.
+    dateFormat: 'd MMM yyyy',
     // The Designally design system is a light system: the page is parchment,
     // the things on it are white, and depth comes from a hairline rather than
     // a shadow. It does have a dark Field, but the system reserves that for a
