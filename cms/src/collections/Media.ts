@@ -12,6 +12,10 @@ export const Media: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'alt',
+    // Grouped so the sidebar can be ordered at all. Payload renders every
+    // ungrouped collection ABOVE the grouped ones, which put Media and Users —
+    // the two things opened least — above the two opened daily.
+    group: 'Library',
   },
   fields: [
     {

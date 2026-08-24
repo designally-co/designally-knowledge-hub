@@ -406,11 +406,16 @@ a:focus-visible,
 
 .nav__link {
   font-family: var(--font-display);
-  font-weight: 600;
+  /* 500, NOT 600 — see the current-state block below. Payload's only signal for
+     "you are here" is a weight step from this value up to 600, so this must sit
+     a step below it or the active link cannot be told apart. */
+  font-weight: 500;
   letter-spacing: -0.01em;
   color: var(--da-ink-2);
   border-radius: var(--style-radius-s);
-  transition: background-color var(--da-dur-feedback) var(--da-ease);
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
 }
 
 @media (hover: hover) {
@@ -420,13 +425,68 @@ a:focus-visible,
   }
 }
 
-/* There is deliberately no active/current state here. Payload renders its nav
-   links with nothing to hook one on — no `aria-current`, no active class, no
-   indicator element — so a rule for it would be CSS that never fires while
-   implying the sidebar tells you where you are. It does not; the breadcrumb
-   above the document does. Giving the nav a real current state means replacing
-   Payload's Nav through `admin.components`, which is an importMap change and
-   carries the blank-admin risk documented in payload.config.ts. */
+/* -----------------------------------------------------------------------------
+   Current state — "you are here"
+
+   Payload DOES ship one, contrary to what this file said before. Reading the
+   built nav (@payloadcms/next/dist/elements/Nav/index.client.js) settles it:
+   when a link matches the path it renders an extra `.nav__link-indicator` div,
+   and on an exact match it drops the anchor entirely for a plain `div.nav__link`
+   — which is also why a `div` here must be styled as though it were a link.
+   Payload's own stylesheet then marks it with a weight step and a 2px bar:
+
+     .nav__link:has(.nav__link-indicator) { font-weight: 600 }
+     .nav__link-indicator { width: 2px; height: 16px; background: var(--theme-text) }
+
+   So the state was never missing — this theme erased it, by setting every link
+   to 600 and leaving the bar at text colour where it reads as a stray mark. The
+   fix is CSS, not a custom Nav component: no importMap entry, none of the
+   blank-admin risk documented in payload.config.ts.
+
+   `:has()` is how Payload itself selects this, so it is the same support floor,
+   and both branches (anchor and div) carry the indicator. */
+.nav__link:has(.nav__link-indicator) {
+  font-weight: 600;
+  color: var(--da-ink);
+  background-color: #ffffff;
+  box-shadow: inset 0 0 0 1px var(--da-hairline);
+  /* The link box is flush-left, so it needs its own inset to look like a
+     surface rather than a band running off the edge. */
+  padding-inline-start: 10px;
+  margin-inline-start: -10px;
+}
+
+/* The bar is the accent's job: one small mark of CI orange, which is the only
+   place colour is load-bearing in this sidebar. Sized to the cap height of the
+   label rather than Payload's default 16px so it reads as aligned.
+
+   INSIDE the pill, not outside it. Payload's own -20px assumes the link sits
+   in a container with at least that much padding to hang the bar in; this
+   sidebar has 23px of padding and the pill already reaches 10px into it, so a
+   negative offset put the bar at x = -1 — off the edge of the sidebar
+   entirely, measured, not guessed. Positive values are measured from the
+   pill's own left edge, which is where it belongs anyway: the bar marks the
+   surface, it does not float beside it. */
+.nav__link-indicator {
+  width: 3px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--da-orange-mark);
+  inset-inline-start: 3px;
+}
+
+/* A current link is not a link — Payload renders it as a div, so it must not
+   invite a click it cannot honour. */
+div.nav__link {
+  cursor: default;
+}
+
+@media (hover: hover) {
+  div.nav__link:hover {
+    background-color: #ffffff;
+    text-decoration: none;
+  }
+}
 
 /* =============================================================================
    The mark

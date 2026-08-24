@@ -123,6 +123,16 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      views: {
+        // Replaces Payload's grid of one-card-per-collection. That grid is a
+        // table of contents, and the sidebar is already the table of contents;
+        // this says what is actually waiting instead. See ADMIN-REDESIGN.md.
+        dashboard: {
+          Component: '/components/admin/Dashboard#Dashboard',
+        },
+      },
+    },
     meta: {
       titleSuffix: '— Designally Hub',
     },
