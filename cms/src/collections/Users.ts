@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { APIError } from 'payload'
 
 export const Users: CollectionConfig = {
   slug: 'users',
@@ -35,11 +36,43 @@ export const Users: CollectionConfig = {
     // "Account" is what keeps Users last rather than first.
     group: 'Account',
   },
-  // API-key auth (alongside email/password) so the Content Generator can post
-  // articles. Enable the key per-user in the admin, then send:
+  // API-key auth so the Content Generator can post articles. Enable the key
+  // per-user in the admin, then send:
   //   Authorization: users API-Key <key>
+  //
+  // This is a SEPARATE strategy from the password one refused below, and from
+  // the cookie one Google sign-in uses. Blocking password login does not touch
+  // it: the key is matched by `apiKeyIndex`, with no session and no person.
   auth: {
     useAPIKey: true,
+  },
+  hooks: {
+    /*
+     * There is no password way in. A Designally Google account is the only way
+     * to reach this CMS, so `POST /api/users/login` — which stayed answerable
+     * after the form was hidden — is refused outright.
+     *
+     * A HOOK, not `disableLocalStrategy`. Payload registers its JWT cookie
+     * strategy only when the local strategy is enabled:
+     *
+     *     if (!collection.auth.disableLocalStrategy && !jwtStrategyEnabled)
+     *                                     — payload/dist/index.js
+     *
+     * and Google sign-in issues a Payload cookie that exactly that strategy
+     * reads back. Disabling local auth would therefore lock everyone out,
+     * Google included. This hook runs inside the login OPERATION, which the
+     * Google callback never calls — it signs its token directly — so SSO is
+     * untouched while the password door is shut.
+     *
+     * KNOWN CONSEQUENCE: this removes the break-glass path. If the OAuth client
+     * is ever misconfigured in production, recovery is a redeploy with this
+     * hook removed, or a change in the database — not a password login.
+     */
+    beforeLogin: [
+      () => {
+        throw new APIError('Sign in with your Designally Google account.', 403)
+      },
+    ],
   },
   fields: [
     // Email added by default
