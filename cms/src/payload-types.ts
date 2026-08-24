@@ -222,12 +222,9 @@ export interface Article {
     | 'Automation'
     | 'AI Design'
     | 'Future of Design';
-  /**
-   * Preferred over a URL.
-   */
   coverImage?: (number | null) | Media;
   /**
-   * Used when no cover image is set.
+   * Used only when no image is set.
    */
   coverUrl?: string | null;
   updatedAt: string;

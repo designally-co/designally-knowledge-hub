@@ -140,22 +140,27 @@ export const Articles: CollectionConfig = {
     // In the rail, not the main column. A cover is not part of the text and was
     // sitting between the references and the SEO group, which is neither where
     // you write it nor where you look for it.
+    // One section, not two fields. Uploading, choosing from the library and
+    // pasting a URL are three ways to answer one question, and stacked as two
+    // separate labelled fields with a description each they took 278px of rail
+    // to ask it. The "Cover" heading above names the whole thing, so
+    // `coverImage` carries no visible label of its own (it keeps one for a
+    // screen reader — see custom.scss) and `coverUrl` is relabelled to read as
+    // the third option rather than as a second subject.
     railHeading('railCover', 'Cover'),
     {
       name: 'coverImage',
       type: 'upload',
       relationTo: 'media',
-      admin: {
-        position: 'sidebar',
-        description: 'Preferred over a URL.',
-      },
+      admin: { position: 'sidebar' },
     },
     {
       name: 'coverUrl',
       type: 'text',
+      label: 'Or paste a URL',
       admin: {
         position: 'sidebar',
-        description: 'Used when no cover image is set.',
+        description: 'Used only when no image is set.',
       },
     },
 
