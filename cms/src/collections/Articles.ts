@@ -133,7 +133,9 @@ export const Articles: CollectionConfig = {
     // alternative, collapsing the group by unnaming it, would move
     // `seo.metaTitle` and its two siblings to the top level. That is a
     // migration, in exchange for a fold.
-    seoField,
+    seoField(
+      'The cover above is used automatically. Only set one here if the share card needs a different picture — a cover that is mostly texture, or one whose subject gets cropped out.',
+    ),
 
     // ---- The rail ----------------------------------------------------------
     // Panels, one question each. Status and its date are one question asked in

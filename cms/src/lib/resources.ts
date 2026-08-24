@@ -55,13 +55,17 @@ function coverOf(r: ArticleDoc): string | undefined {
  * The override exists for the cases where the two genuinely differ: a cover
  * that is mostly texture, or one whose subject sits where a 1.91:1 card crops.
  */
-function shareImageOf(r: ArticleDoc): string | undefined {
+function seoOverrideOf(r: { seo?: { ogImage?: unknown } | null }): string | undefined {
   const og = r.seo?.ogImage
   if (og && typeof og === 'object') {
     const media = og as Media
     if (media.url) return media.url
   }
-  return coverOf(r)
+  return undefined
+}
+
+function shareImageOf(r: ArticleDoc): string | undefined {
+  return seoOverrideOf(r) ?? coverOf(r)
 }
 
 /**
@@ -321,6 +325,9 @@ export interface ResourceDetail extends ResourceItem {
   fileSize?: string
   licence?: string
   files: { url: string; filename: string; format: string }[]
+  /** For the social share card. A resource has no cover to fall back on — its
+   *  artwork comes from its category — so this is the SEO override or nothing. */
+  shareImage?: string
 }
 
 function toResourceItem(r: Resource, locale: Locale): ResourceItem {
@@ -454,6 +461,7 @@ export async function getResourceBySlug(
       return {
         ...toResourceItem(r, locale),
         description: r.description ?? undefined,
+        shareImage: seoOverrideOf(r),
         fileSize: r.fileSize ?? undefined,
         licence: r.licence ?? undefined,
         files,

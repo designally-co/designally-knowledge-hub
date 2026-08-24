@@ -42,10 +42,26 @@ export async function generateMetadata({
   const locale: Locale = isLocale(lang) ? lang : 'en'
   const resource = await getResourceBySlug(slug, locale)
   if (!resource) return { title: getDictionary(locale).resources.notFound }
+  // A resource has no dek — its description is the only prose it carries.
+  const description = resource.description?.split(/\n{2,}/)[0]?.trim()
+  /* No cover to fall back on: a resource's artwork comes from its category, so
+     the share image is whatever the SEO panel was given, or nothing. */
+  const image = resource.shareImage
   return {
     title: resource.title,
-    // A resource has no dek — its description is the only prose it carries.
-    description: resource.description?.split(/\n{2,}/)[0]?.trim(),
+    description,
+    openGraph: {
+      type: 'article',
+      title: resource.title,
+      description,
+      ...(image ? { images: [{ url: image }] } : {}),
+    },
+    twitter: {
+      card: image ? 'summary_large_image' : 'summary',
+      title: resource.title,
+      description,
+      ...(image ? { images: [image] } : {}),
+    },
   }
 }
 

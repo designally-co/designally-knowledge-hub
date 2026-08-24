@@ -124,7 +124,7 @@ export const Resources: CollectionConfig = {
       },
     },
 
-    seoField,
+    seoField('The picture shown when this download is shared.'),
   ],
 }
 

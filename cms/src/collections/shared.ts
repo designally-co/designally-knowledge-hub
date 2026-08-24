@@ -58,6 +58,18 @@ export const publishedDateField: Field = {
   admin: {
     position: 'sidebar',
     date: { pickerAppearance: 'dayOnly', displayFormat: 'd MMM yyyy' },
+    // Hidden while the document is a draft. It is not required, and
+    // `stampPublishedDate` above fills it in the moment status becomes
+    // published — so on a draft it is an empty control asking for something
+    // that will be answered for you.
+    //
+    // `condition` only governs whether the field is RENDERED; a value already
+    // stored is kept, which matters for anything published, unpublished and
+    // published again. The one thing it gives up is setting a date ahead of
+    // time while still drafting, and there is no scheduled publishing here for
+    // that to serve — the hook respects a date already set, so pre-dating is
+    // still possible by publishing and then editing.
+    condition: (data) => data?.status === 'published',
   },
 }
 
@@ -73,17 +85,34 @@ export const translateToThaiField: Field = {
   },
 }
 
-export const seoField: Field = {
+/**
+ * Per-item search and share metadata.
+ *
+ * A FUNCTION, not a constant, because the share image behaves differently in
+ * the two collections that use it: an article falls back to its own cover, and
+ * a resource has no image field to fall back to — its artwork comes from its
+ * category. One shared description could only be true of one of them, and a
+ * field that explains itself wrongly is worse than one that says nothing.
+ */
+export const seoField = (shareImageNote: string): Field => ({
   type: 'group',
   name: 'seo',
-  label: 'SEO',
-  admin: { description: 'Falls back to the title and summary.' },
+  label: 'SEO & sharing',
+  admin: { description: 'Search results and share cards. Optional.' },
   fields: [
     { name: 'metaTitle', type: 'text', localized: true },
     { name: 'metaDescription', type: 'textarea', localized: true },
-    { name: 'ogImage', type: 'upload', relationTo: 'media' },
+    {
+      name: 'ogImage',
+      type: 'upload',
+      relationTo: 'media',
+      // "Og" is Open Graph, which is jargon and was read as a typo. The label
+      // says what it is for; the description says when to touch it.
+      label: 'Share image',
+      admin: { description: shareImageNote },
+    },
   ],
-}
+})
 
 export const titleField: Field = {
   name: 'title',

@@ -173,11 +173,14 @@ export interface Article {
    */
   related?: (number | Article)[] | null;
   /**
-   * Falls back to the title and summary.
+   * Search results and share cards. Optional.
    */
   seo?: {
     metaTitle?: string | null;
     metaDescription?: string | null;
+    /**
+     * The cover above is used automatically. Only set one here if the share card needs a different picture — a cover that is mostly texture, or one whose subject gets cropped out.
+     */
     ogImage?: (number | null) | Media;
   };
   /**
@@ -341,11 +344,14 @@ export interface Resource {
    */
   licence?: string | null;
   /**
-   * Falls back to the title and summary.
+   * Search results and share cards. Optional.
    */
   seo?: {
     metaTitle?: string | null;
     metaDescription?: string | null;
+    /**
+     * The picture shown when this download is shared.
+     */
     ogImage?: (number | null) | Media;
   };
   updatedAt: string;
