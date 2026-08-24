@@ -71,16 +71,24 @@ The flow:
 **Content Studio publishes with an API key**, and that key lives on a `users`
 record. If it is lost, auto-publishing stops.
 
-Two ways it could be lost, both avoidable:
+**Corrected after reading Payload's source.** An earlier draft of this plan
+said a mismatched Google address would strand the key and stop auto-publishing.
+That is wrong, and the correction matters because it was the loudest risk here.
 
-- **Disabling the wrong thing.** `useAPIKey` is a *separate* strategy from the
-  local one, so `disableLocalStrategy` does not touch it. Worth stating because
-  the names suggest otherwise.
-- **Creating a second user.** If the Google address does not match the email on
-  the existing record, sign-in creates a *new* user and the API key is stranded
-  on the old one. CG's migration only came through this cleanly because the
-  addresses matched. The local Hub user is `website.team@designally.co`, which
-  would match — **but production has not been checked** (see Open decisions).
+`APIKeyAuthentication` resolves the user by `apiKeyIndex` alone — an HMAC of the
+key against `payload.secret`. It never looks at the email, never consults the
+local strategy, and does not care whether anyone can sign in as that user
+interactively. So:
+
+- **`disableLocalStrategy` does not touch it.** `useAPIKey` is a separate
+  strategy. Worth stating because the names suggest otherwise.
+- **A mismatched Google address does not break publishing.** It creates a second
+  user record, which is untidy — a legacy account nobody can log into, holding
+  the key, beside a Google account that can. CG keeps publishing throughout.
+
+The one thing that *would* break every API key is changing `PAYLOAD_SECRET`,
+since every `apiKeyIndex` is derived from it. That is unrelated to this work and
+worth knowing anyway.
 
 Verification either side of the change is the same three calls used when the
 API tab was removed: `from-markdown` and `translate-to-thai` must answer **401**
@@ -99,8 +107,15 @@ rather than to a form that no longer accepts anything.
 Deliberately two commits, because this is the one change that can lock everyone
 out of the place the published content lives.
 
-1. **Add Google sign-in beside email/password.** Both work. Verified on a Vercel
-   preview deployment first — never straight to production.
+1. **Add Google sign-in beside email/password.** Both work. Proven locally
+   first, then in production with local auth still enabled.
+
+   Note on "verify it on a preview deployment first", which the earlier draft
+   said and which does not survive contact with Google: **redirect URIs cannot
+   contain wildcards**, and Vercel preview URLs are per-deployment. A preview
+   would need its own stable alias registered on the client. Either register
+   one, or accept that step 1's production test is the first real one — which is
+   what keeping email/password alive through it is for.
 2. **Remove email/password**, once Google sign-in has actually been used in
    production. `disableLocalStrategy`, and the API key keeps working.
 
@@ -124,18 +139,24 @@ Rough effort: half a day for step 1, an hour for step 2, most of it verification
 
 ## Open decisions — needed before building
 
-1. **Which Google OAuth client?** The platform's existing one, or a new one for
-   the Hub? Either way the Hub's own redirect URI has to be added — the consent
-   screen is still named "designally-platform", which is already worth renaming
-   now that it would front three apps.
+1. ~~Which Google OAuth client?~~ **Settled: the same one CG uses.** So the Hub
+   takes CG's `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET` values, and two redirect
+   URIs must be added to that client in the Google console — something only you
+   can do:
+
+       http://localhost:3000/auth/google/callback
+       https://designally-knowledge-hub.vercel.app/auth/google/callback
+
+   The consent screen is still named "designally-platform" and would now front
+   three apps, which is worth renaming while you are in there.
 
 2. **Who gets in?** CG's rule is that anyone with a `@designally.co` Google
    account signs in and is an admin. Same for the Hub, or an explicit allowlist?
    Same-as-CG is simpler and matches what you said; an allowlist matters only if
    the domain has accounts that should not reach published content.
 
-3. **What is the production Hub user's email, and does it hold CG's API key?** I
-   can see the local database but not production, and this is the one fact that
-   decides whether the migration is seamless or strands the publishing key. If
-   it is `website.team@designally.co`, it matches and there is nothing to do.
-   Worth confirming in the admin's Users list before I start.
+3. **What is the production Hub user's email?** Downgraded from critical to
+   tidiness, per the correction above: publishing survives either way. If it
+   matches the Google address, that record is reused and nothing changes. If it
+   does not, you end up with a spare legacy account, and the question is only
+   whether to merge or delete it afterwards.
