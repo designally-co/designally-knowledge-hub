@@ -121,9 +121,21 @@ export async function GET(req: Request) {
     token,
   })
 
+  /* BOTH cookies go on as raw headers. Mixing the two APIs does not work:
+     appending a Set-Cookie header and then calling `res.cookies.set()` on the
+     same response drops the appended one — and, measured on this version of
+     Next, drops BOTH, leaving no Set-Cookie header at all.
+
+     That was this route's first bug, and it was invisible from the outside:
+     the sign-in completed, the redirect landed on /admin, and an editor who
+     already had a session simply stayed logged in under the old one. It was
+     only caught by reading the session's own expiry and finding it predated
+     the Google round trip. */
   const res = NextResponse.redirect(`${origin}/admin`)
   res.headers.append('Set-Cookie', cookie)
-  // The state cookie has done its job.
-  res.cookies.set(STATE_COOKIE, '', { path: '/', maxAge: 0 })
+  res.headers.append(
+    'Set-Cookie',
+    `${STATE_COOKIE}=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax`,
+  )
   return res
 }
