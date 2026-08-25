@@ -392,50 +392,6 @@
   text-wrap: balance;
 }
 
-/* --- References --------------------------------------------------------- */
-
-.article-references {
-  margin-top: clamp(40px, 7vw, 56px);
-  padding-top: clamp(24px, 4vw, 32px);
-  border-top: 1px solid var(--border-hairline);
-}
-
-.article-references__title {
-  font: var(--type-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin: 0 0 16px;
-}
-
-.article-references__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.article-references__link {
-  font: var(--type-body);
-  color: var(--be-ink);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-  word-break: break-word;
-  transition:
-    text-decoration-thickness var(--hover-state-dur) var(--ease-out-quart),
-    text-underline-offset var(--hover-state-dur) var(--ease-out-quart);
-}
-
-@media (hover: hover) {
-  .article-references__link:hover {
-    opacity: 1;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-  }
-}
 
 /* --- Share row (end of article) ---------------------------------------- */
 
@@ -540,5 +496,162 @@
 @media (min-width: 64em) {
   .article__related-grid {
     grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   References
+
+   A source list is scanned, not read: the reader is checking WHO is cited, so
+   the site's own mark does more work than its URL. Chips on a sunken band, in
+   a row, rather than a stack of underlined links.
+
+   Above the share block — see the note in the article page.
+   -------------------------------------------------------------------------- */
+
+.article-refs {
+  margin-top: clamp(40px, 7vw, 56px);
+  padding-top: clamp(24px, 4vw, 32px);
+  border-top: 1px solid var(--border-hairline);
+}
+
+.article-refs__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* The section's own voice: the display serif the rest of the page uses for
+   headings, not the small caps label the old list had. */
+.article-refs__title {
+  font: var(--type-display-2);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* A disc with the Edge, matching the icon buttons elsewhere. It toggles a list
+   that is open by default, so it is an affordance rather than a reveal. */
+.article-refs__toggle {
+  flex-shrink: 0;
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--border-hairline);
+  background: transparent;
+  color: var(--text-primary);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease-out-quart),
+    border-color 0.2s var(--ease-out-quart);
+}
+
+@media (hover: hover) {
+  .article-refs__toggle:hover {
+    background-color: var(--surface-card);
+    border-color: var(--text-primary);
+  }
+}
+
+.article-refs__caret {
+  transition: transform 0.32s var(--ease-out-quart);
+}
+
+.article-refs__toggle[aria-expanded='false'] .article-refs__caret {
+  transform: rotate(-90deg);
+}
+
+/* Same collapse mechanism as the footer groups: 0fr -> 1fr animates a height
+   the browser has to measure, without a fixed pixel value to keep in step. */
+.article-refs__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.32s var(--ease-out-quart);
+}
+
+.article-refs__panel-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.article-refs__panel.is-open {
+  grid-template-rows: 1fr;
+}
+
+.article-refs__list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  /* The band. Paper is the page, so the recess is a step darker than paper
+     rather than a new colour. */
+  background-color: color-mix(in srgb, var(--be-ink) 6%, var(--surface-page));
+  border-radius: 14px;
+}
+
+.article-refs__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 8px;
+  border-radius: 999px;
+  background-color: var(--surface-card);
+  border: 1px solid var(--border-hairline);
+  text-decoration: none;
+  color: var(--text-primary);
+  max-inline-size: 100%;
+  transition:
+    border-color 0.2s var(--ease-out-quart),
+    transform 0.2s var(--ease-out-quart);
+}
+
+@media (hover: hover) {
+  .article-refs__chip:hover {
+    border-color: var(--text-primary);
+  }
+}
+
+.article-refs__chip:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
+}
+
+/* The mark sits on its own dark disc so favicons of every shape and background
+   read as one set — many are pale, transparent, or square, and on a white chip
+   they would each look like a different kind of object. */
+.article-refs__mark {
+  inline-size: 22px;
+  block-size: 22px;
+  border-radius: 999px;
+  background-color: var(--be-ink);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.article-refs__mark img {
+  inline-size: 14px;
+  block-size: 14px;
+  object-fit: contain;
+  display: block;
+}
+
+.article-refs__label {
+  font: var(--type-body-s, var(--type-body));
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-inline-size: 30ch;
+}
+
+@media (max-width: 40em) {
+  .article-refs__label {
+    max-inline-size: 18ch;
   }
 }

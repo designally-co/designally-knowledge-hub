@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 
 import { ArticleCard, Tag } from '@/components/ds'
 import { ArticleToc } from '@/components/ArticleToc'
+import { ArticleReferences } from '@/components/ArticleReferences'
 import { ArticleShare } from '@/components/ArticleShare'
 import { NewsletterCta } from '@/components/NewsletterCta'
 import {
@@ -147,6 +148,13 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
               <RichText data={article.body} />
             </div>
 
+            {/* Sources come BEFORE the share block: whether an article is worth
+                passing on is a judgement made after seeing where it came from. */}
+            <ArticleReferences
+              heading={dict.article.references}
+              references={article.references}
+            />
+
             <ArticleShare
               title={article.title}
               labels={{
@@ -157,25 +165,6 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
               }}
             />
 
-            {article.references.length > 0 && (
-              <div className="article-references">
-                <p className="article-references__title">{dict.article.references}</p>
-                <ul className="article-references__list">
-                  {article.references.map((ref, i) => (
-                    <li key={i}>
-                      <a
-                        className="article-references__link"
-                        href={ref.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {ref.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
         </div>
       )}
