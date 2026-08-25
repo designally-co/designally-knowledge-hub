@@ -2,6 +2,8 @@ import { Gutter } from '@payloadcms/ui'
 import type { Payload } from 'payload'
 import React from 'react'
 
+import { needsSummary } from '@/lib/readiness'
+
 import './Dashboard.css'
 
 /**
@@ -50,6 +52,12 @@ type DashboardProps = {
   user?: { name?: string | null; email?: string | null } | null
 }
 
+/* The readiness rules moved to `lib/readiness.ts` so the Review view can state
+   for one article exactly what this screen counts across the library. They were
+   defined here and exported, which was fine while this was their only reader;
+   two readers is the point at which a shared definition stops being ceremony.
+   `hasCover` also stopped being dead code in the move — the Review view uses
+   it, which is what it was always written for. */
 const rtf = new Intl.RelativeTimeFormat('en-GB', { numeric: 'auto' })
 
 function ago(iso?: string | null): string {
@@ -67,25 +75,6 @@ function ago(iso?: string | null): string {
     year: 'numeric',
   })
 }
-
-/**
- * A cover lives in EITHER of two fields: `coverImage` (an upload) or `coverUrl`
- * (a string, which is what the from-markdown endpoint sets). Checking only the
- * upload field would report every generated article as coverless. Kept here as
- * a named rule so it cannot drift apart from the one in the list view.
- *
- * Nothing currently surfaces it: a missing cover degrades to a default colour
- * on the public site rather than breaking it, which makes it a preference and
- * not a defect. Flagging preferences is how a dashboard teaches people to stop
- * reading it.
- */
-export const hasCover = (a: Article): boolean => Boolean(a.coverImage || a.coverUrl?.trim())
-
-/** Editorially required, per the redesign brief — but deliberately NOT
- *  `required: true` on the field, because `POST /api/articles/from-markdown`
- *  declares summary optional and Content Studio would start failing to publish.
- *  So the rule is enforced here, where a person can act on it. */
-export const needsSummary = (a: Article): boolean => !a.summary?.trim()
 
 export async function Dashboard({ payload, user }: DashboardProps) {
   const base = payload.config.routes?.admin || '/admin'

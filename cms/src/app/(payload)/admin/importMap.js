@@ -27,6 +27,8 @@ import { StatusCell as StatusCell_07f513c68167caf320c51b8dc6c45309 } from '../..
 import { TagCell as TagCell_07f513c68167caf320c51b8dc6c45309 } from '../../../components/admin/ListCells'
 import { TagSelector as TagSelector_b09dda2c9bdc83427116784ee19fdaeb } from '../../../components/admin/TagSelector'
 import { TranslateToThaiButton as TranslateToThaiButton_c8d0b70ea2b3169c421567a646db02b1 } from '../../../components/admin/TranslateToThaiButton'
+import { ReviewView as ReviewView_bd39143e540e8b87b42a43b22c1459a2 } from '../../../components/admin/ReviewView'
+import { EditFormView as EditFormView_beeb7e58a6d1ac2f26827b1f196f4450 } from '../../../components/admin/EditFormView'
 import { GoogleSignIn as GoogleSignIn_d89265836baef557dace4d150b5c9962 } from '../../../components/admin/GoogleSignIn'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { Dashboard as Dashboard_16b88e9b8c48e393fa86591406efd08f } from '../../../components/admin/Dashboard'
@@ -63,6 +65,8 @@ export const importMap = {
   "/components/admin/ListCells#TagCell": TagCell_07f513c68167caf320c51b8dc6c45309,
   "/components/admin/TagSelector#TagSelector": TagSelector_b09dda2c9bdc83427116784ee19fdaeb,
   "/components/admin/TranslateToThaiButton#TranslateToThaiButton": TranslateToThaiButton_c8d0b70ea2b3169c421567a646db02b1,
+  "/components/admin/ReviewView#ReviewView": ReviewView_bd39143e540e8b87b42a43b22c1459a2,
+  "/components/admin/EditFormView#EditFormView": EditFormView_beeb7e58a6d1ac2f26827b1f196f4450,
   "/components/admin/GoogleSignIn#GoogleSignIn": GoogleSignIn_d89265836baef557dace4d150b5c9962,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "/components/admin/Dashboard#Dashboard": Dashboard_16b88e9b8c48e393fa86591406efd08f,

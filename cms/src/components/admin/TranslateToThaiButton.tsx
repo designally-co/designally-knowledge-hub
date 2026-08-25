@@ -18,7 +18,14 @@ import './TranslateToThaiButton.css'
  *   1. It called `window.location.reload()` 700ms after success. Payload v3's
  *      unsaved-changes guard is router-based, not `beforeunload`-based, so a
  *      hard reload walked straight past it and took any unsaved English edits
- *      with it — no prompt, and no version history to recover from.
+ *      with it — no prompt, and nothing to recover from.
+ *
+ *      AND THERE STILL IS NOTHING TO RECOVER FROM. Payload `versions` were
+ *      briefly enabled here as a safety net and then deliberately removed, so
+ *      this collection has no history, no autosave and no restore. Everything
+ *      protecting this action is preventive — the dirty gate and the confirm
+ *      below are the whole of it. Do not relax either one without first giving
+ *      the collection an undo.
  *   2. It regenerated unconditionally. A Thai deck a reviewer had corrected by
  *      hand was replaced with machine output on a single click.
  *   3. It read "Translate to Thai" whether Thai was absent, present or
