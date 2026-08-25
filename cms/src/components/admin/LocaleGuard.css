@@ -1,0 +1,95 @@
+/*
+ * The locale banner at the top of a document.
+ *
+ * Two weights for two different things. The quiet one is orientation — you are
+ * in Thai, here is what that means for the fields below — and it should not
+ * shout every time someone reviews a translation, which is a normal part of the
+ * job. The warning one is a mistake in progress, and takes the same accent the
+ * rest of the admin uses for work that needs a decision.
+ *
+ * No coloured left border. The tint carries the state; a 3px stripe would be a
+ * second, louder way of saying the same thing.
+ */
+
+.da-locale {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.375rem 0.875rem;
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--style-radius-m);
+  background-color: var(--da-warm-white);
+}
+
+.da-locale__text {
+  flex: 1 1 22ch;
+  min-width: 0;
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--da-ink-3);
+}
+
+.da-locale__text strong {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--da-ink);
+}
+
+/* A real target, not a text link squeezed into a sentence — this is the fix for
+   the state the banner is describing. */
+.da-locale__action {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 0.875rem;
+  border-radius: var(--style-radius-s);
+  background-color: #ffffff;
+  border: 1px solid var(--da-hairline);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--da-ink);
+  text-decoration: none;
+  transition:
+    border-color var(--da-dur-feedback) var(--da-ease),
+    background-color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .da-locale__action:hover {
+    border-color: var(--da-ink-4);
+  }
+}
+
+/* ---- the mistake-in-progress variant ------------------------------------- */
+
+.da-locale--warn {
+  background-color: var(--da-orange-tint);
+}
+
+/* The sentence is INK, not accent, and the accent is spent on the emphasis and
+   the container. Setting the whole paragraph in `--da-orange-mark` measured
+   4.54:1 against the tint — passing AA by 0.04, which is the exact margin the
+   critique flagged as one colour nudge away from failing. A warning is also the
+   thing you most need to be able to read. So the tint carries the alarm, the
+   opening clause carries the accent, and the explanation is legible ink. */
+.da-locale--warn .da-locale__text {
+  color: var(--da-ink-2);
+}
+
+.da-locale--warn .da-locale__text strong {
+  color: var(--da-orange-mark);
+}
+
+.da-locale--warn .da-locale__action {
+  border-color: var(--da-orange-mark);
+  color: var(--da-orange-mark);
+}
+
+@media (hover: hover) {
+  .da-locale--warn .da-locale__action:hover {
+    background-color: #ffffff;
+    border-color: var(--da-orange-mark);
+  }
+}

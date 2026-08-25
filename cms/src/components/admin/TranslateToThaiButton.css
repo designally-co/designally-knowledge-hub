@@ -1,0 +1,118 @@
+/*
+ * The Thai panel in the document rail.
+ *
+ * Previously this component styled itself with inline `style={{ fontSize:
+ * '0.7rem', opacity: 0.6 }}` — the one custom component in the admin that
+ * ignored the token system sitting beside it. Two of its lines measured 10.5px
+ * and 10.8px, under the 11px floor, dimmed further by opacity. Everything here
+ * now speaks the same vocabulary as the rest of the rail: 13px/600 ink-3 for a
+ * panel label (matching `.field-label`), 12px ink-3 for supporting text, and
+ * secondary ink rather than transparency, so the text keeps its measured
+ * contrast instead of losing it to an alpha value.
+ *
+ * The panel itself is warm-white (custom.scss). Inner surfaces are white, and
+ * the accent tint is reserved for the one state that means work is waiting —
+ * the same rule `.tag-selector__current--empty` follows.
+ */
+
+.da-thai__label {
+  margin: 0 0 0.5rem;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--da-ink-3);
+}
+
+/* ---- what state the translation is in ------------------------------------ */
+
+/* The state has to be visible BEFORE the click, not discovered after it. The
+   button used to read "Translate to Thai" whether Thai was absent, present, or
+   hand-corrected by a reviewer — so the one piece of information that decides
+   whether pressing it is safe was the one piece the panel never showed. */
+.da-thai__state {
+  display: block;
+  margin: 0 0 0.625rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--style-radius-s);
+  background-color: #ffffff;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--da-ink-3);
+}
+
+.da-thai__state strong {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--da-ink);
+}
+
+/* Missing Thai on a published article is the failure this whole feature exists
+   to prevent, so it takes the accent rather than sitting quiet. */
+.da-thai__state--absent {
+  background-color: var(--da-orange-tint);
+  color: var(--da-orange-mark);
+}
+
+.da-thai__state--absent strong {
+  color: var(--da-orange-mark);
+}
+
+/* ---- the action ---------------------------------------------------------- */
+
+/* 44px minimum. Payload's `btn--size-small` renders 27px tall, which is under
+   the comfortable target size for the second-most-consequential control in the
+   document. */
+.da-thai__btn {
+  margin: 0;
+  min-height: 44px;
+}
+
+.da-thai__confirm {
+  margin: 0 0 0.625rem;
+  padding: 0.625rem;
+  border-radius: var(--style-radius-s);
+  background-color: var(--da-orange-tint);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--da-orange-mark);
+}
+
+.da-thai__confirm p {
+  margin: 0 0 0.625rem;
+}
+
+.da-thai__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.da-thai__actions .btn {
+  margin: 0;
+  min-height: 44px;
+}
+
+/* ---- feedback ------------------------------------------------------------ */
+
+.da-thai__note {
+  margin: 0.625rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--da-ink-3);
+}
+
+.da-thai__note--error {
+  color: var(--da-critical);
+}
+
+/* The blocked state explains the block. A disabled control with no reason is a
+   dead end; this one names the fix. */
+.da-thai__blocked {
+  margin: 0;
+  padding: 0.5rem 0.625rem;
+  border-radius: var(--style-radius-s);
+  background-color: #ffffff;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--da-ink-3);
+}

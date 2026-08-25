@@ -73,6 +73,23 @@ export const publishedDateField: Field = {
   },
 }
 
+/**
+ * Banner at the top of a document saying which language you are editing in.
+ *
+ * Placed FIRST in the fields array on purpose: it warns about the locale, so it
+ * has to appear above the fields the locale applies to. Renders nothing at all
+ * in English, which is the case that needs no explanation.
+ */
+export const localeGuardField: Field = {
+  name: 'localeGuard',
+  type: 'ui',
+  admin: {
+    components: {
+      Field: '/components/admin/LocaleGuard#LocaleGuard',
+    },
+  },
+}
+
 /** Sidebar button: (re)generate the Thai version from the English source. */
 export const translateToThaiField: Field = {
   name: 'translateToThai',

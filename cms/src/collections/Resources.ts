@@ -9,6 +9,7 @@ import {
   isResourceCategory,
 } from '../lib/resourceCategories'
 import {
+  localeGuardField,
   publishedOrEditor,
   publishedDateField,
   seoField,
@@ -69,6 +70,8 @@ export const Resources: CollectionConfig = {
   },
   fields: [
     // ---- Main column -------------------------------------------------------
+    // See Articles: the locale banner goes above everything the locale affects.
+    localeGuardField,
     titleField,
     {
       // A resource has one piece of prose, not a dek and a body. There is no
@@ -135,6 +138,13 @@ export const Resources: CollectionConfig = {
 
     seoField('The picture shown when this download is shared.'),
   ],
+
+  // Same reasoning as Articles: a snapshot per save and a Versions tab, so an
+  // overwrite is recoverable. History only, not Payload's draft model — the
+  // `status` field already owns publication here too.
+  versions: {
+    maxPerDoc: 20,
+  },
 }
 
 /** Typical formats for a category — used in admin help text and the seed. */

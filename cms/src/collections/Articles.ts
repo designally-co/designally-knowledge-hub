@@ -5,6 +5,7 @@ import { translateToThaiHandler } from '../endpoints/translateToThai'
 import { slugField } from '../fields/slug'
 import { TAG_SELECT_OPTIONS } from '../lib/tags'
 import {
+  localeGuardField,
   publishedOrEditor,
   publishedDateField,
   seoField,
@@ -73,6 +74,11 @@ export const Articles: CollectionConfig = {
     // Reading order, and the order the article is made in: what it is called,
     // what it promises, what it looks like, what it says, where that came from,
     // what to read next, and how it is described to a search engine.
+    //
+    // Ahead of all of it: which language this is. It warns about the locale, so
+    // it has to sit above the fields the locale applies to. Nothing renders in
+    // English.
+    localeGuardField,
     titleField,
     summaryField,
     {
@@ -187,4 +193,34 @@ export const Articles: CollectionConfig = {
     // an article written by hand here has neither done for it, and those
     // sections hide themselves when there is nothing to report.
   ],
+
+  /*
+   * A HISTORY, SO THERE IS SOMETHING TO GO BACK TO.
+   *
+   * Until now nothing in this CMS could be undone. Overwrite a body and save,
+   * and the previous text was gone — no history, no autosave, no recovery. That
+   * is a hard thing to live with in any CMS, and an unreasonable one next to a
+   * button that rewrites an entire locale in a single click.
+   *
+   * `versions: true`, NOT `versions: { drafts: true }`, and the distinction is
+   * the point. This collection already has its own `status` field, which the
+   * public site queries, the Content Studio endpoint writes, and the dashboard
+   * counts. Turning on Payload's drafts would add a SECOND publication model
+   * (`_status`) beside it, split Save into Save Draft / Publish, and change what
+   * an unauthenticated `find` returns. That is a migration with a blast radius
+   * across two apps — worth considering on its own terms, not as a side effect
+   * of adding an undo.
+   *
+   * What this gives, additively: every save keeps a snapshot, the document gets
+   * a Versions tab, and any earlier state can be restored. Writes through the
+   * REST API are captured too, so a translation that replaces the Thai text can
+   * be rolled back.
+   *
+   * `maxPerDoc` bounds the table. At roughly 50 articles a year, twenty
+   * snapshots per document is far more history than anyone will walk back
+   * through, and it stops an oft-edited article growing without limit.
+   */
+  versions: {
+    maxPerDoc: 20,
+  },
 }
