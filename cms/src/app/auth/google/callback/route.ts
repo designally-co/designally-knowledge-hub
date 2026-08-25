@@ -101,47 +101,79 @@ export async function GET(req: Request) {
 /** The Payload half of the callback: find-or-create, then issue a session. */
 async function issueSession(email: string): Promise<NextResponse> {
   const payload = await getPayload({ config })
+  const collectionConfig = payload.collections.users.config
+  const localReq = await createLocalReq({}, payload)
 
-  /* Find or create. Matching on email is what lets an existing account keep its
-     identity — and its API key, if it holds the one Content Studio publishes
-     with. A new record is only made for an address that has never signed in.
+  /* THE RAW ROW, NOT THE COLLECTION API'S VIEW OF IT — and this is load-bearing.
+   *
+   * `addSessionToUser` does not write a session row. It appends to `user.sessions`
+   * and writes THE WHOLE USER DOCUMENT back:
+   *
+   *     await payload.db.updateOne({ id: user.id, data: user, … })
+   *                                  — payload/src/auth/sessions.ts
+   *
+   * That is the database layer, so no beforeChange hooks run and nothing is
+   * re-encrypted. Hand it a document that came from `payload.find()` and the
+   * afterRead hook has already DECRYPTED `apiKey` — so signing in writes the
+   * plaintext key back over the encrypted one.
+   *
+   * The account then destroys its own ability to sign in. Every later read of
+   * that user throws `Invalid initialization vector` (a raw key is not
+   * `iv(32 hex) + ciphertext`), including the `payload.findByID` inside
+   * `JWTAuthentication` — which swallows it and returns `user: null`. Sign-in
+   * completes, the cookie is set and valid, and the admin bounces to the login
+   * screen anyway. That is this route's third bug of exactly this shape.
+   *
+   * Reading through `payload.db` skips the field hooks in both directions, so
+   * the encrypted value goes back exactly as it came out. It also means `user`
+   * here is a raw row — fine, since all that is needed below is `id` and `email`.
+   *
+   * Only accounts with an API key were ever affected, which is why this stayed
+   * hidden: the CMS worked for months, then broke the moment a key was enabled
+   * on the account people actually sign in with.
+   */
+  let user = await payload.db.findOne({
+    collection: 'users',
+    where: { email: { equals: email } },
+    req: localReq,
+  })
+
+  /* Matching on email is what lets an existing account keep its identity — and
+     its API key, if it holds the one Content Studio publishes with. A new record
+     is only made for an address that has never signed in.
 
      Everyone on the domain is an admin, which is this CMS's whole access model:
      there are no roles to assign, so there is nothing to set here. */
-  const existing = await payload.find({
-    collection: 'users',
-    where: { email: { equals: email } },
-    limit: 1,
-    overrideAccess: true,
-  })
-
-  let user = existing.docs[0]
   if (!user) {
-    user = await payload.create({
+    await payload.create({
       collection: 'users',
       data: {
         email,
         // Payload requires a password on the local strategy even for an account
         // that will never use one. A long random value nobody holds is the
-        // point: it cannot be guessed and it is never written down. When step 2
-        // disables the local strategy this becomes moot.
+        // point: it cannot be guessed and it is never written down.
         password: crypto.randomUUID() + crypto.randomUUID(),
       },
       overrideAccess: true,
     })
+    // Re-read raw, so the session write below goes through the same path as an
+    // existing account rather than a second, subtly different one.
+    user = await payload.db.findOne({
+      collection: 'users',
+      where: { email: { equals: email } },
+      req: localReq,
+    })
   }
 
   /* Hand over to Payload. From here the session is an ordinary Payload session
-     — same cookie, same expiry, same everything a password login produces. */
-  const collectionConfig = payload.collections.users.config
+     — same cookie, same expiry, same everything a password login produces.
 
-  /* A SESSION ROW, not just a token. Payload 3 defaults `auth.useSessions` to
+     A SESSION ROW, not just a token. Payload 3 defaults `auth.useSessions` to
      true, and its JWT strategy then refuses any token whose `sid` claim does
      not match a session stored on the user — so a correctly signed token with
      no `sid` authenticates as nobody, silently. That was this route's second
      bug, and it presents identically to the first: sign-in completes, the
      redirect lands, and you are still logged out. */
-  const localReq = await createLocalReq({}, payload)
   const { sid } = await addSessionToUser({
     collectionConfig,
     payload,
