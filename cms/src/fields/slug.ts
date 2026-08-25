@@ -1,6 +1,12 @@
 import type { Field } from 'payload'
 
-const toSlug = (value: string): string =>
+/**
+ * Exported so the from-markdown endpoint can derive the SAME slug when deciding
+ * whether an article already exists. Two implementations of this rule would
+ * drift, and a drifted slug means the lookup misses and publishing silently
+ * creates a duplicate instead of updating.
+ */
+export const toSlug = (value: string): string =>
   value
     .toLowerCase()
     .trim()
