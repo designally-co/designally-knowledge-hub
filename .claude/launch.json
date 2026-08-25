@@ -4,8 +4,8 @@
     {
       "name": "hub-cms",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["--prefix", "cms", "run", "dev"],
-      "port": 3000
+      "runtimeArgs": ["--prefix", "cms", "run", "dev", "--", "-p", "3001"],
+      "port": 3001
     },
     {
       "name": "content-generator",
@@ -17,9 +17,30 @@
         "dev",
         "--",
         "-p",
-        "3001"
+        "3000"
       ],
-      "port": 3001
+      "port": 3000
+    },
+    {
+      "name": "cg-local",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "/Users/admin/MegaMind/Content Generator",
+        "run",
+        "dev",
+        "--",
+        "-p",
+        "3002"
+      ],
+      "port": 3002
+    },
+    {
+      "name": "harness",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "8123", "--directory", "/private/tmp/claude-501/-Users-admin-MegaMind-Designally-Knowledge-Hub/2ae0bf05-b603-4d24-9dc6-cd751e31c791/scratchpad"],
+      "port": 8123,
+      "autoPort": false
     }
   ]
 }
