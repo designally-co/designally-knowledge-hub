@@ -4,6 +4,7 @@ import { addDataAndFileToRequest, type PayloadHandler } from 'payload'
 import type { Article } from '../payload-types'
 import { translateItemToThai, translationConfigured } from '../lib/translate'
 import type { RequiredDataFromCollectionSlug } from 'payload'
+import { after } from 'next/server'
 import { toSlug } from '../fields/slug'
 
 /**
@@ -120,20 +121,34 @@ export const fromMarkdownHandler: PayloadHandler = async (req) => {
           data: fields as ArticleData,
         })
 
-    // Auto-translate the English draft to Thai. Runs AFTER the create commits
-    // (its own operations, not the create transaction) so no DB connection is
-    // held during the Claude call. Best-effort: a translation failure never
-    // fails the publish — the editor can retry from the admin.
-    let thaiTranslated = false
-    if (translationConfigured()) {
-      try {
-        await translateItemToThai({ payload: req.payload, collection: 'articles', id: doc.id })
-        thaiTranslated = true
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err)
-        req.payload.logger.error(`Thai auto-translation failed for article ${doc.id}: ${message}`)
-      }
+    /*
+     * Auto-translate to Thai AFTER the response, not before it.
+     *
+     * This used to be awaited inside the request, so the caller waited for a
+     * create plus a Claude translation. Content Studio's publish action is
+     * capped at 60s and the pair overran it: the article saved correctly here
+     * and the editor was told "An unexpected response was received from the
+     * server". Timed in the browser, the failure landed between 52s and 90s —
+     * the function limit, not a crash.
+     *
+     * `after()` runs the work once the response has been sent, so publishing
+     * returns as soon as the article exists. Translation stays best-effort and
+     * a failure still never fails a publish; it is simply no longer something
+     * the caller waits on. `thaiTranslated` therefore reports that translation
+     * was STARTED, which is all the response can honestly claim now.
+     */
+    const willTranslate = translationConfigured()
+    if (willTranslate) {
+      after(async () => {
+        try {
+          await translateItemToThai({ payload: req.payload, collection: 'articles', id: doc.id })
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err)
+          req.payload.logger.error(`Thai auto-translation failed for article ${doc.id}: ${message}`)
+        }
+      })
     }
+    const thaiTranslated = willTranslate
 
     return Response.json(
       {
