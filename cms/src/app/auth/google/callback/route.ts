@@ -67,6 +67,39 @@ export async function GET(req: Request) {
   if (!isAllowed(claims)) return fail(origin, 'domain')
 
   const email = claims.email.toLowerCase()
+
+  try {
+    return await issueSession(email)
+  } catch (err) {
+    /* WHY THE MESSAGE IS SHOWN RATHER THAN SWALLOWED.
+     *
+     * Everything below this point runs against Payload, and an uncaught throw
+     * there is a blank 500 with no `?sso=` reason and nothing on the page — the
+     * least debuggable outcome this route has, and the one it actually produced
+     * in production. Vercel's logs hold the stack, but the person who cannot
+     * sign in is rarely the person who can read them.
+     *
+     * Showing the message is safe HERE specifically, and nowhere earlier: this
+     * line is only reachable after `isAllowed` has passed, which means the
+     * caller has already completed a Google sign-in as a verified
+     * designally.co account. There is no anonymous path to this text.
+     */
+    const message = err instanceof Error ? err.message : String(err)
+    return new NextResponse(
+      `<!doctype html><meta charset="utf-8"><title>Sign-in failed — Designally Hub</title>
+<div style="font:14px/1.6 system-ui;max-width:44rem;padding:3rem 2rem">
+<h1 style="font-size:1.25rem;margin:0 0 .5rem">Signed in with Google, but the Hub could not start a session.</h1>
+<p style="color:#555;margin:0 0 1.5rem">Google accepted the account. The failure is on this side.</p>
+<pre style="white-space:pre-wrap;background:#f5f3ee;border-radius:8px;padding:1rem;font:12px/1.5 ui-monospace,monospace">${message.replace(/[<&]/g, (c) => (c === '<' ? '&lt;' : '&amp;'))}</pre>
+<p style="margin-top:1.5rem"><a href="/admin/login">Back to sign in</a></p>
+</div>`,
+      { status: 500, headers: { 'Content-Type': 'text/html; charset=utf-8' } },
+    )
+  }
+}
+
+/** The Payload half of the callback: find-or-create, then issue a session. */
+async function issueSession(email: string): Promise<NextResponse> {
   const payload = await getPayload({ config })
 
   /* Find or create. Matching on email is what lets an existing account keep its
