@@ -25,6 +25,11 @@ import './RelatedPicker.css'
 
 const MAX = 4
 
+/** How many search results are rendered. The list says when it has more, rather
+ *  than silently ending — someone searching for a title they know exists and
+ *  not seeing it concludes the search is broken, not that the list was cut. */
+const SHOWN = 40
+
 type Media = { url?: string | null; sizes?: Record<string, { url?: string | null }> }
 type Article = {
   id: string | number
@@ -59,6 +64,35 @@ export const RelatedPicker: React.FC<{ path?: string; field?: { label?: unknown 
   const [all, setAll] = React.useState<Article[] | null>(null)
   const [open, setOpen] = React.useState(false)
   const [query, setQuery] = React.useState('')
+  const pickerRef = React.useRef<HTMLDivElement | null>(null)
+
+  /* A WAY OUT THAT IS NOT THE BUTTON THAT OPENED IT.
+     The panel had no Escape handler and no outside-click close, so once open
+     the only exit was to Shift-Tab back to a "+" and press it again — every
+     other dismissable surface in this admin closes on Escape, and a keyboard
+     user reasonably expects it here too. */
+  React.useEffect(() => {
+    if (!open) return
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    const onPointer = (e: MouseEvent) => {
+      const t = e.target as Node
+      // The "+" buttons toggle it themselves; closing here as well would
+      // reopen-and-close on the same click.
+      if (pickerRef.current?.contains(t)) return
+      if ((t as HTMLElement).closest?.('.rel__add')) return
+      setOpen(false)
+    }
+
+    document.addEventListener('keydown', onKey)
+    document.addEventListener('mousedown', onPointer)
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.removeEventListener('mousedown', onPointer)
+    }
+  }, [open])
 
   const selectedIds = React.useMemo(() => (value || []).map(idOf), [value])
 
@@ -142,10 +176,15 @@ export const RelatedPicker: React.FC<{ path?: string; field?: { label?: unknown 
           )
         })}
 
+        {/* Each empty slot needs its OWN name. All four read "Add article", so a
+            screen reader announced the same button four times with nothing to
+            tell them apart and no position in the set. They do the same thing,
+            which is precisely why the name has to say which one you are on. */}
         {Array.from({ length: emptySlots }).map((_, i) => (
           <li className="rel__slot rel__slot--empty" key={`empty-${i}`}>
             <button
               aria-expanded={open}
+              aria-label={`Add related article, slot ${selectedIds.length + i + 1} of ${MAX}`}
               className="rel__add"
               onClick={() => setOpen((o) => !o)}
               type="button"
@@ -160,7 +199,7 @@ export const RelatedPicker: React.FC<{ path?: string; field?: { label?: unknown 
       </ul>
 
       {open ? (
-        <div className="rel__picker">
+        <div className="rel__picker" ref={pickerRef}>
           <input
             aria-label="Search articles"
             className="rel__search"
@@ -177,7 +216,7 @@ export const RelatedPicker: React.FC<{ path?: string; field?: { label?: unknown 
             </p>
           ) : (
             <ul className="rel__options">
-              {options.slice(0, 40).map((a) => (
+              {options.slice(0, SHOWN).map((a) => (
                 <li key={a.id}>
                   <button className="rel__option" onClick={() => add(a.id)} type="button">
                     {coverOf(a) ? (
@@ -191,6 +230,11 @@ export const RelatedPicker: React.FC<{ path?: string; field?: { label?: unknown 
                 </li>
               ))}
             </ul>
+          )}
+          {options.length > SHOWN && (
+            <p className="rel__state">
+              Showing {SHOWN} of {options.length}. Keep typing to narrow it down.
+            </p>
           )}
         </div>
       ) : null}

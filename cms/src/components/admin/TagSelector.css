@@ -66,7 +66,10 @@
   font-family: var(--font-display);
   font-size: 0.75rem;
   font-weight: 500;
-  padding: 0.25rem 0.5rem;
+  /* 44px. These were 24px tall — the smallest targets in the rail, and the
+     control you press first every time you file an article. */
+  min-block-size: 44px;
+  padding: 0.25rem 0.625rem;
   border-radius: var(--style-radius-s);
   color: var(--da-ink-3);
   transition:
@@ -74,9 +77,14 @@
     color var(--da-dur-feedback) var(--da-ease);
 }
 
-.tag-selector__tab:hover {
-  background-color: var(--da-divider);
-  color: var(--da-ink);
+/* Guarded, like every other hover rule in this file. Unguarded, a tap on a
+   touch device leaves the hover state stuck on the tab afterwards, so two tabs
+   appear active at once. */
+@media (hover: hover) {
+  .tag-selector__tab:hover {
+    background-color: var(--da-divider);
+    color: var(--da-ink);
+  }
 }
 
 .tag-selector__tab.is-active {
@@ -201,9 +209,10 @@
   margin: 0;
 }
 
-.tag-selector__error {
-  font-size: 0.75rem;
-  line-height: 1.5;
+/* Validation reads in the state line above the options, not in a second
+   paragraph below them. `--da-critical` rather than `--da-orange-mark`: unfiled
+   is a preference the accent is right for, a failed save is an error. */
+.tag-selector__current--error {
+  background-color: #fdf0f0;
   color: var(--da-critical);
-  margin: 0;
 }

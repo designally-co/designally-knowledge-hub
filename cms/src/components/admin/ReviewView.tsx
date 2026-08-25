@@ -1,8 +1,7 @@
 'use client'
 
 import React from 'react'
-import type { DocumentViewClientProps } from 'payload'
-import { DefaultEditView, useDocumentInfo } from '@payloadcms/ui'
+import { useDocumentInfo } from '@payloadcms/ui'
 import { useRouter } from 'next/navigation'
 
 import { readinessFor, hasBlockers, isPublished, type ReadinessIssue } from '@/lib/readiness'
@@ -10,15 +9,14 @@ import { readinessFor, hasBlockers, isPublished, type ReadinessIssue } from '@/l
 import './ReviewView.css'
 
 /**
- * The Review view — what you land on when you open an article.
+ * The Review view — the article as a reader meets it, on its own tab.
  *
- * WHY THIS IS THE FIRST SCREEN. Articles arrive from Content Studio already
- * written, translated and summarised. The job is not authoring, it is deciding:
- * read it as a reader will, check the Thai, publish. The editor was the landing
- * screen for a job almost nobody was doing, and the job people WERE doing —
- * looking at the article — the CMS could not do at all. There was no preview,
- * no view-on-site link, nothing: checking your work meant copying the slug out
- * of the rail and hand-building a URL, twice, once per language.
+ * WHY IT EXISTS. Articles arrive from Content Studio already written,
+ * translated and summarised, so a large part of the job is not authoring but
+ * deciding: read it, check the Thai, publish. The CMS could not do that at all.
+ * There was no preview, no view-on-site link, nothing — checking your work
+ * meant copying the slug out of the rail and hand-building a URL, twice, once
+ * per language.
  *
  * THE PAGE ITSELF, IN AN IFRAME, NOT A RECONSTRUCTION. The obvious alternative
  * is to import the site's article components and render them here. That still
@@ -34,15 +32,12 @@ import './ReviewView.css'
  * and never becomes a second place to edit prose — but it does mean the Edit
  * tab is where changes happen and this is where they are checked.
  *
- * THE CREATE TRAP. Payload resolves BOTH of these through the same config key:
- *
- *     /collections/articles/:id      → views.edit.default
- *     /collections/articles/create   → views.edit.default
- *
- * (see `getDocumentView` in @payloadcms/next). There is no separate key for
- * create, so overriding `default` silently replaces the create screen too — and
- * a review of an article that does not exist yet is nonsense. No `id` means
- * create, and the editor is what belongs there.
+ * A SECOND TAB, NOT THE LANDING VIEW. This was briefly `views.edit.default`.
+ * Payload stores `editViewType` as a per-collection preference and restores it,
+ * so anyone who opened the editor once kept landing on the editor — a default
+ * the framework reassigns is not a default. Living at its own path is honest
+ * about that, and it removed the need to re-mount Payload's editor from
+ * `DefaultEditView`, which was the one upgrade-fragile thing in the design.
  */
 
 type ArticleShape = {
@@ -64,7 +59,7 @@ type Loaded = {
 
 type Preview = 'en' | 'th'
 
-export function ReviewView(props: DocumentViewClientProps) {
+export function ReviewView() {
   const { id } = useDocumentInfo()
   const router = useRouter()
 
@@ -106,8 +101,15 @@ export function ReviewView(props: DocumentViewClientProps) {
     void load()
   }, [load])
 
-  // Create screen — see the note above. Hand straight back to the editor.
-  if (!id) return <DefaultEditView {...props} />
+  /* Unreachable in practice — /create has no /review route — but a document
+     view with no document should say so rather than render an empty frame. */
+  if (!id) {
+    return (
+      <div className="da-review da-review--message">
+        <p className="da-review__message">Save the article first, then review it.</p>
+      </div>
+    )
+  }
 
   if (failed) {
     return (

@@ -51,33 +51,35 @@ export const Articles: CollectionConfig = {
     group: 'Content',
     description: 'Written editorial. Downloadable files belong in Resources.',
     /*
-     * REVIEW IS WHAT YOU LAND ON; THE EDITOR IS THE SECOND TAB.
+     * EDIT LEADS; REVIEW IS THE SECOND TAB.
      *
-     * Articles arrive from Content Studio already written, translated and
-     * summarised, so the job is reading one and deciding — not authoring. The
-     * editor was the landing screen for a job almost nobody does, while the job
-     * people actually do (look at the article) the CMS could not do at all.
+     * Review was briefly `views.edit.default` — the route a document opens at —
+     * on the argument that the job is reading and deciding rather than
+     * authoring. That is still true of where the WORK is, but it made the
+     * editor a destination you had to go and find, and Payload undercut the
+     * intent anyway: it stores `editViewType` as a per-collection preference,
+     * so the moment anyone opened Edit they kept landing on Edit. A "default"
+     * that the framework quietly reassigns is not a default.
      *
-     * `default` is the key Payload resolves for /collections/articles/:id, so
-     * overriding it changes what opens. The stock editor is then re-mounted at
-     * /edit with its own tab. `order` puts Review first in the tab bar; without
-     * it the tabs sort by declaration and Edit leads.
+     * So the editor is `default` again, which is also the simpler arrangement
+     * by some distance. It removed the one fragile thing in this design: Review
+     * as `default` meant re-mounting Payload's own editor from
+     * `DefaultEditView`, an export that could go internal on any minor upgrade
+     * and would fail by the editor silently disappearing. Nothing depends on it
+     * now.
      *
-     * Note that `default` ALSO serves /collections/articles/create — Payload has
-     * no separate key for it — so ReviewView detects the no-id case and renders
-     * the editor itself. See the comment there.
+     * It also disposes of a trap: `default` serves /collections/articles/create
+     * as well — Payload has no separate key for it — so a Review view mounted
+     * there had to detect the no-id case and hand back to the editor. With the
+     * editor as `default` again, create is simply the editor.
      */
     components: {
       views: {
         edit: {
-          default: {
+          review: {
+            path: '/review',
+            tab: { label: 'Review', href: '/review', order: 100 },
             Component: '/components/admin/ReviewView#ReviewView',
-            tab: { label: 'Review', order: 0 },
-          },
-          editForm: {
-            path: '/edit',
-            tab: { label: 'Edit', href: '/edit', order: 100 },
-            Component: '/components/admin/EditFormView#EditFormView',
           },
         },
       },
@@ -126,6 +128,17 @@ export const Articles: CollectionConfig = {
     // largest thing on the published page, and at rail width there is nowhere
     // to actually look at it. Uploading, choosing from the library and pasting
     // a URL stay one block — see the cover rules in custom.scss.
+    {
+      // The cover, shown before the controls that set it. A cover lives in
+      // either `coverImage` or `coverUrl`, and Payload's upload field only
+      // knows about the first — so an article whose cover came from Content
+      // Studio rendered an empty dropzone. See CoverPreview.
+      name: 'coverPreview',
+      type: 'ui',
+      admin: {
+        components: { Field: '/components/admin/CoverPreview#CoverPreview' },
+      },
+    },
     {
       name: 'coverImage',
       type: 'upload',

@@ -50,6 +50,26 @@ export const TagSelector: SelectFieldClientComponent = ({ path }) => {
   const groupName = `tag-${String(path).replace(/[^\w-]/g, '-')}`
   const panelId = `${groupName}-options`
 
+  const tabRefs = React.useRef<(HTMLButtonElement | null)[]>([])
+
+  /** Arrow/Home/End across the category tabs, per the ARIA tabs pattern. */
+  const onTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, i: number) => {
+    const keys = ['ArrowRight', 'ArrowLeft', 'Home', 'End']
+    if (!keys.includes(e.key)) return
+    e.preventDefault()
+    const last = CATEGORIES.length - 1
+    const next =
+      e.key === 'Home'
+        ? 0
+        : e.key === 'End'
+          ? last
+          : e.key === 'ArrowRight'
+            ? (i + 1) % CATEGORIES.length
+            : (i - 1 + CATEGORIES.length) % CATEGORIES.length
+    setActiveCat(CATEGORIES[next])
+    tabRefs.current[next]?.focus()
+  }
+
   return (
     <div className="tag-selector">
       <span className="tag-selector__label">Tag</span>
@@ -57,28 +77,56 @@ export const TagSelector: SelectFieldClientComponent = ({ path }) => {
       {/* The choice, stated once and plainly. Not a removable token: this is
           the record of what is filed where, and the only way to change it is
           to choose another. */}
-      <p className={`tag-selector__current${selected ? '' : ' tag-selector__current--empty'}`}>
+      {/* ONE MESSAGE, NOT TWO. On the create form this line read "Not filed yet
+          — choose one below." in the accent, while Payload's own "This field is
+          required." sat below the options in a second, near-identical red eight
+          degrees away. One field, one problem, two wordings, two colours.
+          The state readout is the right place for it, because it is where the
+          answer already is, so when validation fails this line carries the
+          message and the separate paragraph goes. */}
+      <p
+        className={`tag-selector__current${selected ? '' : ' tag-selector__current--empty'}${
+          showError ? ' tag-selector__current--error' : ''
+        }`}
+        role={showError ? 'alert' : undefined}
+      >
         {selected ? (
           <>
             Filed under <strong>{selectedCategory ?? 'Unknown category'}</strong>
             <span aria-hidden="true"> · </span>
             <strong>{selected}</strong>
           </>
+        ) : showError && errorMessage ? (
+          errorMessage
         ) : (
           'Not filed yet — choose one below.'
         )}
       </p>
 
+      {/* A REAL TABLIST, OR NONE AT ALL.
+          `role="tab"` is a promise about the keyboard: a screen reader
+          announces "tab", and the ARIA pattern says the group is ONE stop with
+          arrow keys moving between the tabs inside it. This announced itself as
+          a tablist and then ignored every arrow key, so someone following the
+          convention pressed Right, nothing happened, and the 24 tags behind the
+          other two categories stayed undiscovered.
+          Roving tabIndex makes the promise true: only the active tab is
+          reachable by Tab, and Left/Right/Home/End move between them. */}
       <div className="tag-selector__tabs" role="tablist" aria-label="Category">
-        {CATEGORIES.map((c) => (
+        {CATEGORIES.map((c, i) => (
           <button
             type="button"
             key={c}
+            ref={(el) => {
+              tabRefs.current[i] = el
+            }}
             role="tab"
             aria-controls={panelId}
             aria-selected={activeCat === c}
+            tabIndex={activeCat === c ? 0 : -1}
             className={`tag-selector__tab${activeCat === c ? ' is-active' : ''}`}
             onClick={() => setActiveCat(c)}
+            onKeyDown={(e) => onTabKeyDown(e, i)}
           >
             {c}
             {selectedCategory === c ? (
@@ -113,13 +161,9 @@ export const TagSelector: SelectFieldClientComponent = ({ path }) => {
         })}
       </div>
 
-      {showError && errorMessage ? (
-        <p className="tag-selector__error">{errorMessage}</p>
-      ) : (
-        <p className="tag-selector__hint">
-          One tag per article. It also decides the article&rsquo;s category.
-        </p>
-      )}
+      <p className="tag-selector__hint">
+        One tag per article. It also decides the article&rsquo;s category.
+      </p>
     </div>
   )
 }

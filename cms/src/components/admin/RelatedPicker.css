@@ -42,7 +42,10 @@
   border-radius: var(--style-radius-m);
   /* The proportion of the cards the published page lays out, so the choice is
      made at roughly the shape it will be seen at. */
-  aspect-ratio: 3 / 4;
+  /* 4/3, matching `--card-ratio` on the public article card. It was 3/4 —
+     portrait, the exact inverse — so every slot previewed a crop the site
+     would never use, which is the one job a preview has. */
+  aspect-ratio: 4 / 3;
   overflow: hidden;
 }
 
