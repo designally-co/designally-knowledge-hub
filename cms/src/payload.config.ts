@@ -139,6 +139,10 @@ export default buildConfig({
     },
     meta: {
       titleSuffix: '— Designally Hub',
+      // Payload injects its own light/dark favicons into the admin, so the tab
+      // showed Payload's mark on a Designally product. `app/icon.png` covers
+      // the public site automatically; the admin needs telling.
+      icons: [{ rel: 'icon', type: 'image/png', url: '/icon.png' }],
     },
     // Payload's default renders "August 5th 2026, 5:30 PM", which wraps to two
     // lines in a list column and doubles the height of every row. Editorial
