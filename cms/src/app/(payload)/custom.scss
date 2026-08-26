@@ -475,6 +475,192 @@ a:focus-visible,
   inset-inline-start: 3px;
 }
 
+/* =============================================================================
+   The shell — rail, header, and the controls at their edges
+
+   The nav's colours and current-state were settled above; what was left was
+   DENSITY and DEFINITION. Rows were 28px in a 275px rail, group labels sat hard
+   against the links beneath them, the header was a transparent 65px strip with
+   nothing to separate it from the document scrolling underneath, and the two
+   account controls — the gravatar in the header and a bare 23px log-out glyph
+   at the rail's foot — were the same concern parked in opposite corners with no
+   label between them.
+
+   Spacing here is on the system's scale. Payload's own was 64.6px / 23.1px /
+   46.2px, which is 4.2rem / 1.5rem / 3rem of nothing in particular.
+   ========================================================================== */
+
+.nav__scroll {
+  padding: 1.5rem 1rem 1rem;
+}
+
+/* Rows at 44px, like every other control in this admin. In a rail four
+   destinations long the height costs nothing and buys a target you cannot miss
+   — and the extra room is what lets the active pill read as a surface rather
+   than as a highlight drawn round some text. */
+.nav__link {
+  display: flex;
+  align-items: center;
+  min-block-size: 44px;
+  padding-inline: 0.75rem;
+  padding-block: 0;
+}
+
+/* The active pill's inset has to follow the padding above, or the bar and the
+   label drift apart from the surface they belong to. */
+.nav__link:has(.nav__link-indicator) {
+  padding-inline-start: 0.75rem;
+  margin-inline-start: 0;
+}
+
+.nav__link-indicator {
+  inset-inline-start: 5px;
+}
+
+/* ---- group labels -------------------------------------------------------- */
+
+/* More space above a heading than below it: the label belongs to the links
+   under it, not to the group it follows. Payload gives it neither. */
+.nav-group {
+  margin-block-start: 1.5rem;
+}
+
+.nav-group:first-child {
+  margin-block-start: 0;
+}
+
+.nav-group__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  inline-size: 100%;
+  min-block-size: 32px;
+  padding-inline: 0.75rem;
+  margin-block-end: 0.125rem;
+}
+
+/* The chevron is a control, so it stays visible and operable — but it is the
+   quietest thing in the rail, because folding a group of two is a rare thing to
+   want and should not compete with the destinations. */
+.nav-group__indicator .stroke {
+  stroke: var(--da-ink-4);
+}
+
+/* ---- the foot of the rail ------------------------------------------------ */
+
+/* Log out was a 23px glyph with no word next to it — the one control in the
+   admin that ends a session, drawn as a mystery. It becomes a row like the
+   links above it, separated by the rail's one divider because leaving is a
+   different kind of thing from going somewhere.
+
+   The label is drawn in CSS rather than added to the DOM: the anchor already
+   carries `aria-label="Log out"`, so this is the visible half of a name that
+   was always there, and a screen reader is not read it twice. */
+/* Stretched, both ways. Payload runs this as a flex COLUMN and it was sizing to
+   its contents — 103px in a 244px rail — so the divider above it stopped a third
+   of the way across and the row beneath it could not be full width no matter
+   what the row itself asked for. */
+.nav__controls {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  align-items: stretch;
+  gap: 0.625rem;
+  min-block-size: 44px;
+  /* `auto`, not a length. This is the last child of a flex column and Payload
+     pins it to the foot of the rail with `margin-top: auto`; a fixed value
+     overrides that and drops it directly under the last nav group, where it
+     competes with the destinations instead of sitting out of the way. The
+     breathing room it needed is padding, which does not fight the layout. */
+  margin-block-start: auto;
+  padding-block-start: 1rem;
+  padding-inline: 0.75rem;
+  border-block-start: 1px solid var(--da-divider);
+}
+
+.nav__log-out {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  /* `flex: 1` because the parent is a flex row: a width alone is a suggestion a
+     shrinkable flex item ignores, and it did — the row measured 103px against
+     the 244px links above it, so its hover surface stopped halfway across the
+     rail. */
+  flex: 1 1 auto;
+  min-block-size: 44px;
+  margin-inline: -0.75rem;
+  padding-inline: 0.75rem;
+  border-radius: var(--style-radius-s);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--da-ink-3);
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+.nav__log-out::after {
+  content: 'Log out';
+}
+
+.nav__log-out .icon {
+  inline-size: 20px;
+  block-size: 20px;
+  flex: 0 0 auto;
+}
+
+@media (hover: hover) {
+  .nav__log-out:hover {
+    background-color: var(--da-divider);
+    color: var(--da-ink);
+  }
+}
+
+/* ---- the header ---------------------------------------------------------- */
+
+/* A band, not a floating strip. It was transparent, so the document scrolled up
+   into it with nothing marking where the shell ended and the work began — the
+   single thing that made this admin read as unfinished chrome. It takes the
+   page's own ground and the Edge underneath it, which is how every other
+   division in this system is drawn. */
+.app-header {
+  position: sticky;
+  top: 0;
+}
+
+.app-header__bg {
+  background-color: var(--da-warm-white);
+  border-block-end: 1px solid var(--da-hairline);
+}
+
+/* The account is the only way to the account screen and it was a 25px gravatar
+   with a 25px hit area. The picture grows a little, the target grows a lot, and
+   a hairline ring keeps it from dissolving into the band behind it. */
+.app-header__account {
+  display: grid;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 999px;
+}
+
+.app-header__account img,
+.app-header__account .gravatar-account {
+  inline-size: 30px;
+  block-size: 30px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px var(--da-hairline);
+}
+
+@media (hover: hover) {
+  .app-header__account:hover img,
+  .app-header__account:hover .gravatar-account {
+    box-shadow: 0 0 0 1px var(--da-ink-4);
+  }
+}
+
 /* A current link is not a link — Payload renders it as a div, so it must not
    invite a click it cannot honour. */
 div.nav__link {
