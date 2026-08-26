@@ -917,6 +917,7 @@ html {
 
 .document-fields__main .document-fields__fields > .field-type,
 .document-fields__main .document-fields__fields > .rel,
+.document-fields__main .document-fields__fields > .da-coverprev,
 .document-fields__sidebar-fields > .render-fields > .field-type,
 .document-fields__sidebar-fields > .render-fields > .da-thai {
   background-color: var(--da-warm-white);
@@ -972,7 +973,8 @@ html {
    (16.25px) came from, so that is pinned here too. */
 .document-fields__main .document-fields__fields > .field-type > .field-label,
 .document-fields__main .document-fields__fields > .field-type .array-field__title > .field-label,
-.document-fields__main .document-fields__fields > .field-type .group-field__title > .field-label {
+.document-fields__main .document-fields__fields > .field-type .group-field__title > .field-label,
+.document-fields__main .document-fields__fields > .da-coverprev > .field-label {
   font-family: var(--font-display);
   font-size: 13px;
   font-weight: 600;
@@ -1025,10 +1027,25 @@ html {
 
    The preview is always rendered — including when there is no cover — so this
    geometry is fixed. Were it conditional, picking an image would round and
-   unround the top of the block underneath it. */
-.document-fields__fields > .da-coverprev {
+   unround the top of the block underneath it.
+
+   The preview takes the panel ground and the TOP corners explicitly. It is a
+   `ui` field, so it is not a `.field-type` and did not match the panel rule
+   that paints every other block — which left the picture sitting on the page
+   with the box starting underneath it, at the controls. The cover was outside
+   the box that was supposed to contain it. */
+/* Selector matches the panel rule's specificity on purpose. Written as
+   `.document-fields__fields > .da-coverprev` it lost to the three-class panel
+   rule above, which re-rounded all four corners — so the preview kept rounded
+   BOTTOM corners over the square top of the block welded beneath it, and the
+   page showed through in two small wedges at the seam. */
+.document-fields__main .document-fields__fields > .da-coverprev {
   margin-block-end: 0;
   padding-block-end: 0;
+  border-start-start-radius: var(--style-radius-m);
+  border-start-end-radius: var(--style-radius-m);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
 }
 
 .document-fields__fields > .field-type.upload#field-coverImage {
@@ -1050,9 +1067,23 @@ html {
   padding-block-start: 0;
 }
 
-/* In the main column the cover gets room to be looked at. This overrides the
-   compaction further up, which stays in force for the SEO og-image — that one
-   is a sharing thumbnail in a metadata block, not the article's own picture. */
+/* The section is titled ONCE, by the preview at the top of the panel. Payload's
+   own label sits on the upload field, which is the third thing in the block —
+   so it was naming a picture that had already been on screen for two elements.
+   Hidden, not removed: the input keeps its accessible name from it. */
+.field-type.upload#field-coverImage > .field-label {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- the machinery changes weight with the state ------------------------- */
+
+/* WITH NO COVER, the dropzone IS the section: a large dashed target that says
+   "put a picture here", which is exactly the message when there is none. */
 .field-type.upload#field-coverImage .dropzone {
   min-block-size: 14rem;
   display: grid;
@@ -1060,6 +1091,56 @@ html {
   background-color: #ffffff;
   border: 1px dashed var(--da-ink-4);
   border-radius: var(--style-radius-m);
+}
+
+/* ONE DOOR, NOT TWO. "Create New" opens an upload dialog; "Choose from
+   existing" opens the media drawer — which has its own "Create New" at the top
+   of it. Two buttons, one of which is a door into a room containing the other
+   door. The field-level one goes, with the "Or" that separated them, and
+   uploading stays available both inside the drawer and by dragging a file onto
+   the zone. */
+.field-type.upload#field-coverImage .upload__createNewToggler,
+.field-type.upload#field-coverImage .upload__dropzoneContent__orText {
+  display: none;
+}
+
+/* With "Create New" gone this is the only control for the cover in either
+   state, so it gets a real target rather than Payload's 27px pill. */
+.field-type.upload#field-coverImage .upload__listToggler {
+  min-block-size: 44px;
+}
+
+/* WITH A COVER, it is a footer. `:has()` asks the shared parent whether the
+   preview drew a frame — true for a library image and for a URL alike, which is
+   the point: Payload's upload field only knows about its own value, so on a
+   URL-covered article it drew a 261px empty dashed target underneath a
+   perfectly good picture, and was the second-largest thing in the block.
+   Dashed borders and 14rem of space are an invitation; once accepted, the
+   invitation should stop being issued. */
+.document-fields__fields:has(.da-coverprev__frame) .field-type.upload#field-coverImage .dropzone {
+  min-block-size: 0;
+  padding: 0;
+  /* No border and no ground. A drop target draws a box because it is asking to
+     be filled; once it is filled the box is a card inside a card, and the row
+     underneath the picture is just where the controls live. */
+  border: 0;
+  background: none;
+}
+
+/* Controls sit under the picture, aligned with it, not centred in the panel —
+   the section reads down one edge: heading, picture, source, action. */
+.document-fields__fields:has(.da-coverprev__frame)
+  .field-type.upload#field-coverImage
+  .upload__dropzoneContent {
+  justify-content: flex-start;
+}
+
+/* And the file card stops showing the picture a second time. Payload renders a
+   thumbnail beside the filename; directly under a 312px preview of the same
+   image it is duplication, so the card keeps the facts — name, weight,
+   dimensions — and gives up the picture. */
+.document-fields__fields:has(.da-coverprev__frame) #field-coverImage .thumbnail {
+  display: none;
 }
 
 /* Centred on the CONTENT, not on the buttons. The buttons sit in a shrink-to-fit

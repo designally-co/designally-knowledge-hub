@@ -112,10 +112,14 @@ export const Articles: CollectionConfig = {
       label: 'Cover image',
     },
     {
+      // No description. It read "Used only when no image is set." — a rule the
+      // preview above now states only when it actually applies, and states more
+      // precisely: "the uploaded image wins over the URL", shown exactly when
+      // both are set. A permanent 15px footnote for a conditional rule was the
+      // largest piece of text in the section.
       name: 'coverUrl',
       type: 'text',
       label: 'Or paste a URL',
-      admin: { description: 'Used only when no image is set.' },
     },
 
     {

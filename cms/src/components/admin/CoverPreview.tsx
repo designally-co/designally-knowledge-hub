@@ -31,6 +31,12 @@ import './CoverPreview.css'
  * block where the picture goes — and partly so the panel above the upload does
  * not appear and disappear, which would make the whole block jump as soon as
  * anyone picked an image.
+ *
+ * IT ALSO CARRIES THE SECTION'S HEADING, which is why Payload's own "Cover
+ * image" label is hidden in custom.scss. The label belongs above the thing it
+ * names; because the upload field sits UNDER the preview, its label was landing
+ * in the middle of the section, naming a picture already on screen above it.
+ * One heading, at the top, and the machinery beneath.
  */
 
 /** Matches the public card's ratio, so the crop shown here is the crop shipped. */
@@ -80,6 +86,7 @@ export function CoverPreview() {
   if (!src) {
     return (
       <div className="da-coverprev da-coverprev--empty">
+        <span className="field-label">Cover image</span>
         <p className="da-coverprev__note">
           <strong>No cover yet.</strong> The article publishes without one — its page and card
           show a plain colour block where the picture goes.
@@ -90,6 +97,7 @@ export function CoverPreview() {
 
   return (
     <div className="da-coverprev">
+      <span className="field-label">Cover image</span>
       <div className="da-coverprev__frame" style={{ aspectRatio: RATIO }}>
         {broken ? (
           <p className="da-coverprev__broken">

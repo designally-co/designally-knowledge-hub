@@ -11,11 +11,22 @@
   padding: 0.875rem 1rem 0.75rem;
 }
 
+.da-coverprev > .field-label {
+  display: block;
+  margin-block-end: 0.625rem;
+}
+
 /* ---- the picture --------------------------------------------------------- */
 
+/* Wide enough to judge a crop, not so wide it becomes the document. At full
+   column width the 4/3 frame stood 442px tall and the cover outweighed the body
+   it belongs to; capped, it is 312px and still the largest thing in its own
+   panel. The ratio is never traded away for height — 4/3 is the public card's
+   crop, and showing a different one would make the preview a lie. */
 .da-coverprev__frame {
   display: grid;
   place-items: center;
+  max-inline-size: 26rem;
   overflow: hidden;
   border-radius: var(--style-radius-s);
   /* A ground for images with transparency, and for the moment before load. */
@@ -40,9 +51,12 @@
 
 /* ---- what it is ---------------------------------------------------------- */
 
+/* One supporting size in this panel. The caption was 0.75rem — 11.25px at the
+   admin's 15px root, right on the detector's floor and the smallest thing in a
+   section whose whole job is being looked at. */
 .da-coverprev__source {
   margin: 0.625rem 0 0;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--da-ink-3);
 }
