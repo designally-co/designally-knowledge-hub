@@ -48,7 +48,6 @@ export const Articles: CollectionConfig = {
     // it went out, and when it was last touched. Last edited closes the row
     // because it answers "where was I", not "what needs doing".
     defaultColumns: ['title', 'status', 'tag', 'publishedDate', 'updatedAt'],
-    group: 'Content',
     description: 'Written editorial. Downloadable files belong in Resources.',
   },
   access: publishedOrEditor,

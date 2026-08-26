@@ -53,7 +53,6 @@ export const Resources: CollectionConfig = {
     hideAPIURL: true,
     useAsTitle: 'title',
     defaultColumns: ['title', 'category', 'status', 'publishedDate'],
-    group: 'Content',
     description: 'Downloadable files. Written articles belong in Articles.',
   },
   access: publishedOrEditor,

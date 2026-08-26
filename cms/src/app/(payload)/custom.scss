@@ -490,8 +490,15 @@ a:focus-visible,
    46.2px, which is 4.2rem / 1.5rem / 3rem of nothing in particular.
    ========================================================================== */
 
+/* The rail's own header — the Designally mark — is `--app-header-height` tall
+   and sits OVER this column, so the first destination has to start below it.
+   Payload's 64.6px was that height written as a number; the variable says why,
+   and follows it if the header ever changes. Dropping it to a flat 1.5rem put
+   the first row 42px underneath the mark. */
 .nav__scroll {
-  padding: 1.5rem 1rem 1rem;
+  padding-block-start: calc(var(--app-header-height) + 0.5rem);
+  padding-block-end: 1rem;
+  padding-inline: 1rem;
 }
 
 /* Rows at 44px, like every other control in this admin. In a rail four
@@ -519,14 +526,36 @@ a:focus-visible,
 
 /* ---- group labels -------------------------------------------------------- */
 
-/* More space above a heading than below it: the label belongs to the links
-   under it, not to the group it follows. Payload gives it neither. */
-.nav-group {
-  margin-block-start: 1.5rem;
+/* NO HEADING OVER A LIST THAT IS THE WHOLE LIST.
+ *
+ * There were three groups — Content, Library, Account — and two of them held a
+ * single item: a label and a fold-away chevron costing a row each to say
+ * "Media" and "Users" a second time. Three headings and three chevrons for four
+ * destinations is more chrome than content.
+ *
+ * The groups were never editorial in the first place. Media's own comment gave
+ * the game away: "Grouped so the sidebar can be ordered at all" — Payload sorts
+ * ungrouped collections above grouped ones, so grouping was the lever for
+ * pushing Media and Users below the two things opened daily. With NOTHING
+ * grouped there is nothing to sort around, and the order falls out of
+ * `collections: [Articles, Resources, Media, Users]` in payload.config, which
+ * was already the wanted order. The hack solved a problem it created.
+ *
+ * That leaves Payload's own "Collections" heading over all four, which is
+ * developer vocabulary for "the nav" and labels nothing the four rows do not.
+ *
+ * CONDITIONAL, so it restores itself: this hides the heading only while there is
+ * exactly one group — `:has(.nav-group + .nav-group)` is false until two groups
+ * sit next to each other. Add a second group and every label comes back,
+ * without anyone remembering this rule exists. */
+.nav__wrap:not(:has(.nav-group + .nav-group)) .nav-group__toggle {
+  display: none;
 }
 
-.nav-group:first-child {
-  margin-block-start: 0;
+/* More space above a heading than below it: the label belongs to the links
+   under it, not to the group it follows. Payload gives it neither. */
+.nav-group + .nav-group {
+  margin-block-start: 1.5rem;
 }
 
 .nav-group__toggle {

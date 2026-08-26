@@ -34,7 +34,6 @@ export const Users: CollectionConfig = {
     hideAPIURL: true,
     // See the note on Media: ungrouped collections sort above grouped ones, so
     // "Account" is what keeps Users last rather than first.
-    group: 'Account',
   },
   // API-key auth so the Content Generator can post articles. Enable the key
   // per-user in the admin, then send:

@@ -21,10 +21,6 @@ export const Media: CollectionConfig = {
     // /api/articles/:id/translate-to-thai, and the public site still reads
     // through Payload as before. Only the admin's viewer for it is gone.
     hideAPIURL: true,
-    // Grouped so the sidebar can be ordered at all. Payload renders every
-    // ungrouped collection ABOVE the grouped ones, which put Media and Users —
-    // the two things opened least — above the two opened daily.
-    group: 'Library',
     // The only collection that had no description. Says what belongs here and,
     // more usefully, where the files actually come from.
     description:
