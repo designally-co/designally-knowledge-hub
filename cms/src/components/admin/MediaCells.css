@@ -1,0 +1,31 @@
+/*
+ * The media list's preview column.
+ *
+ * The picture is a recognition aid sitting beside the name, not a replacement
+ * for it — so it is small, fixed, and does not change the row height. A table
+ * whose rows grow with their contents gives up the one thing a table is good
+ * at.
+ */
+
+/* `contain`, not `cover`. This library holds logos and icons as well as
+   photographs — its two smallest files are a 48px SVG and a 96px PNG — and
+   cropping a logo to fill a square removes the part that identifies it. */
+.da-media-thumb {
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: var(--style-radius-s);
+  overflow: hidden;
+  background-color: var(--da-warm-white);
+}
+
+.da-media-thumb img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+/* An empty optional field. See QuietTextCell: Payload's own placeholder is the
+   field name in angle brackets, which reads as a fault rather than a blank. */
+.da-media-cell__none {
+  color: var(--da-ink-4);
+}
