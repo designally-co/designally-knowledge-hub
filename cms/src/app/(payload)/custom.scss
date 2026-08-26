@@ -146,6 +146,25 @@
   --style-radius-card: 26px;
   --style-radius-sheet: 34px;
 
+  /* THE MEASURE. 68 characters of the body face at its own size — the width the
+     editor was designed around and the one thing on the screen that was already
+     right. Held as a length rather than as `68ch` on each element that needs it,
+     because `ch` is font-relative: 68ch on the sheet (Poppins 15px) is a
+     different width from 68ch on the body (17px), and sizing the column that way
+     made it 55px narrower than the text it was supposed to contain.
+
+     46.35rem is 695px at this root — the width `68ch` was already resolving to
+     on the body, measured before it was replaced, so the column that was right
+     stays exactly where it was. */
+  --da-measure: 46.35rem;
+
+  /* The gap between the document and the rail, stated once. It was the sum of
+     two unrelated paddings — 22.5px on the editor's right and 46.2px on the
+     rail's left — which is how it reached 93px without anyone choosing 93.
+     2rem matches the sheet's own inset, so the space between the two sheets
+     reads as the same size as the space inside them. */
+  --da-column-gap: 2rem;
+
   /* Focus, everywhere Payload draws it. */
   --accessibility-outline: 2px solid var(--da-focus);
   --accessibility-outline-offset: 2px;
@@ -1013,7 +1032,7 @@ html {
    column runs to about 84 characters at this width, which is past the point
    where the eye reliably finds the next line. */
 [data-field-path='body'] .ContentEditable__root {
-  max-inline-size: 68ch;
+  max-inline-size: var(--da-measure);
   font-size: 1.0625rem;
   line-height: 1.7;
 }
@@ -1428,6 +1447,47 @@ html {
 
 .field-type.row.da-cover:has(.da-coverprev__frame) .da-cover__ways {
   visibility: hidden;
+}
+
+/* ---- the two columns, measured to the text ------------------------------- */
+
+/* THE SHEET IS AS WIDE AS THE THING IT HOLDS. The body is set to 68ch — the
+   measure this editor was designed around — and the sheet was running 837px
+   against it, so 82px of every row was column that nothing reached, and the rail
+   was pushed 93px away by gutters sized for a full-bleed layout.
+   
+   The editor column is now the body's measure plus the sheet's own padding, and
+   it stops growing there. The rail follows it in, because the two are flex
+   siblings and the first one no longer takes everything it is offered. */
+/* `__main`, not `__edit`. The flex children of `.document-fields` are
+   `__main` and `__sidebar-wrap`; `__edit` is nested inside the first, so sizing
+   it set the width of a block while the column around it went on taking
+   everything, and the rail did not move at all. */
+.document-fields--has-sidebar .document-fields__main {
+  flex: 0 1 auto;
+  /* measure + the panel's own inset (1rem a side) + the sheet's (2rem a side)
+     + the page gutter + the gap to the rail. Without the panel's inset the text
+     lands 32px short of its measure: every field sits on a panel, so the body
+     never touches the edge of the sheet that contains it. */
+  /* The gap is NOT in here: it belongs to the rail's side now, and counting it
+     twice put 30px of slack back inside the sheet — the exact thing this rule
+     exists to remove. */
+  inline-size: min(100%, calc(var(--da-measure) + 2rem + 4rem + var(--gutter-h)));
+}
+
+/* The gap belongs to one side, not two. */
+.document-fields--has-sidebar .document-fields__edit {
+  padding-inline-end: 0;
+}
+
+.document-fields--has-sidebar .document-fields__sidebar-fields {
+  padding-inline-start: var(--da-column-gap);
+}
+
+/* The pair reads as one composition rather than as a document with something
+   parked to the right of it, so what is left over goes outside them both. */
+.document-fields--has-sidebar {
+  justify-content: center;
 }
 
 /* ---- the rail ------------------------------------------------------------ */
