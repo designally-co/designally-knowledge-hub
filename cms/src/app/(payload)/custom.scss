@@ -898,12 +898,26 @@ html {
   justify-content: flex-start;
 }
 
-/* Two buttons side by side do not need a word between them saying they are
-   alternatives, and the drag-and-drop line is the second "Or" in a section
-   that now has a third option written under it. */
+/* ONE DOOR, NOT TWO — everywhere, not just on the cover. "Create New" opens an
+   upload dialog; "Choose from existing" opens the media drawer, which has its
+   own "Create New" at the top of it. Two buttons, one of which is a door into a
+   room containing the other door. The field-level one goes, and the "Or"
+   between them goes with it; uploading stays available inside the drawer and by
+   dragging a file onto the field.
+
+   The drag-and-drop line goes too: it advertises a gesture the field still
+   accepts, in a place where there is now one button to read instead of three
+   things. */
+.field-type.upload .upload__createNewToggler,
 .field-type.upload .upload__dropzoneContent__orText,
 .field-type.upload .upload__dragAndDropText {
   display: none;
+}
+
+/* The remaining button is the only way in, so it gets a real target rather than
+   Payload's 27px pill. */
+.field-type.upload .upload__listToggler {
+  min-block-size: 44px;
 }
 
 /* -----------------------------------------------------------------------------
@@ -1148,20 +1162,6 @@ html {
   padding: 0;
   border: 0;
   background: none;
-}
-
-/* ONE DOOR, NOT TWO. "Create New" opens an upload dialog; "Choose from existing"
-   opens the media drawer — which has its own "Create New" at the top of it. Two
-   buttons, one of which is a door into a room containing the other door. The
-   field-level one goes, with the "Or" that separated them; uploading stays
-   available inside the drawer and by dragging a file onto the well. */
-.da-cover__ways .upload__createNewToggler,
-.da-cover__ways .upload__dropzoneContent__orText {
-  display: none;
-}
-
-.da-cover__ways .upload__listToggler {
-  min-block-size: 44px;
 }
 
 /* The upload's own label would name the picture from inside the box it sits
