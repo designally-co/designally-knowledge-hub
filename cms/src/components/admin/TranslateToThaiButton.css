@@ -36,7 +36,7 @@
   margin: 0 0 0.625rem;
   padding: 0.5rem 0.625rem;
   border-radius: var(--style-radius-s);
-  background-color: #ffffff;
+  background-color: var(--da-warm-white);
   font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--da-ink-3);
@@ -109,11 +109,13 @@
 
 /* The blocked state explains the block. A disabled control with no reason is a
    dead end; this one names the fix. */
+/* Warm white, not white. The rail's panels are gone and this block sits
+   directly on the sheet now, so a white chip on a white ground draws nothing. */
 .da-thai__blocked {
   margin: 0;
   padding: 0.5rem 0.625rem;
   border-radius: var(--style-radius-s);
-  background-color: #ffffff;
+  background-color: var(--da-warm-white);
   font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--da-ink-3);

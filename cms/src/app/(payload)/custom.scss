@@ -835,19 +835,24 @@ html {
   padding-block-end: 0.875rem;
 }
 
-/* The two sheets. */
-.document-fields__main .render-fields.document-fields__fields,
-.document-fields__sidebar-fields .render-fields {
+/* The two sheets. DIRECT children, both of them: written as a descendant
+   selector, `.document-fields__sidebar-fields .render-fields` also matched the
+   nested `.render-fields` that Payload puts inside a `row`, so a row in the rail
+   drew a second white bordered sheet with 18px of padding INSIDE the panel it
+   was already sitting in. Measured on Status: four painted surfaces between the
+   page and the select. */
+.document-fields__main > .render-fields.document-fields__fields,
+.document-fields__sidebar-fields > .render-fields {
   background-color: #ffffff;
   border: 1px solid var(--da-hairline);
   border-radius: var(--style-radius-l);
 }
 
-.document-fields__main .render-fields.document-fields__fields {
+.document-fields__main > .render-fields.document-fields__fields {
   padding: 1.75rem 2rem 2rem;
 }
 
-.document-fields__sidebar-fields .render-fields {
+.document-fields__sidebar-fields > .render-fields {
   padding: 1.25rem 1.25rem 1.5rem;
 }
 
@@ -915,11 +920,15 @@ html {
    and were sitting bare on the sheet while everything around them had a panel.
    -------------------------------------------------------------------------- */
 
+/* THE MAIN COLUMN ONLY. The rail used to get the same treatment and it was one
+   layer too many: the page, then the rail's sheet, then a grey panel per field,
+   then the input's own white ground and border — four surfaces to ask "is this
+   published?". A panel earns its place in the document, where blocks are long
+   and need separating from each other; in a 278px rail every block is one short
+   question, and the label and the control say that on their own. */
 .document-fields__main .document-fields__fields > .field-type,
 .document-fields__main .document-fields__fields > .rel,
-.document-fields__main .document-fields__fields > .da-coverprev,
-.document-fields__sidebar-fields > .render-fields > .field-type,
-.document-fields__sidebar-fields > .render-fields > .da-thai {
+.document-fields__main .document-fields__fields > .da-coverprev {
   background-color: var(--da-warm-white);
   border-radius: var(--style-radius-m);
   padding: 0.875rem 1rem 1rem;
@@ -942,8 +951,11 @@ html {
   margin-block-start: 0.75rem;
 }
 
+/* Space does the separating now that the panels are gone. 0.625rem was the gap
+   BETWEEN panels, each of which carried its own inch of padding; on a bare sheet
+   that reads as one undifferentiated list. */
 .document-fields__sidebar-fields > .render-fields > * + * {
-  margin-block-start: 0.625rem;
+  margin-block-start: 1.375rem;
 }
 
 /* Payload renders `bodyMarkdown`, `updatedAt` and `createdAt` as bare hidden
@@ -1183,17 +1195,49 @@ html {
 
 /* ---- the rail ------------------------------------------------------------ */
 
-/* Status and its date are one question in two parts, so they share a panel. A
-   `row` this narrow stacks rather than sitting side by side, which is what is
-   wanted — the grouping is the point, not the axis. Its children are inside a
-   nested `.render-fields`, so the direct-child selectors above leave them
-   alone and they need no reset. */
+/* Status and its date are one question in two parts, so they sit closer to each
+   other than to anything else. A `row` this narrow stacks rather than sitting
+   side by side, which is what is wanted — the grouping is the point, not the
+   axis. With the panels gone, proximity is what carries the grouping: half the
+   gap that separates the questions from one another. */
 .document-fields__sidebar-fields .field-type.row {
   display: block;
 }
 
+.document-fields__sidebar-fields .field-type.row > .render-fields {
+  /* Payload's nested row sheet: no ground, no border, no padding of its own.
+     `gap: 0` because the wrapper is a flex container carrying an 18.46px gap
+     that ADDS to the margin below — together they made the grouped pair sit
+     29px apart against 21px between the separate questions either side. One
+     source of spacing, not two. */
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  background: none;
+  border: 0;
+}
+
+/* Payload's own 23px bottom margin survives in here — the reset further up
+   reaches only the sheet's DIRECT children, not fields nested inside a row. Left
+   alone it made the grouped pair sit 29px apart while the separate questions
+   either side sat 20px apart: proximity saying the opposite of what the grouping
+   means. */
+.document-fields__sidebar-fields .field-type.row .render-fields > * {
+  margin-block-end: 0;
+}
+
 .document-fields__sidebar-fields .field-type.row .render-fields > * + * {
-  margin-block-start: 0.75rem;
+  margin-block-start: 0.6875rem;
+}
+
+/* THE ONE DIVIDER IN THE RAIL, and the one place that earns it. Everything above
+   describes the article; this does something to it. That is a change of kind
+   rather than of subject, which space alone does not say — so a hairline says
+   it, and nothing else in the rail draws a line. */
+.document-fields__sidebar-fields > .render-fields > .da-thai {
+  margin-block-start: 1.375rem;
+  padding-block-start: 1.375rem;
+  border-block-start: 1px solid var(--da-divider);
 }
 
 
