@@ -26,9 +26,7 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { RelatedPicker as RelatedPicker_3eb131fbfe4b0bc8a64b3e8c3b6ff916 } from '../../../components/admin/RelatedPicker'
 import { StatusCell as StatusCell_07f513c68167caf320c51b8dc6c45309 } from '../../../components/admin/ListCells'
 import { TagCell as TagCell_07f513c68167caf320c51b8dc6c45309 } from '../../../components/admin/ListCells'
-import { TagSelector as TagSelector_b09dda2c9bdc83427116784ee19fdaeb } from '../../../components/admin/TagSelector'
 import { TranslateToThaiButton as TranslateToThaiButton_c8d0b70ea2b3169c421567a646db02b1 } from '../../../components/admin/TranslateToThaiButton'
-import { ReviewView as ReviewView_bd39143e540e8b87b42a43b22c1459a2 } from '../../../components/admin/ReviewView'
 import { MediaPreviewCell as MediaPreviewCell_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
 import { QuietTextCell as QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
 import { GoogleSignIn as GoogleSignIn_d89265836baef557dace4d150b5c9962 } from '../../../components/admin/GoogleSignIn'
@@ -66,9 +64,7 @@ export const importMap = {
   "/components/admin/RelatedPicker#RelatedPicker": RelatedPicker_3eb131fbfe4b0bc8a64b3e8c3b6ff916,
   "/components/admin/ListCells#StatusCell": StatusCell_07f513c68167caf320c51b8dc6c45309,
   "/components/admin/ListCells#TagCell": TagCell_07f513c68167caf320c51b8dc6c45309,
-  "/components/admin/TagSelector#TagSelector": TagSelector_b09dda2c9bdc83427116784ee19fdaeb,
   "/components/admin/TranslateToThaiButton#TranslateToThaiButton": TranslateToThaiButton_c8d0b70ea2b3169c421567a646db02b1,
-  "/components/admin/ReviewView#ReviewView": ReviewView_bd39143e540e8b87b42a43b22c1459a2,
   "/components/admin/MediaCells#MediaPreviewCell": MediaPreviewCell_caa40f712cc60fbbf39decd6b126e7a1,
   "/components/admin/MediaCells#QuietTextCell": QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1,
   "/components/admin/GoogleSignIn#GoogleSignIn": GoogleSignIn_d89265836baef557dace4d150b5c9962,

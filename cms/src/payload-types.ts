@@ -234,6 +234,8 @@ export interface Article {
   createdAt: string;
 }
 /**
+ * Images and files. Most arrive automatically — Content Studio uploads each article’s cover here when it publishes.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
@@ -323,24 +325,7 @@ export interface Resource {
       }[]
     | null;
   /**
-   * Draft is hidden from the public site.
-   */
-  status: 'draft' | 'published';
-  publishedDate?: string | null;
-  /**
-   * Auto-filled from the title. Used in the URL.
-   */
-  slug?: string | null;
-  /**
-   * What this download is. Also decides the artwork and colour on the card.
-   */
-  category: 'Templates' | 'Fonts' | 'Ebooks & Guides' | 'Wallpapers' | 'Icons';
-  /**
-   * Human-readable total, e.g. "2.4 MB".
-   */
-  fileSize?: string | null;
-  /**
-   * Licence terms for the download, e.g. "Free for personal and commercial use".
+   * Terms for this download, e.g. "Free for personal and commercial use".
    */
   licence?: string | null;
   /**
@@ -354,6 +339,20 @@ export interface Resource {
      */
     ogImage?: (number | null) | Media;
   };
+  fileSize?: string | null;
+  /**
+   * Draft is hidden from the public site.
+   */
+  status: 'draft' | 'published';
+  publishedDate?: string | null;
+  /**
+   * What this download is. Also decides the artwork and colour on the card.
+   */
+  category: 'Templates' | 'Fonts' | 'Ebooks & Guides' | 'Wallpapers' | 'Icons';
+  /**
+   * Auto-filled from the title. Used in the URL.
+   */
+  slug?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -516,11 +515,6 @@ export interface ResourcesSelect<T extends boolean = true> {
         format?: T;
         id?: T;
       };
-  status?: T;
-  publishedDate?: T;
-  slug?: T;
-  category?: T;
-  fileSize?: T;
   licence?: T;
   seo?:
     | T
@@ -529,6 +523,11 @@ export interface ResourcesSelect<T extends boolean = true> {
         metaDescription?: T;
         ogImage?: T;
       };
+  fileSize?: T;
+  status?: T;
+  publishedDate?: T;
+  category?: T;
+  slug?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -11,15 +11,17 @@
  * contrast instead of losing it to an alpha value.
  *
  * The panel itself is warm-white (custom.scss). Inner surfaces are white, and
- * the accent tint is reserved for the one state that means work is waiting —
- * the same rule `.tag-selector__current--empty` follows.
+ * the accent tint is reserved for the one state that means work is waiting.
  */
 
 .da-thai__label {
   margin: 0 0 0.5rem;
   font-size: 13px;
   font-weight: 600;
-  line-height: 1.4;
+  /* 20px, matching `.field-label` exactly. A unitless 1.4 gave 18.2px here,
+     which is a third line-height for a label that sits directly beneath two
+     others in the same rail. */
+  line-height: 20px;
   color: var(--da-ink-3);
 }
 

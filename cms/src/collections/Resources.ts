@@ -104,11 +104,40 @@ export const Resources: CollectionConfig = {
       ],
     },
 
-    // ---- Sidebar -----------------------------------------------------------
-    statusField,
-    translateToThaiField,
-    publishedDateField,
-    ...slugField('title'),
+    {
+      // Beside the files, not in the rail. A licence is a fact ABOUT the
+      // download — proximity puts it next to the thing it describes rather than
+      // three panels away among the publishing controls.
+      name: 'licence',
+      type: 'text',
+      admin: {
+        description: 'Terms for this download, e.g. "Free for personal and commercial use".',
+      },
+    },
+
+    seoField('The picture shown when this download is shared.'),
+
+    /* Retired: `fileSize` was a text box asking a person to total up bytes the
+       upload had already measured, and it was empty on every resource in both
+       databases. Hidden rather than deleted — dropping a column means a
+       destructive migration, and Payload's schema push stops on an interactive
+       prompt when one is pending, which hangs a boot. The resource page no
+       longer prints a size. */
+    {
+      name: 'fileSize',
+      type: 'text',
+      admin: { hidden: true },
+    },
+
+    // ---- The rail ----------------------------------------------------------
+    // The same four questions as an article, asked in the same order: is it
+    // live, where is it filed, what is its address, and one action at the end.
+    // Status and its date are one question in two parts, so they share a row.
+    {
+      type: 'row',
+      admin: { position: 'sidebar' },
+      fields: [statusField, publishedDateField],
+    },
     {
       name: 'category',
       type: 'select',
@@ -119,24 +148,10 @@ export const Resources: CollectionConfig = {
         description: 'What this download is. Also decides the artwork and colour on the card.',
       },
     },
-    {
-      name: 'fileSize',
-      type: 'text',
-      admin: {
-        position: 'sidebar',
-        description: 'Human-readable total, e.g. "2.4 MB".',
-      },
-    },
-    {
-      name: 'licence',
-      type: 'text',
-      admin: {
-        position: 'sidebar',
-        description: 'Licence terms for the download, e.g. "Free for personal and commercial use".',
-      },
-    },
+    ...slugField('title'),
 
-    seoField('The picture shown when this download is shared.'),
+    // An action rather than a property, so it closes the rail — as on Articles.
+    translateToThaiField,
   ],
 }
 

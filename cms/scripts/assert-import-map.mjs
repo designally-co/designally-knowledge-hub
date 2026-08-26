@@ -41,14 +41,27 @@ const REQUIRED = [
     why: 'the article body is a richText field and cannot render without the Lexical editor',
   },
   {
-    key: '/components/admin/TagSelector#TagSelector',
-    why: "the article's tag field is a custom component",
-  },
-  {
     key: '/components/admin/TranslateToThaiButton#TranslateToThaiButton',
     why: 'the Translate to Thai button is mounted on both collections',
   },
+  {
+    key: '/components/admin/CoverPreview#CoverPreview',
+    why: "the article's cover is only visible through this component",
+  },
+  {
+    key: '/components/admin/LocaleGuard#LocaleGuard',
+    why: 'without it, creating in the wrong locale gives no warning at all',
+  },
+  {
+    key: '/components/admin/Dashboard#Dashboard',
+    why: 'it replaces the admin landing view; missing, the dashboard is blank',
+  },
 ]
+
+// TagSelector was required here until the tag field became a plain select. A
+// guard that lists a component nobody registers any more fails every build for
+// a component that is gone on purpose — so entries come out of this list when
+// the thing they protect comes out of the config.
 
 let map
 try {

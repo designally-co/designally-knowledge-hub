@@ -81,8 +81,9 @@ export default async function ResourcePage({ params }: { params: Promise<Params>
   const files = resource.files
   // No format row: every file is listed by name below, extension and all, so
   // stating the format again only repeats what the reader can already see.
+  // No size row: it was a hand-typed field nobody ever filled, so the page
+  // promised a figure it never had. Every file is listed by name below anyway.
   const facts = [
-    resource.fileSize && { label: dict.resources.fileSize, value: resource.fileSize },
     resource.licence && { label: dict.resources.licence, value: resource.licence },
   ].filter(Boolean) as { label: string; value: string }[]
 

@@ -721,9 +721,7 @@ html {
 .field-description,
 .doc-controls__label,
 .upload__dragAndDropText,
-.upload__dropzoneContent__orText,
-.tag-selector__tab,
-.tag-selector__hint {
+.upload__dropzoneContent__orText {
   color: var(--da-ink-3);
 }
 
@@ -920,7 +918,6 @@ html {
 .document-fields__main .document-fields__fields > .field-type,
 .document-fields__main .document-fields__fields > .rel,
 .document-fields__sidebar-fields > .render-fields > .field-type,
-.document-fields__sidebar-fields > .render-fields > .tag-selector,
 .document-fields__sidebar-fields > .render-fields > .da-thai {
   background-color: var(--da-warm-white);
   border-radius: var(--style-radius-m);
@@ -955,10 +952,31 @@ html {
   display: none;
 }
 
-.document-fields__main .document-fields__fields > .field-type > .field-label {
+/* Main-column field labels: the display face and a darker ink, so a heading
+   over the document reads as a heading and the rail's labels stay quieter.
+
+   TWO THINGS WERE WRONG WITH THIS RULE.
+
+   It asked for `0.8125rem` while the base `.field-label` asks for `13px`. The
+   admin's root is 15px, so the rem resolved to 12.19px — the same intended
+   size expressed in two units, landing on two different numbers, on labels
+   sitting inches apart. Now stated in the same unit as the rule it is
+   overriding.
+
+   And it only reached labels that are DIRECT children of `.field-type`, which
+   a plain text field's label is. An array puts its label inside
+   `h3.array-field__title` and a group inside `h3.group-field__title`, so
+   "Files" and "SEO & sharing" fell through to the base treatment and rendered
+   as rail labels in the middle of the document — three renderings of one role.
+   The h3 also carried its own line-height, which is where the third value
+   (16.25px) came from, so that is pinned here too. */
+.document-fields__main .document-fields__fields > .field-type > .field-label,
+.document-fields__main .document-fields__fields > .field-type .array-field__title > .field-label,
+.document-fields__main .document-fields__fields > .field-type .group-field__title > .field-label {
   font-family: var(--font-display);
-  font-size: 0.8125rem;
+  font-size: 13px;
   font-weight: 600;
+  line-height: 20px;
   color: var(--da-ink-2);
 }
 

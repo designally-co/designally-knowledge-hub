@@ -50,40 +50,6 @@ export const Articles: CollectionConfig = {
     defaultColumns: ['title', 'status', 'tag', 'publishedDate', 'updatedAt'],
     group: 'Content',
     description: 'Written editorial. Downloadable files belong in Resources.',
-    /*
-     * EDIT LEADS; REVIEW IS THE SECOND TAB.
-     *
-     * Review was briefly `views.edit.default` — the route a document opens at —
-     * on the argument that the job is reading and deciding rather than
-     * authoring. That is still true of where the WORK is, but it made the
-     * editor a destination you had to go and find, and Payload undercut the
-     * intent anyway: it stores `editViewType` as a per-collection preference,
-     * so the moment anyone opened Edit they kept landing on Edit. A "default"
-     * that the framework quietly reassigns is not a default.
-     *
-     * So the editor is `default` again, which is also the simpler arrangement
-     * by some distance. It removed the one fragile thing in this design: Review
-     * as `default` meant re-mounting Payload's own editor from
-     * `DefaultEditView`, an export that could go internal on any minor upgrade
-     * and would fail by the editor silently disappearing. Nothing depends on it
-     * now.
-     *
-     * It also disposes of a trap: `default` serves /collections/articles/create
-     * as well — Payload has no separate key for it — so a Review view mounted
-     * there had to detect the no-id case and hand back to the editor. With the
-     * editor as `default` again, create is simply the editor.
-     */
-    components: {
-      views: {
-        edit: {
-          review: {
-            path: '/review',
-            tab: { label: 'Review', href: '/review', order: 100 },
-            Component: '/components/admin/ReviewView#ReviewView',
-          },
-        },
-      },
-    },
   },
   access: publishedOrEditor,
   endpoints: [
@@ -219,7 +185,10 @@ export const Articles: CollectionConfig = {
         position: 'sidebar',
         description: 'One tag per article; it sets the category.',
         components: {
-          Field: '/components/admin/TagSelector#TagSelector',
+          // The list keeps its cell — a colour dot and the category beneath the
+          // tag is worth having when scanning 30 rows. The EDITOR is a plain
+          // select: react-select searches 34 options, which beats three tabs
+          // hiding 24 of them behind a control that had to be taught arrow keys.
           Cell: '/components/admin/ListCells#TagCell',
         },
       },
