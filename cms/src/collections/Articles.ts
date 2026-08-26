@@ -89,37 +89,79 @@ export const Articles: CollectionConfig = {
       admin: { hidden: true },
     },
 
-    // The cover, in the main column. It was briefly in the rail on the argument
-    // that it is not part of the text; it is part of the article, it is the
-    // largest thing on the published page, and at rail width there is nowhere
-    // to actually look at it. Uploading, choosing from the library and pasting
-    // a URL stay one block — see the cover rules in custom.scss.
+    /* ---- the cover, as one box ---------------------------------------------
+     *
+     * THE BOX IS THE CONSTANT AND THE CONTENT SWAPS. Empty, it holds the two
+     * ways to fill it; filled, the picture takes the box over at the same size
+     * and the controls wait underneath until Remove. Nothing moves, because the
+     * frame's height comes from its 4/3 ratio rather than from whatever is
+     * inside it — and 4/3 is the public card's crop, so the box is showing the
+     * crop that ships.
+     *
+     * WHY THE ROWS. These three fields have to be layered on top of one another,
+     * and as plain siblings they are three separate blocks in the document with
+     * no shared container to stack them in. A `row` gives them one. It is
+     * PRESENTATIONAL ONLY — unlike `group`, it does not nest the data — so
+     * `coverImage` and `coverUrl` stay exactly where they are in the API and in
+     * every existing document. The inner row keeps the two controls beside each
+     * other on their own layer instead of stacking them on each other.
+     *
+     * The cover is in the main column, not the rail: it is part of the article,
+     * it is the largest thing on the published page, and at rail width there is
+     * nowhere to actually look at it. */
     {
-      // The cover, shown before the controls that set it. A cover lives in
-      // either `coverImage` or `coverUrl`, and Payload's upload field only
-      // knows about the first — so an article whose cover came from Content
-      // Studio rendered an empty dropzone. See CoverPreview.
-      name: 'coverPreview',
+      // The heading, above the box. Payload's own label lives on the upload
+      // field, which is INSIDE the box — it would name the picture from
+      // underneath it, so it is clipped and this stands in its place.
+      name: 'coverHeading',
       type: 'ui',
       admin: {
-        components: { Field: '/components/admin/CoverPreview#CoverPreview' },
+        components: { Field: '/components/admin/CoverPreview#CoverHeading' },
       },
     },
     {
-      name: 'coverImage',
-      type: 'upload',
-      relationTo: 'media',
-      label: 'Cover image',
+      type: 'row',
+      admin: { className: 'da-cover' },
+      fields: [
+        {
+          // The picture layer. Renders nothing when there is no cover, so the
+          // controls beneath ARE the empty state.
+          name: 'coverPreview',
+          type: 'ui',
+          admin: {
+            components: { Field: '/components/admin/CoverPreview#CoverPreview' },
+          },
+        },
+        {
+          type: 'row',
+          admin: { className: 'da-cover__ways' },
+          fields: [
+            {
+              name: 'coverImage',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Cover image',
+            },
+            {
+              // No description. It read "Used only when no image is set." — a
+              // rule the preview states only when it applies, and states more
+              // precisely, as "chosen over the URL below".
+              name: 'coverUrl',
+              type: 'text',
+              label: 'Or paste a URL',
+            },
+          ],
+        },
+      ],
     },
     {
-      // No description. It read "Used only when no image is set." — a rule the
-      // preview above now states only when it actually applies, and states more
-      // precisely: "the uploaded image wins over the URL", shown exactly when
-      // both are set. A permanent 15px footnote for a conditional rule was the
-      // largest piece of text in the section.
-      name: 'coverUrl',
-      type: 'text',
-      label: 'Or paste a URL',
+      // What the cover is, and Remove — below the box, because they describe
+      // and act on the thing above them.
+      name: 'coverCaption',
+      type: 'ui',
+      admin: {
+        components: { Field: '/components/admin/CoverPreview#CoverCaption' },
+      },
     },
 
     {

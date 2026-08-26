@@ -1,14 +1,18 @@
 /*
- * The cover preview, welded to the top of the cover panel.
+ * The cover preview — the picture layer of the cover box, plus the heading
+ * above it and the caption and Remove beneath it.
  *
- * The cover is two fields answering one question, and custom.scss already joins
- * the upload and the URL into a single continuous panel. This is the third part
- * of that panel, so it takes the top corners and gives up its bottom ones — see
- * the matching rule in custom.scss that stops the upload rounding its top.
+ * The frame fills the box exactly, because the box is the constant: empty it
+ * shows the two ways to fill it, filled it shows this. Both states are the same
+ * 4/3 well at the same size, so adding a cover moves nothing.
  */
 
 .da-coverprev {
-  padding: 0.875rem 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  /* The picture fills whatever is left after the heading and the footer, so the
+     box never grows to fit them. */
+  min-block-size: 0;
 }
 
 .da-coverprev > .field-label {
@@ -18,15 +22,13 @@
 
 /* ---- the picture --------------------------------------------------------- */
 
-/* Wide enough to judge a crop, not so wide it becomes the document. At full
-   column width the 4/3 frame stood 442px tall and the cover outweighed the body
-   it belongs to; capped, it is 312px and still the largest thing in its own
-   panel. The ratio is never traded away for height — 4/3 is the public card's
-   crop, and showing a different one would make the preview a lie. */
+/* Held to the public card's crop. The ratio is never traded for height: 4/3 is
+   what ships, and showing a different one would make the preview a lie. */
 .da-coverprev__frame {
+  position: relative;
   display: grid;
   place-items: center;
-  max-inline-size: 26rem;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: var(--style-radius-s);
   /* A ground for images with transparency, and for the moment before load. */
@@ -35,8 +37,8 @@
 
 .da-coverprev__img {
   display: block;
-  width: 100%;
-  height: 100%;
+  inline-size: 100%;
+  block-size: 100%;
   object-fit: cover;
 }
 
@@ -49,24 +51,65 @@
   color: var(--da-critical);
 }
 
-/* ---- what it is ---------------------------------------------------------- */
+/* ---- remove, on the picture ---------------------------------------------- */
 
-/* One supporting size in this panel. The caption was 0.75rem — 11.25px at the
-   admin's 15px root, right on the detector's floor and the smallest thing in a
-   section whose whole job is being looked at. */
+/* A SOLID PILL, NOT A TRANSLUCENT ONE. This button has to stay legible over an
+   unknown photograph — a frosted or tinted surface reads differently on every
+   cover and is unreadable on some. An opaque chip carries its own contrast
+   wherever it lands, and the shadow separates it from whatever is behind it.
+   Lives on the picture because it acts on the picture: the box is the full
+   width of the panel, so a control underneath would sit a long way from it. */
+.da-coverprev__remove {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 0.5rem;
+  inset-inline-end: 0.5rem;
+  min-block-size: 36px;
+  padding: 0 0.875rem;
+  border: 0;
+  border-radius: 999px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgb(27 29 35 / 0.28);
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--da-ink);
+  cursor: pointer;
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .da-coverprev__remove:hover {
+    background-color: var(--da-critical);
+    color: #ffffff;
+  }
+}
+
+/* ---- what it is, below the box ------------------------------------------- */
+
 .da-coverprev__source {
-  margin: 0.625rem 0 0;
+  margin: 0;
+  min-inline-size: 0;
   font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--da-ink-3);
 }
 
-/* ---- nothing set --------------------------------------------------------- */
+.da-coverprev__remove {
+  flex: 0 0 auto;
+  margin: 0;
+  min-block-size: 44px;
+}
 
-/* No frame when there is no picture: an empty 4/3 box above an empty dropzone
-   would be two ways of drawing the same absence. */
+/* ---- empty --------------------------------------------------------------- */
+
+/* No frame and no footer: the box's own dashed well is the empty state, and the
+   controls inside it are what there is to say. This layer contributes only the
+   heading, and must not cover them. */
 .da-coverprev--empty {
-  padding-block-end: 0;
+  pointer-events: none;
 }
 
 .da-coverprev__note {

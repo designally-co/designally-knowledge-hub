@@ -1012,66 +1012,122 @@ html {
   padding-block-start: 0;
 }
 
-/* ---- the cover, as one continuous panel ---------------------------------- */
+/* ---- the cover, as one box ----------------------------------------------- */
 
-/* NOTE ON THE SELECTOR. Payload puts `id="field-coverImage"` on the
-   `.field-type` wrapper itself for an upload field — not on an input inside it,
-   which is where a text field's id goes (`#field-coverUrl` is the input). So
-   `.field-type.upload:has(#field-coverImage)` matches nothing: it asks for a
-   descendant that is actually the element. Every cover rule here was written
-   that way first and silently did nothing. */
-
-/* THREE fields, one question, so the panels are welded into one: the preview
-   keeps the top corners, the upload gives up both ends, the URL loses its top
-   corners and the gap above it, and the joins are invisible.
-
-   The preview is always rendered — including when there is no cover — so this
-   geometry is fixed. Were it conditional, picking an image would round and
-   unround the top of the block underneath it.
-
-   The preview takes the panel ground and the TOP corners explicitly. It is a
-   `ui` field, so it is not a `.field-type` and did not match the panel rule
-   that paints every other block — which left the picture sitting on the page
-   with the box starting underneath it, at the controls. The cover was outside
-   the box that was supposed to contain it. */
-/* Selector matches the panel rule's specificity on purpose. Written as
-   `.document-fields__fields > .da-coverprev` it lost to the three-class panel
-   rule above, which re-rounded all four corners — so the preview kept rounded
-   BOTTOM corners over the square top of the block welded beneath it, and the
-   page showed through in two small wedges at the seam. */
-.document-fields__main .document-fields__fields > .da-coverprev {
+/* Heading, box and caption are three fields answering one question, so the
+   panels are welded into one: the heading keeps the top corners, the box gives
+   up both ends, the caption keeps the bottom, and the joins are invisible. */
+.document-fields__main .document-fields__fields > .field-type:has(> .da-cover__heading) {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
   margin-block-end: 0;
-  padding-block-end: 0;
-  border-start-start-radius: var(--style-radius-m);
-  border-start-end-radius: var(--style-radius-m);
-  border-end-start-radius: 0;
-  border-end-end-radius: 0;
+  padding-block-end: 0.5rem;
 }
 
-.document-fields__fields > .field-type.upload#field-coverImage {
-  border-start-start-radius: 0;
-  border-start-end-radius: 0;
-  border-end-start-radius: 0;
-  border-end-end-radius: 0;
-  padding-block-end: 0.75rem;
+.document-fields__main .document-fields__fields > .field-type.row.da-cover {
+  border-radius: 0;
+  margin-block: 0;
+  padding-block: 0;
 }
 
-.document-fields__fields > .da-coverprev + .field-type.upload#field-coverImage {
-  margin-block-start: 0;
-}
-
-.document-fields__fields > #field-coverImage + .field-type {
+.document-fields__main .document-fields__fields > .field-type:has(> .da-coverprev__source),
+.document-fields__main .document-fields__fields > .field-type:has(> .da-coverprev__note) {
   border-start-start-radius: 0;
   border-start-end-radius: 0;
   margin-block-start: 0;
-  padding-block-start: 0;
+  padding-block-start: 0.625rem;
 }
 
-/* The section is titled ONCE, by the preview at the top of the panel. Payload's
-   own label sits on the upload field, which is the third thing in the block —
-   so it was naming a picture that had already been on screen for two elements.
-   Hidden, not removed: the input keeps its accessible name from it. */
-.field-type.upload#field-coverImage > .field-label {
+/* ONE FRAME, TWO STATES. Empty, the box holds the two ways to fill it; filled,
+   the picture covers them at exactly the same size, so adding a cover moves
+   nothing on the page. Everything is stacked in a single grid cell rather than
+   flowed, which is what lets the picture sit ON the controls instead of after
+   them, and the height comes from the 4/3 ratio rather than from the contents.
+
+   Full width of the panel: the cover is the largest thing on the published page
+   and the crop is the decision being made here, so it gets the whole measure. */
+.field-type.row.da-cover > .render-fields {
+  display: grid;
+  grid-template-areas: 'cover';
+  gap: 0;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--style-radius-s);
+  background-color: #ffffff;
+  /* Dashed while it is still asking to be filled. */
+  border: 1px dashed var(--da-ink-4);
+}
+
+.field-type.row.da-cover > .render-fields > * {
+  grid-area: cover;
+  min-inline-size: 0;
+  margin: 0;
+}
+
+/* The picture's layer sits above the controls'. */
+.field-type.row.da-cover > .render-fields > .field-type:has(.da-coverprev__frame) {
+  z-index: 1;
+}
+
+/* ---- the ways in, on the lower layer ------------------------------------- */
+
+/* Centred in the well as a pair, and never the reason the box is any given
+   height — the ratio decides that.
+
+   `flex: 0 0 auto` with `!important` because Payload's row renderer writes
+   `style="flex:1 1 auto"` INLINE on every child, which no class rule can beat
+   at any specificity. Measured: the upload was growing to 212px around a 44px
+   button and pinning the URL field to the floor of the well, so the two options
+   read as two unrelated things at opposite ends rather than as a pair. */
+/* Centred on both axes. Stretched across a well this size the pair hugged the
+   left edge and read as a form someone had left in an empty room; centred, it
+   reads as the invitation it is. */
+.da-cover__ways > .render-fields {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  block-size: 100%;
+  padding: 1rem;
+}
+
+/* The URL row keeps a readable measure instead of shrinking to its label. */
+.da-cover__ways .field-type.text {
+  inline-size: min(100%, 24rem);
+}
+
+.da-cover__ways .field-type {
+  flex: 0 0 auto !important;
+  margin: 0;
+}
+
+/* Payload's dropzone drew its own bordered box. Inside a well that already has
+   a border that is a box in a box; the well IS the drop target now. */
+.da-cover__ways .dropzone {
+  min-block-size: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+/* ONE DOOR, NOT TWO. "Create New" opens an upload dialog; "Choose from existing"
+   opens the media drawer — which has its own "Create New" at the top of it. Two
+   buttons, one of which is a door into a room containing the other door. The
+   field-level one goes, with the "Or" that separated them; uploading stays
+   available inside the drawer and by dragging a file onto the well. */
+.da-cover__ways .upload__createNewToggler,
+.da-cover__ways .upload__dropzoneContent__orText {
+  display: none;
+}
+
+.da-cover__ways .upload__listToggler {
+  min-block-size: 44px;
+}
+
+/* The upload's own label would name the picture from inside the box it sits
+   under; clipped, not removed, so the input keeps its accessible name. */
+.da-cover__ways .field-type.upload > .field-label {
   position: absolute;
   inline-size: 1px;
   block-size: 1px;
@@ -1080,86 +1136,22 @@ html {
   white-space: nowrap;
 }
 
-/* ---- the machinery changes weight with the state ------------------------- */
+/* ---- filled: the picture takes the box over ------------------------------ */
 
-/* WITH NO COVER, the dropzone IS the section: a large dashed target that says
-   "put a picture here", which is exactly the message when there is none. */
-.field-type.upload#field-coverImage .dropzone {
-  min-block-size: 14rem;
-  display: grid;
-  place-items: center;
-  background-color: #ffffff;
-  border: 1px dashed var(--da-ink-4);
-  border-radius: var(--style-radius-m);
+/* `:has()` asks the box whether the preview drew a frame — true for a library
+   image and a pasted URL alike, which is the point: Payload's upload field only
+   knows about its own value, so on a URL-covered article it went on offering to
+   set a cover that was already set.
+
+   `visibility` rather than `display`: the controls keep their place under the
+   picture and leave the tab order and the accessibility tree while covered, so
+   nothing can be focused through the image. */
+.field-type.row.da-cover:has(.da-coverprev__frame) > .render-fields {
+  border-color: transparent;
 }
 
-/* ONE DOOR, NOT TWO. "Create New" opens an upload dialog; "Choose from
-   existing" opens the media drawer — which has its own "Create New" at the top
-   of it. Two buttons, one of which is a door into a room containing the other
-   door. The field-level one goes, with the "Or" that separated them, and
-   uploading stays available both inside the drawer and by dragging a file onto
-   the zone. */
-.field-type.upload#field-coverImage .upload__createNewToggler,
-.field-type.upload#field-coverImage .upload__dropzoneContent__orText {
-  display: none;
-}
-
-/* With "Create New" gone this is the only control for the cover in either
-   state, so it gets a real target rather than Payload's 27px pill. */
-.field-type.upload#field-coverImage .upload__listToggler {
-  min-block-size: 44px;
-}
-
-/* WITH A COVER, it is a footer. `:has()` asks the shared parent whether the
-   preview drew a frame — true for a library image and for a URL alike, which is
-   the point: Payload's upload field only knows about its own value, so on a
-   URL-covered article it drew a 261px empty dashed target underneath a
-   perfectly good picture, and was the second-largest thing in the block.
-   Dashed borders and 14rem of space are an invitation; once accepted, the
-   invitation should stop being issued. */
-.document-fields__fields:has(.da-coverprev__frame) .field-type.upload#field-coverImage .dropzone {
-  min-block-size: 0;
-  padding: 0;
-  /* No border and no ground. A drop target draws a box because it is asking to
-     be filled; once it is filled the box is a card inside a card, and the row
-     underneath the picture is just where the controls live. */
-  border: 0;
-  background: none;
-}
-
-/* Controls sit under the picture, aligned with it, not centred in the panel —
-   the section reads down one edge: heading, picture, source, action. */
-.document-fields__fields:has(.da-coverprev__frame)
-  .field-type.upload#field-coverImage
-  .upload__dropzoneContent {
-  justify-content: flex-start;
-}
-
-/* And the file card stops showing the picture a second time. Payload renders a
-   thumbnail beside the filename; directly under a 312px preview of the same
-   image it is duplication, so the card keeps the facts — name, weight,
-   dimensions — and gives up the picture. */
-.document-fields__fields:has(.da-coverprev__frame) #field-coverImage .thumbnail {
-  display: none;
-}
-
-/* Centred on the CONTENT, not on the buttons. The buttons sit in a shrink-to-fit
-   flex box 279px wide inside a 685px parent, so `justify-content: center` on the
-   buttons themselves centres them within their own width and moves nothing —
-   which is what it did. Both axes are set because the parent's direction is
-   Payload's to change. */
-.field-type.upload#field-coverImage .upload__dropzoneContent {
-  justify-content: center;
-  align-items: center;
-}
-
-/* Once a file is chosen the dropzone gives way to Payload's preview card; it
-   sits on the panel as the object it is. */
-.field-type.upload#field-coverImage .upload__wrap {
-  background-color: #ffffff;
-  border: 1px solid var(--da-hairline);
-  border-radius: var(--style-radius-m);
-  overflow: hidden;
+.field-type.row.da-cover:has(.da-coverprev__frame) .da-cover__ways {
+  visibility: hidden;
 }
 
 /* ---- the rail ------------------------------------------------------------ */
