@@ -1,0 +1,212 @@
+/*
+ * Which half of the document each layer shows.
+ *
+ * Everything here is `display: none` on a field that is still mounted and still
+ * carrying its value — see ArticleViews.tsx. Hiding rather than unmounting is
+ * what lets one form serve both layers.
+ */
+
+/* ---- the overview: the article, not the inputs that make it -------------- */
+
+/* The writing itself, in the order it appears in the document: headline, deck,
+   the cover box and its two labels, and the body. The rendered article stands
+   in for all of it.
+
+   `.document-fields__main` IS IN THE CHAIN TO WIN THE CASCADE, not for reach.
+   The cover panel's rules in custom.scss are written from that ancestor and set
+   `display: block` on the heading; at equal specificity the later stylesheet
+   wins, and the label alone survived — one stray "Cover image" floating between
+   the article and its references. The extra class outranks it. */
+.da-doc--overview .document-fields__main .document-fields__fields > .field-type:has(#field-title),
+.da-doc--overview .document-fields__main .document-fields__fields > .field-type:has(#field-summary),
+.da-doc--overview .document-fields__main .document-fields__fields > .field-type.row.da-cover,
+.da-doc--overview .document-fields__main .document-fields__fields > .field-type:has([data-lexical-editor]) {
+  display: none;
+}
+
+/* ---- the overview: one header ------------------------------------------- */
+
+/*
+ * THREE HEADERS BECAME ONE. The overview opened with the breadcrumb bar, then a
+ * row of document tabs, then a row of timestamps with Save on the end — three
+ * stacked strips before the article started, two of which said nothing the rail
+ * does not already say.
+ *
+ * THE ONE THAT SURVIVES IS THE APP HEADER, not the document's own control bar.
+ * It carries the breadcrumb, the account menu and — the deciding factor — the
+ * locale switcher, which is how anyone reaches the Thai version of a bilingual
+ * article. Payload does not export that switcher, so hiding this bar would have
+ * removed the only route to it with no supported way to put it back. Save,
+ * Duplicate and Delete are all components that CAN be rendered elsewhere, so
+ * they moved into the rail instead (ArticleActions.tsx).
+ *
+ * The tabs go with no replacement: they offered "Overview" and "Edit", and the
+ * rail's own Edit control is the second of those.
+ */
+body.da-overview .doc-tabs,
+/* The document header is an `h1` of the article's title — which the read-only
+   article below states in the same words, in larger type. */
+body.da-overview .doc-header,
+body.da-overview .doc-controls {
+  display: none;
+}
+
+/* ---- the writing surface: the writing, and nothing else ------------------ */
+
+.da-doc--write .da-articleread {
+  display: none;
+}
+
+/* References, related and SEO describe the article rather than being it, and
+   they are the overview's business.
+
+   `.rel` IS THE RELATED PICKER, and it is named separately because it has no
+   `.field-type` wrapper to match on: a custom Field component replaces Payload's
+   wrapper outright, so the picker sits on the sheet as a bare element. Matched
+   by the generic relationship selector it stayed visible at the foot of the
+   writing surface — the one thing on this layer that is not the writing. */
+.da-doc--write .document-fields__fields > .field-type.array-field,
+.da-doc--write .document-fields__fields > .field-type.group-field,
+.da-doc--write .document-fields__fields > .rel {
+  display: none;
+}
+
+/* THE RAIL GOES. Status, the date, the tag, the slug and the Thai panel are all
+   decisions about the article rather than the article, so they live one layer
+   up. What is left is a column of writing with nothing beside it. */
+.da-doc--write .document-fields__sidebar-wrap {
+  display: none;
+}
+
+/* ---- writing mode: the article, and one bar ------------------------------ */
+
+/*
+ * THREE STACKED BARS BECOME ONE. Measured on the way in: the app header at 65px
+ * (logo, hamburger, breadcrumb, locale), the document tabs at 39px, and the
+ * control bar at another 65 — 169px of chrome above an article, three separate
+ * rows of navigation offering to take you somewhere else while you write.
+ *
+ * The one that survives is Payload's `doc-controls`, because it owns Save. The
+ * back link is portalled into it (ArticleViews.tsx), so leaving is still one
+ * click and the bar is the only thing between the top of the window and the
+ * headline.
+ *
+ * SCOPED TO `body.da-writing`, WHICH THE VIEW ADDS AND REMOVES. All of this sits
+ * outside the view's own markup, so it cannot be reached from a class on it —
+ * and it must come back for every other screen in the admin, which is what the
+ * effect's cleanup is for.
+ */
+
+body.da-writing .app-header,
+/* The hamburger is its own sticky element, outside the header. Left in place it
+   is a control that opens a nav writing mode has already hidden. */
+body.da-writing .template-default__nav-toggler-wrapper,
+body.da-writing .step-nav,
+/* THE DOCUMENT HEADER, WHICH IS THE HEADLINE A SECOND TIME. It holds an `h1` of
+   the article's title — already the first thing in the editor below it — and
+   hiding only the breadcrumb inside it left the container behind: 22px of empty
+   height above the control bar. That is what made the bar appear to sit low and
+   then jump up on the first scroll, because 22px is exactly how far a sticky
+   element travels before it reaches `top: 0`. */
+body.da-writing .doc-header,
+body.da-writing .doc-tabs,
+/* Last Modified / Created: provenance, and not a thing you act on mid-sentence. */
+body.da-writing .doc-controls__meta,
+body.da-writing .doc-controls__divider {
+  display: none;
+}
+
+/* The dot menu is Duplicate and Delete. Both are real actions and both belong on
+   the layer that manages the article — neither is something to have one click
+   away from the caret. */
+body.da-writing .doc-controls__dots,
+body.da-writing .doc-controls__popup {
+  display: none;
+}
+
+/* THE NAV IS HIDDEN WITHOUT BEING REMOVED, because it is a grid ITEM and the
+   shell is a two-column grid. `display: none` took it out of the grid, the
+   document wrap auto-placed itself into the column the nav had been holding —
+   which is 0px wide while the nav is collapsed — and the entire article
+   rendered one character wide down the left edge of the screen. Keeping the nav
+   in flow keeps the wrap in the column that has the width; the track is pinned
+   to 0 so an EXPANDED nav cannot leave 275px of empty gutter beside the
+   writing either. */
+body.da-writing .template-default {
+  grid-template-columns: 0 1fr;
+}
+
+body.da-writing .nav {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* The header's height is reserved further up the layout; with the header gone
+   the reservation is a gap. */
+body.da-writing .template-default__wrap {
+  padding-block-start: 0;
+}
+
+/* The surviving bar, as a bar: it stays put while the article scrolls under it,
+   so Save and the way out are always where you left them. */
+body.da-writing .doc-controls {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 10;
+  border-block-end: 1px solid var(--da-divider);
+  background-color: #ffffff;
+}
+
+/* ---- paper, not a card on a page ----------------------------------------- */
+
+/*
+ * WRITING MODE HAS NO SHEET. Everywhere else in the admin the parchment page
+ * carries white cards, and that inversion is what separates a document from the
+ * decisions about it. Here there is only the document: a card drawn around the
+ * one thing on screen divides it from nothing, and its border and radius are two
+ * more edges to look at while writing. So the page turns white and the sheet
+ * stops painting itself.
+ *
+ * ITS PADDING STAYS. With the card gone the inset is no longer the sheet's
+ * margin — it is what holds the text at its measure, and the column width is
+ * calculated from it (custom.scss, "the two columns"). Removing it would widen
+ * the line by 4rem past the measure the whole surface is built around.
+ */
+body.da-writing,
+body.da-writing .template-default,
+body.da-writing .template-default__wrap,
+body.da-writing .collection-edit,
+body.da-writing .document-fields {
+  background-color: #ffffff;
+}
+
+body.da-writing .document-fields__main .render-fields.document-fields__fields {
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+/* THE COLUMN'S SIDE RULES, WHICH ONLY EXIST ONCE THE PAGE IS WHITE. The edit
+   column carries a 1px `#f3f3f3` border down each side — the same value as the
+   parchment page, so everywhere else in the admin it is invisible by
+   construction. Against white paper it becomes two thin lines running the full
+   height of the article. */
+body.da-writing .document-fields__edit {
+  border-inline: 0;
+}
+
+body.da-writing .doc-controls__content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ---- the way back -------------------------------------------------------- */
+
+/* The shared `.da-iconbtn` carries the shape, the states and the focus ring;
+   this only nudges it back into the bar's own inset so the glyph sits level
+   with Save on the far side. */
+.da-writeback {
+  margin-inline-start: -0.5rem;
+  text-decoration: none;
+}

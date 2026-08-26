@@ -1,0 +1,277 @@
+/*
+ * The overview's actions, at the top of the rail.
+ *
+ * One filled control and two quiet ones. The rail was cleared of panels and
+ * boxes earlier for a reason — everything in it sits directly on the sheet, and
+ * these follow that: the primary action carries its own weight in colour, and
+ * the other two are text, because they are things you do occasionally and
+ * neither of them changes the document.
+ */
+
+.da-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-block-end: 0.5rem;
+}
+
+/* ---- into the writing surface -------------------------------------------- */
+
+/* The one filled control on the layer, because it is the one thing this page
+   exists to send you to. 44px, like every other target in the admin. */
+.da-actions__edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 44px;
+  padding: 0 1.25rem;
+  /* A PILL, BECAUSE IT KEPT ITS LABEL. Everything else on this layer is a glyph
+     in a round target; the one control that still spends a word takes the
+     system's own action shape rather than the 8px rectangle it had, which
+     matched neither the icons beside it nor Save above it. */
+  border-radius: 999px;
+  /* The same two tokens `.btn--style-primary` uses, so this reads as the admin's
+     primary control rather than as a new one that happens to be orange. */
+  background-color: var(--da-orange);
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+  transition: background-color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .da-actions__edit:hover {
+    background-color: var(--da-orange-deep);
+    color: #ffffff;
+  }
+}
+
+.da-actions__edit:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}
+
+/* ---- why it is not available --------------------------------------------- */
+
+/* Takes the accent, like the Thai panel's absent state: it is not an error, but
+   it is the one thing standing between you and what you came here to do. */
+.da-actions__blocked {
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--style-radius-s);
+  background-color: var(--da-orange-tint);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--da-orange-mark);
+}
+
+/* ---- the quiet pair ------------------------------------------------------ */
+
+/* A row of glyphs, tight together — they are one set of small actions, not
+   separate blocks. The negative inset pulls the first one's round target back
+   to the rail's own edge so the icons line up with the text above them. */
+.da-actions__quiet {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.125rem;
+  margin-inline-start: -0.5rem;
+}
+
+
+/* ---- Save, and what it is worth right now -------------------------------- */
+
+/* A GHOST WHILE THERE IS NOTHING TO SAVE. Save and "Edit the article" were two
+   full-width pills stacked at the top of the rail, and on a document with
+   nothing changed — which is most of the time an article is open — the accent
+   sat on the one with no work to do. Clean, Save recedes and Edit carries the
+   accent; dirty, they swap, and the "Save first" notice replaces Edit anyway.
+   The strongest thing in the rail is always the next thing worth doing.
+
+   Payload's button arrives with `.btn` margins meant for a control bar and nests
+   its own `.btn` inside a `.form-submit` wrapper, so both are stretched to the
+   column. */
+.da-actions__save .form-submit {
+  margin: 0;
+  inline-size: 100%;
+}
+
+.da-actions__save .form-submit .btn {
+  margin: 0;
+  inline-size: 100%;
+}
+
+.da-actions__save .form-submit .btn__content {
+  justify-content: center;
+}
+
+.da-actions__save .form-submit .btn--style-primary {
+  --bg-color: transparent;
+  --color: var(--da-ink);
+  --hover-bg: var(--da-warm-white);
+  --hover-color: var(--da-ink);
+  min-block-size: 44px;
+  border: 1px solid var(--da-hairline);
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    border-color var(--da-dur-feedback) var(--da-ease);
+}
+
+.da-actions__save--dirty .form-submit .btn--style-primary {
+  --bg-color: var(--da-orange);
+  --color: #ffffff;
+  --hover-bg: var(--da-orange-deep);
+  --hover-color: #ffffff;
+  border-color: transparent;
+}
+
+/* Says WHY it just changed colour. Without it the accent arriving on Save is a
+   state change with no explanation — the sentence is the status, the colour is
+   only the alarm. */
+.da-actions__unsaved {
+  margin: 0.4375rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--da-orange-mark);
+  text-align: center;
+}
+
+/* ---- delete, at the foot of the rail ------------------------------------- */
+
+/* A FULL-WIDTH ROW, NOT AN 18px LINK. Measured before this: the destructive
+   action had the smallest target in the rail — 80x18 — sitting two rows under
+   Save. It is now last in the column, behind its own rule, and the size of every
+   other control here. Quiet, because it should be findable rather than
+   prominent; a real target, because a misclick is unrecoverable either way. */
+.da-delete__ask {
+  display: flex;
+  align-items: center;
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding: 0 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--da-ink-3);
+  cursor: pointer;
+  transition:
+    border-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+/* The ring appears on approach rather than at rest — the accent ladder's "you
+   are pointing at this", in the critical hue because of what it does. */
+@media (hover: hover) {
+  .da-delete__ask:hover {
+    border-color: var(--da-critical);
+    color: var(--da-critical);
+  }
+}
+
+.da-delete__ask:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}
+
+/* The confirmation takes a tint used nowhere else in this rail, so the one
+   state that can destroy something looks like nothing else in it. */
+.da-delete__confirm {
+  padding: 0.875rem;
+  border-radius: var(--style-radius-m);
+  background-color: #fdecec;
+}
+
+.da-delete__question {
+  margin: 0 0 0.75rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #8f1c22;
+}
+
+.da-delete__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.da-delete__yes {
+  min-block-size: 44px;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 999px;
+  background-color: var(--da-critical);
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.da-delete__yes:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.da-delete__no {
+  min-block-size: 44px;
+  padding: 0 0.75rem;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  color: #8f1c22;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.da-delete__yes:focus-visible,
+.da-delete__no:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}
+
+.da-delete__error {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--da-critical);
+}
+
+/* ---- provenance, at the foot of the rail --------------------------------- */
+
+/* NO RULE OF ITS OWN. The rail's rhythm (custom.scss) decides which seams get a
+   hairline; this drew a second one on top of it, so the timestamps arrived
+   behind a line the grouping had not asked for — four rules in a rail that
+   earns three. The block carries content and nothing else. */
+.da-meta {
+  margin: 0;
+}
+
+.da-meta__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.da-meta__row + .da-meta__row {
+  margin-block-start: 0.25rem;
+}
+
+.da-meta__label,
+.da-meta__value {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--da-ink-3);
+}
+
+.da-meta__value {
+  color: var(--da-ink-2);
+}

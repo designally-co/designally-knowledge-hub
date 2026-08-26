@@ -1,0 +1,58 @@
+/*
+ * The headline on the writing surface. Type from the system's ladder at
+ * `section` — 34/600/1.20 — not `display` 40: this sits in a 784px column
+ * beside a rail, not across a marketing page, and 40 wraps the average Hub
+ * headline onto three lines.
+ */
+
+.da-title {
+  background: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.da-title__label {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.da-title__input {
+  display: block;
+  inline-size: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  /* No manual resize handle and no scrollbar: the box is sized to its content
+     by the component, so both would only ever be wrong. */
+  resize: none;
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  color: var(--da-ink);
+}
+
+.da-title__input::placeholder {
+  color: var(--da-ink-4);
+}
+
+/* Focus is the caret. A ring around a headline that fills the column would
+   outline the whole surface; the caret is unambiguous about where you are. */
+.da-title__input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.da-title__error {
+  margin: 0.375rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--da-critical);
+}

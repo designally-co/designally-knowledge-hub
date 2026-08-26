@@ -44,6 +44,32 @@ export const Articles: CollectionConfig = {
     // /api/articles/:id/translate-to-thai, and the public site still reads
     // through Payload as before. Only the admin's viewer for it is gone.
     hideAPIURL: true,
+    /* TWO LAYERS: manage the article, or write it.
+     *
+     * `default` is where the list lands you and it is the article as published,
+     * read-only, with the status, the tag, the slug, the SEO and the actions
+     * around it. `write` is the writing surface — title, deck, cover, body, and
+     * nothing else. Both render the SAME `DefaultEditView` over the same form,
+     * so there is one Save, one set of validation and one document; which fields
+     * each layer shows is presentation. See ArticleViews.tsx.
+     *
+     * Articles only. A resource is a file with a description attached — there is
+     * no long-form text there to keep a caret out of, so it keeps its one page. */
+    components: {
+      views: {
+        edit: {
+          default: {
+            Component: '/components/admin/ArticleViews#ArticleOverview',
+            tab: { href: '', label: 'Overview' },
+          },
+          write: {
+            Component: '/components/admin/ArticleViews#ArticleWrite',
+            path: '/write',
+            tab: { href: '/write', label: 'Edit' },
+          },
+        },
+      },
+    },
     // A triage order: what it is, whether it is live, where it is filed, when
     // it went out, and when it was last touched. Last edited closes the row
     // because it answers "where was I", not "what needs doing".
@@ -78,7 +104,27 @@ export const Articles: CollectionConfig = {
     // it has to sit above the fields the locale applies to. Nothing renders in
     // English.
     localeGuardField,
-    titleField,
+    {
+      // The article as published, read-only — the overview's main column. Sits
+      // FIRST among the content fields because on that layer it stands in for
+      // all of them; the writing surface hides it and shows the real ones.
+      name: 'articleRead',
+      type: 'ui',
+      admin: {
+        components: { Field: '/components/admin/ArticleRead#ArticleRead' },
+      },
+    },
+    {
+      // The shared title field, with a control that WRAPS. At 34px on the
+      // writing surface an `<input>` scrolls the headline off the sheet; this
+      // renders a textarea over the same string. Articles only — a resource's
+      // title is a form field, not a headline. See ArticleTitle.
+      ...titleField,
+      admin: {
+        ...titleField.admin,
+        components: { Field: '/components/admin/ArticleTitle#ArticleTitle' },
+      },
+    },
     summaryField,
     {
       // English source markdown (set by the from-markdown endpoint). The Thai
@@ -108,16 +154,6 @@ export const Articles: CollectionConfig = {
      * The cover is in the main column, not the rail: it is part of the article,
      * it is the largest thing on the published page, and at rail width there is
      * nowhere to actually look at it. */
-    {
-      // The heading, above the box. Payload's own label lives on the upload
-      // field, which is INSIDE the box — it would name the picture from
-      // underneath it, so it is clipped and this stands in its place.
-      name: 'coverHeading',
-      type: 'ui',
-      admin: {
-        components: { Field: '/components/admin/CoverPreview#CoverHeading' },
-      },
-    },
     {
       type: 'row',
       admin: { className: 'da-cover' },
@@ -154,20 +190,14 @@ export const Articles: CollectionConfig = {
       ],
     },
     {
-      // What the cover is, and Remove — below the box, because they describe
-      // and act on the thing above them.
-      name: 'coverCaption',
-      type: 'ui',
-      admin: {
-        components: { Field: '/components/admin/CoverPreview#CoverCaption' },
-      },
-    },
-
-    {
+      // No description. It read "Open with 2\u20133 sentences, then 3\u20136 H2
+      // sections." \u2014 house style for a writer who has written here before, and
+      // a standing instruction printed above the article every time afterwards.
+      // The writing surface has no labels on the title, the deck or the body;
+      // a note explaining how to write is the one piece of chrome left on it.
       name: 'body',
       type: 'richText',
       localized: true,
-      admin: { description: 'Open with 2\u20133 sentences, then 3\u20136 H2 sections.' },
     },
     {
       name: 'references',
@@ -214,6 +244,16 @@ export const Articles: CollectionConfig = {
     // are no section headings: with one field to a panel the field's own label
     // is the heading, and a second one above it just repeats the word.
     {
+      // Top of the rail: the way into the writing surface, above the decisions
+      // about the article rather than below them.
+      name: 'articleActions',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: { Field: '/components/admin/ArticleActions#ArticleActions' },
+      },
+    },
+    {
       type: 'row',
       admin: { position: 'sidebar' },
       fields: [statusField, publishedDateField],
@@ -243,6 +283,29 @@ export const Articles: CollectionConfig = {
     // An action rather than a property: everything above describes what the
     // article is, this one does something to it.
     translateToThaiField,
+
+    {
+      // Last modified and Created, at the foot of the rail. They used to be the
+      // widest thing in the document control bar; that bar is gone from the
+      // overview, and provenance belongs at the end of the column rather than
+      // at the top of the screen.
+      name: 'documentMeta',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: { Field: '/components/admin/ArticleActions#ArticleMeta' },
+      },
+    },
+    {
+      // Last in the rail, and last on purpose. It used to sit two rows under
+      // Save, in the group you reach for when you mean to publish something.
+      name: 'documentDelete',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        components: { Field: '/components/admin/ArticleActions#ArticleDelete' },
+      },
+    },
 
     // NOTE: there are deliberately no "Thai" and "Summary" columns in the list.
     // Content Studio translates and writes the dek as part of publishing, so

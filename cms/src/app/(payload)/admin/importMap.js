@@ -1,7 +1,7 @@
 import { LocaleGuard as LocaleGuard_481577e4283d332780d8f4cb437a0714 } from '../../../components/admin/LocaleGuard'
-import { CoverHeading as CoverHeading_01843476ac5725c4f1a626f58c1f0fc1 } from '../../../components/admin/CoverPreview'
+import { ArticleRead as ArticleRead_b74fe3e052dacaf09c8a1405df510199 } from '../../../components/admin/ArticleRead'
+import { ArticleTitle as ArticleTitle_6df45382d408c20720cbdef836b871d6 } from '../../../components/admin/ArticleTitle'
 import { CoverPreview as CoverPreview_01843476ac5725c4f1a626f58c1f0fc1 } from '../../../components/admin/CoverPreview'
-import { CoverCaption as CoverCaption_01843476ac5725c4f1a626f58c1f0fc1 } from '../../../components/admin/CoverPreview'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -26,9 +26,14 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { RelatedPicker as RelatedPicker_3eb131fbfe4b0bc8a64b3e8c3b6ff916 } from '../../../components/admin/RelatedPicker'
+import { ArticleActions as ArticleActions_820209e87154fb77fa550708666ace60 } from '../../../components/admin/ArticleActions'
 import { StatusCell as StatusCell_07f513c68167caf320c51b8dc6c45309 } from '../../../components/admin/ListCells'
 import { TagCell as TagCell_07f513c68167caf320c51b8dc6c45309 } from '../../../components/admin/ListCells'
 import { TranslateToThaiButton as TranslateToThaiButton_c8d0b70ea2b3169c421567a646db02b1 } from '../../../components/admin/TranslateToThaiButton'
+import { ArticleMeta as ArticleMeta_820209e87154fb77fa550708666ace60 } from '../../../components/admin/ArticleActions'
+import { ArticleDelete as ArticleDelete_820209e87154fb77fa550708666ace60 } from '../../../components/admin/ArticleActions'
+import { ArticleOverview as ArticleOverview_2189bbbf21ed1de1d6d01c49729884c2 } from '../../../components/admin/ArticleViews'
+import { ArticleWrite as ArticleWrite_2189bbbf21ed1de1d6d01c49729884c2 } from '../../../components/admin/ArticleViews'
 import { MediaPreviewCell as MediaPreviewCell_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
 import { QuietTextCell as QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
 import { GoogleSignIn as GoogleSignIn_d89265836baef557dace4d150b5c9962 } from '../../../components/admin/GoogleSignIn'
@@ -39,9 +44,9 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/components/admin/LocaleGuard#LocaleGuard": LocaleGuard_481577e4283d332780d8f4cb437a0714,
-  "/components/admin/CoverPreview#CoverHeading": CoverHeading_01843476ac5725c4f1a626f58c1f0fc1,
+  "/components/admin/ArticleRead#ArticleRead": ArticleRead_b74fe3e052dacaf09c8a1405df510199,
+  "/components/admin/ArticleTitle#ArticleTitle": ArticleTitle_6df45382d408c20720cbdef836b871d6,
   "/components/admin/CoverPreview#CoverPreview": CoverPreview_01843476ac5725c4f1a626f58c1f0fc1,
-  "/components/admin/CoverPreview#CoverCaption": CoverCaption_01843476ac5725c4f1a626f58c1f0fc1,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -66,9 +71,14 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/components/admin/RelatedPicker#RelatedPicker": RelatedPicker_3eb131fbfe4b0bc8a64b3e8c3b6ff916,
+  "/components/admin/ArticleActions#ArticleActions": ArticleActions_820209e87154fb77fa550708666ace60,
   "/components/admin/ListCells#StatusCell": StatusCell_07f513c68167caf320c51b8dc6c45309,
   "/components/admin/ListCells#TagCell": TagCell_07f513c68167caf320c51b8dc6c45309,
   "/components/admin/TranslateToThaiButton#TranslateToThaiButton": TranslateToThaiButton_c8d0b70ea2b3169c421567a646db02b1,
+  "/components/admin/ArticleActions#ArticleMeta": ArticleMeta_820209e87154fb77fa550708666ace60,
+  "/components/admin/ArticleActions#ArticleDelete": ArticleDelete_820209e87154fb77fa550708666ace60,
+  "/components/admin/ArticleViews#ArticleOverview": ArticleOverview_2189bbbf21ed1de1d6d01c49729884c2,
+  "/components/admin/ArticleViews#ArticleWrite": ArticleWrite_2189bbbf21ed1de1d6d01c49729884c2,
   "/components/admin/MediaCells#MediaPreviewCell": MediaPreviewCell_caa40f712cc60fbbf39decd6b126e7a1,
   "/components/admin/MediaCells#QuietTextCell": QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1,
   "/components/admin/GoogleSignIn#GoogleSignIn": GoogleSignIn_d89265836baef557dace4d150b5c9962,

@@ -1,4 +1,4 @@
-import type { CollectionConfig, Field } from 'payload'
+import type { CollectionConfig, Field, TextField } from 'payload'
 
 /**
  * Fields and behaviour common to Articles and Resources.
@@ -131,11 +131,19 @@ export const seoField = (shareImageNote: string): Field => ({
   ],
 })
 
-export const titleField: Field = {
+/* Typed as `TextField`, not `Field`. Articles spread this to swap in their own
+   control, and spreading the `Field` union widens it back to something no
+   branch accepts. */
+export const titleField: TextField = {
   name: 'title',
   type: 'text',
   required: true,
   localized: true,
+  admin: {
+    /* The label is hidden on the article's writing surface and the placeholder
+       stands in its place, so an empty document still says what goes here. */
+    placeholder: 'Title',
+  },
 }
 
 export const summaryField: Field = {
@@ -146,7 +154,7 @@ export const summaryField: Field = {
   // name stays `summary`, because renaming it would be a migration for a word.
   label: 'Deck',
   admin: {
-    description:
-      'One-sentence lede. Also the card excerpt.',
+    placeholder: 'One-sentence lede — also the card excerpt',
+    description: 'One-sentence lede. Also the card excerpt.',
   },
 }

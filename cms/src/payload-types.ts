@@ -137,9 +137,6 @@ export interface Article {
   bodyMarkdown?: string | null;
   coverImage?: (number | null) | Media;
   coverUrl?: string | null;
-  /**
-   * Open with 2–3 sentences, then 3–6 H2 sections.
-   */
   body?: {
     root: {
       type: string;

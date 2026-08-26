@@ -45,6 +45,20 @@
   --da-warm-white: #f3f3f3;
   --da-stone: #aaaaaa;
 
+  /* ---- the icon disc, from the platform ---------------------------------
+     A WARM NEUTRAL, NOT THE CI'S COOL ONE. The system hues its whole neutral
+     ramp 265° so light surfaces echo the steel Field; the disc is the one
+     control where that reasoning does not hold, because it sits on a dead
+     `#f3f3f3` page next to the orange. Same ramp rotated 45° into the orange's
+     own family, at a chroma low enough to stay neutral rather than become a
+     tint — a blue-grey disc beside a warm orange button reads as borrowed from
+     another system. The glyph is solved against `--da-fill-press`, the extreme
+     it sits on rather than the resting state (4.53:1). */
+  --da-fill: #beb5b2;
+  --da-fill-deep: #b1a7a3;
+  --da-fill-press: #a49994;
+  --da-glyph: #514c49;
+
   /* Action. White on Designally Orange measures 3.24:1 — under the 4.5 a
      17px label owes. The system crosses that floor knowingly and records it
      rather than arguing it: the brand rule is a white label on the orange.
@@ -270,6 +284,98 @@ p,
   --bg-color: var(--da-orange);
   --hover-bg: var(--da-orange-deep);
   --hover-color: #ffffff;
+}
+
+/* -----------------------------------------------------------------------------
+   The icon button
+
+   THE DEFAULT SHAPE FOR AN ACTION HERE. A label is spent only where one is
+   actually required: the single accented action of a screen, and anything whose
+   meaning a glyph cannot carry ("Translate to Thai" is not a picture). Everything
+   else — back, copy, open, confirm, dismiss — is a glyph in a round target.
+
+   ONE CLASS, NOT ONE PER COMPONENT. The back control on the writing surface, the
+   two quiet actions in the rail and the pair inside the cover box are the same
+   object in three places; three copies of it would drift the first time one of
+   them was adjusted.
+
+   THE ACCESSIBLE NAME IS NOT OPTIONAL. Dropping the visible word means the name
+   has to be stated rather than implied, so every use carries `aria-label` AND
+   `title` — the first for a screen reader, the second so a pointer user can find
+   out what a glyph means without clicking it.
+   ========================================================================== */
+.da-iconbtn {
+  display: inline-grid;
+  place-items: center;
+  /* 44px, the target size the rest of this admin holds to — the Thai button and
+     Save both sit at it, and 40 was this one control quietly under the floor. */
+  inline-size: 44px;
+  block-size: 44px;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  /* Round, because the pill is this system's action signal and a pill with
+     equal sides is a circle. */
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--da-ink-3);
+  cursor: pointer;
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+/* Ghost at rest: in a rail of quiet controls a filled disc each would read as
+   four primary actions. The ground appears under the pointer instead. */
+@media (hover: hover) {
+  .da-iconbtn:hover {
+    background-color: var(--da-warm-white);
+    color: var(--da-ink);
+  }
+}
+
+.da-iconbtn:active {
+  background-color: var(--da-divider);
+}
+
+.da-iconbtn:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}
+
+.da-iconbtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (hover: hover) {
+  .da-iconbtn:disabled:hover {
+    background-color: transparent;
+    color: var(--da-ink-3);
+  }
+}
+
+/* The one icon button that confirms rather than navigates. It takes the accent,
+   because it is the action its region exists for. */
+.da-iconbtn--accent {
+  background-color: var(--da-orange);
+  color: #ffffff;
+}
+
+@media (hover: hover) {
+  .da-iconbtn--accent:hover {
+    background-color: var(--da-orange-deep);
+    color: #ffffff;
+  }
+}
+
+.da-iconbtn--accent:active {
+  background-color: var(--da-orange-deep);
+}
+
+.da-iconbtn--accent:disabled {
+  background-color: var(--da-orange);
 }
 
 /* Secondary is the ghost pill: transparent, ink label, hairline ring. Hover
@@ -1221,11 +1327,18 @@ html {
   margin-block-start: 0.75rem;
 }
 
-/* Space does the separating now that the panels are gone. 0.625rem was the gap
-   BETWEEN panels, each of which carried its own inch of padding; on a bare sheet
-   that reads as one undifferentiated list. */
+/* TWO GAPS, NOT ONE — the rail's blocks are not all siblings of the same kind.
+   Measured before this: six blocks at an identical 20.625px, so the actions, the
+   publishing controls, the filing controls, the translation panel and the
+   timestamps read as one undifferentiated list of six things with no entry
+   point. The rail is now a tight run of questions about the article, with the
+   changes of KIND marked.
+
+   No headings do this work. One field to a block means the field's own label is
+   already its heading, and a row of section titles above single controls would
+   be a second vocabulary to read past. Space groups; a rule marks the seam. */
 .document-fields__sidebar-fields > .render-fields > * + * {
-  margin-block-start: 1.375rem;
+  margin-block-start: 1rem;
 }
 
 /* Payload renders `bodyMarkdown`, `updatedAt` and `createdAt` as bare hidden
@@ -1270,65 +1383,365 @@ html {
   background-color: transparent;
 }
 
-/* ---- the masthead, as one panel ------------------------------------------ */
+/* ---- the writing surface ------------------------------------------------- */
 
-/* Title and deck are one box: a headline and the sentence under it are one
-   thought, and two panels put a seam through the middle of it. Same weld as
-   the cover below — the first loses its bottom corners and margin, the second
-   its top corners.
+/* TITLE, DECK AND BODY ARE ONE PIECE OF WRITING, so they stop looking like
+   three form fields. No panels, no boxes, no labels — the type says what each
+   one is, the way it will on the published page, and the placeholders carry the
+   naming that the labels were doing.
+   
+   Scoped to `.collection-edit--articles`, the class Payload puts on the edit
+   view's `<main>`, because this is what an article IS. A
+   resource is a file with a description attached and its description is a form
+   field; giving it a 34px borderless headline would be dressing a download up as
+   an essay.
+   
+   The fields keep their order, their names and their storage. This is the same
+   document it always was, set as prose. */
 
-   `:has()` is correct here, unlike on the cover. For a text or textarea field
-   Payload puts the id on the INPUT, so `#field-title` really is a descendant
-   of the `.field-type`; for an upload it puts the id on the `.field-type`
-   itself, which is why the cover rules had to drop `:has()` entirely. */
-.document-fields__fields > .field-type:has(#field-title) {
-  border-end-start-radius: 0;
-  border-end-end-radius: 0;
-  padding-block-end: 0.5rem;
+.collection-edit--articles .document-fields__fields > .field-type:has(#field-title),
+.collection-edit--articles .document-fields__fields > .field-type:has(#field-summary),
+.collection-edit--articles .document-fields__fields > .field-type:has([data-lexical-editor]) {
+  background: none;
+  border-radius: 0;
+  padding: 0;
 }
 
-.document-fields__fields > .field-type:has(#field-title) + .field-type {
+/* The labels go; the placeholders replace them. Kept in the accessibility tree
+   — clipped, not removed — because a screen reader still needs to be told which
+   box it is in, and a placeholder is not a name. */
+.collection-edit--articles .document-fields__fields > .field-type:has(#field-title) > .field-label,
+.collection-edit--articles .document-fields__fields > .field-type:has(#field-summary) > .field-label,
+.collection-edit--articles .document-fields__fields > .field-type:has([data-lexical-editor]) .rich-text-lexical__label-row {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The description under the deck says what the label said. On a surface with no
+   labels it is a caption explaining a field that is explaining itself. */
+.collection-edit--articles .document-fields__fields > .field-type:has(#field-summary) .field-description {
+  display: none;
+}
+
+/* ---- the type ------------------------------------------------------------ */
+
+/* `section` from the ladder — 34/600/1.20. Not `display` 40: this sits in a
+   784px column beside a rail, not across a marketing page, and 40 wraps the
+   average Hub headline onto three lines. */
+.collection-edit--articles #field-title {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  color: var(--da-ink);
+}
+
+/* The deck is Poppins at the CI's own Light 300, one step down the ladder at
+   `tagline` size. Light is what the system asks for in body copy and it is
+   never more at home than under a headline. */
+/* THE DECK IS SET AS BODY COPY, because that is what it is: the first thing
+   read after the headline and the sentence the card excerpt repeats. It was one
+   step up the ladder at 21px in secondary ink, which made it a third weight of
+   type between the 34px headline and the article — a size that appears once and
+   nowhere else. Same face, same size, same leading, same ink as the body now,
+   so the head matter reads as the opening of the article rather than as a
+   caption sitting above it. */
+.collection-edit--articles #field-summary {
+  padding: 0;
+  border: 0;
+  background: none;
+  min-block-size: 0;
+  font-family: var(--font-body);
+  font-size: 19px;
+  font-weight: 300;
+  line-height: 1.65;
+  letter-spacing: 0;
+  color: var(--da-ink);
+  resize: none;
+}
+
+.collection-edit--articles #field-title::placeholder,
+.collection-edit--articles #field-summary::placeholder {
+  color: var(--da-ink-4);
+}
+
+/* Focus is the caret. A ring around a headline that fills the column would
+   outline the whole surface, so these two take the one exception in the admin —
+   and only because the caret is unambiguous about where you are. */
+.collection-edit--articles #field-title:focus,
+.collection-edit--articles #field-summary:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ---- the rhythm of the head matter --------------------------------------- */
+
+/* TWO SIZES OF GAP, AND THEY MEAN DIFFERENT THINGS. The headline and its deck
+   are one thought — a title and the line that finishes it — so they keep the
+   smaller of the two. The cover and the body are each a new thing starting, and
+   they get the larger one.
+
+   Measured before this: 8px, 11px and 26px. At 34px display over 21px deck the
+   first two were smaller than the leading inside the headline itself, so the
+   deck read as a third line of the title rather than as an answer to it, and
+   the cover was welded to the deck above it. */
+.collection-edit--articles .document-fields__fields > .field-type:has(#field-summary) {
+  margin-block-start: 1rem;
+}
+
+/* The cover starts the article's furniture, so it takes the full gap. Scoped
+   through `.collection-edit--articles` to outrank the cover panel's own rule,
+   which is written from `.document-fields__main` and would otherwise win on
+   source order. */
+.collection-edit--articles .document-fields__main .document-fields__fields > .field-type.row.da-cover {
+  margin-block-start: 2.75rem;
+}
+
+/* ---- the article itself -------------------------------------------------- */
+
+/* THE BODY IS SET AS THE ARTICLE, NOT AS A FORM CONTROL. Measured before this
+   existed: 16px Zalando Sans — the display face, at the admin's default control
+   size, because the editor had simply inherited whatever the surrounding form
+   was using. Nothing about that was chosen, and it meant the one field you
+   spend an hour inside was the one field that looked least like what it
+   produces. Poppins at 19px is the reading face at reading size, so the
+   paragraph you are typing breaks roughly where it will break on the page. */
+
+.collection-edit--articles .ContentEditable__root {
+  /* THE CAP MOVES TO THE COLUMN. `max-inline-size: var(--da-measure)` earlier in
+     this file sizes the BORDER box, and the gutter's 45px of padding lives
+     inside it — so the measure it was buying was going to the handles: the text
+     ran 650px against a 695px measure, and had done since the measure was
+     introduced. The article column is now the measure itself, which leaves
+     nothing here to cap. */
+  max-inline-size: none;
+  /* Room to write into before the first keystroke. Without it a new article's
+     body is a few pixels tall and reads as the end of the form. */
+  min-block-size: 24rem;
+  font-family: var(--font-body);
+  font-size: 19px;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--da-ink);
+}
+
+/* THE GUTTER IS LEFT ALONE, AND THE BODY SITS INSIDE IT.
+   This used to pull the editor 45px left so the body lined up with the headline,
+   putting the drag and add-block handles out in the sheet's padding. It lined
+   the text up and broke the handles: Lexical positions them from the paragraph's
+   own left edge on the assumption that the gutter is still inside the editor, so
+   after the pull they landed ON the first characters — measured, the drag handle
+   spanning 382-410 and the add handle 402-430 against text starting at 390.
+
+   Alignment was the smaller prize. The body is indented by the width of the
+   gutter now, and the gutter's own rule (below) marks it, so the indent reads as
+   a margin the editor owns rather than as a mistake. The placeholder's own 45px
+   offset is correct again for the same reason, so that override is gone too. */
+
+/* THE GUTTER'S OWN RULE, KEPT. Lexical draws a full-height line down the gutter
+   as a `::before` with a 1px `#f3f3f3` left border. It was hidden while the
+   editor was pulled left and the gutter was empty space in the sheet's padding;
+   now that the body sits inside the gutter again, the line is what says so — it
+   marks the margin the handles live in rather than looking like a stray rule
+   beside the text. Recoloured, because `#f3f3f3` is the parchment page and is
+   invisible on the white writing surface. */
+.collection-edit--articles .ContentEditable__root::before {
+  border-inline-start-color: var(--da-divider);
+}
+
+/* ---- the add-block and drag handles -------------------------------------- */
+
+/* A WHITE PLUS ON WHITE PAPER, AT 30% OPACITY. The bundled stylesheet defines
+   the icon twice — a black glyph, then a white one that overrides it — so the
+   control that starts a new block was drawn in the page's own colour and faded
+   to near-nothing on top of that. It is 18x24 as well, which is small for the
+   one affordance that says "something else can go here".
+
+   Redrawn in ink at a size worth aiming at. Both handles get it: they sit
+   together in the gutter and one being legible while the other is not would be
+   worse than either. */
+.collection-edit--articles :is(.add-block-menu, .draggable-block-menu) {
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: var(--style-radius-s);
+}
+
+.collection-edit--articles .add-block-menu .icon {
+  inline-size: 28px;
+  block-size: 28px;
+  opacity: 0.85;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 20px 20px;
+  background-image: url('data:image/svg+xml,<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4,10h12" stroke="%231b1d23" stroke-width="1.5" stroke-linecap="round"/><path d="M10,16V4" stroke="%231b1d23" stroke-width="1.5" stroke-linecap="round"/></svg>');
+}
+
+.collection-edit--articles .draggable-block-menu .icon {
+  inline-size: 28px;
+  block-size: 28px;
+  opacity: 0.85;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 20px 20px;
+  background-image: url('data:image/svg+xml,<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7.5" cy="5" r="1.1" fill="%231b1d23"/><circle cx="12.5" cy="5" r="1.1" fill="%231b1d23"/><circle cx="7.5" cy="10" r="1.1" fill="%231b1d23"/><circle cx="12.5" cy="10" r="1.1" fill="%231b1d23"/><circle cx="7.5" cy="15" r="1.1" fill="%231b1d23"/><circle cx="12.5" cy="15" r="1.1" fill="%231b1d23"/></svg>');
+}
+
+.collection-edit--articles :is(.add-block-menu, .draggable-block-menu):hover .icon {
+  opacity: 1;
+}
+
+/* ---- the prose, shared by both layers ------------------------------------ */
+
+/* SIZED ON THE PARAGRAPH, NOT INHERITED FROM THE ROOT. Payload's own paragraph
+   rule sits in a cascade layer and targets the element directly, and a direct
+   rule beats an inherited value whatever layer it is in — so setting 19px on
+   the root alone left every paragraph at 16px while the root reported 19.
+
+   `.da-articleread__body` is named alongside the editor throughout this section:
+   the overview renders the same article read-only, and one declaration for both
+   is what stops what you read and what you type from drifting apart. */
+.collection-edit--articles .ContentEditable__root :is(p, li),
+.da-articleread__body :is(p, li) {
+  font-size: 19px;
+  line-height: 1.65;
+  /* Colour is set HERE for the same reason size is: Payload's layered paragraph
+     rule targets the element directly, so the root's `--da-ink` never reached a
+     single paragraph and the article was reading at `--da-ink-3` — secondary
+     ink, for a body of text that is the primary thing on the page. It also left
+     the deck a different colour from the sentence directly beneath it. */
+  color: var(--da-ink);
+}
+
+.collection-edit--articles .ContentEditable__root p,
+.da-articleread__body p {
+  margin: 0 0 1.35em;
+}
+
+/* Display face for the headings inside the article, as on the page — and at 600
+   rather than the 700 the public h2 uses, so a section heading sits clearly
+   under the 34px title instead of shouting past it. */
+.collection-edit--articles .ContentEditable__root :is(h1, h2, h3, h4),
+.da-articleread__body :is(h1, h2, h3, h4) {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--da-ink);
+  text-wrap: balance;
+}
+
+/* Space above a heading, little below it: the gap belongs to the section that
+   is starting, and a heading floating equidistant between two blocks belongs to
+   neither. */
+.collection-edit--articles .ContentEditable__root h2,
+.da-articleread__body h2 {
+  margin: 2.25em 0 0.5em;
+  font-size: 27px;
+  line-height: 1.25;
+}
+
+.collection-edit--articles .ContentEditable__root h3,
+.da-articleread__body h3 {
+  margin: 1.75em 0 0.4em;
+  font-size: 21px;
+  line-height: 1.3;
+}
+
+/* The first block never takes its top margin — it would push the article away
+   from the cover it belongs to. */
+.collection-edit--articles .ContentEditable__root > :first-child,
+.da-articleread__body > :first-child {
+  margin-block-start: 0;
+}
+
+.collection-edit--articles .ContentEditable__root :is(ul, ol),
+.da-articleread__body :is(ul, ol) {
+  margin: 0 0 1.35em;
+  padding-inline-start: 1.4em;
+}
+
+.collection-edit--articles .ContentEditable__root li,
+.da-articleread__body li {
+  margin-block-end: 0.4em;
+}
+
+/* Underlined, as they will be in the article. A link that is only a colour is
+   indistinguishable from emphasis while you are reading your own draft. */
+.collection-edit--articles .ContentEditable__root a,
+.da-articleread__body a {
+  color: var(--da-ink);
+  /* PAYLOAD'S LEXICAL THEME ALREADY DRAWS ONE, as a `border-bottom` on the link
+     node — so adding a text-decoration gave every link in the body two rules
+     under it, a couple of pixels apart. The border goes and the decoration
+     stays: it is the one that follows descenders instead of cutting through
+     them, and it is what the published article uses. */
+  border-block-end: 0;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* 300 is the body weight here, so bold has to clear it by more than one step to
+   register at all. */
+.collection-edit--articles .ContentEditable__root strong,
+.da-articleread__body strong {
+  font-weight: 600;
+  color: var(--da-ink);
+}
+
+.collection-edit--articles .ContentEditable__root blockquote,
+.da-articleread__body blockquote {
+  margin: 2em 0;
+  padding-inline-start: 1.25rem;
+  border: 0;
+  border-inline-start: 2px solid var(--da-hairline);
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 1.4;
+  color: var(--da-ink);
+}
+
+/* The article starts a clear beat below the cover — the same gap the cover took
+   from the deck, so the three things above the body are evenly spaced. */
+.collection-edit--articles .document-fields__fields > .field-type:has([data-lexical-editor]) {
+  margin-block-start: 2.75rem;
+}
+
+/* ---- everything that is not the writing ---------------------------------- */
+
+/* References, related and SEO describe the article rather than being it, so
+   they sit after it, behind one rule. The divider is the only thing marking the
+   change and it is enough: above it you are writing, below it you are filing. */
+.collection-edit--articles .document-fields__fields > .field-type:has(#field-references),
+.collection-edit--articles .document-fields__fields > .field-type.array-field {
+  margin-block-start: 2.5rem;
+  padding-block-start: 2.5rem;
+  border-block-start: 1px solid var(--da-divider);
   border-start-start-radius: 0;
   border-start-end-radius: 0;
-  margin-block-start: 0;
-  padding-block-start: 0;
 }
 
-/* ---- the cover, as one box ----------------------------------------------- */
+/* THE PANEL STAYS; ONLY THE HEADING IS GONE. "Cover image" named a box that
+   now names itself — the empty state says what it is in its own middle — but
+   the warm-white ground still does real work: it is what makes the picture, the
+   dashed well and the caption read as one section of the document rather than
+   as loose blocks on the page.
 
-/* Heading, box and caption are three fields answering one question, welded into
-   one panel: the heading keeps the top corners, the box gives up both ends, the
-   caption keeps the bottom, and the joins are invisible.
-
-   THE HEADING AND CAPTION CARRY THE PANEL THEMSELVES. A custom Field component
-   replaces Payload's `.field-type` wrapper entirely, so these two are bare
-   elements sitting directly on the sheet — there is no wrapper for the panel
-   rule to paint, and none for a `:has()` weld to hook. Written that way first,
-   the result was a bare label, a grey square-cornered block, and bare text: the
-   single panel this describes did not exist, and the heading sat 15px left of
-   the well it introduces. */
-.document-fields__main .document-fields__fields > .da-cover__heading {
-  display: block;
-  background-color: var(--da-warm-white);
-  border-start-start-radius: var(--style-radius-m);
-  border-start-end-radius: var(--style-radius-m);
-  margin-block-end: 0;
-  padding: 0.875rem 1rem 0.5rem;
-}
-
+   The panel used to start at the heading, which carried the top corners. With
+   the heading gone the box takes them back. */
 .document-fields__main .document-fields__fields > .field-type.row.da-cover {
-  border-radius: 0;
-  margin-block: 0;
-  padding-block: 0;
-}
-
-.document-fields__main .document-fields__fields > .da-coverprev__source,
-.document-fields__main .document-fields__fields > .da-coverprev__note {
   background-color: var(--da-warm-white);
-  border-end-start-radius: var(--style-radius-m);
-  border-end-end-radius: var(--style-radius-m);
-  margin-block-start: 0;
-  padding: 0.625rem 1rem 1rem;
+  border-radius: var(--style-radius-m);
+  margin-block: 0;
+  padding: 1rem;
 }
 
 /* ONE FRAME, TWO STATES. Empty, the box holds the two ways to fill it; filled,
@@ -1344,12 +1757,19 @@ html {
    open sheet. Here it pulled the well 6px left of the panel's own padding, so
    the heading above it was out of alignment with the picture, and its bottom
    margin opened a 23px seam between the box and the caption welded under it. */
+/* NO RATIO OF ITS OWN — THE PICTURE DECIDES. The well used to hold 4/3 whether
+   or not there was anything in it, so an article with no cover reserved a large
+   empty crop in the middle of the writing surface, and one WITH a cover was
+   shown that cover cropped to a shape it may not be. Empty, the box is now only
+   as tall as the two controls inside it; filled, it takes the height the image
+   actually has at full width. The grid still stacks both layers in one cell, so
+   the taller of the two sets the height, and that is the picture whenever there
+   is one. */
 .field-type.row.da-cover > .render-fields {
   display: grid;
   grid-template-areas: 'cover';
   gap: 0;
   margin: 0;
-  aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: var(--style-radius-s);
   background-color: #ffffff;
@@ -1380,35 +1800,31 @@ html {
 
 /* ---- the ways in, on the lower layer ------------------------------------- */
 
-/* Centred in the well as a pair, and never the reason the box is any given
-   height — the ratio decides that.
+/* THIS LAYER IS NOW ONLY THE DROP TARGET. The sentence offering the three ways
+   in is drawn on the layer above (CoverPreview.css); what is left down here is
+   Payload's dropzone, stretched to the whole box so a file can be dropped
+   anywhere on it rather than onto a 169x44 strip in the middle — which is the
+   size it was when it wrapped two buttons.
 
-   `flex: 0 0 auto` with `!important` because Payload's row renderer writes
-   `style="flex:1 1 auto"` INLINE on every child, which no class rule can beat
-   at any specificity. Measured: the upload was growing to 212px around a 44px
-   button and pinning the URL field to the floor of the well, so the two options
-   read as two unrelated things at opposite ends rather than as a pair. */
-/* Centred on both axes. Stretched across a well this size the pair hugged the
-   left edge and read as a form someone had left in an empty room; centred, it
-   reads as the invitation it is. */
+   The buttons themselves are kept and hidden rather than removed: "upload a
+   file" up above works by clicking the real one, so the media drawer, the
+   upload endpoint and the drawer's own state stay Payload's problem. */
 .da-cover__ways > .render-fields {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
+  display: block;
   block-size: 100%;
-  padding: 1rem;
+  margin: 0;
+  padding: 0;
 }
 
-/* The URL row keeps a readable measure instead of shrinking to its label. */
-.da-cover__ways .field-type.text {
-  inline-size: min(100%, 24rem);
+.da-cover__ways .field-type,
+.da-cover__ways .upload__dropzoneAndUpload,
+.da-cover__ways .dropzone {
+  block-size: 100%;
+  margin: 0;
 }
 
 .da-cover__ways .field-type {
   flex: 0 0 auto !important;
-  margin: 0;
 }
 
 /* Payload's dropzone drew its own bordered box. Inside a well that already has
@@ -1418,6 +1834,24 @@ html {
   padding: 0;
   border: 0;
   background: none;
+}
+
+/* The two buttons and the "Or" between them. Not `display: none` — a button
+   that is not displayed is a button the empty state cannot click on your
+   behalf — so they are clipped instead, which keeps them clickable while
+   taking them out of the picture. */
+.da-cover__ways .upload__dropzoneContent {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The URL field moved inside the box, where it opens on request. */
+.da-cover__ways .field-type.text {
+  display: none;
 }
 
 /* The upload's own label would name the picture from inside the box it sits
@@ -1475,6 +1909,17 @@ html {
   inline-size: min(100%, calc(var(--da-measure) + 2rem + 4rem + var(--gutter-h)));
 }
 
+/* THE ARTICLE COLUMN IS THE MEASURE, WITH NOTHING ADDED. The 2rem above buys
+   the inset of the panel every field sits on — but the writing surface takes
+   those panels away from the title, the deck and the body, so on an article that
+   allowance is spent on nothing and the column runs 2rem wider than the text it
+   was sized for. Measured: a 724px column around a 695px measure, which is why
+   the headline and the cover finished 29px to the right of where the body
+   stopped. Dropping it lands all three on the same right edge. */
+.collection-edit--articles .document-fields--has-sidebar .document-fields__main {
+  inline-size: min(100%, calc(var(--da-measure) + 4rem + var(--gutter-h)));
+}
+
 /* The gap belongs to one side, not two. */
 .document-fields--has-sidebar .document-fields__edit {
   padding-inline-end: 0;
@@ -1527,14 +1972,45 @@ html {
   margin-block-start: 0.6875rem;
 }
 
-/* THE ONE DIVIDER IN THE RAIL, and the one place that earns it. Everything above
-   describes the article; this does something to it. That is a change of kind
-   rather than of subject, which space alone does not say — so a hairline says
-   it, and nothing else in the rail draws a line. */
-.document-fields__sidebar-fields > .render-fields > .da-thai {
-  margin-block-start: 1.375rem;
-  padding-block-start: 1.375rem;
+/* THE THREE SEAMS. Each one is a change of kind, and space alone does not say
+   so: acting on the article, then describing it, then translating it, then
+   ending it. Between blocks WITHIN a group there is no line — the rail earns
+   three rules in total, and the last of them exists mostly to put distance
+   around the one action that cannot be undone. */
+.document-fields__sidebar-fields > .render-fields > .da-actions + *,
+.document-fields__sidebar-fields > .render-fields > .da-thai,
+.document-fields__sidebar-fields > .render-fields > .da-delete {
+  margin-block-start: 1.75rem;
+  padding-block-start: 1.75rem;
   border-block-start: 1px solid var(--da-divider);
+}
+
+/* The timestamps close the rail rather than starting a section, so they take
+   the space without the rule. */
+.document-fields__sidebar-fields > .render-fields > .da-meta {
+  margin-block-start: 1.75rem;
+}
+
+/* ---- the rail's own type scale ------------------------------------------- */
+
+/* THE HELPER TEXT WAS BIGGER THAN THE LABEL IT EXPLAINS. Measured: labels at
+   13px/600 and descriptions at 15px/400, both in the same `--da-ink-3` — so the
+   least important line in every block was the largest thing in it, and the only
+   signals separating the two were weight and typeface, one of which the size
+   was actively contradicting.
+
+   The label goes darker and the description goes smaller, so the order reads the
+   same way twice. `--da-ink-3` is kept for the description rather than dropping
+   to `--da-ink-4`: at 12px the lighter tone measures 4.06:1 and small text owes
+   4.5. */
+.document-fields__sidebar-fields .field-label {
+  color: var(--da-ink-2);
+}
+
+.document-fields__sidebar-fields .field-description {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--da-ink-3);
 }
 
 

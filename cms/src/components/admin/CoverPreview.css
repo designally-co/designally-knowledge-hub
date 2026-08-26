@@ -15,38 +15,39 @@
   min-block-size: 0;
 }
 
-.da-coverprev > .field-label {
-  display: block;
-  margin-block-end: 0.625rem;
-}
-
 /* ---- the picture --------------------------------------------------------- */
 
-/* Held to the public card's crop. The ratio is never traded for height: 4/3 is
-   what ships, and showing a different one would make the preview a lie. */
+/* THE PICTURE'S OWN SHAPE, AT THE FULL WIDTH OF THE BOX. No aspect-ratio here:
+   the frame is as tall as what is inside it, so a panorama stays a panorama and
+   a portrait stays a portrait. Nothing is cropped to a shape the file does not
+   have. */
 .da-coverprev__frame {
   position: relative;
-  display: grid;
-  place-items: center;
-  aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: var(--style-radius-s);
   /* A ground for images with transparency, and for the moment before load. */
   background-color: var(--da-warm-white);
 }
 
-/* The frame while the media document is still being fetched: the ground it
-   already uses, and no spinner — the wait is one local request, and a spinner
-   for something that short is more movement than information. */
+/* The frame while the media document is still being fetched. It carries NO
+   height of its own — the two controls stacked in the same grid cell are still
+   holding the box open at its empty size, so the wait looks like the empty
+   state rather than like a large grey block that is about to become a
+   different large grey block. No spinner either: the wait is one local
+   request, and a spinner for something that short is more movement than
+   information. */
 .da-coverprev__frame--loading {
   background-color: var(--da-warm-white);
 }
 
+/* `block-size: auto` against the intrinsic size. The `width` and `height`
+   attributes on the element give the browser the ratio before a byte of the
+   image arrives, so the box opens to the right height once rather than
+   snapping to it on load. */
 .da-coverprev__img {
   display: block;
   inline-size: 100%;
-  block-size: 100%;
-  object-fit: cover;
+  block-size: auto;
 }
 
 .da-coverprev__broken {
@@ -60,83 +61,185 @@
 
 /* ---- remove, on the picture ---------------------------------------------- */
 
-/* A SOLID PILL, NOT A TRANSLUCENT ONE. This button has to stay legible over an
-   unknown photograph — a frosted or tinted surface reads differently on every
-   cover and is unreadable on some. An opaque chip carries its own contrast
-   wherever it lands, and the shadow separates it from whatever is behind it.
-   Lives on the picture because it acts on the picture: the box is the full
-   width of the panel, so a control underneath would sit a long way from it. */
+/* THE PLATFORM'S ICON DISC. This was a white pill with a drop shadow carrying
+   the word "Remove" — a control invented here to stay readable over an unknown
+   photograph. The system already answers that: a warm-neutral disc, hued into
+   the orange's own family so it does not read as borrowed from a cooler system,
+   with the glyph solved against the PRESSED fill rather than the resting one.
+
+   On the picture because it acts on the picture. 44px, the target size the rest
+   of this admin holds to. */
 .da-coverprev__remove {
   position: absolute;
   z-index: 1;
-  inset-block-start: 0.5rem;
-  inset-inline-end: 0.5rem;
-  min-block-size: 36px;
-  padding: 0 0.875rem;
+  inset-block-start: 0.625rem;
+  inset-inline-end: 0.625rem;
+  display: grid;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  margin: 0;
+  padding: 0;
   border: 0;
-  border-radius: 999px;
+  border-radius: 50%;
+  /* WHITE, NOT THE WARM DISC. Over an unknown photograph white is the one
+     ground that carries its own separation on every cover — the warm neutral
+     reads as part of the picture on anything light or sandy. The glyph keeps
+     the system's own colour, and the shadow does what the fill can no longer
+     do: hold the control off whatever is behind it. */
   background-color: #ffffff;
-  box-shadow: 0 1px 3px rgb(27 29 35 / 0.28);
-  font-family: var(--font-display);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--da-ink);
+  box-shadow: 0 1px 3px rgb(27 29 35 / 0.24);
+  color: var(--da-glyph);
   cursor: pointer;
-  transition:
-    background-color var(--da-dur-feedback) var(--da-ease),
-    color var(--da-dur-feedback) var(--da-ease);
+  transition: background-color var(--da-dur-feedback) var(--da-ease);
 }
+
+/* A filled control deepens its own fill — the system's stated exception to
+   "a hover darkens the line". */
+@media (hover: hover) {
+  .da-coverprev__remove:hover {
+    background-color: var(--da-warm-white);
+  }
+}
+
+.da-coverprev__remove:active {
+  background-color: var(--da-fill);
+}
+
+/* Dropping Payload's `.btn` class dropped its focus ring with it. The ring is
+   the admin's own, plus a white halo so it stays visible against a dark
+   photograph. */
+.da-coverprev__remove:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+  box-shadow:
+    0 1px 3px rgb(27 29 35 / 0.24),
+    0 0 0 4px rgb(255 255 255 / 0.9);
+}
+
 
 /* Dropping Payload's `.btn` class dropped its focus ring with it, and this
    button had none at all — measured as `outline: none`. The ring is the admin's
    own, plus a white halo so it stays visible against a dark photograph. */
-.da-coverprev__remove:focus-visible {
-  outline: 2px solid var(--da-focus);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgb(255 255 255 / 0.9);
-}
+/* ---- empty: the three ways in -------------------------------------------- */
 
-@media (hover: hover) {
-  .da-coverprev__remove:hover {
-    background-color: var(--da-critical);
-    color: #ffffff;
-  }
-}
-
-/* ---- what it is, below the box ------------------------------------------- */
-
-.da-coverprev__source {
-  margin: 0;
-  min-inline-size: 0;
-  font-size: 0.8125rem;
-  line-height: 1.5;
-  color: var(--da-ink-3);
-}
-
-.da-coverprev__remove {
-  flex: 0 0 auto;
-  margin: 0;
-  min-block-size: 44px;
-}
-
-/* ---- empty --------------------------------------------------------------- */
-
-/* No frame and no footer: the box's own dashed well is the empty state, and the
-   controls inside it are what there is to say. This layer contributes only the
-   heading, and must not cover them. */
-.da-coverprev--empty {
+/* POINTER EVENTS OFF, EXCEPT ON THE TWO CONTROLS. Payload's drop target is the
+   layer beneath this one and covers the whole box, so anything here that
+   accepted the mouse would swallow a file dropped in the middle of it — which
+   is most of the box. */
+/* ABOVE THE DROP TARGET, AND TRANSPARENT TO IT. Both layers share one grid
+   cell, and the drop target is second in the DOM — so without this it painted
+   over the sentence and took every click meant for the two links: measured,
+   `elementFromPoint` on "paste a URL" returned the dropzone. Lifting this layer
+   puts the words on top; `pointer-events: none` lets a dropped file fall
+   straight through to the target underneath anyway. */
+.da-coverprev__empty {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2.25rem 1.5rem;
+  text-align: center;
   pointer-events: none;
 }
 
-.da-coverprev__note {
+.da-coverprev__glyph {
+  display: block;
+  margin-block-end: 0.25rem;
+  color: var(--da-ink-4);
+}
+
+.da-coverprev__headline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--da-ink);
+}
+
+.da-coverprev__ways-text {
   margin: 0;
   font-size: 0.8125rem;
   line-height: 1.5;
   color: var(--da-ink-3);
 }
 
-.da-coverprev__note strong {
+/* The two actions are words in the sentence, not buttons beside it — so they
+   give up every button default and keep only the underline, which is the thing
+   that says a word can be clicked. */
+.da-coverprev__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--da-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .da-coverprev__link:hover {
+    color: var(--da-orange-mark);
+  }
+}
+
+.da-coverprev__link:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ---- empty: typing a URL ------------------------------------------------- */
+
+/* The box's whole contents while a URL is being entered. Pointer events come
+   back on: there is nothing to drop onto here, and everything to click. */
+.da-coverprev__urlentry {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 2rem 1.5rem;
+  pointer-events: auto;
+}
+
+.da-coverprev__urllabel {
   font-family: var(--font-display);
+  font-size: 13px;
   font-weight: 600;
+  line-height: 20px;
+  color: var(--da-ink-2);
+}
+
+.da-coverprev__urlinput {
+  inline-size: min(100%, 26rem);
+  min-block-size: 40px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-s);
+  background-color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
   color: var(--da-ink);
 }
+
+.da-coverprev__urlinput:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 1px;
+}
+
+.da-coverprev__urlactions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+

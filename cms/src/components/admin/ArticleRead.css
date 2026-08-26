@@ -1,0 +1,91 @@
+/*
+ * The read-only article on the overview.
+ *
+ * ONLY WHAT IS UNIQUE TO THIS LAYER LIVES HERE — the cover, the headline and the
+ * deck. The prose itself is set by the same rules that set the writing surface
+ * (custom.scss, "the article itself"), which name `.da-articleread__body`
+ * alongside the editor's own root. One declaration, two layers: what you read
+ * here and what you type there cannot drift apart, because they are the same
+ * paragraph style.
+ */
+
+.da-articleread {
+  /* The document's own measure. Set on the sheet rather than here so the cover
+     can still reach the full column. */
+  margin: 0;
+}
+
+/* ---- the cover ----------------------------------------------------------- */
+
+/* The picture's own shape, matching the box on the writing surface exactly, so
+   moving between the two layers does not re-crop the picture in front of you. */
+/* The same three gaps as the writing surface — 1rem under the headline, 2.75rem
+   before the cover and again before the body. The two layers show the same
+   article, so a different rhythm on each would make crossing between them feel
+   like crossing between two documents. */
+.da-articleread__cover {
+  margin-block-start: 2.75rem;
+  overflow: hidden;
+  border-radius: var(--style-radius-m);
+  background-color: var(--da-warm-white);
+}
+
+.da-articleread__hero {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+}
+
+/* ---- headline and deck --------------------------------------------------- */
+
+/* The same 34/600 as the writing surface. The headline is the one thing that
+   should look identical whether you are reading it or typing it — anything else
+   makes the editor feel like a different document. */
+.da-articleread__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  color: var(--da-ink);
+  text-wrap: balance;
+}
+
+.da-articleread__missing {
+  color: var(--da-ink-4);
+}
+
+/* Body copy, exactly as on the writing surface — see custom.scss. */
+.da-articleread__deck {
+  margin: 1rem 0 0;
+  font-family: var(--font-body);
+  font-size: 19px;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--da-ink);
+}
+
+.da-articleread__body {
+  margin-block-start: 2.75rem;
+}
+
+/* ---- nothing written yet ------------------------------------------------- */
+
+/* Names the way forward instead of leaving a blank column. The word it points
+   at is the control in the rail, spelled the same way. */
+.da-articleread__empty {
+  margin: 2.75rem 0 0;
+  padding: 1.25rem;
+  border-radius: var(--style-radius-m);
+  background-color: var(--da-warm-white);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--da-ink-3);
+}
+
+.da-articleread__empty strong {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--da-ink);
+}
