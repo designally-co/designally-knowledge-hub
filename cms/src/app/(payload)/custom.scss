@@ -139,6 +139,12 @@
   --style-radius-s: 8px;
   --style-radius-m: 11px;
   --style-radius-l: 18px;
+  /* The top of the system's ladder, which this file was missing: `card` 26 and
+     `sheet` 34 (globals.css `--r-card` / `--r-sheet`). Without them the document
+     sheets were drawn at `lg` — the radius of a large CONTROL — so the biggest
+     surfaces in the admin curved like the smallest ones. */
+  --style-radius-card: 26px;
+  --style-radius-sheet: 34px;
 
   /* Focus, everywhere Payload draws it. */
   --accessibility-outline: 2px solid var(--da-focus);
@@ -406,10 +412,11 @@ a:focus-visible,
 
 .nav__link {
   font-family: var(--font-display);
-  /* 500, NOT 600 — see the current-state block below. Payload's only signal for
-     "you are here" is a weight step from this value up to 600, so this must sit
-     a step below it or the active link cannot be told apart. */
-  font-weight: 500;
+  /* 400, and the step to the active link's 600 is wider for it. This asked for
+     500, which the system does not have — its ladder is 300/400/600/700 and the
+     token block above says so. The reasoning was right and the value was not
+     available. */
+  font-weight: 400;
   letter-spacing: -0.01em;
   color: var(--da-ink-2);
   border-radius: var(--style-radius-s);
@@ -471,7 +478,13 @@ a:focus-visible,
   width: 3px;
   height: 18px;
   border-radius: 2px;
-  background: var(--da-orange-mark);
+  /* `--da-orange`, not `--da-orange-mark`. The system reversed `--primary` to
+     Designally Orange on 19 August 2026 and `--primary-mark` followed it — the
+     fills, the dots and the marks are all `#ef6148` now, and `#c73f29` is what
+     you reach for when a thing has to be READ rather than recognised. A 3px bar
+     is recognised. Running the older value here put two oranges in one product,
+     which is the exact defect that reversal existed to remove. */
+  background: var(--da-orange);
   inset-inline-start: 3px;
 }
 
@@ -622,7 +635,7 @@ a:focus-visible,
   border-radius: var(--style-radius-s);
   font-family: var(--font-display);
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: -0.01em;
   color: var(--da-ink-3);
   transition:
@@ -981,7 +994,8 @@ html {
 #field-title {
   font-family: var(--font-body);
   font-size: 1rem;
-  font-weight: 500;
+  /* 600 — `body-strong` in the ladder. It is the document's name. */
+  font-weight: 600;
   color: var(--da-ink);
 }
 
@@ -1050,20 +1064,28 @@ html {
   padding-block-end: 0.875rem;
 }
 
-/* The two sheets. DIRECT children, both of them: written as a descendant
-   selector, `.document-fields__sidebar-fields .render-fields` also matched the
-   nested `.render-fields` that Payload puts inside a `row`, so a row in the rail
-   drew a second white bordered sheet with 18px of padding INSIDE the panel it
-   was already sitting in. Measured on Status: four painted surfaces between the
-   page and the select. */
-.document-fields__main > .render-fields.document-fields__fields,
+/* The two sheets.
+   
+   ONLY THE RAIL'S SELECTOR NEEDED TIGHTENING. `.document-fields__sidebar-fields
+   .render-fields` is a descendant selector and also matched the nested
+   `.render-fields` Payload puts inside a `row`, so a row in the rail drew a
+   second white bordered sheet inside the panel it was already sitting in —
+   four painted surfaces between the page and the Status select.
+   
+   The main column's was never leaky: `.document-fields__fields` is a class
+   Payload puts on the sheet alone, and a nested row is `.row__fields`. Making it
+   a direct child too was an over-correction, and it silently deleted the
+   document sheet — the main column sits inside a `.gutter` wrapper, so
+   `.document-fields__main > …` matches nothing. The whole editor lost its white
+   ground, its Edge and its padding, and the fields sat on the bare page. */
+.document-fields__main .render-fields.document-fields__fields,
 .document-fields__sidebar-fields > .render-fields {
   background-color: #ffffff;
   border: 1px solid var(--da-hairline);
-  border-radius: var(--style-radius-l);
+  border-radius: var(--style-radius-sheet);
 }
 
-.document-fields__main > .render-fields.document-fields__fields {
+.document-fields__main .render-fields.document-fields__fields {
   padding: 1.75rem 2rem 2rem;
 }
 
