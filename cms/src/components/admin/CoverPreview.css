@@ -35,6 +35,13 @@
   background-color: var(--da-warm-white);
 }
 
+/* The frame while the media document is still being fetched: the ground it
+   already uses, and no spinner — the wait is one local request, and a spinner
+   for something that short is more movement than information. */
+.da-coverprev__frame--loading {
+  background-color: var(--da-warm-white);
+}
+
 .da-coverprev__img {
   display: block;
   inline-size: 100%;
@@ -78,6 +85,15 @@
   transition:
     background-color var(--da-dur-feedback) var(--da-ease),
     color var(--da-dur-feedback) var(--da-ease);
+}
+
+/* Dropping Payload's `.btn` class dropped its focus ring with it, and this
+   button had none at all — measured as `outline: none`. The ring is the admin's
+   own, plus a white halo so it stays visible against a dark photograph. */
+.da-coverprev__remove:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgb(255 255 255 / 0.9);
 }
 
 @media (hover: hover) {

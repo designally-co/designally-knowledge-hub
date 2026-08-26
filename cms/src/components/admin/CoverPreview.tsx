@@ -75,6 +75,13 @@ function useCover() {
 
   const fromLibrary = Boolean(uploaded?.url)
 
+  /* A library cover holds an id, not a URL, so the picture is one fetch away.
+     Without this the box rendered its EMPTY state for that round trip — a dashed
+     well offering to set a cover the article already had, then the picture
+     snapping in over it. `loading` keeps the frame up, so the box is filled from
+     the first paint and nothing flashes. */
+  const loading = mediaId !== null && !uploaded
+
   /* Clears whatever is currently WINNING, not both. With a library image over a
      URL, the first Remove drops the library image and the URL cover comes back
      into view; the second clears that. You remove what you can see. */
@@ -87,6 +94,7 @@ function useCover() {
 
   return {
     src: uploaded?.url || url || '',
+    loading,
     fromLibrary,
     filename: uploaded?.filename ?? null,
     alt: uploaded?.alt ?? null,
@@ -103,12 +111,17 @@ export function CoverHeading() {
 /** The picture layer. Renders nothing when there is no cover, so the controls
  *  underneath ARE the empty state rather than being covered by one. */
 export function CoverPreview() {
-  const { src, alt, remove } = useCover()
+  const { src, alt, loading, remove } = useCover()
   const [broken, setBroken] = React.useState(false)
 
   React.useEffect(() => setBroken(false), [src])
 
-  if (!src) return null
+  if (!src && !loading) return null
+
+  if (!src) {
+    // Holding the frame while the media document resolves — see `loading`.
+    return <div className="da-coverprev__frame da-coverprev__frame--loading" style={{ aspectRatio: RATIO }} />
+  }
 
   return (
     <div className="da-coverprev__frame" style={{ aspectRatio: RATIO }}>
@@ -137,7 +150,10 @@ export function CoverPreview() {
 
 /** What the cover is, and the one thing you can do to it. Below the box. */
 export function CoverCaption() {
-  const { src, fromLibrary, filename, hasUrl } = useCover()
+  const { src, loading, fromLibrary, filename, hasUrl } = useCover()
+
+  // Says nothing rather than "No cover yet" about a cover that is still loading.
+  if (loading) return <p className="da-coverprev__source">&nbsp;</p>
 
   if (!src) {
     return (

@@ -1014,14 +1014,24 @@ html {
 
 /* ---- the cover, as one box ----------------------------------------------- */
 
-/* Heading, box and caption are three fields answering one question, so the
-   panels are welded into one: the heading keeps the top corners, the box gives
-   up both ends, the caption keeps the bottom, and the joins are invisible. */
-.document-fields__main .document-fields__fields > .field-type:has(> .da-cover__heading) {
-  border-end-start-radius: 0;
-  border-end-end-radius: 0;
+/* Heading, box and caption are three fields answering one question, welded into
+   one panel: the heading keeps the top corners, the box gives up both ends, the
+   caption keeps the bottom, and the joins are invisible.
+
+   THE HEADING AND CAPTION CARRY THE PANEL THEMSELVES. A custom Field component
+   replaces Payload's `.field-type` wrapper entirely, so these two are bare
+   elements sitting directly on the sheet — there is no wrapper for the panel
+   rule to paint, and none for a `:has()` weld to hook. Written that way first,
+   the result was a bare label, a grey square-cornered block, and bare text: the
+   single panel this describes did not exist, and the heading sat 15px left of
+   the well it introduces. */
+.document-fields__main .document-fields__fields > .da-cover__heading {
+  display: block;
+  background-color: var(--da-warm-white);
+  border-start-start-radius: var(--style-radius-m);
+  border-start-end-radius: var(--style-radius-m);
   margin-block-end: 0;
-  padding-block-end: 0.5rem;
+  padding: 0.875rem 1rem 0.5rem;
 }
 
 .document-fields__main .document-fields__fields > .field-type.row.da-cover {
@@ -1030,12 +1040,13 @@ html {
   padding-block: 0;
 }
 
-.document-fields__main .document-fields__fields > .field-type:has(> .da-coverprev__source),
-.document-fields__main .document-fields__fields > .field-type:has(> .da-coverprev__note) {
-  border-start-start-radius: 0;
-  border-start-end-radius: 0;
+.document-fields__main .document-fields__fields > .da-coverprev__source,
+.document-fields__main .document-fields__fields > .da-coverprev__note {
+  background-color: var(--da-warm-white);
+  border-end-start-radius: var(--style-radius-m);
+  border-end-end-radius: var(--style-radius-m);
   margin-block-start: 0;
-  padding-block-start: 0.625rem;
+  padding: 0.625rem 1rem 1rem;
 }
 
 /* ONE FRAME, TWO STATES. Empty, the box holds the two ways to fill it; filled,
@@ -1046,16 +1057,32 @@ html {
 
    Full width of the panel: the cover is the largest thing on the published page
    and the crop is the decision being made here, so it gets the whole measure. */
+/* `margin: 0` first. Payload's row carries `margin: 0 -5.77px 23.08px` — a
+   negative inline gutter and a bottom gap meant for a row of fields sitting in
+   open sheet. Here it pulled the well 6px left of the panel's own padding, so
+   the heading above it was out of alignment with the picture, and its bottom
+   margin opened a 23px seam between the box and the caption welded under it. */
 .field-type.row.da-cover > .render-fields {
   display: grid;
   grid-template-areas: 'cover';
   gap: 0;
+  margin: 0;
   aspect-ratio: 4 / 3;
   overflow: hidden;
   border-radius: var(--style-radius-s);
   background-color: #ffffff;
   /* Dashed while it is still asking to be filled. */
   border: 1px dashed var(--da-ink-4);
+  transition:
+    border-color var(--da-dur-feedback) var(--da-ease),
+    background-color var(--da-dur-feedback) var(--da-ease);
+}
+
+/* The well took the border over from Payload's dropzone, so it has to take the
+   drag feedback over too — otherwise dragging a file onto it says nothing. */
+.field-type.row.da-cover > .render-fields:has(.dropzone.dragging) {
+  border-color: var(--da-orange-mark);
+  background-color: var(--da-orange-tint);
 }
 
 .field-type.row.da-cover > .render-fields > * {
