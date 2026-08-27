@@ -40,3 +40,4 @@ Two things are stand-ins until the real brand assets arrive:
 - **Imagery** — the seeded sample content hotlinks Unsplash photographs as
   covers, and the headlines are invented. Swap all of it before anything ships
   publicly.
+
