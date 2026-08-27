@@ -124,16 +124,24 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     components: {
+      // The mark and "Knowledge Hub" at the head of the nav. It replaces
+      // Payload's bare 34px disc, which had no accessible name. See NavBrand.
+      beforeNavLinks: ['/components/admin/NavBrand#NavBrand'],
+      // Language and account, at the foot of the nav. Both came down from the
+      // top bar, which is now only the breadcrumb. See NavFooter.
+      afterNavLinks: ['/components/admin/NavFooter#NavFooter'],
       // "Continue with Google" above the login form. The form stays for now:
       // until Google sign-in has been used against production, removing the
       // other way in would let a misconfigured OAuth client lock everyone out.
       beforeLogin: ['/components/admin/GoogleSignIn#GoogleSignIn'],
       views: {
-        // Replaces Payload's grid of one-card-per-collection. That grid is a
-        // table of contents, and the sidebar is already the table of contents;
-        // this says what is actually waiting instead. See ADMIN-REDESIGN.md.
+        // `/admin` is a door, not a screen: it redirects to the articles list.
+        // It used to render "What needs you" — a triage dashboard over drafts,
+        // missing Thai and thin summaries — which was removed along with the
+        // readiness rules behind it. The sidebar is the table of contents and
+        // the list is where the work happens, so the CMS opens there.
         dashboard: {
-          Component: '/components/admin/Dashboard#Dashboard',
+          Component: '/components/admin/DashboardRedirect#DashboardRedirect',
         },
       },
     },

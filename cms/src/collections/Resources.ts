@@ -53,7 +53,35 @@ export const Resources: CollectionConfig = {
     hideAPIURL: true,
     useAsTitle: 'title',
     defaultColumns: ['title', 'category', 'status', 'publishedDate'],
-    description: 'Downloadable files. Written articles belong in Articles.',
+    // About resources and nothing else — the mirror of the line removed from
+    // Articles. It closed with "Written articles belong in Articles", pointing
+    // at another collection from under the heading of the one already chosen.
+    description: 'Files to download, each filed under a single category.',
+
+    /* No `listSearchableFields`: Articles searches by title alone and these are
+       one person's two queues, so a list that searched its prose beside one
+       that did not would be the kind of split that gets discovered mid-task. */
+
+    pagination: {
+      defaultLimit: 25,
+      limits: [10, 25, 50, 100],
+    },
+
+    components: {
+      beforeListTable: [
+        '/components/admin/ListReturn#RememberList',
+        // The language pair, on a collection that actually has localized
+        // fields. It used to be one global control in the nav.
+        '/components/admin/LocaleSwitch#LocaleSwitch',
+      ],
+      views: {
+        edit: {
+          default: {
+            actions: ['/components/admin/ListReturn#ReturnToPlace'],
+          },
+        },
+      },
+    },
   },
   access: publishedOrEditor,
   endpoints: [

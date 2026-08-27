@@ -1,0 +1,57 @@
+/*
+ * Sign out, in the account document's rail.
+ *
+ * Quiet until wanted, and set apart from the fields above it by space and a
+ * single rule — the same treatment Delete gets at the foot of an article's
+ * rail, and for the same reason: it is a different KIND of thing from the
+ * fields it follows, which space alone does not say.
+ */
+
+.da-signout {
+  margin-block-start: 1.75rem;
+  padding-block-start: 1.75rem;
+  border-block-start: 1px solid var(--da-divider);
+}
+
+.da-signout__note {
+  margin: 0 0 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--da-ink-3);
+  overflow-wrap: anywhere;
+}
+
+.da-signout__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--da-hairline);
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--da-ink);
+  text-decoration: none;
+  transition:
+    border-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+/* The ring turns critical on approach — the accent ladder's "you are pointing
+   at this", in the hue that says what this one does. */
+@media (hover: hover) {
+  .da-signout__btn:hover {
+    border-color: var(--da-critical);
+    color: var(--da-critical);
+    text-decoration: none;
+  }
+}
+
+.da-signout__btn:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}

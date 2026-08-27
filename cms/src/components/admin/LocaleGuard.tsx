@@ -18,9 +18,11 @@ import './LocaleGuard.css'
  *
  * 1. CREATING IN THE WRONG LANGUAGE. `/articles/create` inherits the sticky
  *    preference, so it can open with Title, Deck and Body labelled ไทย. The
- *    resulting article has no English at all — invisible to the English site,
- *    and absent from the dashboard's "Thai missing" queue too, because its Thai
- *    title IS filled. It fails in the one place built to catch this.
+ *    resulting article has no English at all — invisible to the English site.
+ *    This warning is now the ONLY thing standing between that mistake and a
+ *    published article: the dashboard used to run a "Thai missing" queue, but
+ *    that article slipped past it anyway (its Thai title IS filled), and the
+ *    dashboard has since been removed along with the rest of the triage.
  *
  * 2. NOT KNOWING WHICH FIELDS ARE SHARED. In Thai, Cover, Status, Published
  *    date, Tag and Slug remain editable and look identical to the Thai-only

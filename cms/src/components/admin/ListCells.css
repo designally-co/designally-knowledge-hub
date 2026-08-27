@@ -67,3 +67,91 @@
 .da-cell-empty {
   color: var(--da-ink-3);
 }
+
+/* ---- the row's identity: a picture and a name ---------------------------- */
+
+/*
+ * From the reference: the first column carries a thumbnail beside the name, so
+ * a row is recognised rather than read. Same reasoning as the media library.
+ */
+.da-row__id {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-inline-size: 0;
+  color: var(--da-ink);
+  text-decoration: none;
+}
+
+.da-row__thumb {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  inline-size: 40px;
+  block-size: 40px;
+  overflow: hidden;
+  border-radius: var(--style-radius-s);
+  background-color: var(--da-warm-white);
+}
+
+.da-row__img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+/* The fallback when a cover is an upload id rather than a URL. A letter, not a
+   broken-image glyph: it identifies the row instead of reporting a failure the
+   reader cannot act on. */
+.da-row__initial {
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--da-ink-4);
+}
+
+/* Two lines maximum, then ellipsis. Article titles here are full editorial
+   sentences — one ran 1311px in the editor — and an unbounded cell would set
+   the height of every row in the table from its longest headline. */
+.da-row__name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  min-inline-size: 0;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--da-ink);
+}
+
+@media (hover: hover) {
+  .da-row__id--link:hover .da-row__name {
+    color: var(--da-orange-mark);
+  }
+}
+
+.da-row__id--link:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+  border-radius: var(--style-radius-s);
+}
+
+/* ---- the status dot ------------------------------------------------------ */
+
+/* The reference states each status as a tinted pill with a leading dot. The
+   chip already carried the tint; this adds the dot, which is what makes a
+   column of them scannable without reading the words. */
+.da-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+}
+
+.da-chip__dot {
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}

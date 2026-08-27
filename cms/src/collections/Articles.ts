@@ -56,10 +56,21 @@ export const Articles: CollectionConfig = {
      * Articles only. A resource is a file with a description attached — there is
      * no long-form text there to keep a caret out of, so it keeps its one page. */
     components: {
+      // Records which page and filter you were on, so the back control in the
+      // document header can return you to it. Renders nothing.
+      beforeListTable: [
+        '/components/admin/ListReturn#RememberList',
+        // The language pair, on a collection that actually has localized
+        // fields. It used to be one global control in the nav.
+        '/components/admin/LocaleSwitch#LocaleSwitch',
+      ],
       views: {
         edit: {
           default: {
             Component: '/components/admin/ArticleViews#ArticleOverview',
+            // Renders nothing: it makes the breadcrumb's "Articles" return to
+            // the page of the list you left. See ListReturn.
+            actions: ['/components/admin/ListReturn#ReturnToPlace'],
             tab: { href: '', label: 'Overview' },
           },
           write: {
@@ -70,11 +81,42 @@ export const Articles: CollectionConfig = {
         },
       },
     },
-    // A triage order: what it is, whether it is live, where it is filed, when
-    // it went out, and when it was last touched. Last edited closes the row
-    // because it answers "where was I", not "what needs doing".
-    defaultColumns: ['title', 'status', 'tag', 'publishedDate', 'updatedAt'],
-    description: 'Written editorial. Downloadable files belong in Resources.',
+    /* FIXED, NOT A STARTING POINT. The column picker is gone from the list (see
+       custom.scss), so this is the table rather than its default — five columns
+       chosen once for everyone instead of a per-user arrangement nobody
+       maintains.
+
+       Reading order: what it is, where it is filed, whether it is live, and
+       when it went out. The tag comes before the status because filing is the
+       question you ask of a row you do not recognise, and "Published" is the
+       answer you already expect.
+
+       "Last edited" was here and is gone: on a library where almost everything
+       is published, it repeated the publish date a column to its left and paid
+       a column's width to do it. */
+    defaultColumns: ['title', 'tag', 'status', 'publishedDate'],
+    // About articles and nothing else. It used to close with "Downloadable files
+    // belong in Resources" — a signpost to another collection, printed under the
+    // heading of the one you already chose from the nav.
+    description: 'Guides, tutorials and opinion, each filed under a single tag.',
+
+    /* SEARCH IS THE TITLE, AND ONLY THE TITLE. `listSearchableFields` was set to
+       title, deck, slug and the markdown source — the last of those because
+       Content Studio stores each article's full text there, so a phrase from
+       the middle of a piece would find it. It is unset again by decision: a
+       search that matches on body text returns rows whose titles do not contain
+       what you typed, and on a list you scan by headline that reads as a wrong
+       answer. Payload searches `useAsTitle` when this is absent. */
+
+    /* Ten was Payload's default, never a decision, over a library meant to
+       grow. `limit` is stored per user in `CollectionPreferences`, so this
+       governs the first visit and anyone who never touched the control — it
+       does not override a choice already made. */
+    pagination: {
+      defaultLimit: 25,
+      limits: [10, 25, 50, 100],
+    },
+
   },
   access: publishedOrEditor,
   endpoints: [
@@ -111,6 +153,10 @@ export const Articles: CollectionConfig = {
       name: 'articleRead',
       type: 'ui',
       admin: {
+        // A `ui` field is a component, not data. Payload still offers it in the
+        // column picker, where choosing it would render this component inside a
+        // table cell — "Article Read" tried to put a whole article in one.
+        disableListColumn: true,
         components: { Field: '/components/admin/ArticleRead#ArticleRead' },
       },
     },
@@ -122,7 +168,12 @@ export const Articles: CollectionConfig = {
       ...titleField,
       admin: {
         ...titleField.admin,
-        components: { Field: '/components/admin/ArticleTitle#ArticleTitle' },
+        components: {
+          Field: '/components/admin/ArticleTitle#ArticleTitle',
+          // In the list, the title column carries the cover beside the name —
+          // a row is recognised rather than read. See ArticleRowTitle.
+          Cell: '/components/admin/ListCells#ArticleRowTitle',
+        },
       },
     },
     summaryField,
@@ -131,7 +182,13 @@ export const Articles: CollectionConfig = {
       // translation step reads this to produce the Thai body. Hidden from editors.
       name: 'bodyMarkdown',
       type: 'textarea',
-      admin: { hidden: true },
+      admin: {
+        hidden: true,
+        // It carried a `label: 'Body'` for a while, purely to keep the search
+        // placeholder from reading "Body Markdown". Search is the title alone
+        // now, so the placeholder never names it and the label had no reader.
+        disableListColumn: true,
+      },
     },
 
     /* ---- the cover, as one box ---------------------------------------------
@@ -164,6 +221,10 @@ export const Articles: CollectionConfig = {
           name: 'coverPreview',
           type: 'ui',
           admin: {
+        // A `ui` field is a component, not data. Payload still offers it in the
+        // column picker, where choosing it would render this component inside a
+        // table cell — "Article Read" tried to put a whole article in one.
+        disableListColumn: true,
             components: { Field: '/components/admin/CoverPreview#CoverPreview' },
           },
         },
@@ -244,20 +305,30 @@ export const Articles: CollectionConfig = {
     // are no section headings: with one field to a panel the field's own label
     // is the heading, and a second one above it just repeats the word.
     {
-      // Top of the rail: the way into the writing surface, above the decisions
-      // about the article rather than below them.
+      // RENDERS NOTHING HERE. It is mounted in the rail because a `ui` field is
+      // the only slot Payload offers inside the document's FORM, and Save, the
+      // dirty state and the slug all come from form context — but it portals
+      // itself into the header band, where the article's verbs now live. The
+      // rail is left holding only what the article IS.
       name: 'articleActions',
       type: 'ui',
       admin: {
+        // A `ui` field is a component, not data. Payload still offers it in the
+        // column picker, where choosing it would render this component inside a
+        // table cell — "Article Read" tried to put a whole article in one.
+        disableListColumn: true,
         position: 'sidebar',
         components: { Field: '/components/admin/ArticleActions#ArticleActions' },
       },
     },
-    {
-      type: 'row',
-      admin: { position: 'sidebar' },
-      fields: [statusField, publishedDateField],
-    },
+    /* THE TAG COMES BEFORE THE STATUS, in the rail and in the list, and it has to
+       be moved HERE to do it. `defaultColumns` chooses which columns appear; the
+       ORDER follows the fields array — measured, Payload rewrote a preference
+       set to `title, tag, status…` back into `title, status, tag…`, which is
+       schema order. Reordering the column list alone could never have held.
+
+       Filing is the question you ask of a row you do not recognise; "Published"
+       is the answer you already expect. */
     {
       // Exactly one tag. The tag determines the article's category (each tag
       // belongs to exactly one), so a second tag would make the category
@@ -278,6 +349,11 @@ export const Articles: CollectionConfig = {
         },
       },
     },
+    {
+      type: 'row',
+      admin: { position: 'sidebar' },
+      fields: [statusField, publishedDateField],
+    },
     ...slugField('title'),
 
     // An action rather than a property: everything above describes what the
@@ -292,21 +368,14 @@ export const Articles: CollectionConfig = {
       name: 'documentMeta',
       type: 'ui',
       admin: {
+        // A `ui` field is a component, not data. Payload still offers it in the
+        // column picker, where choosing it would render this component inside a
+        // table cell — "Article Read" tried to put a whole article in one.
+        disableListColumn: true,
         position: 'sidebar',
         components: { Field: '/components/admin/ArticleActions#ArticleMeta' },
       },
     },
-    {
-      // Last in the rail, and last on purpose. It used to sit two rows under
-      // Save, in the group you reach for when you mean to publish something.
-      name: 'documentDelete',
-      type: 'ui',
-      admin: {
-        position: 'sidebar',
-        components: { Field: '/components/admin/ArticleActions#ArticleDelete' },
-      },
-    },
-
     // NOTE: there are deliberately no "Thai" and "Summary" columns in the list.
     // Content Studio translates and writes the dek as part of publishing, so
     // for the articles that arrive that way both are filled by the time anyone

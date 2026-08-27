@@ -112,7 +112,12 @@ body.da-writing .doc-header,
 body.da-writing .doc-tabs,
 /* Last Modified / Created: provenance, and not a thing you act on mid-sentence. */
 body.da-writing .doc-controls__meta,
-body.da-writing .doc-controls__divider {
+body.da-writing .doc-controls__divider,
+/* THE RAIL'S COLLAPSE ARROW, which is portalled to `document.body` so that the
+   nav's own scroll box cannot clip it — which also means it is not inside the
+   nav this view hides, and it stayed on screen as a chevron floating in the
+   top-left corner offering to collapse a column that is not there. */
+body.da-writing .da-brand__toggle {
   display: none;
 }
 

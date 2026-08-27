@@ -577,15 +577,23 @@ a:focus-visible,
 
    `:has()` is how Payload itself selects this, so it is the same support floor,
    and both branches (anchor and div) carry the indicator. */
-.nav__link:has(.nav__link-indicator) {
+/* THE SAME STATE ON BOTH BRANCHES. This selector is what marks the active item
+   on a DOCUMENT page, where Payload keeps the anchor and adds the indicator to
+   it; on a LIST page it drops the anchor for a `div` and `.nav div.nav__link`
+   below carries the state instead. The two were styled differently — a white
+   surface with a hairline ring here, a grey fill there — so the sidebar changed
+   its appearance when you opened an article. It is one treatment now: a grey
+   fill, no ring, no colour on the label, per the same decision the list branch
+   records below. */
+.nav .nav__link:has(.nav__link-indicator) {
   font-weight: 600;
+  /* `.nav .nav__link` — one class heavier than a bare `.nav__link:has()` — sets
+     every label to ink-3, so without the `.nav` here the active item on a
+     document page kept the resting colour while the same item on a list page
+     took ink. Measured: rgb(83,87,94) against rgb(27,29,35). */
   color: var(--da-ink);
-  background-color: #ffffff;
-  box-shadow: inset 0 0 0 1px var(--da-hairline);
-  /* The link box is flush-left, so it needs its own inset to look like a
-     surface rather than a band running off the edge. */
-  padding-inline-start: 10px;
-  margin-inline-start: -10px;
+  background-color: var(--da-warm-white);
+  box-shadow: none;
 }
 
 /* The bar is the accent's job: one small mark of CI orange, which is the only
@@ -860,7 +868,8 @@ div.nav__link {
    ========================================================================== */
 
 /* Payload draws its mark in three places: the login card, the sidebar header,
-   and the breadcrumb's home link. All three, or the product is half-rebranded. */
+   and the breadcrumb's home link. The first two are rebranded below; the third
+   is removed entirely — see the breadcrumb rule further down. */
 svg.graphic-logo,
 svg.graphic-icon,
 .nav__header-content svg {
@@ -868,8 +877,7 @@ svg.graphic-icon,
 }
 
 .login__brand,
-.nav__header-content,
-.step-nav__home {
+.nav__header-content {
   /* The disc is the mark's own container — 56% of the diameter, which is the
      geometry the platform measured rather than a second set of numbers. */
   display: inline-grid;
@@ -893,12 +901,22 @@ svg.graphic-icon,
   height: 34px;
 }
 
-/* In the breadcrumb the mark is a link, so it also has to stop being one
-   typographically — no underline, no link colour bleeding onto a disc. */
-.step-nav__home {
-  width: 26px;
-  height: 26px;
-  text-decoration: none;
+/* THE BREADCRUMB'S HOME LINK IS GONE, 27 August 2026.
+ *
+ * It was a second logo, 26px across, sitting a hundred pixels from the one in
+ * the nav — and it pointed at `/admin`, which was the dashboard. The dashboard
+ * has been removed and `/admin` now lands on Articles, so the crumb had become
+ * a mark that takes you to the list you are already looking at, or to a list
+ * that has nothing to do with the Resource you are editing.
+ *
+ * The nav says where you are in the product. The breadcrumb says where you are
+ * inside it, and it starts at the collection.
+ *
+ * The separator goes with it: Payload writes the "/" as a bare `<span>` after
+ * the link, so hiding the link alone would leave a slash opening every trail. */
+.step-nav__home,
+.step-nav__home + span {
+  display: none;
 }
 
 /* =============================================================================
@@ -926,14 +944,25 @@ svg.graphic-icon,
   font-family: var(--font-display);
 }
 
-/* Step nav — the breadcrumb over every document. One colour per line: the
-   system forbids a greyed closing phrase, so the trail is one ink and the
-   current page is told apart by weight. */
+/* Step nav — the breadcrumb over every screen, and the only thing in the band.
+ *
+ * IT IS A TRAIL, NOT A TITLE. It was briefly promoted to one — the last crumb
+ * at 22px in the header — and that put "Articles" at the top of the band and
+ * "Articles" again in the panel below it. The panel keeps the heading; this
+ * says how you got to it.
+ *
+ * One colour per line: the system forbids a greyed closing phrase, so the trail
+ * is one ink and the current page is told apart by weight. */
 .step-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-inline-size: 0;
   color: var(--da-ink-3);
 }
 
 .step-nav a {
+  flex: 0 0 auto;
   color: var(--da-ink-3);
 }
 
@@ -941,6 +970,30 @@ svg.graphic-icon,
   .step-nav a:hover {
     color: var(--da-ink);
   }
+}
+
+/* The separator is punctuation, not content. */
+.step-nav > span:not([class]) {
+  flex: 0 0 auto;
+  color: var(--da-hairline);
+}
+
+/* WEIGHT, NOT SIZE, MARKS WHERE YOU ARE — and it truncates rather than wraps.
+   An article title runs to eighty characters here and the band is sticky, so a
+   second line would push the shell down as you opened a document. */
+.step-nav__last {
+  flex: 0 1 auto;
+  /* PAYLOAD CAPS THIS AT 160px, which cut "Inside Wolff Olins' bet that a brand
+     should behave, not just look" to "Inside Wolff Olins' bet…" with 900px of
+     empty band beside it. The cap goes; the row shrinks the crumb only when it
+     genuinely runs out of width. */
+  max-inline-size: none;
+  min-inline-size: 0;
+  overflow: hidden;
+  font-weight: 600;
+  color: var(--da-ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* A text link is the accent in this system — but in the orange that is legal
@@ -1203,10 +1256,13 @@ html {
    document sheet — the main column sits inside a `.gutter` wrapper, so
    `.document-fields__main > …` matches nothing. The whole editor lost its white
    ground, its Edge and its padding, and the fields sat on the bare page. */
+/* The document sheets, on the same rule as the list panel: the white surface is
+   the boundary, and the Edge is spent on inputs rather than on the things
+   holding them. */
 .document-fields__main .render-fields.document-fields__fields,
 .document-fields__sidebar-fields > .render-fields {
   background-color: #ffffff;
-  border: 1px solid var(--da-hairline);
+  border: 0;
   border-radius: var(--style-radius-sheet);
 }
 
@@ -1972,14 +2028,13 @@ html {
   margin-block-start: 0.6875rem;
 }
 
-/* THE THREE SEAMS. Each one is a change of kind, and space alone does not say
-   so: acting on the article, then describing it, then translating it, then
-   ending it. Between blocks WITHIN a group there is no line — the rail earns
-   three rules in total, and the last of them exists mostly to put distance
-   around the one action that cannot be undone. */
-.document-fields__sidebar-fields > .render-fields > .da-actions + *,
-.document-fields__sidebar-fields > .render-fields > .da-thai,
-.document-fields__sidebar-fields > .render-fields > .da-delete {
+/* THE ONE SEAM LEFT. There were three, and two of them separated the rail's
+   verbs from its nouns: a rule under the actions at the top, and another above
+   Delete at the very bottom. Both actions have moved to the header, so the rail
+   is one kind of thing all the way down — what the article IS — and the only
+   change of kind left in it is the point where it stops describing the English
+   article and starts talking about its translation. */
+.document-fields__sidebar-fields > .render-fields > .da-thai {
   margin-block-start: 1.75rem;
   padding-block-start: 1.75rem;
   border-block-start: 1px solid var(--da-divider);
@@ -2043,4 +2098,917 @@ html {
 .login__form + a,
 .login a[href*="forgot"] {
   display: none;
+}
+
+/* -----------------------------------------------------------------------------
+   The list, as a panel
+
+   FROM THE REFERENCE: the table is not loose on the page. It sits in one white
+   card whose header carries the collection's name, its one line of description,
+   and the controls that act on the table — search, filter, columns. Everything
+   that belongs to the table is inside the thing the table is in.
+
+   Payload lays a list out as a stack of siblings on the page instead: the
+   heading, then a controls bar, then the table, then pagination, each carrying
+   its own margins. Weld them and the screen stops being a page with a table on
+   it and becomes a table.
+
+   Colour and type are Designally's throughout — this borrows the composition,
+   not the reference's teal.
+   ========================================================================== */
+
+.collection-list__wrap,
+.collection-list .list-controls,
+.collection-list .table {
+  margin: 0;
+}
+
+/* The card. The page keeps its parchment; the table gets the white surface, the
+   sheet radius and the Edge, exactly like the document sheets. */
+/* THE SPACE AROUND THE CARD, which the card's own padding cannot provide.
+   Payload put the page gutter on `.collection-list__wrap` itself — the same
+   element that is the white card — so setting one consistent inset on it took
+   the OUTER space with it and left the card flush: measured at 0px against the
+   nav and 0px against the window's right edge. The gutter belongs out here, on
+   the container, where it separates the card from the column beside it and from
+   the edge of the screen; the card's own 1.5rem stays internal. */
+.collection-list {
+  padding: 1.5rem;
+}
+
+/* NO RULE AROUND IT. White on the parchment page is the whole boundary — the
+   surface says "this is the content" without a line drawn to announce it.
+
+   ONE INSET, ON THE CARD, ON ALL FOUR SIDES. Payload gives this element the page
+   gutter — `0 60px 60px`, so nothing on top and 60 everywhere else — and then
+   every child adds 22.5px of its own on top of that. Measured: the heading sat
+   82.5px from the card's edge while the table sat at 60, and the card ran 22.5px
+   above its first block against 75px below its last. The padding belongs to the
+   card; the children below give theirs up and align to it. */
+.collection-list__wrap {
+  background-color: #ffffff;
+  border: 0;
+  border-radius: var(--style-radius-sheet);
+  overflow: hidden;
+  /* 2rem, not 1.5. The card holds a heading, a control row, a table and its
+     pagination — four blocks — and at the tighter inset the table's own edge sat
+     close enough to the card's curve to read as one thick border rather than
+     two objects. The outer gutter stays at 1.5rem so the card still reads as
+     lifted off the page rather than centred in a frame. */
+  padding: 2rem;
+}
+
+/* Controls sit INSIDE the card, above the rows.
+
+   NO RULE OF ITS OWN. It had one, and the table below it has a top border, with
+   nothing between them — two 1px lines stacked into what reads as a single
+   heavy one. The table is a closed box now, so its own edge is the separator
+   and this gives its up. */
+.collection-list .list-controls {
+  flex: 0 0 auto;
+  margin-block-end: 1.25rem;
+  /* The search group leads the pair now that the language pair sits where the
+     filter did, so the auto margin lives here and pushes both to the trailing
+     edge together. */
+  margin-inline-start: auto;
+  padding: 0;
+  border-block-end: 0;
+  /* The filter panel opens beneath this group; without a floor it would inherit
+     the width of the two controls above it and give the where-builder about
+     260px to lay out a field, an operator and a value in. */
+  min-inline-size: 0;
+}
+
+/* IT OPENS BELOW THE ROW, NOT OVER IT. Positioned against the card it took the
+   card's width and its static offset, which put a 119px panel straight across
+   the heading. Anchored to the control that opens it instead: directly beneath,
+   right-aligned with the filter button, and wide enough for the where-builder's
+   three fields.
+
+   It floats over the table, so it needs to read as a layer — white ground and a
+   hairline. This is the one place in the list that earns an edge: everything
+   else here is separated by being a different surface, and a panel over rows
+   cannot be. */
+.collection-list .list-controls {
+  position: relative;
+}
+
+.collection-list .list-controls__where {
+  position: absolute;
+  inset-block-start: calc(100% + 0.5rem);
+  inset-inline-end: 0;
+  z-index: 3;
+  inline-size: min(34rem, 70vw);
+  border: 1px solid var(--da-divider);
+  border-radius: var(--style-radius-m);
+  background-color: #ffffff;
+}
+
+/* Empty until the toggle is pressed — without this the border and ground draw a
+   1px sliver under the button on every list. */
+.collection-list .list-controls__where:empty,
+.collection-list .list-controls__where[aria-hidden='true'] {
+  border: 0;
+  background: none;
+}
+
+/* ---- the head row -------------------------------------------------------- */
+
+/* Quiet, small, and not competing with the rows beneath: a column head names a
+   column, it is not data. */
+.collection-list .table thead th {
+  padding: 0.875rem 1rem;
+  border-block-end: 1px solid var(--da-divider);
+  background-color: transparent;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--da-ink-3);
+  white-space: nowrap;
+}
+
+/* ---- the rows ------------------------------------------------------------ */
+
+/* Room to breathe around a 40px thumbnail, and a hairline between rows rather
+   than a border box around every cell. */
+.collection-list .table tbody td {
+  padding: 0.875rem 1rem;
+  border-block-end: 1px solid var(--da-divider);
+  vertical-align: middle;
+  font-size: 0.8125rem;
+  color: var(--da-ink-3);
+}
+
+/* The last row closes the card; a rule there would sit a pixel above the
+   card's own edge and read as a mistake. */
+.collection-list .table tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+@media (hover: hover) {
+  .collection-list .table tbody tr:hover td {
+    background-color: var(--da-warm-white);
+  }
+}
+
+/* ONE BOX, NOT TWO. `.table` ships its own card — white ground, hairline and an
+   18px radius — which inside the panel above became a box drawn inside a box,
+   two rules and two radii a few pixels apart. The wrap is the card now, so the
+   table gives all three up and contributes only its rows. */
+.collection-list .table {
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+/* Payload's 23px gap under the tables opened a seam between the last row and
+   the pagination that closes the card. */
+.collection-list__tables {
+  margin: 0;
+}
+
+/* The heading and its description sit inside the card too, on the same inset as
+   the controls below them — they were flush to the card's edge while the search
+   row was indented, so the two rows disagreed about where the panel starts. */
+/* ONE ROW: the collection and what it is on the left, the controls that act on
+   it on the right. They were stacked, which spent a whole band of the card on a
+   heading and a single line of description.
+
+   The card becomes the flex parent; the table and its pagination take full
+   rows beneath. */
+.collection-list__wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.collection-list .list-header {
+  flex: 1 1 18rem;
+  margin-block-end: 1.25rem;
+  padding: 0;
+}
+
+/* The description sat in a 40px block under a 40px title — 80px of card for two
+   lines of type, and the "gap" was the block's own height rather than a margin
+   between them. */
+.collection-list .collection-list__sub-header {
+  min-block-size: 0;
+  margin-block-start: 0;
+}
+
+/* The heading's own line box was 40px around 28px of type, so a third of the
+   measured gap was leading rather than spacing. */
+.collection-list .list-header h1 {
+  margin: 0;
+  line-height: 1.15;
+}
+
+.collection-list .custom-view-description {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--da-ink-3);
+}
+
+/* The table and the pagination are rows of their own beneath the two groups. */
+.collection-list__tables,
+.collection-list .page-controls {
+  flex-basis: 100%;
+}
+
+/* Pagination and the per-page control close the card, inside it.
+   `.page-controls`, NOT `.collection-list__page-controls`: the first attempt
+   invented the BEM-looking name and matched nothing, so the rule was dead. */
+/* Same at the foot: this drew a top border directly against the table's bottom
+   one. The table closes itself; the pagination just sits under it. */
+.collection-list .page-controls {
+  margin-block-start: 1rem;
+  padding: 0;
+  border-block-start: 0;
+}
+
+/* -----------------------------------------------------------------------------
+   The shell: a grey column, a white stage, and no lines
+
+   THE SEPARATION IS THE SURFACE, NOT A RULE. The nav sat on the page behind a
+   1px right border and the header behind another, so the shell was drawn with
+   lines while the content beside it was drawn with surfaces. The lines are gone:
+   the nav and the header stay on the parchment and every piece of content sits
+   on white, which is the same inversion the document sheets already use. Where
+   something needs to read as raised, it is white; where it needs to recede, it
+   is the page.
+
+   THE HEADER IS THE BREADCRUMB. Language and account moved into the foot of the
+   nav (NavFooter), which leaves the top bar saying one thing: where you are.
+   ========================================================================== */
+
+/* WHITE, LIKE THE CONTENT IT SITS BESIDE. The column was on the parchment and
+   read as page rather than as furniture; it is a surface now, and the page's
+   grey is what separates the two — still no rule between them. */
+.nav {
+  border: 0;
+  background-color: #ffffff;
+}
+
+.app-header,
+.app-header__bg {
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+/* Payload wraps every view action in a div of its own, and this view has one
+   that renders nothing — `ReturnToPlace`, which only listens for a click on the
+   breadcrumb. Left in flow it is an empty flex item collecting the row's gap
+   beside the controls that do render. */
+.app-header__actions > div:empty {
+  display: none;
+}
+
+/* The locale control and the account link now live in the nav's foot. Their
+   markup stays in the header — Payload owns it — so it is hidden here rather
+   than removed.
+
+   THE CLASS NAMES ARE THE RENDERED ONES, not the ones they look like they
+   should be: the visible locale control is `.localizer-button`, while
+   `.app-header__localizer` is a different element that Payload already hides,
+   so the first attempt at this rule matched something invisible and left the
+   real control on screen beside the breadcrumb. */
+.localizer-button,
+.app-header__account,
+.app-header .popup {
+  display: none;
+}
+
+/* ---- the nav is furniture, not a drawer ---------------------------------- */
+
+/* IT WAS A PANEL THAT SLID OVER THE PAGE. Payload's nav is a drawer whose grid
+   track collapses to zero when closed — measured at `0px 1431px`, with the nav
+   still rendered at full width underneath the content it was supposed to sit
+   beside. On a desktop CMS with four destinations there is nothing to gain from
+   hiding them: the column is always there and the hamburger that opened it is
+   gone with it. */
+.template-default {
+  grid-template-columns: var(--nav-width, 275px) 1fr;
+}
+
+.template-default__nav-toggler-wrapper {
+  display: none;
+}
+
+/* AND IT HAS TO BE VISIBLE, which is a separate fact from having a column.
+   Payload fades a closed nav to `opacity: 0` rather than removing it, so
+   opening the grid track alone produced a correctly laid out, fully
+   transparent sidebar: four links measured at their right positions, an
+   account block at the foot, and nothing on screen. Scoped to the width where
+   the column is permanent, so the drawer keeps its own fade below that. */
+@media (min-width: 1025px) {
+  .nav {
+    opacity: 1;
+  }
+}
+
+/* Below the point where a fixed column starts eating the content's width, the
+   drawer comes back — and so does the control that opens it. */
+@media (max-width: 1024px) {
+  .template-default {
+    grid-template-columns: 0 1fr;
+  }
+
+  .template-default__nav-toggler-wrapper {
+    display: block;
+  }
+}
+
+/* ---- the nav column ------------------------------------------------------ */
+
+/* A column, so the account block can be pushed to the bottom with `auto`
+   margin rather than positioned there. */
+.nav__scroll {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100%;
+}
+
+/* Links give up the full-width hairline rows Payload draws them as and become
+   what they are: a short list of four places. The active one takes the white
+   surface, matching the language control below it — on a grey column, white is
+   what "you are here" looks like. */
+.nav .nav__link {
+  margin-block-end: 2px;
+  padding: 0.5625rem 0.75rem;
+  border: 0;
+  border-radius: var(--style-radius-m);
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--da-ink-3);
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .nav .nav__link:hover {
+    background-color: var(--da-warm-white);
+    color: var(--da-ink);
+  }
+}
+
+/* THE ACTIVE ITEM IS A `div`, NOT AN ANCHOR. Payload renders the collection you
+   are already in as a non-link — which is correct, there is nowhere to go — but
+   it means `.active` and `[aria-current]` match nothing at all, and the first
+   version of this rule styled a state that never existed. `div.nav__link` is
+   the state.
+
+   A GREY FILL AND NOTHING ELSE. It took the accent tint for a while; on a white
+   column that made the item you are in the loudest thing in the shell, and the
+   accent is spent on one action per screen rather than on saying where you
+   already are. Fill only — no ring, no colour on the label. */
+.nav div.nav__link {
+  background-color: var(--da-warm-white);
+  color: var(--da-ink);
+  cursor: default;
+  /* AND THE RING IS A SHADOW, WHICH IS WHY IT SURVIVED. Payload draws the
+     active item's edge as `inset 0 0 0 1px` in the hairline colour, so zeroing
+     `border` and `outline` — both of which measured clean — left it exactly
+     where it was. The fill is the state; nothing is drawn around it. */
+  box-shadow: none;
+}
+
+/* Payload marks the same item a second time with a 3px bar inside the row. The
+   white surface already says which one you are on, and a coloured rule down the
+   side of a list item is the one shape this shell has otherwise given up. */
+.nav .nav__link-indicator {
+  display: none;
+}
+
+/* Payload's own logout sits at the very bottom of the column, 400px below the
+   account block that now carries Sign out — two ways to do the same thing, one
+   of them stranded past the fold. */
+.nav .nav__controls {
+  display: none;
+}
+
+/* Payload's own controls at the foot of the nav — they sat under a rule and
+   above nothing. The account block replaces what they were for. */
+.nav .nav__controls {
+  border: 0;
+}
+
+/* ---- the columns are the table, not a preference ------------------------- */
+
+/* THE PICKER IS GONE. It offered nineteen options over a five-column table,
+   most of them fields that make no sense in a cell — an upload, a rich text
+   body, three SEO strings, and an id. Choosing well from that list is work, and
+   the reward for doing it is a table only you can see; choosing badly is a
+   table missing the column you sort by. The five that matter are set in the
+   collection and are the same for everyone.
+
+   Payload has no config for this — `defaultColumns` is the only columns option
+   it exposes — so the control is removed here. `Filters` stays: filtering
+   answers a question about the content, which is the opposite of rearranging
+   the furniture. */
+.list-controls__toggle-columns,
+.list-controls__columns {
+  display: none;
+}
+
+/* ---- no filters, for now ------------------------------------------------- */
+
+/* THE CONTROL AND ITS PANEL ARE BOTH HIDDEN, not just the toggle: leaving the
+   where-builder in the DOM but unreachable would keep any filter already
+   applied silently in force, with nothing on screen able to clear it. Hiding
+   the pair means a filter cannot be set in the first place.
+
+   The markup stays because it is Payload's, and this is a "for now" rather than
+   a decision about filtering. */
+.list-controls__toggle-where,
+.list-controls .list-controls__where {
+  display: none;
+}
+
+/* ---- the search bar: a control, not a banner ----------------------------- */
+
+/*
+ * IT WAS 909x67, AND IT WAS ALSO A CONTAINER. `.search-bar` is Payload's
+ * wrapper and it ran 976px — the full width of the panel — with the filter
+ * button parked inside it at x689. So the filter was not beside the search, it
+ * was in it, with 300px of invisible box either side.
+ *
+ * SHRUNK TO ITS CONTENTS rather than dissolved. `display: contents` was tried
+ * first and it took the header apart: `.list-controls` became the flex parent,
+ * its filter panel claimed a full-width row, and the field and button ended up
+ * centred on two lines with 150px of nothing between them. The wrapper stays a
+ * flex row; it just stops being wider than the two controls inside it.
+ *
+ * A PILL, WHICH IS THE SYSTEM'S ONE FIELD EXCEPTION. The platform moved inputs
+ * off the pill on 18 August 2026 — "the pill is the action signal, and a field
+ * is not an action" — and named the single case that keeps it: a search field,
+ * "a control you invoke, sitting in a bar, [which] looks like a button because
+ * it half is one".
+ */
+.list-controls .search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  inline-size: max-content;
+  max-inline-size: 100%;
+  /* Pushed to the trailing edge: the panel's heading owns the left, and the two
+     controls that act on the table sit opposite it — the arrangement the
+     reference uses, with the title on one side and search and filter on the
+     other. */
+  margin-inline-start: auto;
+  background: none;
+}
+
+/* AN EXPLICIT WIDTH, because the bar above is sized to its contents. A
+   percentage basis has nothing definite to resolve against there, so the field
+   collapsed to the width of its own placeholder — "Search by Title, D" — and
+   the rest of the string was cut off. */
+.list-controls .search-filter {
+  flex: 0 0 auto;
+  inline-size: 20rem;
+  max-inline-size: 100%;
+}
+
+/* PAYLOAD'S MAGNIFIER IS A FLEX ITEM, NOT AN ADORNMENT. It sat at x358 while
+   the field began at x381 — a loose icon floating to the left of the pill, with
+   the pill's own left padding standing empty behind it. It is replaced by
+   Lucide's `search` drawn inside the field, where the padding was always
+   reserving room for it. */
+.list-controls .search-bar > svg {
+  display: none;
+}
+
+/* Grey-filled, no edge — the same treatment the filter button beside it took. A
+   ring would draw a vertical line into a header that has none. */
+.list-controls .search-filter__input {
+  block-size: 44px;
+  min-block-size: 44px;
+  padding-inline: 2.625rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  background-color: var(--da-warm-white);
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23797d85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>');
+  background-repeat: no-repeat;
+  background-position: left 0.9375rem center;
+  background-size: 16px 16px;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+}
+
+.list-controls .search-filter__input:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 1px;
+}
+
+/* The wrapper was 67px square around a 44px button. It holds nothing now that
+   the filter is hidden, so it must not contribute a gap either. */
+.list-controls .search-bar__actions {
+  display: none;
+}
+
+/* ---- the table's own edges ----------------------------------------------- */
+
+/* The rows are separated by hairlines top and bottom; these close the block at
+   the sides so the table reads as one ruled object rather than as lines running
+   off into the card.
+
+   NOT rules BETWEEN columns — the platform's project table is explicit that it
+   has "no zebra striping, no fills, no vertical rules", and that ban is about
+   dividing the columns from each other. This is the outer edge. */
+/* A ROUNDED, ENCLOSED BLOCK. The rows already ruled themselves top and bottom;
+   the edge closes them at the sides and the radius makes the result an object
+   rather than a fenced-off region of the panel. `overflow: hidden` is what
+   makes the corners real — without it the first header cell and the last row
+   square themselves off against the curve. */
+.collection-list .table {
+  border: 1px solid var(--da-divider);
+  border-radius: var(--style-radius-m);
+  overflow: hidden;
+}
+
+/* PAYLOAD ROUNDS EVERY ROW — `row-1` at 8px, with the first cell taking
+   `8px 0 0 8px` and the last mirroring it. Inside a table that now has corners
+   of its own, that is a rounded box drawn inside a rounded box, eleven times
+   over. The table owns the corners; the rows are rows.
+
+   Scoped to the row and its cells so the things INSIDE a cell keep theirs — the
+   cover thumbnail, the status pill and the tag dot are content, not table
+   chrome. */
+.collection-list .table tbody tr,
+.collection-list .table tbody td,
+.collection-list .table thead th {
+  border-radius: 0;
+}
+
+/* ---- a glyph for each destination ---------------------------------------- */
+
+/*
+ * LUCIDE, MASKED RATHER THAN DRAWN. `mask-image` with `background-color:
+ * currentColor` means each glyph takes the colour of the row it sits in — grey
+ * at rest, ink on hover, and the accent on the item you are in — from one
+ * declaration instead of four recoloured copies of the same file.
+ *
+ * MATCHED BY POSITION, because the active item has no `href` to match on:
+ * Payload renders the collection you are already in as a `div`, so an
+ * attribute selector would style three of the four and skip whichever one you
+ * were looking at. The order is the collections array in payload.config.ts —
+ * Articles, Resources, Media, Users — so `nth-child` is reading the same list
+ * the nav is built from.
+ */
+.nav .nav__link {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.nav .nav__link::before {
+  content: '';
+  flex: 0 0 auto;
+  inline-size: 18px;
+  block-size: 18px;
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+/* Articles — `file-text` */
+.nav .nav-group__content > :nth-child(1)::before {
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>');
+}
+
+/* Resources — `download`, because what a resource is IS the download */
+.nav .nav-group__content > :nth-child(2)::before {
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>');
+}
+
+/* Media — `image` */
+.nav .nav-group__content > :nth-child(3)::before {
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>');
+}
+
+/* Users — `users` */
+.nav .nav-group__content > :nth-child(4)::before {
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>');
+}
+
+/* Payload's own nav header was a bare 34px disc with no accessible name. The
+   brand lockup replaces it and carries the product's name as real text. */
+.nav .nav__header {
+  display: none;
+}
+
+/* ---- nothing underlines on hover ----------------------------------------- */
+
+/* Payload underlines its links on hover, including the nav rows and the
+   "Create New" pill beside the list's heading — a pill is a button and a button
+   does not gain a line under its label. The hover state everywhere in this
+   admin is the surface under the control, never a rule through its text. */
+.nav .nav__link:hover,
+.da-brand:hover,
+.btn:hover,
+.pill:hover,
+.list-header .btn:hover,
+.doc-tab:hover,
+.step-nav a:hover {
+  text-decoration: none;
+}
+
+/* Ordering in the header row: what this is, then the language, then the
+   controls that act on it. `beforeListTable` renders after the controls in the
+   DOM, so the row is sequenced explicitly rather than by source order. */
+.collection-list .list-header { order: 0; }
+.collection-list .list-controls { order: 1; }
+/* Where the filter button used to sit — the far end of the control row. */
+.collection-list .da-locale { order: 2; }
+.collection-list__tables { order: 3; }
+.collection-list .page-controls { order: 4; }
+
+/* ---- the selection bar --------------------------------------------------- */
+
+/*
+ * WHERE IT WENT WRONG. Payload renders `.list-selection` as a sibling of the
+ * heading and the controls. Once the card became a flex row so those two could
+ * share a line, the bar became a third item in that row and landed mid-header,
+ * measured at x590 across the description.
+ *
+ * WHERE IT BELONGS. Not in the row at all. It is a MODE rather than a control:
+ * it exists only while rows are selected, it acts on the table, and it has to
+ * stay reachable after you have scrolled to select the last row of twenty-three.
+ * Anything in the header fails that last test — select at the bottom, scroll
+ * back to the top to press Delete.
+ *
+ * So it floats, anchored to the bottom of the content column and centred in it.
+ * `position: fixed` also means it cannot move anything: the table does not shift
+ * down when it appears and does not jump back when the selection clears, which
+ * is the failure that made the original placement noticeable.
+ *
+ * THE SHADOW IS DELIBERATE, and it is the second in this admin. The system
+ * prefers an edge to a shadow, and an edge is enough for anything sitting ON a
+ * surface. This sits OVER one — white rows scrolling underneath a white bar —
+ * and a hairline alone leaves it flat against them.
+ */
+.collection-list .list-selection {
+  position: fixed;
+  z-index: 50;
+  inset-block-end: 1.5rem;
+  inset-inline: var(--nav-width, 275px) 0;
+  inline-size: max-content;
+  max-inline-size: calc(100% - 3rem);
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  padding: 0.5rem 0.5rem 0.5rem 1.125rem;
+  border: 1px solid var(--da-divider);
+  border-radius: 999px;
+  background-color: #ffffff;
+  box-shadow: 0 6px 24px rgb(27 29 35 / 0.14);
+  font-size: 0.8125rem;
+  color: var(--da-ink);
+}
+
+/* The count is the subject of the bar, so it is the one thing set in the
+   display face — the actions beside it are actions. */
+.collection-list .list-selection > :first-child {
+  font-family: var(--font-display);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.collection-list .list-selection__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.collection-list .list-selection__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  min-block-size: 36px;
+  margin: 0;
+  padding: 0 0.875rem;
+  border: 0;
+  border-radius: 999px;
+  background-color: transparent;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--da-ink-3);
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .collection-list .list-selection__button:hover {
+    background-color: var(--da-warm-white);
+    color: var(--da-ink);
+    text-decoration: none;
+  }
+}
+
+/* Delete is the one irreversible action in the bar and takes the critical ink,
+   the way it does at the foot of the document rail. */
+.collection-list .delete-documents__toggle {
+  color: var(--da-critical);
+}
+
+@media (hover: hover) {
+  .collection-list .delete-documents__toggle:hover {
+    background-color: #fdecec;
+    color: var(--da-critical);
+  }
+}
+
+/* Below the breakpoint the nav is a drawer and the column is the whole width. */
+@media (max-width: 1024px) {
+  .collection-list .list-selection {
+    inset-inline: 0;
+  }
+}
+
+/* ---- glyphs on the two actions ------------------------------------------- */
+
+/*
+ * Lucide, masked with `currentColor` — the same technique as the nav's icons,
+ * and the reason it is worth repeating here: Delete's label is critical ink and
+ * Edit's is not, so a mask takes each glyph's colour from the button it sits in
+ * rather than needing two recoloured files. Hover changes the label and the
+ * glyph together, from one declaration.
+ *
+ * Only these two. "Select all" is a scope, not an action — it changes what the
+ * other two apply to — and giving it a glyph would put three icons in a bar
+ * whose whole job is to be small and temporary.
+ */
+/* OPT-IN, NOT OPT-OUT. `delete-documents__toggle` sits on the button; the Edit
+   one — `edit-many__toggle` — sits on a wrapper DIV around it. Excluding by
+   class therefore caught the Edit button, which carries neither, and left it
+   the only action in the bar without a glyph. Each is named by what actually
+   holds it instead. */
+.collection-list .edit-many .list-selection__button::before,
+.collection-list .delete-documents__toggle::before {
+  content: '';
+  flex: 0 0 auto;
+  inline-size: 15px;
+  block-size: 15px;
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+/* Edit — `pencil` */
+.collection-list .edit-many .list-selection__button::before {
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>');
+}
+
+/* Delete — `trash-2` */
+.collection-list .delete-documents__toggle::before {
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>');
+}
+
+/* ---- the collapsed rail -------------------------------------------------- */
+
+/*
+ * A 68px rail: the mark, four glyphs and the avatar. Everything that is a WORD
+ * goes, and nothing that is a TARGET does.
+ *
+ * THE MARK DOES NOT MOVE. Earlier versions of this shrank the rail's padding and
+ * the mark with it, so collapsing slid the logo 15px left and took 2px off it —
+ * the one element on screen that should be nailed down was the one that
+ * travelled. The inset and the mark's size are untouched now; only the name
+ * beside it disappears.
+ *
+ * THAT IS AFFORDABLE BECAUSE THE ARROW LEFT THE ROW. It straddles the rail's
+ * edge instead (below), so nothing inside the column has to make room for it.
+ */
+body.da-nav-collapsed .template-default {
+  grid-template-columns: 68px 1fr;
+}
+
+/* THE PANEL HAS TO SHRINK TOO, not just the track it sits in. Payload gives
+   `.nav` an explicit 275px; narrowing only the grid column left the panel at
+   full width, so each link stayed 245px and centred its glyph at about x130 —
+   a rail with four icons parked outside it.
+
+   ONLY THE PANEL. Sizing the scroller to a fixed width as well made it wider
+   than the panel's own padded content box: it overflowed, was clipped at the
+   rail's edge, and its inset then started the icons at x26 — everything hard
+   against the right with 26px of dead space on the left. The scroller fills its
+   parent, and the inset is spent once, by Payload. */
+body.da-nav-collapsed .nav {
+  inline-size: 68px;
+}
+
+body.da-nav-collapsed .nav__scroll {
+  inline-size: 100%;
+}
+
+/* Labels go; the glyph that was beside them becomes the whole control. */
+body.da-nav-collapsed .nav .nav__link-label,
+body.da-nav-collapsed .da-brand__name,
+body.da-nav-collapsed .da-navfoot__who {
+  display: none;
+}
+
+body.da-nav-collapsed .nav .nav__link {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+body.da-nav-collapsed .da-navfoot__who-link {
+  flex: 0 0 auto;
+  justify-content: center;
+  padding-inline: 0;
+}
+
+/* Sign-out drops below the avatar; side by side they would overflow the rail. */
+body.da-nav-collapsed .da-navfoot__account {
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.375rem;
+}
+
+/* The floating selection bar is centred on the content column, so it has to
+   know the column moved. */
+body.da-nav-collapsed .collection-list .list-selection {
+  inset-inline-start: 68px;
+}
+
+/* ---- the collapse control, on the edge ----------------------------------- */
+
+/*
+ * IT SITS ON THE RAIL'S EDGE, HALF OUTSIDE IT. In the row it had to be squeezed
+ * in beside the mark, which meant either widening the rail to fit both or
+ * stacking them — and stacking moved the arrow to a new place on every toggle.
+ * On the edge it is out of the column's way entirely: the mark keeps its
+ * position and its size, and the arrow reads as the handle on the boundary it
+ * actually moves.
+ *
+ * `position: fixed`, NOT `absolute`. Absolute kept it inside `.nav__scroll`,
+ * which is Payload's scroll container at `overflow: auto` — so the outer half
+ * was simply cut off at the rail's edge, measured spanning 55-81 against a clip
+ * at 68. Opening that container up would have traded a clipped button for a nav
+ * that cannot scroll when it has more links than height. Fixed leaves the
+ * clipping chain altogether.
+ *
+ * It follows the edge by tracking the rail's width rather than by being
+ * positioned against the panel: the same two numbers the grid uses.
+ */
+@media (min-width: 1025px) {
+  /* THE COLUMN HAS TO OUTRANK THE CONTENT, and the button's own z-index cannot
+     do it. `.nav` is `position: sticky`, which creates a stacking context
+     whatever its z-index — so `z-index: 30` on the button only ordered it
+     against its siblings INSIDE the nav, and the nav itself, at `auto`, painted
+     in DOM order behind `.collection-list`. The outer half of the button was
+     under the list: `elementFromPoint` on it returned the list, not the button.
+     Raising the context raises everything in it. */
+  .nav {
+    z-index: 20;
+  }
+
+  .da-brand__toggle {
+    position: fixed;
+    z-index: 30;
+    /* Aligned to the MARK's centre, not to the top of the column: the mark's
+       box centres at y87 and this is 26 tall, so 74 puts the two on one line.
+       Measured rather than guessed — 4.75rem sat it 3px high. */
+    inset-block-start: 74px;
+    inset-inline-start: var(--nav-width, 275px);
+    inline-size: 26px;
+    block-size: 26px;
+    transform: translateX(-50%);
+    border: 1px solid var(--da-divider);
+    background-color: #ffffff;
+    color: var(--da-ink-3);
+  }
+
+  body.da-nav-collapsed .da-brand__toggle {
+    inset-inline-start: 68px;
+  }
+
+  @media (hover: hover) {
+    .da-brand__toggle:hover {
+      background-color: var(--da-warm-white);
+      color: var(--da-ink);
+    }
+  }
 }

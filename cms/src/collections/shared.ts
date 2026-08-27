@@ -84,6 +84,10 @@ export const localeGuardField: Field = {
   name: 'localeGuard',
   type: 'ui',
   admin: {
+        // A `ui` field is a component, not data. Payload still offers it in the
+        // column picker, where choosing it would render this component inside a
+        // table cell — "Article Read" tried to put a whole article in one.
+        disableListColumn: true,
     components: {
       Field: '/components/admin/LocaleGuard#LocaleGuard',
     },
@@ -95,6 +99,10 @@ export const translateToThaiField: Field = {
   name: 'translateToThai',
   type: 'ui',
   admin: {
+        // A `ui` field is a component, not data. Payload still offers it in the
+        // column picker, where choosing it would render this component inside a
+        // table cell — "Article Read" tried to put a whole article in one.
+        disableListColumn: true,
     position: 'sidebar',
     components: {
       Field: '/components/admin/TranslateToThaiButton#TranslateToThaiButton',

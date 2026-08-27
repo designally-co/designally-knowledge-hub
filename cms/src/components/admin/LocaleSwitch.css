@@ -1,0 +1,60 @@
+/*
+ * The language pair, in the list's control row.
+ *
+ * Same object as the segmented control that used to sit in the nav's foot: a
+ * tinted track with the chosen option lifted to white. Two languages, both
+ * shown — a select would hide half the answer behind a click and give no sense
+ * of which one you are in without opening it.
+ */
+
+.da-locale {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.25rem;
+  /* The 0.5rem the filter button used to keep from the search pill: the pair
+     sits together at the trailing edge, not welded. The push to that edge is
+     the search group's job now — it leads the pair. */
+  margin-inline-start: 0.5rem;
+  margin-block-end: 1.25rem;
+  padding: 0.25rem;
+  border-radius: 999px;
+  background-color: var(--da-warm-white);
+}
+
+.da-locale__opt {
+  min-block-size: 36px;
+  /* Two-letter labels, so the chips are sized rather than hugged — "EN" and
+     "TH" set to their own width would be two different-sized buttons. */
+  min-inline-size: 44px;
+  padding: 0 0.625rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--da-ink-3);
+  cursor: pointer;
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .da-locale__opt:hover {
+    color: var(--da-ink);
+  }
+}
+
+/* On a tinted track, white IS the selected state — the same inversion the
+   content uses against the page. */
+.da-locale__opt--on {
+  background-color: #ffffff;
+  color: var(--da-ink);
+}
+
+.da-locale__opt:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}

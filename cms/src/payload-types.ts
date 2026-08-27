@@ -122,7 +122,7 @@ export interface UserAuthOperations {
   };
 }
 /**
- * Written editorial. Downloadable files belong in Resources.
+ * Guides, tutorials and opinion, each filed under a single tag.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "articles".
@@ -178,11 +178,6 @@ export interface Article {
     ogImage?: (number | null) | Media;
   };
   /**
-   * Draft is hidden from the public site.
-   */
-  status: 'draft' | 'published';
-  publishedDate?: string | null;
-  /**
    * One tag per article; it sets the category.
    */
   tag:
@@ -221,6 +216,11 @@ export interface Article {
     | 'AI Design'
     | 'Future of Design';
   /**
+   * Draft is hidden from the public site.
+   */
+  status: 'draft' | 'published';
+  publishedDate?: string | null;
+  /**
    * Auto-filled from the title. Used in the URL.
    */
   slug?: string | null;
@@ -228,7 +228,7 @@ export interface Article {
   createdAt: string;
 }
 /**
- * Images and files. Most arrive automatically — Content Studio uploads each article’s cover here when it publishes.
+ * Images and files, most uploaded here by Content Studio.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
@@ -282,7 +282,7 @@ export interface Media {
   };
 }
 /**
- * Downloadable files. Written articles belong in Articles.
+ * Files to download, each filed under a single category.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "resources".
@@ -351,7 +351,7 @@ export interface Resource {
   createdAt: string;
 }
 /**
- * Accounts are created automatically the first time someone signs in with a Designally Google account. There is nothing to add here by hand.
+ * Created automatically on first Designally Google sign-in.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
@@ -488,9 +488,9 @@ export interface ArticlesSelect<T extends boolean = true> {
         metaDescription?: T;
         ogImage?: T;
       };
+  tag?: T;
   status?: T;
   publishedDate?: T;
-  tag?: T;
   slug?: T;
   updatedAt?: T;
   createdAt?: T;

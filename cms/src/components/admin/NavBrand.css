@@ -1,0 +1,110 @@
+/*
+ * The lockup at the head of the nav: the disc, then the product's name.
+ *
+ * The disc's geometry is the platform's own — 56% of the diameter — rather than
+ * a second set of numbers invented here. custom.scss uses the same figure for
+ * the login card and the breadcrumb.
+ */
+
+.da-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-inline-size: 0;
+  margin-block-end: 1.25rem;
+}
+
+/* The brand keeps the whole row: the toggle is lifted out of the flow onto the
+   rail's edge (custom.scss) at the width where the nav is permanent. */
+.da-brand {
+  flex: 1 1 auto;
+}
+
+.da-brand {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 0.625rem;
+  min-inline-size: 0;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--style-radius-m);
+  text-decoration: none;
+}
+
+/* ---- collapse ------------------------------------------------------------ */
+
+.da-brand__toggle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  inline-size: 32px;
+  block-size: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--da-ink-4);
+  cursor: pointer;
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .da-brand__toggle:hover {
+    background-color: var(--da-warm-white);
+    color: var(--da-ink);
+  }
+}
+
+.da-brand__toggle:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}
+
+/* The chevron turns to face the direction the column will travel. */
+body.da-nav-collapsed .da-brand__toggle svg {
+  transform: rotate(180deg);
+}
+
+/* The platform's FlatMark geometry, to its own numbers: the file is 290x256,
+   the D clips to 73.79% and the stop starts there. Both `<i>` layers mask the
+   same image, so they are registered by construction and cannot drift. */
+.da-brand__mark {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  inline-size: 26px;
+  aspect-ratio: 290 / 256;
+}
+
+.da-brand__mark i {
+  position: absolute;
+  inset: 0;
+  mask: url('/designally-mark.png') no-repeat center / contain;
+  -webkit-mask: url('/designally-mark.png') no-repeat center / contain;
+}
+
+.da-brand__d {
+  background-color: var(--da-ink);
+  clip-path: inset(0 26.21% 0 0);
+}
+
+/* The stop is the one piece of this identity that has always been the accent —
+   it is what the retired `DESIGNALLY.` wordmark's full stop took. */
+.da-brand__dot {
+  background-color: var(--da-orange-mark);
+  clip-path: inset(0 0 0 73.79%);
+}
+
+.da-brand__name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--da-ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

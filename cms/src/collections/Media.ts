@@ -24,7 +24,7 @@ export const Media: CollectionConfig = {
     // The only collection that had no description. Says what belongs here and,
     // more usefully, where the files actually come from.
     description:
-      'Images and files. Most arrive automatically — Content Studio uploads each article’s cover here when it publishes.',
+      'Images and files, most uploaded here by Content Studio.',
     // The picture first, then what it is, then when it arrived. Previously
     // unset, so the list showed every field plus both timestamps: Alt, Credit,
     // Updated At, Created At — four columns of words about files nobody could

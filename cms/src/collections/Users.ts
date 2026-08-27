@@ -22,7 +22,7 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
     description:
-      'Accounts are created automatically the first time someone signs in with a Designally Google account. There is nothing to add here by hand.',
+      'Created automatically on first Designally Google sign-in.',
     // Hides the "API" tab beside "Edit". It is a read-only JSON viewer for
     // developers and nothing an editor needs; despite the name this gates the
     // tab AND its route, not just the URL shown inside it.
@@ -75,7 +75,17 @@ export const Users: CollectionConfig = {
   },
   fields: [
     // Email added by default
-    // Add more fields as needed
+    {
+      // Sign out, on the account screen rather than in the nav. It renders only
+      // on your OWN user document — see SignOut.
+      name: 'signOut',
+      type: 'ui',
+      admin: {
+        position: 'sidebar',
+        disableListColumn: true,
+        components: { Field: '/components/admin/SignOut#SignOut' },
+      },
+    },
   ],
   versions: false,
 }

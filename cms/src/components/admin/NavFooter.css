@@ -1,0 +1,94 @@
+/*
+ * The account, at the foot of the nav.
+ *
+ * NO RULE ABOVE IT. The block is pushed to the bottom of the column and the
+ * distance is what separates it from the links — a hairline here would be the
+ * one line in a shell that has otherwise given them all up.
+ *
+ * The language pair lived here too and has moved to the two screens that have
+ * localized fields; its styles went with it (LocaleSwitch.css).
+ */
+
+.da-navfoot {
+  margin-block-start: auto;
+  padding-block-start: 1.5rem;
+}
+
+.da-navfoot__block + .da-navfoot__block {
+  margin-block-start: 1.25rem;
+}
+
+/* ---- account ------------------------------------------------------------- */
+
+/* The row is the container; the profile link and sign-out are the two things in
+   it. Hover lives on each half rather than on the row, so pointing at sign-out
+   does not light up the whole block as though the profile were the target. */
+.da-navfoot__account {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-inline-size: 0;
+}
+
+.da-navfoot__who-link {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 0.625rem;
+  min-inline-size: 0;
+  padding: 0.5rem;
+  border-radius: var(--style-radius-m);
+  text-decoration: none;
+  transition: background-color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .da-navfoot__who-link:hover {
+    background-color: rgb(27 29 35 / 0.05);
+  }
+}
+
+.da-navfoot__who-link:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}
+
+.da-navfoot__avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 50%;
+  background-color: var(--da-orange);
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #ffffff;
+}
+
+.da-navfoot__who {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.da-navfoot__name {
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--da-ink);
+}
+
+/* The address is long and the column is 275px, so it truncates rather than
+   wrapping the block to three lines. */
+.da-navfoot__email {
+  overflow: hidden;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: var(--da-ink-4);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

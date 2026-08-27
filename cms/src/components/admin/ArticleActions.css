@@ -1,208 +1,328 @@
 /*
- * The overview's actions, at the top of the rail.
+ * The article's actions, in the header band.
  *
- * One filled control and two quiet ones. The rail was cleared of panels and
- * boxes earlier for a reason — everything in it sits directly on the sheet, and
- * these follow that: the primary action carries its own weight in colour, and
- * the other two are text, because they are things you do occasionally and
- * neither of them changes the document.
+ * TWO CONTROLS: Save, filled, and one glyph holding every other verb. The rail
+ * below holds what the article IS; this holds what you can do to it.
+ *
+ * THE POPOVER IS THE PLATFORM'S, ported rather than reinvented — `.barmenu` in
+ * the Designally platform, down to the concentric corners and the 180ms it
+ * takes to grow out of its button. Every value below that carries a number is
+ * that file's number.
  */
 
-.da-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-block-end: 0.5rem;
-}
-
-/* ---- into the writing surface -------------------------------------------- */
-
-/* The one filled control on the layer, because it is the one thing this page
-   exists to send you to. 44px, like every other target in the admin. */
-.da-actions__edit {
+.da-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
-  min-block-size: 44px;
-  padding: 0 1.25rem;
-  /* A PILL, BECAUSE IT KEPT ITS LABEL. Everything else on this layer is a glyph
-     in a round target; the one control that still spends a word takes the
-     system's own action shape rather than the 8px rectangle it had, which
-     matched neither the icons beside it nor Save above it. */
-  border-radius: 999px;
-  /* The same two tokens `.btn--style-primary` uses, so this reads as the admin's
-     primary control rather than as a new one that happens to be orange. */
-  background-color: var(--da-orange);
-  font-family: var(--font-display);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #ffffff;
-  text-decoration: none;
-  transition: background-color var(--da-dur-feedback) var(--da-ease);
+  gap: 0.5rem;
 }
 
-@media (hover: hover) {
-  .da-actions__edit:hover {
-    background-color: var(--da-orange-deep);
-    color: #ffffff;
-  }
-}
+/* ---- the state, said in words -------------------------------------------- */
 
-.da-actions__edit:focus-visible {
-  outline: 2px solid var(--da-focus);
-  outline-offset: 2px;
-}
-
-/* ---- why it is not available --------------------------------------------- */
-
-/* Takes the accent, like the Thai panel's absent state: it is not an error, but
-   it is the one thing standing between you and what you came here to do. */
-.da-actions__blocked {
-  margin: 0;
-  padding: 0.625rem 0.75rem;
-  border-radius: var(--style-radius-s);
-  background-color: var(--da-orange-tint);
-  font-size: 0.8125rem;
+/* Save is filled whether or not there is anything to write, so the button
+   cannot be what tells you there is. This is — the one piece of text in the
+   cluster, set quieter than the controls so the row still reads as buttons with
+   a note rather than a sentence with buttons. */
+.da-bar__unsaved {
+  margin: 0 0.25rem 0 0;
+  font-size: 0.75rem;
   line-height: 1.5;
   color: var(--da-orange-mark);
+  white-space: nowrap;
 }
 
-/* ---- the quiet pair ------------------------------------------------------ */
+/* ---- Save, the primary --------------------------------------------------- */
 
-/* A row of glyphs, tight together — they are one set of small actions, not
-   separate blocks. The negative inset pulls the first one's round target back
-   to the rail's own edge so the icons line up with the text above them. */
-.da-actions__quiet {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.125rem;
-  margin-inline-start: -0.5rem;
-}
-
-
-/* ---- Save, and what it is worth right now -------------------------------- */
-
-/* A GHOST WHILE THERE IS NOTHING TO SAVE. Save and "Edit the article" were two
-   full-width pills stacked at the top of the rail, and on a document with
-   nothing changed — which is most of the time an article is open — the accent
-   sat on the one with no work to do. Clean, Save recedes and Edit carries the
-   accent; dirty, they swap, and the "Save first" notice replaces Edit anyway.
-   The strongest thing in the rail is always the next thing worth doing.
+/* THE ONE FILLED CONTROL ON THE SCREEN. Everything else here is a glyph or a
+   row in a menu, which is what lets a single accent do its job.
 
    Payload's button arrives with `.btn` margins meant for a control bar and nests
-   its own `.btn` inside a `.form-submit` wrapper, so both are stretched to the
-   column. */
-.da-actions__save .form-submit {
+   its own `.btn` inside a `.form-submit` wrapper. */
+.da-bar__save .form-submit,
+.da-bar__save .form-submit .btn {
   margin: 0;
-  inline-size: 100%;
 }
 
-.da-actions__save .form-submit .btn {
-  margin: 0;
-  inline-size: 100%;
-}
-
-.da-actions__save .form-submit .btn__content {
-  justify-content: center;
-}
-
-.da-actions__save .form-submit .btn--style-primary {
-  --bg-color: transparent;
-  --color: var(--da-ink);
-  --hover-bg: var(--da-warm-white);
-  --hover-color: var(--da-ink);
-  min-block-size: 44px;
-  border: 1px solid var(--da-hairline);
-  transition:
-    background-color var(--da-dur-feedback) var(--da-ease),
-    border-color var(--da-dur-feedback) var(--da-ease);
-}
-
-.da-actions__save--dirty .form-submit .btn--style-primary {
+.da-bar__save .form-submit .btn--style-primary {
   --bg-color: var(--da-orange);
   --color: #ffffff;
   --hover-bg: var(--da-orange-deep);
   --hover-color: #ffffff;
-  border-color: transparent;
+  block-size: 36px;
+  min-block-size: 36px;
+  padding: 0 1.0625rem;
+  border: 0;
+  border-radius: 999px;
+  /* 0.875rem, not 0.8125: the admin's root is 15px, so the smaller step lands
+     at 12.19px — under the floor for a control's label, measured. */
+  font-size: 0.875rem;
+  transition: background-color var(--da-dur-feedback) var(--da-ease);
 }
 
-/* Says WHY it just changed colour. Without it the accent arriving on Save is a
-   state change with no explanation — the sentence is the status, the colour is
-   only the alarm. */
-.da-actions__unsaved {
-  margin: 0.4375rem 0 0;
-  font-size: 0.75rem;
-  line-height: 1.5;
-  color: var(--da-orange-mark);
-  text-align: center;
+.da-bar__save .form-submit .btn__content {
+  padding: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
-/* ---- delete, at the foot of the rail ------------------------------------- */
+/* ---- the trigger --------------------------------------------------------- */
 
-/* A FULL-WIDTH ROW, NOT AN 18px LINK. Measured before this: the destructive
-   action had the smallest target in the rail — 80x18 — sitting two rows under
-   Save. It is now last in the column, behind its own rule, and the size of every
-   other control here. Quiet, because it should be findable rather than
-   prominent; a real target, because a misclick is unrecoverable either way. */
-.da-delete__ask {
+.da-bar__menu {
+  position: relative;
   display: flex;
   align-items: center;
-  inline-size: 100%;
-  min-block-size: 44px;
-  padding: 0 0.75rem;
-  border: 1px solid transparent;
+}
+
+/* THE PLATFORM'S WHITE DISC. On parchment, white is the one surface in this
+   system that is NOT the page — it is what the cards are made of — so a white
+   disc reads as an object ON the band rather than a patch of it. A warm-grey
+   fill would be the same temperature as the ground behind it.
+
+   IT TAKES THE EDGE TO DO IT. White on the page measures 1.06:1, which is no
+   boundary at all, and this system's answer to that is a border and never a
+   shadow.
+
+   36px rather than the platform's 44: it is paired with Save here, and two
+   controls of different heights in one cluster read as two clusters. */
+.da-bar__more {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 36px;
+  block-size: 36px;
+  padding: 0;
+  border: 1px solid var(--da-hairline);
   border-radius: 999px;
-  background: none;
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  line-height: 1.5;
+  background-color: #ffffff;
   color: var(--da-ink-3);
   cursor: pointer;
   transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
     border-color var(--da-dur-feedback) var(--da-ease),
-    color var(--da-dur-feedback) var(--da-ease);
+    color var(--da-dur-feedback) var(--da-ease),
+    transform 0.12s var(--da-ease);
 }
 
-/* The ring appears on approach rather than at rest — the accent ladder's "you
-   are pointing at this", in the critical hue because of what it does. */
+/* The disc deepens under the pointer: the glyph goes to ink and the Edge
+   darkens with it, which is what gives a borderless-looking control something
+   to aim at. */
 @media (hover: hover) {
-  .da-delete__ask:hover {
-    border-color: var(--da-critical);
-    color: var(--da-critical);
+  .da-bar__more:hover {
+    border-color: var(--da-ink-3);
+    color: var(--da-ink);
   }
 }
 
-.da-delete__ask:focus-visible {
+.da-bar__more:active {
+  background-color: var(--da-warm-white);
+  color: var(--da-ink);
+  transform: scale(0.94);
+}
+
+/* The button stays lit while its panel is open, so it is clear what the panel
+   belongs to. */
+.da-bar__more--on {
+  border-color: var(--da-ink-3);
+  color: var(--da-ink);
+}
+
+.da-bar__more:focus-visible {
   outline: 2px solid var(--da-focus);
   outline-offset: 2px;
 }
 
-/* The confirmation takes a tint used nowhere else in this rail, so the one
-   state that can destroy something looks like nothing else in it. */
-.da-delete__confirm {
-  padding: 0.875rem;
-  border-radius: var(--style-radius-m);
-  background-color: #fdecec;
+/* ---- the panel, which is `.barmenu` -------------------------------------- */
+
+/* BORDERS, NOT SHADOWS. The platform's rule, and the reason its popovers read
+   as tiles of the same canvas the rest of the product is made of rather than as
+   something hovering over it. The card radius is what makes a menu a floating
+   object; 8px of padding around rows at 18 would have been a rounded box.
+
+   240px is the platform's floor, so the panel does not resize when a row is
+   replaced by the confirmation it opens. */
+.da-bar__panel {
+  --menu-pad: 6px;
+  position: absolute;
+  inset-block-start: calc(100% + 8px);
+  inset-inline-end: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-inline-size: 240px;
+  padding: var(--menu-pad);
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-card);
+  background-color: #ffffff;
+  /* It grows out of the control it hangs off and never fades in over the page:
+     the origin is the corner it is anchored to, and 180ms is this system's
+     feedback duration — a popover is a response to a press. */
+  animation: da-bar-open var(--da-dur-feedback) var(--da-ease);
+  transform-origin: top right;
 }
 
-.da-delete__question {
-  margin: 0 0 0.75rem;
+@keyframes da-bar-open {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .da-bar__panel {
+    animation: none;
+  }
+}
+
+/* CONCENTRIC CORNERS. A row's highlight is 8px and the panel is 26 with 6
+   between them, so at the top and bottom an 8px curve sat inside a 26px one and
+   left a crescent belonging to neither. An inner corner equals the outer corner
+   minus the distance between them: 26 − 6 = 20, derived rather than chosen. */
+.da-bar__panel > .da-bar__item:first-child {
+  border-start-start-radius: calc(var(--style-radius-card) - var(--menu-pad));
+  border-start-end-radius: calc(var(--style-radius-card) - var(--menu-pad));
+}
+
+.da-bar__panel > .da-bar__item:last-child {
+  border-end-start-radius: calc(var(--style-radius-card) - var(--menu-pad));
+  border-end-end-radius: calc(var(--style-radius-card) - var(--menu-pad));
+}
+
+/* ---- the rows ------------------------------------------------------------ */
+
+/* THE MARK LEADS. iOS puts it on the trailing edge because a phone menu falls
+   under the thumb; this one is opened with a cursor and read left to right, and
+   a column of marks down the leading edge is scannable in a way a column past
+   four different label lengths is not.
+
+   One line each — a menu that wraps is a paragraph, and the panel is sized by
+   its content anyway. */
+.da-bar__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  inline-size: 100%;
+  padding: 9px 11px;
+  border: 0;
+  border-radius: var(--style-radius-s);
+  background: none;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--da-ink);
+  text-align: start;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--da-dur-feedback) var(--da-ease);
+}
+
+/* A step below the label: the mark is a second way to recognise a row you can
+   already read, not the thing to read first. */
+.da-bar__item svg {
+  flex: none;
+  inline-size: 20px;
+  block-size: 20px;
+  color: var(--da-ink-3);
+}
+
+/* THE ROW LIGHTS UP AS ONE. The platform's hover is the recess — the warm white
+   its pages are made of — and here the mark steps up with it: at rest the glyph
+   sits a shade below its label so the label is read first, and under the pointer
+   the pair arrives at the same weight, which is what makes the whole row feel
+   like the target rather than the words in it. */
+@media (hover: hover) {
+  .da-bar__item:not(:disabled):hover {
+    background-color: var(--da-warm-white);
+    color: var(--da-ink);
+  }
+
+  .da-bar__item:not(:disabled):hover svg {
+    color: var(--da-ink-2);
+  }
+
+  /* The destructive row keeps its own hue on both, and takes the wash it will
+     open into rather than the neutral the others take. */
+  .da-bar__item--danger:not(:disabled):hover,
+  .da-bar__item--danger:not(:disabled):hover svg {
+    background-color: #fcf0f0;
+    color: var(--da-critical);
+  }
+}
+
+.da-bar__item:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.da-bar__item:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: -2px;
+}
+
+/* IT SAYS WHAT IT IS ON THE WAY PAST, rather than only once you are inside it —
+   the row a cursor crosses on the way to something else carries the hue, mark
+   and all. 5.1:1 on the white panel. */
+.da-bar__item--danger,
+.da-bar__item--danger svg {
+  color: var(--da-critical);
+}
+
+/* The one sentence a menu still holds: why the row above it cannot be used. */
+.da-bar__note {
+  margin: 2px 11px 4px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--da-ink-3);
+  white-space: normal;
+}
+
+/* ---- the question -------------------------------------------------------- */
+
+/* WHEN THE CONFIRMATION *IS* THE PANEL, it stops being a block inside one. A
+   recessed block among rows is right — the menu is the container and the block
+   is one thing in it — but with no rows left, the panel's white ground, its
+   Edge and its 6px of padding become a second container drawn around the first:
+   a white frame with a pink block floating in it. So the wrapper stands down
+   and the confirmation takes the popover's own shape. */
+.da-bar__panel:has(> .da-bar__confirm) {
+  min-inline-size: 268px;
+  padding: 0;
+  border: 0;
+  background: none;
+}
+
+/* The wash, not the accent: nothing here is being marked, the whole block is
+   being placed — and the ground says which of the two answers is the
+   irreversible one before the sentence is read. */
+.da-bar__confirm {
+  display: grid;
+  gap: 6px;
+  padding: 0.875rem;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-card);
+  background-color: #fcf0f0;
+}
+
+.da-bar__question {
+  margin: 0;
   font-size: 0.8125rem;
   line-height: 1.5;
   color: #8f1c22;
 }
 
-.da-delete__row {
+.da-bar__row {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 0.5rem;
+  margin-block-start: 0.25rem;
 }
 
-.da-delete__yes {
-  min-block-size: 44px;
-  padding: 0 1rem;
+.da-bar__yes {
+  min-block-size: 36px;
+  padding: 0 0.875rem;
   border: 0;
   border-radius: 999px;
   background-color: var(--da-critical);
@@ -210,17 +330,18 @@
   font-size: 0.8125rem;
   font-weight: 600;
   color: #ffffff;
+  white-space: nowrap;
   cursor: pointer;
 }
 
-.da-delete__yes:disabled {
+.da-bar__yes:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.da-delete__no {
-  min-block-size: 44px;
-  padding: 0 0.75rem;
+.da-bar__no {
+  min-block-size: 36px;
+  padding: 0 0.5rem;
   border: 0;
   background: none;
   font-family: var(--font-body);
@@ -231,14 +352,14 @@
   cursor: pointer;
 }
 
-.da-delete__yes:focus-visible,
-.da-delete__no:focus-visible {
+.da-bar__yes:focus-visible,
+.da-bar__no:focus-visible {
   outline: 2px solid var(--da-focus);
   outline-offset: 2px;
 }
 
-.da-delete__error {
-  margin: 0.5rem 0 0;
+.da-bar__error {
+  margin: 0.25rem 0 0;
   font-size: 0.75rem;
   line-height: 1.5;
   color: var(--da-critical);

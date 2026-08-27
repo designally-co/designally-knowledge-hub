@@ -53,7 +53,7 @@ const REQUIRED = [
     why: 'without it, creating in the wrong locale gives no warning at all',
   },
   {
-    key: '/components/admin/Dashboard#Dashboard',
+    key: '/components/admin/DashboardRedirect#DashboardRedirect',
     why: 'it replaces the admin landing view; missing, the dashboard is blank',
   },
 ]
