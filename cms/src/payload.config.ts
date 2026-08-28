@@ -130,10 +130,13 @@ export default buildConfig({
       // Language and account, at the foot of the nav. Both came down from the
       // top bar, which is now only the breadcrumb. See NavFooter.
       afterNavLinks: ['/components/admin/NavFooter#NavFooter'],
-      // "Continue with Google" above the login form. The form stays for now:
+      // The whole sign-in screen — the platform's door, ported. `beforeLogin` is
+      // the only slot Payload offers on that page, so the composition arrives
+      // inside its card and SignIn.css takes the card apart around it. The
+      // password form stays behind it:
       // until Google sign-in has been used against production, removing the
       // other way in would let a misconfigured OAuth client lock everyone out.
-      beforeLogin: ['/components/admin/GoogleSignIn#GoogleSignIn'],
+      beforeLogin: ['/components/admin/SignIn#SignIn'],
       views: {
         // `/admin` is a door, not a screen: it redirects to the articles list.
         // It used to render "What needs you" — a triage dashboard over drafts,

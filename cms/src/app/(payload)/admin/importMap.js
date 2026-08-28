@@ -41,7 +41,7 @@ import { MediaPreviewCell as MediaPreviewCell_caa40f712cc60fbbf39decd6b126e7a1 }
 import { QuietTextCell as QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
 import { SignOut as SignOut_ecde4383348bf1e963734111aebbf434 } from '../../../components/admin/SignOut'
 import { NavFooter as NavFooter_3b9e48c0766d631a740babd8ba41f9aa } from '../../../components/admin/NavFooter'
-import { GoogleSignIn as GoogleSignIn_d89265836baef557dace4d150b5c9962 } from '../../../components/admin/GoogleSignIn'
+import { SignIn as SignIn_4ca1d6643189fb160fd7f4543c3fb84a } from '../../../components/admin/SignIn'
 import { NavBrand as NavBrand_d7dd6c791c113ce8ff240c7282294e70 } from '../../../components/admin/NavBrand'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { DashboardRedirect as DashboardRedirect_ece04e350fec6f57c4af84d53a7af84d } from '../../../components/admin/DashboardRedirect'
@@ -92,7 +92,7 @@ export const importMap = {
   "/components/admin/MediaCells#QuietTextCell": QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1,
   "/components/admin/SignOut#SignOut": SignOut_ecde4383348bf1e963734111aebbf434,
   "/components/admin/NavFooter#NavFooter": NavFooter_3b9e48c0766d631a740babd8ba41f9aa,
-  "/components/admin/GoogleSignIn#GoogleSignIn": GoogleSignIn_d89265836baef557dace4d150b5c9962,
+  "/components/admin/SignIn#SignIn": SignIn_4ca1d6643189fb160fd7f4543c3fb84a,
   "/components/admin/NavBrand#NavBrand": NavBrand_d7dd6c791c113ce8ff240c7282294e70,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "/components/admin/DashboardRedirect#DashboardRedirect": DashboardRedirect_ece04e350fec6f57c4af84d53a7af84d,

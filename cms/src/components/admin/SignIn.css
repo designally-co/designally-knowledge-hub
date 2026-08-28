@@ -1,0 +1,321 @@
+/* =============================================================================
+   Sign-in — the team app's door, ported
+
+   The same screen as designally-platform's `/sign-in` and Content Studio's
+   `/login`: the Cut with the Point on it, the lockup, one line, one pill —
+   and, above 1080, the Cut standing up as the window's left rail with the
+   column beside it. Three products behind one Workspace login, one door.
+
+   IT HAS TO TAKE PAYLOAD'S PAGE APART TO GET THERE. This arrives through
+   `beforeLogin`, which renders inside the login card, between Payload's brand
+   block and its password form. Both of those are hidden, the card stops being
+   a card, and the page's own `<section class="login">` becomes the container
+   the composition needs. Unlayered, like the rest of this theme, so it wins
+   over Payload's layered rules without fighting on specificity.
+   ========================================================================== */
+
+/* THE VARIABLES LIVE ON THE PAGE, NOT ON THE COMPOSITION. They were declared on
+   `.da-signin` first, which is a DESCENDANT of the two elements that need them —
+   custom properties inherit downward only, so `.login`'s padding and the
+   column's width resolved to nothing while the rail, being inside, worked. The
+   rail landed correctly and the column came out 560px instead of 880.
+
+   The rail's geometry is the questionnaire's, carried over value for value
+   rather than re-invented: `--sl-disc` is the survey's disc, `--sl-eye` the
+   height its Point crosses the rail at, and `--sl-rail-x` the same expression
+   that centres the GROUP — rail and column together — rather than centring the
+   column and hanging the rail off its edge. */
+.login {
+  --sl-disc: clamp(54px, 6.5vw, 84px);
+  --sl-rail-air: 40px;
+  --sl-rail-lead: calc(var(--sl-disc) / 2 + var(--sl-rail-air));
+  --sl-col: min(880px, 100vw - 340px);
+  --sl-rail-x: calc(50vw - var(--sl-col) / 2 - var(--sl-rail-lead) / 2);
+  --sl-eye: clamp(96px, 18vh, 170px);
+  --sl-cut-width: 2px;
+  --sl-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---- the page, which was a card on a page ------------------------------- */
+
+/* The door stands on the same ground as the room: white, not the parchment the
+   admin's own pages take. A card on a grey field would be two surfaces arguing
+   on a screen with one thing to say.
+
+   `.login.template-minimal`, not `.login`: the theme grounds every page with
+   `html, body, .template-default, .template-minimal`, which is the same
+   specificity and later in the cascade, so a single class lost and the door
+   came out grey. */
+.login.template-minimal {
+  min-block-size: 100dvh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  /* Above centre, not on it. A composition centred by arithmetic reads low,
+     because the eye puts the optical centre above the geometric one; 12dvh of
+     bottom padding lifts the block to roughly 44% of the window. */
+  padding: 1.5rem 1.5rem 12dvh;
+  background-color: #ffffff;
+}
+
+/* Payload's card, dismantled: no ground, no Edge, no radius, no measure of its
+   own. What is left is a column. */
+.login.template-minimal .template-minimal__wrap {
+  inline-size: min(700px, 100%);
+  max-inline-size: none;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  text-align: center;
+}
+
+/* Payload's logo block, its password form, its submit and its
+   forgotten-password link. The form's endpoint is untouched — `POST
+   /api/users/login` still works, and it is the recovery path if the OAuth
+   client is ever misconfigured in production. What goes is the form in front of
+   it, because a second way in that is only sometimes correct is the one nobody
+   checks. */
+.login__brand,
+.login__form,
+.login .form-submit,
+.login__form + a,
+.login a[href*='forgot'] {
+  display: none;
+}
+
+/* ---- the Cut ------------------------------------------------------------- */
+
+/* Laid down and running past the column: `100vw` centred on the page's axis
+   rather than `100%` of the card, because a line that stops at the text is a
+   divider, and the Cut is not a divider. */
+.sl-cut {
+  position: relative;
+  display: grid;
+  place-items: center;
+  margin-block-end: 2rem;
+}
+
+.sl-cut::before {
+  content: '';
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  inline-size: 100vw;
+  block-size: var(--sl-cut-width);
+  background-color: var(--da-orange);
+  transform: translate(-50%, -50%);
+}
+
+/* The Point. 56% of the diameter is the disc's own geometry, measured on the
+   platform rather than chosen again here. */
+.da-signin .brandmark {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  inline-size: 60px;
+  block-size: 60px;
+  border-radius: 999px;
+  background-color: var(--da-orange);
+}
+
+.da-signin .brandmark img {
+  inline-size: 56%;
+  block-size: auto;
+}
+
+/* ---- the type ------------------------------------------------------------ */
+
+/* The name, on one line wherever the column is wide enough to hold one. On a
+   phone it wraps, and `balance` decides where — a wrap is a sentence breaking,
+   which is a different thing from a lockup in tiers. */
+.sl-lockup {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 4.6vw, 3.1rem);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.034em;
+  color: var(--da-ink);
+  text-wrap: balance;
+}
+
+/* What the product is for. A sentence, set as one — sentence case in the body
+   face, not a tracked label, which would make three tiers of lockup out of what
+   is a name and a description. */
+.sl-line {
+  margin: 0 0 2rem;
+  font-family: var(--font-body);
+  font-size: clamp(15px, 1.15vw, 16px);
+  line-height: 1.55;
+  letter-spacing: -0.008em;
+  color: var(--da-ink-2);
+  text-wrap: balance;
+}
+
+/* Why the last attempt failed. It sits above the control it is about, in the
+   accent's readable ink — this is a thing that went wrong, not a thing that is
+   dangerous. */
+.sl-error {
+  margin: 0 0 1.25rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--style-radius-s);
+  background-color: var(--da-orange-tint);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--da-orange-mark);
+  text-align: start;
+}
+
+/* ---- the way in ---------------------------------------------------------- */
+
+/* The one action on the page takes the one colour this product reserves for
+   actions.
+
+   White on `#ef6148` is 3.24:1, the divergence the system records and the brand
+   rule decides. The hover darkens to `--da-orange-deep` and 4.27:1, so the
+   control somebody is pointing at is the legible one.
+
+   The shadow is tinted from the fill — a grey shadow under an orange pill reads
+   as dirt beneath it, and this is the colour's own shade. */
+.sl-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 52px;
+  padding: 0 34px;
+  border: 0;
+  border-radius: 999px;
+  background-color: var(--da-orange);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.004em;
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow:
+    0 2px 4px rgb(199 63 41 / 0.16),
+    0 18px 38px -14px rgb(199 63 41 / 0.5);
+  transition:
+    transform 0.55s var(--sl-ease),
+    box-shadow 0.55s var(--sl-ease),
+    background-color 0.55s var(--sl-ease);
+}
+
+@media (hover: hover) {
+  .sl-cta:hover {
+    background-color: var(--da-orange-deep);
+    color: #ffffff;
+    box-shadow:
+      0 2px 4px rgb(199 63 41 / 0.18),
+      0 26px 48px -16px rgb(199 63 41 / 0.58);
+  }
+}
+
+.sl-cta:active {
+  transform: scale(0.985);
+}
+
+.sl-cta:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 3px;
+}
+
+/* ---- the Cut stands up on a wide screen --------------------------------- */
+
+/*
+ * Above 1080 the rule becomes a full-height rail down the left edge and the
+ * content sits in a column beside it — the platform's signature composition,
+ * and the one place a sign-in screen can carry it at no cost, because there is
+ * a single control and nothing to lay out around.
+ *
+ * `position: fixed`, as on the survey: the rail belongs to the window rather
+ * than to the column, and it is the one thing on the page that does not move.
+ *
+ * The page pads by the rail's LEAD and lets the column centre itself in what is
+ * left, so the group a person sees — rail and column together — is what sits in
+ * the middle of the screen.
+ */
+@media (min-width: 1080px) {
+  .login.template-minimal {
+    padding-inline: var(--sl-rail-lead) 0;
+  }
+
+  .login.template-minimal .template-minimal__wrap {
+    inline-size: var(--sl-col);
+    text-align: start;
+  }
+
+  .sl-cut {
+    position: fixed;
+    inset: 0 auto 0 var(--sl-rail-x);
+    z-index: 4;
+    display: block;
+    inline-size: var(--sl-cut-width);
+    margin: 0;
+    background-color: var(--da-orange);
+    pointer-events: none;
+  }
+
+  .sl-cut::before {
+    content: none;
+  }
+
+  /* The Point crosses the rail at eye height, centred on the line — the same
+     placement and the same `--sl-eye` the questionnaire uses. */
+  .da-signin .brandmark {
+    position: absolute;
+    inset-block-start: var(--sl-eye);
+    inset-inline-start: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* ---- entrance ------------------------------------------------------------ */
+
+/* One movement, staggered, and it starts from visible rather than from nothing:
+   a page that flashes empty before it resolves is worse than a page that simply
+   appears. */
+@keyframes sl-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+.sl-cut,
+.sl-lockup,
+.sl-line,
+.sl-go {
+  animation: sl-rise 0.95s var(--sl-ease) both;
+}
+
+.sl-line {
+  animation-delay: 0.09s;
+}
+
+.sl-go {
+  animation-delay: 0.18s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sl-cut,
+  .sl-lockup,
+  .sl-line,
+  .sl-go {
+    animation: none;
+  }
+
+  .sl-cta {
+    transition: none;
+  }
+}

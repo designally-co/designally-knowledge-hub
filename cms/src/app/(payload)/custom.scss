@@ -868,15 +868,15 @@ div.nav__link {
    ========================================================================== */
 
 /* Payload draws its mark in three places: the login card, the sidebar header,
-   and the breadcrumb's home link. The first two are rebranded below; the third
-   is removed entirely — see the breadcrumb rule further down. */
+   and the breadcrumb's home link. Only the sidebar's is drawn here now — the
+   breadcrumb's is removed (see the rule further down) and the login screen is
+   a composition of its own, with its own mark on the Cut (SignIn.css). */
 svg.graphic-logo,
 svg.graphic-icon,
 .nav__header-content svg {
   display: none;
 }
 
-.login__brand,
 .nav__header-content {
   /* The disc is the mark's own container — 56% of the diameter, which is the
      geometry the platform measured rather than a second set of numbers. */
@@ -889,11 +889,6 @@ svg.graphic-icon,
   background-size: 56%;
   border-radius: 9999px;
   flex: none;
-}
-
-.login__brand {
-  width: 64px;
-  height: 64px;
 }
 
 .nav__header-content {
@@ -1097,18 +1092,8 @@ html {
   text-transform: uppercase;
 }
 
-/* The mark on the login screen sat at the form's left edge — Payload's brand
-   block is a plain box, and giving it a 64px square left it aligned to the
-   start of a 480px card. The door is a centred composition in this system;
-   this is the same lockup the Content Studio sign-in page uses. */
-.login__brand {
-  /* `display: grid`, not the `inline-grid` the three mark slots share above.
-     An inline-level box sits on a text line and ignores `margin-inline: auto`,
-     which is why centring it did nothing the first time. The sidebar and
-     breadcrumb marks stay inline, because there they sit beside other things. */
-  display: grid;
-  margin-inline: auto;
-}
+/* Payload's brand block on the login screen is hidden now — the door draws its
+   own mark, on the Cut. See SignIn.css. */
 
 /* =============================================================================
    Muted text that was under the floor
@@ -2093,12 +2078,9 @@ html {
    production: POST /api/users/login still works.
    -------------------------------------------------------------------------- */
 
-.login__form,
-.login .form-submit,
-.login__form + a,
-.login a[href*="forgot"] {
-  display: none;
-}
+/* The hiding moved to SignIn.css, with the rest of the login screen: that file
+   is loaded by the component that replaces what these were hiding, so the door
+   is described in one place rather than two. */
 
 /* -----------------------------------------------------------------------------
    The list, as a panel
