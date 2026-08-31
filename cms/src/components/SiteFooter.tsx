@@ -83,6 +83,11 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
                 </Link>
               </li>
               <li>
+                <Link className="site-footer__col-link" href={localeHref(locale, '/newsletter')}>
+                  {dict.footer.newsletter}
+                </Link>
+              </li>
+              <li>
                 <Link className="site-footer__col-link" href={localeHref(locale, '/contact')}>
                   {dict.footer.contact}
                 </Link>

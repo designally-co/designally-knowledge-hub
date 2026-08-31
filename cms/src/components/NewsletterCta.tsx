@@ -2,6 +2,7 @@
 
 import React from 'react'
 
+import { NewsletterForm } from '@/components/NewsletterForm'
 import { DEFAULT_LOCALE, getDictionary, type Dictionary } from '@/lib/i18n'
 
 /*
@@ -50,20 +51,7 @@ export function NewsletterCta({
 
         <div className="cta__signup">
           <p className="cta__lede">{lede ?? c.lede}</p>
-          <form className="cta__form" onSubmit={(e) => e.preventDefault()}>
-            <input
-              className="cta__input"
-              type="email"
-              name="email"
-              placeholder={c.placeholder}
-              aria-label={c.placeholder}
-              required
-            />
-            <button className="cta__submit" type="submit">
-              {c.button}
-            </button>
-          </form>
-          <p className="cta__note">{c.note}</p>
+          <NewsletterForm dict={dict} />
         </div>
       </div>
     </section>

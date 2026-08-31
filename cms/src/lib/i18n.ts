@@ -65,6 +65,7 @@ export type Dictionary = {
     resources: string
     about: string
     contact: string
+    newsletter: string
     rights: string // "All rights reserved."
   }
   cta: {
@@ -176,6 +177,15 @@ export type Dictionary = {
     /** Accessible name for the embedded map. */
     mapTitle: string
   }
+  newsletter: {
+    eyebrow: string
+    title: string
+    lede: string
+    whyLabel: string
+    whyStatement: string
+    /** Three reasons, each a problem and the answer to it. */
+    reasons: { index: string; label: string; problem: string; title: string; answer: string }[]
+  }
   listing: {
     home: string
     articles: string
@@ -236,12 +246,15 @@ const en: Dictionary = {
     resources: 'Resources',
     about: 'About',
     contact: 'Contact',
+    newsletter: 'Newsletter',
     rights: 'All rights reserved.',
   },
   cta: {
-    eyebrow: 'Newsletter',
-    title: 'Get the good stuff, first.',
-    lede: 'Design templates, articles and resources — straight to your inbox. No noise.',
+    /* The letter's own name. `.cta__eyebrow` sets it in caps, so it is written
+       here as it reads. */
+    eyebrow: 'Spec Sheet \u00b7 Newsletter',
+    title: 'Better design thinking, twice a month.',
+    lede: 'One case study, one practical workflow, and useful ideas about branding, design and AI.',
     button: 'Subscribe',
     placeholder: 'Enter your email',
     note: 'No spam. Unsubscribe at any time.',
@@ -377,6 +390,39 @@ const en: Dictionary = {
     mapLink: 'Open in Google Maps',
     mapTitle: 'Map showing Designally in Chan Kasem, Chatuchak, Bangkok',
   },
+  newsletter: {
+    eyebrow: 'The Spec Sheet \u00b7 Newsletter',
+    title: 'Better design thinking, twice a month.',
+    lede: 'One case study, one practical workflow, and three useful ideas about branding, design and AI.',
+    whyLabel: 'Why subscribe?',
+    whyStatement: 'Because keeping up should not become another full-time job.',
+    reasons: [
+      {
+        index: '01',
+        label: 'Too much noise',
+        problem:
+          'Design news, new tools and trend reports arrive every day. Most of them do not help you make better work.',
+        title: 'Notice what is actually useful.',
+        answer: 'We select a small number of ideas and explain why each one matters.',
+      },
+      {
+        index: '02',
+        label: 'Not enough process',
+        problem:
+          'Finished projects show the result, but they often hide the questions, decisions and mistakes behind it.',
+        title: 'Learn from the work behind the work.',
+        answer: 'We make the process visible so you can apply the thinking to your own projects.',
+      },
+      {
+        index: '03',
+        label: 'Limited time',
+        problem:
+          'You want to stay current, but you do not have hours to search for reliable articles, tools and examples.',
+        title: 'Get a focused update twice a month.',
+        answer: 'One useful email gives you a clear place to start, with no daily inbox pressure.',
+      },
+    ],
+  },
   listing: {
     home: 'Home',
     articles: 'articles',
@@ -432,12 +478,13 @@ const th: Dictionary = {
     resources: 'รีซอร์ส',
     about: 'เกี่ยวกับเรา',
     contact: 'ติดต่อเรา',
+    newsletter: 'จดหมายข่าว',
     rights: 'สงวนลิขสิทธิ์',
   },
   cta: {
-    eyebrow: 'จดหมายข่าว',
-    title: 'รับของดีก่อนใคร',
-    lede: 'เทมเพลต บทความ และรีซอร์สด้านดีไซน์ ส่งตรงถึงอีเมลคุณ ไม่มีสแปม',
+    eyebrow: 'Spec Sheet \u00b7 จดหมายข่าว',
+    title: 'คิดงานออกแบบให้คมขึ้น เดือนละสองครั้ง',
+    lede: 'หนึ่งกรณีศึกษา หนึ่งเวิร์กโฟลว์ที่ใช้ได้จริง และไอเดียดี ๆ เรื่องแบรนด์ ดีไซน์ และ AI',
     button: 'ติดตาม',
     placeholder: 'กรอกอีเมลของคุณ',
     note: 'ไม่มีสแปม ยกเลิกได้ทุกเมื่อ',
@@ -571,6 +618,38 @@ const th: Dictionary = {
     addressLabel: 'ที่อยู่',
     mapLink: 'เปิดใน Google Maps',
     mapTitle: 'แผนที่แสดงที่ตั้งของ Designally ย่านจันทรเกษม จตุจักร กรุงเทพฯ',
+  },
+  newsletter: {
+    eyebrow: 'The Spec Sheet \u00b7 จดหมายข่าว',
+    title: 'คิดงานออกแบบให้คมขึ้น เดือนละสองครั้ง',
+    lede: 'หนึ่งกรณีศึกษา หนึ่งเวิร์กโฟลว์ที่ใช้ได้จริง และสามไอเดียดี ๆ เรื่องแบรนด์ ดีไซน์ และ AI',
+    whyLabel: 'ทำไมต้องสมัคร',
+    whyStatement: 'เพราะการตามให้ทันไม่ควรกลายเป็นงานประจำอีกงานหนึ่ง',
+    reasons: [
+      {
+        index: '01',
+        label: 'ข้อมูลล้นเกินไป',
+        problem:
+          'ข่าวสารด้านดีไซน์ เครื่องมือใหม่ และรายงานเทรนด์มาถึงทุกวัน แต่ส่วนใหญ่ไม่ได้ช่วยให้คุณทำงานได้ดีขึ้น',
+        title: 'เห็นว่าอะไรมีประโยชน์จริง',
+        answer: 'เราคัดมาไม่กี่เรื่อง และอธิบายว่าทำไมแต่ละเรื่องถึงสำคัญ',
+      },
+      {
+        index: '02',
+        label: 'เห็นแต่ผลลัพธ์ ไม่เห็นกระบวนการ',
+        problem:
+          'งานที่เสร็จแล้วแสดงผลลัพธ์ แต่มักซ่อนคำถาม การตัดสินใจ และความผิดพลาดที่อยู่เบื้องหลังไว้',
+        title: 'เรียนรู้จากงานที่อยู่เบื้องหลังงาน',
+        answer: 'เราทำให้กระบวนการมองเห็นได้ เพื่อให้คุณนำวิธีคิดไปใช้กับงานของตัวเองได้',
+      },
+      {
+        index: '03',
+        label: 'เวลามีจำกัด',
+        problem: 'คุณอยากตามให้ทัน แต่ไม่มีเวลาเป็นชั่วโมงไปค้นหาบทความ เครื่องมือ และตัวอย่างที่เชื่อถือได้',
+        title: 'รับอัปเดตที่คัดมาแล้ว เดือนละสองครั้ง',
+        answer: 'อีเมลฉบับเดียวที่ให้จุดเริ่มต้นชัดเจน โดยไม่ต้องกดดันกับกล่องจดหมายทุกวัน',
+      },
+    ],
   },
   listing: {
     home: 'หน้าแรก',

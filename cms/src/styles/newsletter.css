@@ -1,0 +1,257 @@
+/* --- Newsletter — what the letter is, and why somebody wants it.
+
+   The hero is the About page's band with a field in it: same ground, same
+   watermark, same eyebrow. What is new is the fanned trio of reasons. --- */
+
+/* ---- the offer --------------------------------------------------------- */
+
+/* #E4E4E4, ASKED FOR — a neutral grey rather than the warm parchment the About
+   and Contact heroes take. It is the one literal colour on this page: nothing
+   in the palette lands on it, and mixing toward it from `--be-line` would put a
+   warm cast back into a grey chosen for not having one. */
+.news-hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(44px, 7vw, 96px);
+  background-color: #e4e4e4;
+}
+
+.news-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.22;
+  background: url('/hero-bg-pattern.svg') no-repeat center / cover;
+  pointer-events: none;
+}
+
+.news-hero__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 4vw, 48px);
+}
+
+/* The drawing sits beside the offer at width and above it below that — the
+   arrangement the newsletter band already uses, so the two read as one object
+   in two sizes. */
+@media (min-width: 64em) {
+  .news-hero__inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+/* THE COLUMN IS THE MEASURE FOR BOTH, AND IT GROWS WITH THE TYPE. A fixed 36rem
+   held the headline to two lines up to about 1200px and then broke: the display
+   size is `4.4vw`, so at 1440 it reaches 63px and "Better design thinking," on
+   its own is ~690px — measured, three lines in a 576px column. The column
+   scales on the same viewport the font does, so the two stay in step.
+
+   44rem at the top end is what leaves room for the drawing beside it: 704 +
+   gap + a 440px illustration is 1192 inside a 1264px content width. */
+.news-hero__copy {
+  min-width: 0;
+  max-width: clamp(30rem, 48vw, 44rem);
+}
+
+.news-hero__title {
+  margin: 0 0 clamp(14px, 1.8vw, 20px);
+  text-wrap: balance;
+  font: var(--type-display-2);
+  letter-spacing: -0.02em;
+  color: var(--be-ink);
+  text-wrap: balance;
+}
+
+/* Bold, because it is the offer itself and the note under the field is the
+   fine print — the two must not read at the same weight.
+
+   NO MEASURE OF ITS OWN. It carried 34ch, which set it three lines deep and
+   half the width of the headline above it: two blocks of the same voice, ragged
+   against two different right edges. It takes the column the headline takes, so
+   the two share one edge and both come out at two lines. `balance` splits them
+   evenly rather than leaving four words alone on the second. */
+.news-hero__lede {
+  margin: 0 0 clamp(22px, 3vw, 32px);
+  font: var(--type-body);
+  font-weight: 700;
+  color: var(--be-ink);
+  text-wrap: balance;
+}
+
+.news-hero__form {
+  max-width: 30rem;
+}
+
+/* Wider than the band's figure, because it is a different drawing: that one
+   stands up in a 235x280 portrait, this one lies down across 989x884. Sized to
+   the shape it actually is rather than to the slot the other one fits. */
+.news-hero__art {
+  flex: none;
+  width: clamp(230px, 34vw, 440px);
+  height: auto;
+  align-self: center;
+}
+
+/* ---- why --------------------------------------------------------------- */
+
+.news-why {
+  padding-block: clamp(56px, 9vw, 120px);
+  background-color: var(--be-white);
+}
+
+.news-why__inner {
+  display: grid;
+  gap: clamp(20px, 3vw, 36px);
+}
+
+/* THE LABEL KEEPS THE LEFT AND THE STATEMENT TAKES THE RIGHT — the same
+   arrangement the About page's "Why we exist" uses, and for the same reason:
+   the section's name is a margin note, and the sentence is the section. */
+@media (min-width: 900px) {
+  .news-why__inner {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+    align-items: start;
+  }
+}
+
+.news-why__label {
+  margin: 0;
+}
+
+.news-why__statement {
+  margin: 0;
+  font: var(--type-section);
+  letter-spacing: -0.02em;
+  color: var(--be-ink);
+  text-wrap: balance;
+}
+
+/* ---- the three reasons -------------------------------------------------- */
+
+/* A FAN, LIKE THE ABOUT PAGE'S — but landscape, because each of these carries
+   four lines rather than a word. They overlap by a little and lean by a little,
+   which is what makes three panels read as a hand rather than a table of
+   features.
+
+   The grid spans both columns: the statement above is the introduction to all
+   three, not to the first. */
+.news-cards {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: start;
+  margin: clamp(32px, 5vw, 56px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 900px) {
+  .news-cards {
+    grid-column: 1 / -1;
+  }
+}
+
+.news-card {
+  --pad: clamp(18px, 2.2vw, 30px);
+  --overlap: clamp(20px, 3vw, 40px);
+
+  position: relative;
+  z-index: var(--z);
+  flex: 1 1 0;
+  min-width: 0;
+  padding: var(--pad);
+  background-color: color-mix(in srgb, var(--card-tint) 52%, var(--be-white));
+  color: var(--be-ink);
+  /* The middle card rides highest and the outer two fall away from it, which is
+     how a spread hand sits. */
+  transform: rotate(calc(var(--i) * -1.1deg)) translateY(calc(var(--lift) * 14px));
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.news-card + .news-card {
+  margin-inline-start: calc(var(--overlap) * -1);
+}
+
+/* THE TEXT STOPS WHERE THE NEXT CARD STARTS. Every card but the last has one
+   lying over its trailing edge, and with the same padding all round the lines
+   underneath ran straight into it — measured, "do not help you make bette" with
+   the r under card 02. The overlap is added back as padding, so the card is
+   still the width it was and the words never reach the part of it that is
+   covered. */
+.news-card:not(:last-child) {
+  padding-inline-end: calc(var(--pad) + var(--overlap));
+}
+
+@media (hover: hover) {
+  .news-card:hover {
+    z-index: 10;
+    transform: translateY(-18px);
+  }
+}
+
+/* The index and its label, on one line: a number, a point, and the name of the
+   problem. */
+.news-card__index {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 clamp(14px, 1.8vw, 20px);
+  font-family: var(--font-serif);
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  color: var(--be-ink-70);
+}
+
+.news-card__problem {
+  margin: 0 0 clamp(16px, 2vw, 24px);
+  font: var(--type-body-sm);
+  font-size: 13px;
+  color: var(--be-ink-70);
+}
+
+/* The turn: the problem is set as text and the answer is set as a heading,
+   which is the whole shape of the card. */
+.news-card__title {
+  margin: 0 0 10px;
+  font-family: var(--font-serif);
+  font-size: clamp(19px, 1.7vw, 24px);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--be-ink);
+  text-wrap: balance;
+}
+
+.news-card__answer {
+  margin: 0;
+  font: var(--type-body-sm);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--be-ink);
+}
+
+/* Below the fold-out width the fan is three stacked cards: at 375px, three
+   side by side would be 100px wide holding four lines each, and the lean reads
+   as a mistake the moment they stop overlapping. */
+@media (max-width: 899px) {
+  .news-cards {
+    flex-direction: column;
+  }
+
+  .news-card {
+    transform: none;
+  }
+
+  .news-card:not(:last-child) {
+    padding-inline-end: var(--pad);
+  }
+
+  .news-card + .news-card {
+    margin-inline-start: 0;
+    margin-block-start: 12px;
+  }
+}

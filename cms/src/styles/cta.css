@@ -140,8 +140,12 @@
   }
 }
 
+/* INK-70, NOT INK-50. The note rides under the field on three different grounds
+   now — the mint band, the newsletter hero's #E4E4E4 and the paper — and at
+   ink-50 it measured 3.7:1 on the mint and 3.54 on the grey. It is 14px body
+   text; it owes 4.5. */
 .cta__note {
   font: var(--type-body-sm);
-  color: var(--be-ink-50);
+  color: var(--be-ink-70);
   margin: 12px 0 0;
 }

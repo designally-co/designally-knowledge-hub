@@ -14,13 +14,17 @@
 /* ---- the label that opens each band ------------------------------------ */
 
 /* The site's `--type-label` — the same uppercase mark the tags and section
-   eyebrows wear, so a reader arrives here already knowing what it means. */
+   eyebrows wear, so a reader arrives here already knowing what it means.
+
+   INK-70, NOT INK-50. At 12px this is small text and owes 4.5:1. On the paper
+   band it measured 3.9 and on the newsletter's #E4E4E4 it fell to 3.54 —
+   under on both, and the darker grey is what made it obvious. */
 .about-eyebrow {
   margin: 0 0 clamp(16px, 2.4vw, 28px);
   font: var(--type-label);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--be-ink-50);
+  color: var(--be-ink-70);
 }
 
 .about-eyebrow--on-dark {
