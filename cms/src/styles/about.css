@@ -1,0 +1,527 @@
+/* --- About — what this publication is, who makes it, how to read it.
+
+   FIVE BANDS, EACH A DIFFERENT SURFACE, because the page answers five separate
+   questions and the ground is what says a new one has started: the paper it
+   opens on, the dark band the four routes sit in, the white the principles are
+   listed on, the accent the studio speaks from, and the newsletter's mint —
+   which is the site's own `.cta`, not a sixth thing invented here.
+
+   Everything below reuses the site's vocabulary: `--type-*` for the scale,
+   `--be-*` for the palette, `.shell` for the measure, `.band` for the vertical
+   rhythm, and `hero-bg-pattern.svg` for the watermark the hero, the article
+   header and the promo banners already carry. --- */
+
+/* ---- the label that opens each band ------------------------------------ */
+
+/* The site's `--type-label` — the same uppercase mark the tags and section
+   eyebrows wear, so a reader arrives here already knowing what it means. */
+.about-eyebrow {
+  margin: 0 0 clamp(16px, 2.4vw, 28px);
+  font: var(--type-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--be-ink-50);
+}
+
+.about-eyebrow--on-dark {
+  color: rgb(255 255 255 / 0.62);
+}
+
+.about-eyebrow--on-accent {
+  color: rgb(255 255 255 / 0.72);
+}
+
+/* ---- the opening ------------------------------------------------------- */
+
+/* Paper, with the watermark laid over it at the weight the promo banners use.
+   The pattern is the one piece of decoration this site has, and it earns its
+   place by being the same one everywhere. */
+.about-hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(48px, 8vw, 104px) clamp(56px, 9vw, 120px);
+  background-color: var(--be-line);
+  background-color: color-mix(in srgb, var(--be-line) 42%, var(--be-paper));
+}
+
+.about-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.22;
+  background: url('/hero-bg-pattern.svg') no-repeat center / cover;
+  pointer-events: none;
+}
+
+.about-hero__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.about-hero__title {
+  margin: 0 0 clamp(16px, 2vw, 24px);
+  font: var(--type-display-2);
+  letter-spacing: -0.02em;
+  color: var(--be-ink);
+  text-wrap: balance;
+}
+
+/* The lede is set at the reading measure rather than the page's, so it breaks
+   as a paragraph instead of running the full 1600px. */
+.about-hero__lede {
+  max-width: 52ch;
+  margin: 0;
+  font: var(--type-body-lg);
+  color: var(--be-ink-70);
+}
+
+/* ---- why we exist ------------------------------------------------------ */
+
+/* THE LABEL HANGS OFF THE LEFT MARGIN and the argument runs down the right —
+   the composition's own arrangement, and the reason this is a grid rather than
+   a stack. Below the fold-out width the label simply sits above what it names. */
+.about-why {
+  display: grid;
+  gap: clamp(20px, 4vw, 48px);
+  margin-block-start: clamp(48px, 8vw, 96px);
+}
+
+@media (min-width: 900px) {
+  .about-why {
+    grid-template-columns: minmax(140px, 1fr) minmax(0, 2fr);
+    align-items: start;
+  }
+}
+
+.about-why__label {
+  margin: 0;
+  font: var(--type-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--be-ink);
+}
+
+.about-why__column {
+  min-width: 0;
+}
+
+/* The picture the section opens with. Until there is one, the frame holds its
+   own place: the site's paper tint under the watermark every other band wears,
+   at the shape the photograph will take, so the composition is the composition
+   whether or not the image has arrived.
+
+   IT HAS TO READ AS A FRAME, NOT A GAP. Tinted from `--be-white` it measured
+   within a shade of the hero band behind it and the slot disappeared into the
+   page — a 649x365 hole where the picture goes. Mixed toward the line colour
+   instead, and closed with the hairline, it is visibly a reserved space. */
+.about-why__figure {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  margin: 0 0 clamp(24px, 4vw, 40px);
+  overflow: hidden;
+  border: 1px solid var(--border-hairline);
+  border-radius: var(--radius-hero);
+  background-color: color-mix(in srgb, var(--be-line) 78%, var(--be-white));
+}
+
+.about-why__figure::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.3;
+  background: url('/hero-bg-pattern.svg') no-repeat center / cover;
+  pointer-events: none;
+}
+
+/* With a photograph in it the frame stops being a shape and becomes a window:
+   the ratio gives way to the picture's own, and the tint and pattern go with
+   it. */
+.about-why__figure:has(img) {
+  aspect-ratio: auto;
+  border-color: transparent;
+  background: none;
+}
+
+.about-why__figure:has(img)::after {
+  content: none;
+}
+
+.about-why__figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The one sentence the section is about, at the section scale — it is the
+   argument, not an introduction to one.
+
+   IT RUNS THE COLUMN'S FULL WIDTH, not a measure of its own: it sits directly
+   over the two paragraphs that explain it, and a statement narrower than the
+   text under it reads as a pull-quote beside the argument rather than the top
+   of it. The rule closes it and opens them — one line, doing the job the white
+   space alone could not at this size. */
+.about-why__statement {
+  margin: 0 0 clamp(24px, 4vw, 40px);
+  padding-block-end: clamp(24px, 4vw, 40px);
+  border-block-end: 1px solid var(--border-hairline);
+  font: var(--type-section);
+  letter-spacing: -0.015em;
+  color: var(--be-ink);
+  text-wrap: balance;
+}
+
+/* Two columns at width, one below it: this is 90 words, and two columns of 45
+   is a spread while two columns of 20 is a fragment. */
+.about-why__body {
+  display: grid;
+  gap: clamp(16px, 2.4vw, 32px);
+}
+
+@media (min-width: 720px) {
+  .about-why__body {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.about-why__body p {
+  margin: 0;
+  font: var(--type-body-sm);
+  color: var(--be-ink-70);
+}
+
+/* ---- the four surfaces ------------------------------------------------- */
+
+.about-find {
+  padding-block: clamp(64px, 10vw, 132px);
+  background-color: #3f342b;
+  color: var(--be-white);
+  text-align: center;
+}
+
+.about-find__heading {
+  margin-block-end: clamp(12px, 1.6vw, 18px);
+}
+
+.about-find__lede {
+  max-width: 46ch;
+  margin: 0 auto;
+  font: var(--type-body-sm);
+  color: rgb(255 255 255 / 0.66);
+}
+
+/* THE FAN. Four upright rectangles in a row would be a nav bar; a hand of cards
+   is four things you can take one of. Each leans a degree further than the last
+   from the `--i` its list item carries, and the whole group overlaps by a third
+   of a card so it reads as a stack rather than a grid.
+
+   `list-style: none` and the reset here rather than in the markup: this is a
+   list because it is four of the same thing, and it should be one to anything
+   reading the page aloud. */
+.about-cards {
+  display: flex;
+  justify-content: center;
+  margin: clamp(40px, 6vw, 72px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* THEY TUCK UNDER EACH OTHER. Set side by side with a gap they were four tiles;
+   overlapped by a fifth of their width they are a hand of cards, which is the
+   whole reason for the tilt. Each one lies over the one before it — the later
+   card is the nearer card, the way a dealt hand falls — so the `z-index` climbs
+   with the index rather than being left to source order alone. */
+.about-cards__item {
+  position: relative;
+  flex: 0 1 clamp(120px, 15vw, 172px);
+  z-index: calc(var(--z));
+  transform: rotate(calc(var(--i) * 2.4deg)) translateY(calc(var(--lift) * 6px));
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* HOW FAR THEY TUCK IS SET BY THE ARROW, not by taste. Each card's arrow sits
+   in its top-right corner, about 44px in from the edge, so an overlap deeper
+   than that hides the arrow of every card but the last — measured at 30px,
+   where three of the four were half-covered. 16 is enough to read as a stack
+   and shallow enough to leave all four marks whole. */
+.about-cards__item + .about-cards__item {
+  margin-inline-start: clamp(-16px, -1.2vw, -10px);
+}
+
+/* Straightens and lifts clear under the pointer, and comes to the front while
+   it does — a card rising behind the one next to it reads as a glitch. */
+@media (hover: hover) {
+  .about-cards__item:hover,
+  .about-cards__item:focus-within {
+    z-index: 10;
+    transform: translateY(-10px);
+  }
+}
+
+/* `text-align: start` because the band around it is centred, and the card's own
+   contents are not: the mark opens the top-left corner and the label closes the
+   bottom-left one, which is the diagonal the composition reads along. */
+.about-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  aspect-ratio: 3 / 4;
+  padding: clamp(12px, 1.4vw, 18px);
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  background-color: var(--card-tint, var(--be-band-lavender));
+  color: var(--be-ink);
+  text-align: start;
+  text-decoration: none;
+}
+
+/* The same watermark as the bands, at the weight the promo banner uses — the
+   tint is a flat colour and the pattern is what stops four flat rectangles
+   reading as swatches. */
+.about-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.25;
+  background: url('/hero-bg-pattern.svg') no-repeat center / cover;
+  pointer-events: none;
+}
+
+/* THE MARK, WITH NOTHING UNDER IT. It wore the white tile it has on the
+   homepage, which on a card that is already a coloured surface made a second
+   container inside the first — a tile on a tile. The artwork carries its own
+   soft cluster behind the glyph, so it needs no help being seen. */
+.about-card__mark {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: clamp(34px, 4.2vw, 46px);
+  height: auto;
+}
+
+.about-card__mark img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The arrow rides the top-right corner, the way the promo banners put theirs on
+   the trailing edge: a mark that the card goes somewhere, not a second button. */
+/* WHITE, RING AND GLYPH BOTH. On four different tints an ink arrow was four
+   different weights — nearly black on the mint, nearly invisible on nothing.
+   White is the one value that reads the same on all four, and it is the colour
+   the band's own type is set in. */
+.about-card__arrow {
+  position: absolute;
+  z-index: 1;
+  top: clamp(12px, 1.4vw, 18px);
+  right: clamp(12px, 1.4vw, 18px);
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--be-white);
+  color: var(--be-white);
+  transition:
+    background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Fills on approach, and the glyph inverts with it — the ring was already
+   white, so a white fill alone would have erased the arrow inside it. */
+@media (hover: hover) {
+  .about-card:hover .about-card__arrow {
+    background-color: var(--be-white);
+    color: var(--be-ink);
+  }
+}
+
+.about-card__label {
+  position: relative;
+  z-index: 1;
+  font: var(--type-title-sm);
+  letter-spacing: -0.01em;
+}
+
+.about-card:focus-visible {
+  outline: 3px solid var(--be-white);
+  outline-offset: 3px;
+}
+
+/* On a phone the fan becomes a two-by-two: four cards side by side at 375px are
+   88px wide, which is a row of stamps. The tilt goes with it — it reads as a
+   mistake once the cards no longer overlap. */
+@media (max-width: 720px) {
+  .about-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .about-cards__item {
+    flex: none;
+    transform: none;
+  }
+
+  /* The tuck goes with the fan. Left on, the negative margin pulled the
+     right-hand column 10px over the left one inside the grid — an overlap with
+     none of the lean that made it read as one, and three column positions
+     instead of two.
+
+     IT HAS TO BE THE ADJACENT-SIBLING SELECTOR AGAIN. Written as a single class
+     this reset was (0,1,0) against the (0,2,0) that set it, and lost inside its
+     own media query — measured, still -10px at 375. */
+  .about-cards__item + .about-cards__item {
+    margin-inline-start: 0;
+  }
+}
+
+/* ---- editorial principles ---------------------------------------------- */
+
+.about-principles {
+  padding-block: clamp(64px, 10vw, 132px);
+  background-color: var(--be-white);
+}
+
+.about-principles__inner {
+  display: grid;
+  gap: clamp(32px, 5vw, 72px);
+}
+
+@media (min-width: 900px) {
+  .about-principles__inner {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: start;
+  }
+}
+
+.about-principles__title {
+  margin: 0;
+  font: var(--type-section);
+  letter-spacing: -0.02em;
+  color: var(--be-ink);
+}
+
+/* THE NUMBER IS DRAWN BY THE LIST, not typed into each row: an ordered list
+   already knows what number each item is, and a hand-written "01" would be a
+   second source of truth for the same fact — and would go wrong the moment a
+   principle is added or dropped. */
+.about-principles__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: principle;
+}
+
+.about-principle {
+  display: grid;
+  gap: 6px 24px;
+  padding-block: clamp(18px, 2.4vw, 26px);
+  border-block-start: 1px solid var(--border-hairline);
+  counter-increment: principle;
+}
+
+/* The rule closes the list as well as separating it, so the last row does not
+   hang. */
+.about-principle:last-child {
+  border-block-end: 1px solid var(--border-hairline);
+}
+
+@media (min-width: 720px) {
+  .about-principle {
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.15fr);
+    align-items: start;
+  }
+}
+
+/* SET IN THE SERIF, like the headings either side of the list rather than like
+   the sans the rows are set in: the number is editorial furniture — a folio,
+   not data — and in the grotesque it read as a table's row index. */
+.about-principle::before {
+  content: counter(principle, decimal-leading-zero);
+  font-family: var(--font-serif);
+  font-size: 15px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+  color: var(--be-ink-35);
+}
+
+.about-principle__title {
+  margin: 0;
+  font: var(--type-title-sm);
+  letter-spacing: -0.01em;
+  color: var(--be-ink);
+}
+
+.about-principle__body {
+  margin: 0;
+  font: var(--type-body-sm);
+  color: var(--be-ink-50);
+}
+
+/* ---- who makes it ------------------------------------------------------ */
+
+/* The accent band, which is the one place on this page the brand speaks in its
+   own voice rather than about the work. */
+.about-studio {
+  padding-block: clamp(56px, 9vw, 116px);
+  background-color: var(--be-orange);
+  color: var(--be-white);
+}
+
+.about-studio__inner {
+  display: grid;
+  gap: clamp(24px, 4vw, 56px);
+}
+
+@media (min-width: 900px) {
+  .about-studio__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.about-studio__title {
+  max-width: 14ch;
+  margin: 0;
+  font: var(--type-section);
+  letter-spacing: -0.02em;
+  color: var(--be-white);
+  text-wrap: balance;
+}
+
+.about-studio__body p {
+  max-width: 48ch;
+  margin: 0 0 clamp(20px, 2.6vw, 28px);
+  font: var(--type-body-sm);
+  color: rgb(255 255 255 / 0.88);
+}
+
+/* An underline that arrives on approach: on a colour field a link needs to be
+   a link before it is pointed at, and the arrow does that; the rule is the
+   feedback. */
+.about-studio__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: var(--type-body-sm);
+  font-weight: 700;
+  color: var(--be-white);
+  text-decoration: none;
+  border-block-end: 1.5px solid transparent;
+  transition: border-color 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .about-studio__link:hover {
+    border-block-end-color: var(--be-white);
+  }
+}
+
+.about-studio__link:focus-visible {
+  outline: 3px solid var(--be-white);
+  outline-offset: 4px;
+}

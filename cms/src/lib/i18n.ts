@@ -63,6 +63,7 @@ export type Dictionary = {
     explore: string
     topics: string
     resources: string
+    about: string
     rights: string // "All rights reserved."
   }
   cta: {
@@ -117,6 +118,27 @@ export type Dictionary = {
     noFilesNote: string
     /** Related row heading. */
     moreLikeThis: string
+  }
+  about: {
+    eyebrow: string
+    title: string
+    lede: string
+    whyLabel: string
+    whyStatement: string
+    /** Two columns of body copy under the statement. */
+    whyBody: [string, string]
+    findEyebrow: string
+    findTitle: string
+    findLede: string
+    principlesLabel: string
+    /** The heading, broken where the design breaks it. */
+    principlesTitle: [string, string]
+    /** Four numbered principles. */
+    principles: { title: string; body: string }[]
+    studioLabel: string
+    studioTitle: string
+    studioBody: string
+    studioLink: string
   }
   listing: {
     home: string
@@ -176,6 +198,7 @@ const en: Dictionary = {
     explore: 'Explore',
     topics: 'Topics',
     resources: 'Resources',
+    about: 'About',
     rights: 'All rights reserved.',
   },
   cta: {
@@ -238,6 +261,45 @@ const en: Dictionary = {
     noFilesNote: 'This resource is published but nothing has been uploaded to it. Check back shortly.',
     moreLikeThis: 'More like this',
   },
+  about: {
+    eyebrow: 'About the Knowledge Hub',
+    title: 'The thinking behind the work',
+    lede: 'A practical publication about how brands, interfaces, and creative systems are researched, designed, built, and changed.',
+    whyLabel: 'Why we exist',
+    whyStatement: 'Good design becomes more useful when the process is made visible.',
+    whyBody: [
+      'The Knowledge Hub looks past the finished image. We share the decisions, questions, tools and working methods that shape the result.',
+      'Our aim is simple: help designers, founders and creative teams understand the work clearly — and apply what they learn to real projects.',
+    ],
+    findEyebrow: 'What you will find',
+    findTitle: 'Four ways to learn.',
+    findLede: 'Every section has a different purpose, from studying real decisions to using a practical resource today.',
+    principlesLabel: 'Editorial principles',
+    principlesTitle: ['Clear. Useful.', 'Honest.'],
+    principles: [
+      {
+        title: 'Explain the decisions',
+        body: 'We explain how decisions are made, not only how the final work looks.',
+      },
+      {
+        title: 'Make it practical',
+        body: 'Each piece should leave readers with an idea, method or resource they can use.',
+      },
+      {
+        title: 'Use real evidence',
+        body: 'We separate client work, independent analysis, opinion and sample content clearly.',
+      },
+      {
+        title: 'Stay curious',
+        body: 'We explore new tools and ideas without treating every new trend as the answer.',
+      },
+    ],
+    studioLabel: 'A publication by Designally',
+    studioTitle: 'Created from inside a working design studio.',
+    studioBody:
+      'The Knowledge Hub is published by Designally, a Bangkok-based creative agency. The publication gives us a place to share useful knowledge, study the industry, and document what we learn through the work.',
+    studioLink: 'Visit Designally',
+  },
   listing: {
     home: 'Home',
     articles: 'articles',
@@ -291,6 +353,7 @@ const th: Dictionary = {
     explore: 'สำรวจ',
     topics: 'หัวข้อ',
     resources: 'รีซอร์ส',
+    about: 'เกี่ยวกับเรา',
     rights: 'สงวนลิขสิทธิ์',
   },
   cta: {
@@ -352,6 +415,45 @@ const th: Dictionary = {
     noFiles: 'ยังไม่มีไฟล์แนบ',
     noFilesNote: 'รีซอร์สนี้เผยแพร่แล้วแต่ยังไม่ได้อัปโหลดไฟล์ กรุณากลับมาตรวจสอบอีกครั้ง',
     moreLikeThis: 'รีซอร์สที่คล้ายกัน',
+  },
+  about: {
+    eyebrow: 'เกี่ยวกับ Knowledge Hub',
+    title: 'ความคิดที่อยู่เบื้องหลังงาน',
+    lede: 'คลังความรู้เชิงปฏิบัติว่าด้วยการค้นคว้า ออกแบบ สร้าง และปรับเปลี่ยนแบรนด์ อินเทอร์เฟซ และระบบงานสร้างสรรค์',
+    whyLabel: 'ทำไมเราถึงมีอยู่',
+    whyStatement: 'งานออกแบบที่ดีจะมีประโยชน์มากขึ้น เมื่อกระบวนการถูกทำให้มองเห็นได้',
+    whyBody: [
+      'Knowledge Hub มองข้ามภาพผลงานที่เสร็จแล้ว เราแบ่งปันการตัดสินใจ คำถาม เครื่องมือ และวิธีทำงานที่หล่อหลอมผลลัพธ์นั้นขึ้นมา',
+      'เป้าหมายของเราเรียบง่าย คือช่วยให้นักออกแบบ ผู้ก่อตั้ง และทีมครีเอทีฟเข้าใจงานได้อย่างชัดเจน แล้วนำสิ่งที่ได้เรียนรู้ไปใช้กับงานจริง',
+    ],
+    findEyebrow: 'สิ่งที่คุณจะได้พบ',
+    findTitle: 'สี่เส้นทางของการเรียนรู้',
+    findLede: 'แต่ละส่วนมีจุดประสงค์ต่างกัน ตั้งแต่การศึกษาการตัดสินใจจริง ไปจนถึงการหยิบทรัพยากรไปใช้ได้ทันที',
+    principlesLabel: 'หลักการทางบรรณาธิการ',
+    principlesTitle: ['ชัดเจน มีประโยชน์', 'และตรงไปตรงมา'],
+    principles: [
+      {
+        title: 'อธิบายการตัดสินใจ',
+        body: 'เราอธิบายว่าการตัดสินใจเกิดขึ้นอย่างไร ไม่ใช่แค่ว่างานสุดท้ายหน้าตาเป็นอย่างไร',
+      },
+      {
+        title: 'ใช้ได้จริง',
+        body: 'ทุกชิ้นควรทิ้งไอเดีย วิธีการ หรือทรัพยากรที่ผู้อ่านนำไปใช้ต่อได้',
+      },
+      {
+        title: 'อ้างอิงจากของจริง',
+        body: 'เราแยกงานลูกค้า การวิเคราะห์อิสระ ความเห็น และเนื้อหาตัวอย่างออกจากกันอย่างชัดเจน',
+      },
+      {
+        title: 'อยากรู้อยู่เสมอ',
+        body: 'เราสำรวจเครื่องมือและแนวคิดใหม่ โดยไม่ถือว่าทุกเทรนด์ใหม่คือคำตอบ',
+      },
+    ],
+    studioLabel: 'เผยแพร่โดย Designally',
+    studioTitle: 'สร้างขึ้นจากภายในสตูดิโอออกแบบที่ทำงานจริง',
+    studioBody:
+      'Knowledge Hub เผยแพร่โดย Designally เอเจนซีสร้างสรรค์ในกรุงเทพฯ คลังความรู้นี้เป็นพื้นที่ให้เราแบ่งปันความรู้ที่ใช้ได้จริง ศึกษาอุตสาหกรรม และบันทึกสิ่งที่เราเรียนรู้จากการทำงาน',
+    studioLink: 'ไปที่ Designally',
   },
   listing: {
     home: 'หน้าแรก',

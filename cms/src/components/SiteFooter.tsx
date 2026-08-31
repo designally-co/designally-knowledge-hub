@@ -78,6 +78,11 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
                 </li>
               ))}
               <li>
+                <Link className="site-footer__col-link" href={localeHref(locale, '/about')}>
+                  {dict.footer.about}
+                </Link>
+              </li>
+              <li>
                 <Link className="site-footer__col-link" href={localeHref(locale, '/resources')}>
                   {dict.footer.resources}
                 </Link>
