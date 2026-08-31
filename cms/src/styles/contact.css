@@ -1,0 +1,445 @@
+/* --- Contact — the ways in, and where the studio is.
+
+   It shares the About page's opening exactly: `.about-hero`, `.about-eyebrow`
+   and the label-in-the-margin arrangement are reused rather than restated, so
+   the two pages read as two halves of one section of the site. What is new here
+   is the note the form sits on, the detail rows, and the map. --- */
+
+/* ---- the message ------------------------------------------------------- */
+
+.contact-write {
+  padding-block: clamp(56px, 9vw, 112px);
+  background-color: var(--be-white);
+}
+
+.contact-write__inner {
+  display: grid;
+  gap: clamp(40px, 6vw, 80px);
+}
+
+/* The note is the wider half: it holds four fields and a button, and the column
+   beside it holds four short paragraphs. */
+@media (min-width: 980px) {
+  .contact-write__inner {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+    align-items: start;
+  }
+}
+
+.contact-write__title {
+  max-width: 16ch;
+  margin: 0 0 clamp(14px, 1.8vw, 20px);
+  font: var(--type-section);
+  letter-spacing: -0.02em;
+  color: var(--be-ink);
+  text-wrap: balance;
+}
+
+.contact-write__lede {
+  max-width: 40ch;
+  margin: 0;
+  font: var(--type-body-sm);
+  color: var(--be-ink-50);
+}
+
+/* BEHIND ITS OWN RULE, because it is a warning and not the next sentence of the
+   paragraph above it. The line is what stops it being read as one. */
+.contact-write__caution {
+  margin: clamp(24px, 3vw, 34px) 0 0;
+  padding-block-start: clamp(20px, 2.4vw, 28px);
+  border-block-start: 1px solid var(--border-hairline);
+  font: var(--type-body-sm);
+  font-size: 13px;
+  color: var(--be-ink-50);
+}
+
+.contact-write__social-label {
+  margin: clamp(24px, 3vw, 34px) 0 12px;
+  font: var(--type-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--be-ink-50);
+}
+
+.contact-social {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---- the note ---------------------------------------------------------- */
+
+/* A PIECE OF PAPER, TACKED UP. The one piece of theatre on this page and the
+   About page combined, and it earns it by being the thing somebody is actually
+   writing on. A degree and a half off square, with the shadow thrown down and
+   to the right — an object resting on the page rather than a panel drawn into
+   it. */
+.contact-note {
+  position: relative;
+  padding: clamp(24px, 3.4vw, 44px);
+  border-radius: 4px;
+  background-color: var(--be-band-butter);
+  box-shadow: 14px 16px 0 -2px rgb(18 16 13 / 0.72);
+  transform: rotate(-1.2deg);
+}
+
+/* The contents sit straight while the paper leans: type set at a slant is a
+   different decision from paper at a slant, and it is not this one. */
+.contact-note > * {
+  transform: rotate(1.2deg);
+}
+
+.contact-note__tack {
+  position: absolute;
+  top: -22px;
+  left: 46%;
+  display: block;
+  transform: rotate(1.2deg);
+  filter: drop-shadow(2px 3px 2px rgb(18 16 13 / 0.22));
+}
+
+.contact-note__title {
+  margin: 0 0 10px;
+  font: var(--type-title-lg);
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--be-ink);
+}
+
+.contact-note__lede {
+  margin: 0 0 clamp(22px, 2.8vw, 32px);
+  font: var(--type-body-sm);
+  color: var(--be-ink-70);
+}
+
+/* ---- the fields -------------------------------------------------------- */
+
+/* UNDERLINES, NOT BOXES. On a coloured sheet a bordered input is a white card
+   inside a piece of paper; a ruled line is what paper already has. The rule is
+   the field, and it darkens when the field has the caret. */
+.contact-note__form {
+  display: grid;
+  gap: clamp(16px, 2vw, 22px);
+}
+
+.contact-field-row {
+  display: grid;
+  gap: clamp(16px, 2vw, 22px);
+}
+
+@media (min-width: 560px) {
+  .contact-field-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.contact-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.contact-field__label {
+  font: var(--type-body-sm);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--be-ink-70);
+}
+
+.contact-field__input {
+  width: 100%;
+  padding: 8px 0;
+  border: 0;
+  border-block-end: 1px solid rgb(18 16 13 / 0.28);
+  border-radius: 0;
+  background: none;
+  font: var(--type-body-sm);
+  font-size: 15px;
+  color: var(--be-ink);
+  transition: border-color 160ms ease;
+}
+
+.contact-field__input::placeholder {
+  color: rgb(18 16 13 / 0.42);
+}
+
+.contact-field__input:focus {
+  outline: none;
+  border-block-end-color: var(--be-ink);
+}
+
+/* The focus ring is drawn on the field's own line rather than as a box around
+   a borderless control, which would trace a rectangle nothing else here has. */
+.contact-field__input:focus-visible {
+  border-block-end-width: 2px;
+  padding-block-end: 7px;
+}
+
+.contact-field__input--area {
+  min-height: 108px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+/* The chevron is the site's, drawn by the wrapper: a native select arrow is a
+   different shape in every browser and none of them is this one. */
+.contact-field__select {
+  position: relative;
+  display: block;
+}
+
+.contact-field__select select {
+  appearance: none;
+  padding-inline-end: 28px;
+  cursor: pointer;
+}
+
+.contact-field__select .be-icon {
+  position: absolute;
+  right: 2px;
+  bottom: 12px;
+  color: var(--be-ink-70);
+  pointer-events: none;
+}
+
+/* NO RULE OF ITS OWN. It had one, directly under the textarea's — two parallel
+   lines a few pixels apart, where the field's own underline is already the
+   boundary this note sits below. */
+.contact-note__help {
+  margin: 0;
+  padding-block-start: clamp(10px, 1.4vw, 14px);
+  font: var(--type-body-sm);
+  font-size: 13px;
+  color: var(--be-ink-50);
+}
+
+/* ---- sending ----------------------------------------------------------- */
+
+.contact-note__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.contact-note__consent {
+  flex: 1 1 16rem;
+  max-width: 34ch;
+  margin: 0;
+  font: var(--type-body-sm);
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgb(18 16 13 / 0.55);
+}
+
+/* Ink, not the accent: the accent band is two sections below and this is the
+   only filled control on a yellow sheet — it needs to be the darkest thing on
+   it, which is what the site's primary button already is. */
+.contact-note__send {
+  flex: none;
+  min-height: 46px;
+  padding: 0 24px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background-color: var(--be-ink);
+  font: var(--type-nav);
+  font-size: 14px;
+  color: var(--be-paper);
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    transform 120ms ease;
+}
+
+@media (hover: hover) {
+  .contact-note__send:hover {
+    background-color: var(--be-ink-70);
+  }
+}
+
+.contact-note__send:active {
+  transform: scale(0.98);
+}
+
+.contact-note__send:focus-visible {
+  outline: 3px solid var(--be-ink);
+  outline-offset: 3px;
+}
+
+.contact-note__fallback {
+  margin: 0;
+  font: var(--type-body-sm);
+  font-size: 13px;
+  color: var(--be-ink-70);
+}
+
+/* ---- where we are ------------------------------------------------------ */
+
+/* GREY, NOT THE PAPER TINT. It carried the same warm parchment the hero above
+   it does, which put two bands of one colour either side of the white the form
+   sits on — the page read as paper, white, paper. A neutral grey separates the
+   half that is about writing to us from the half that is about where we are.
+
+   Mixed from `--be-ink` rather than typed as a hex: the ink is a warm near-black
+   (#12100d), so a low percentage of it against white is a grey that belongs to
+   this palette rather than a cool one borrowed from another. */
+.contact-where {
+  padding-block: clamp(56px, 9vw, 112px);
+  background-color: color-mix(in srgb, var(--be-ink) 7%, var(--be-white));
+}
+
+.contact-where__inner {
+  display: grid;
+  gap: clamp(32px, 5vw, 72px);
+}
+
+@media (min-width: 900px) {
+  .contact-where__inner {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+    align-items: start;
+  }
+}
+
+.contact-where__title {
+  max-width: 12ch;
+  margin: 0;
+  font: var(--type-section);
+  letter-spacing: -0.02em;
+  color: var(--be-ink);
+  text-wrap: balance;
+}
+
+/* A definition list, because that is what it is: four labels and the thing each
+   one names. */
+.contact-rows {
+  margin: 0;
+}
+
+.contact-row {
+  display: grid;
+  gap: 6px 24px;
+  padding-block: clamp(16px, 2.2vw, 24px);
+  border-block-start: 1px solid var(--border-hairline);
+}
+
+.contact-row:last-child {
+  border-block-end: 1px solid var(--border-hairline);
+}
+
+@media (min-width: 640px) {
+  .contact-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    align-items: start;
+  }
+}
+
+.contact-row__label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font: var(--type-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--be-ink-50);
+}
+
+/* AN OUTLINE AND NOTHING IN IT. The tile was filled white, which on the band's
+   own paper made four little cards down the left of a list that has no other
+   surfaces in it. The rule is the tile; the glyph is the only ink. */
+.contact-row__mark {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border: 1px solid var(--border-hairline);
+  border-radius: 10px;
+  background: none;
+  color: var(--be-ink-70);
+}
+
+.contact-row__value {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  font: var(--type-body-sm);
+  font-size: 15px;
+  color: var(--be-ink);
+}
+
+.contact-row__value a {
+  color: inherit;
+  text-decoration: none;
+  border-block-end: 1px solid transparent;
+  transition: border-color 160ms ease;
+}
+
+@media (hover: hover) {
+  .contact-row__value a:hover {
+    border-block-end-color: var(--be-ink);
+  }
+}
+
+/* ---- the map ----------------------------------------------------------- */
+
+.contact-map {
+  position: relative;
+  display: block;
+  line-height: 0;
+}
+
+/* GREYED, so a full-colour third-party map does not become the loudest thing on
+   a page whose palette is four warm neutrals — and it lifts to full colour when
+   somebody puts the pointer on it, which is when the colour is information
+   rather than noise. */
+.contact-map__frame {
+  display: block;
+  width: 100%;
+  height: clamp(280px, 38vw, 440px);
+  border: 0;
+  filter: grayscale(1) contrast(0.96);
+  transition: filter 320ms ease;
+}
+
+@media (hover: hover) {
+  .contact-map:hover .contact-map__frame {
+    filter: grayscale(0.15) contrast(1);
+  }
+}
+
+/* The way out to the real map: an iframe is awkward on a phone and unreachable
+   with a keyboard alone. It sits on the frame as a card of its own so it is
+   legible whatever is under it. */
+.contact-map__link {
+  position: absolute;
+  bottom: clamp(16px, 2.4vw, 28px);
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: var(--radius-pill);
+  background-color: var(--be-ink);
+  font: var(--type-nav);
+  font-size: 14px;
+  line-height: 1;
+  color: var(--be-paper);
+  text-decoration: none;
+  transform: translateX(-50%);
+  transition: background-color 160ms ease;
+}
+
+@media (hover: hover) {
+  .contact-map__link:hover {
+    background-color: var(--be-ink-70);
+  }
+}
+
+.contact-map__link:focus-visible {
+  outline: 3px solid var(--be-ink);
+  outline-offset: 3px;
+}

@@ -12,7 +12,10 @@ import {
   ArrowLeft,
   Instagram,
   Facebook,
-  Music,
+  Phone,
+  Mail,
+  MessageSquare,
+  MapPin,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -32,7 +35,10 @@ const MAP: Record<string, LucideIcon> = {
   'arrow-left': ArrowLeft,
   instagram: Instagram,
   facebook: Facebook,
-  music: Music,
+  phone: Phone,
+  mail: Mail,
+  'message-square': MessageSquare,
+  'map-pin': MapPin,
 }
 
 export interface IconProps {

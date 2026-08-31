@@ -64,6 +64,7 @@ export type Dictionary = {
     topics: string
     resources: string
     about: string
+    contact: string
     rights: string // "All rights reserved."
   }
   cta: {
@@ -140,6 +141,41 @@ export type Dictionary = {
     studioBody: string
     studioLink: string
   }
+  contact: {
+    eyebrow: string
+    title: string
+    lede: string
+    formLabel: string
+    formTitle: string
+    formLede: string
+    formCaution: string
+    social: string
+    cardTitle: string
+    cardLede: string
+    name: string
+    namePlaceholder: string
+    email: string
+    emailPlaceholder: string
+    subject: string
+    subjectPlaceholder: string
+    subjects: string[]
+    message: string
+    messagePlaceholder: string
+    messageHelp: string
+    consent: string
+    send: string
+    /** Shown when the browser has no mail client to hand the message to. */
+    sendFallback: string
+    whereLabel: string
+    whereTitle: string
+    phoneLabel: string
+    emailRowLabel: string
+    lineLabel: string
+    addressLabel: string
+    mapLink: string
+    /** Accessible name for the embedded map. */
+    mapTitle: string
+  }
   listing: {
     home: string
     articles: string
@@ -199,6 +235,7 @@ const en: Dictionary = {
     topics: 'Topics',
     resources: 'Resources',
     about: 'About',
+    contact: 'Contact',
     rights: 'All rights reserved.',
   },
   cta: {
@@ -300,6 +337,46 @@ const en: Dictionary = {
       'The Knowledge Hub is published by Designally, a Bangkok-based creative agency. The publication gives us a place to share useful knowledge, study the industry, and document what we learn through the work.',
     studioLink: 'Visit Designally',
   },
+  contact: {
+    eyebrow: 'Contact the Knowledge Hub',
+    title: 'Let\u2019s start a conversation.',
+    lede: 'Have a question, an idea, or useful work to share? Tell us what is on your mind.',
+    formLabel: 'Send a message',
+    formTitle: 'What would you like to talk about?',
+    formLede:
+      'Choose the subject that best matches your message. It helps your enquiry reach the right person.',
+    formCaution: 'Please do not send confidential client information through this form.',
+    social: 'Social',
+    cardTitle: 'Contact details',
+    cardLede: 'We read everything that arrives here and reply to what we can, usually within two working days.',
+    name: 'Your name',
+    namePlaceholder: 'Full name',
+    email: 'Email address',
+    emailPlaceholder: 'you@company.com',
+    subject: 'What is this about?',
+    subjectPlaceholder: 'Choose a subject',
+    subjects: [
+      'A question about an article',
+      'Pitch or contribute a piece',
+      'Working with Designally',
+      'A correction or a problem',
+      'Something else',
+    ],
+    message: 'Your message',
+    messagePlaceholder: 'Tell us what you would like to talk about.',
+    messageHelp: 'Please include relevant links when they are useful.',
+    consent: 'Sending this form opens your email app with the message ready. Nothing is stored here.',
+    send: 'Start communication',
+    sendFallback: 'Write to clients@designally.co',
+    whereLabel: 'Where we are',
+    whereTitle: 'Made in Bangkok. Read everywhere.',
+    phoneLabel: 'Talk with us',
+    emailRowLabel: 'Drop us a line',
+    lineLabel: 'Add on LINE',
+    addressLabel: 'Address',
+    mapLink: 'Open in Google Maps',
+    mapTitle: 'Map showing Designally in Chan Kasem, Chatuchak, Bangkok',
+  },
   listing: {
     home: 'Home',
     articles: 'articles',
@@ -354,6 +431,7 @@ const th: Dictionary = {
     topics: 'หัวข้อ',
     resources: 'รีซอร์ส',
     about: 'เกี่ยวกับเรา',
+    contact: 'ติดต่อเรา',
     rights: 'สงวนลิขสิทธิ์',
   },
   cta: {
@@ -454,6 +532,45 @@ const th: Dictionary = {
     studioBody:
       'Knowledge Hub เผยแพร่โดย Designally เอเจนซีสร้างสรรค์ในกรุงเทพฯ คลังความรู้นี้เป็นพื้นที่ให้เราแบ่งปันความรู้ที่ใช้ได้จริง ศึกษาอุตสาหกรรม และบันทึกสิ่งที่เราเรียนรู้จากการทำงาน',
     studioLink: 'ไปที่ Designally',
+  },
+  contact: {
+    eyebrow: 'ติดต่อ Knowledge Hub',
+    title: 'มาเริ่มบทสนทนากัน',
+    lede: 'มีคำถาม มีไอเดีย หรือมีงานดี ๆ อยากแบ่งปัน บอกเราได้เลยว่าคุณคิดอะไรอยู่',
+    formLabel: 'ส่งข้อความ',
+    formTitle: 'คุณอยากคุยเรื่องอะไร',
+    formLede: 'เลือกหัวข้อที่ตรงกับเรื่องของคุณมากที่สุด จะช่วยให้เรื่องถึงคนที่ดูแลได้เร็วขึ้น',
+    formCaution: 'กรุณาอย่าส่งข้อมูลลับของลูกค้าผ่านแบบฟอร์มนี้',
+    social: 'โซเชียล',
+    cardTitle: 'รายละเอียดการติดต่อ',
+    cardLede: 'เราอ่านทุกข้อความที่ส่งเข้ามา และจะตอบกลับเท่าที่ทำได้ โดยปกติภายในสองวันทำการ',
+    name: 'ชื่อของคุณ',
+    namePlaceholder: 'ชื่อ-นามสกุล',
+    email: 'อีเมล',
+    emailPlaceholder: 'you@company.com',
+    subject: 'เรื่องอะไร',
+    subjectPlaceholder: 'เลือกหัวข้อ',
+    subjects: [
+      'คำถามเกี่ยวกับบทความ',
+      'เสนอหรือร่วมเขียนบทความ',
+      'ร่วมงานกับ Designally',
+      'แจ้งข้อผิดพลาดหรือปัญหา',
+      'เรื่องอื่น ๆ',
+    ],
+    message: 'ข้อความของคุณ',
+    messagePlaceholder: 'เล่าให้เราฟังว่าคุณอยากคุยเรื่องอะไร',
+    messageHelp: 'ใส่ลิงก์ที่เกี่ยวข้องมาด้วยได้ ถ้ามี',
+    consent: 'การส่งฟอร์มนี้จะเปิดแอปอีเมลของคุณพร้อมข้อความที่เตรียมไว้ เราไม่ได้เก็บข้อมูลไว้ที่นี่',
+    send: 'เริ่มการสนทนา',
+    sendFallback: 'เขียนถึง clients@designally.co',
+    whereLabel: 'เราอยู่ที่ไหน',
+    whereTitle: 'สร้างที่กรุงเทพฯ อ่านได้ทุกที่',
+    phoneLabel: 'โทรหาเรา',
+    emailRowLabel: 'ส่งอีเมล',
+    lineLabel: 'เพิ่มเพื่อนใน LINE',
+    addressLabel: 'ที่อยู่',
+    mapLink: 'เปิดใน Google Maps',
+    mapTitle: 'แผนที่แสดงที่ตั้งของ Designally ย่านจันทรเกษม จตุจักร กรุงเทพฯ',
   },
   listing: {
     home: 'หน้าแรก',
