@@ -136,6 +136,42 @@ function ResourcesNavPanel({ locale, dict }: { locale: Locale; dict: Dictionary 
   )
 }
 
+/**
+ * The Information panel — the pages about the publication rather than in it.
+ *
+ * The same object as `ResourcesNavPanel`: a rail naming the group and a row of
+ * destinations. There are three and they are pages rather than filters, so the
+ * "view all" link the other panels carry has nothing to point at and is left
+ * off; the rail is just the group's name.
+ */
+function InfoNavPanel({ locale, dict }: { locale: Locale; dict: Dictionary }) {
+  const pages = [
+    { label: dict.footer.about, href: localeHref(locale, '/about') },
+    { label: dict.footer.contact, href: localeHref(locale, '/contact') },
+    { label: dict.footer.newsletter, href: localeHref(locale, '/newsletter') },
+  ]
+
+  return (
+    <div className="nav-panel" id="nav-panel-info">
+      <div className="shell nav-panel__inner">
+        <div className="nav-panel__rail">
+          <span className="nav-panel__title">{dict.footer.information}</span>
+        </div>
+
+        <ul className="nav-panel__tags">
+          {pages.map((page, i) => (
+            <li key={page.href} style={{ '--i': i } as React.CSSProperties}>
+              <Link className="nav-panel__tag" href={page.href}>
+                <span>{page.label}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
 /* -------------------------------------------------------------------------- */
 /* Mobile drawer                                                               */
 /* -------------------------------------------------------------------------- */
@@ -230,6 +266,31 @@ function Drawer({ onClose, returnFocusTo, locale, dict }: DrawerProps) {
                   {dict.nav.resources}
                 </Link>
               </li>
+              {/* The drawer has no panels, so the three information pages are
+                  listed rather than grouped behind a disclosure. */}
+              <li>
+                <Link className="drawer__link" href={localeHref(locale, '/about')} onClick={onClose}>
+                  {dict.footer.about}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="drawer__link"
+                  href={localeHref(locale, '/contact')}
+                  onClick={onClose}
+                >
+                  {dict.footer.contact}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  className="drawer__link"
+                  href={localeHref(locale, '/newsletter')}
+                  onClick={onClose}
+                >
+                  {dict.footer.newsletter}
+                </Link>
+              </li>
             </ul>
           </nav>
 
@@ -253,7 +314,11 @@ function Drawer({ onClose, returnFocusTo, locale, dict }: DrawerProps) {
 export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const [drawerOpen, setDrawerOpen] = React.useState(false)
   // The open panel: a category, or Resources (its own panel of resource kinds).
-  const [openCategory, setOpenCategory] = React.useState<Category | 'resources' | null>(null)
+  /* The panel that is open, which is a category, the resources index, or the
+     information group — three kinds of thing, one at a time. */
+  const [openCategory, setOpenCategory] = React.useState<Category | 'resources' | 'info' | null>(
+    null,
+  )
   const toggleRef = React.useRef<HTMLButtonElement>(null)
   const navRef = React.useRef<HTMLDivElement>(null)
   const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -265,7 +330,7 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
     }
   }
 
-  const scheduleOpen = (category: Category | 'resources') => {
+  const scheduleOpen = (category: Category | 'resources' | 'info') => {
     clearTimer()
     timer.current = setTimeout(() => setOpenCategory(category), OPEN_DELAY)
   }
@@ -339,6 +404,25 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
             >
               {dict.nav.resources}
             </Link>
+
+            {/* A BUTTON, NOT A LINK. The four items beside it each go somewhere
+                — a category, the resources index — and this one has nowhere of
+                its own to go: it is three pages, and the panel is the whole
+                point of it. A link to `/about` labelled "Information" would
+                promise a page that does not exist. */}
+            <button
+              aria-controls="nav-panel-info"
+              aria-expanded={openCategory === 'info'}
+              className={['site-nav__link', 'site-nav__link--button', openCategory === 'info' ? 'is-open' : '']
+                .filter(Boolean)
+                .join(' ')}
+              onClick={() => setOpenCategory((v) => (v === 'info' ? null : 'info'))}
+              onFocus={() => setOpenCategory('info')}
+              onMouseEnter={() => scheduleOpen('info')}
+              type="button"
+            >
+              {dict.footer.information}
+            </button>
           </nav>
 
           {/* Left to right: search, Subscribe, language. */}
@@ -368,6 +452,8 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
           <div onMouseEnter={clearTimer} onMouseLeave={scheduleClose}>
             {openCategory === 'resources' ? (
               <ResourcesNavPanel locale={locale} dict={dict} />
+            ) : openCategory === 'info' ? (
+              <InfoNavPanel locale={locale} dict={dict} />
             ) : (
               <NavPanel category={openCategory} locale={locale} dict={dict} />
             )}

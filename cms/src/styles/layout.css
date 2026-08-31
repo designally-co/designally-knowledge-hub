@@ -92,6 +92,16 @@
   padding-block: 6px;
 }
 
+/* The Information item is a disclosure rather than a destination, so it is a
+   button — which arrives with a browser's own chrome and has to give it up to
+   sit in a row of links. */
+.site-nav__link--button {
+  padding-inline: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
 /* Underline grows from the left rather than blinking on — it reads as the item
    arming itself, and it survives the panel being open (.is-open). */
 .site-nav__link::after {
