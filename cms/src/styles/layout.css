@@ -23,25 +23,50 @@
   .site-header__bar { height: 82px; gap: 24px; }
 }
 
+/* The brand, in the header and at the head of the drawer. It holds the mark
+   rather than the word now — see `Wordmark` in SiteHeader. */
 .wordmark {
+  display: inline-flex;
+  align-items: center;
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
-  text-align: left;
-  font-family: var(--font-sans);
-  font-weight: 800;
-  font-size: 17px;
-  line-height: 1.02;
-  letter-spacing: 0.01em;
-  text-transform: uppercase;
-  color: var(--be-ink);
   text-decoration: none;
   flex: none;
 }
 
+/* THE FLAT MARK, ONE FILE MASKED TWICE. The artwork is a white D. on
+   transparency; the D runs to 73.79% of the width and the stop begins there, so
+   two layers clipped either side of that seam take their own colours while both
+   stay registered to the same drawing. The ratio is the file's own, 290x256. */
+.wordmark__mark {
+  position: relative;
+  display: inline-block;
+  inline-size: 30px;
+  aspect-ratio: 290 / 256;
+}
+
 @media (min-width: 48em) {
-  .wordmark { font-size: 19px; }
+  .wordmark__mark { inline-size: 34px; }
+}
+
+.wordmark__mark i {
+  position: absolute;
+  inset: 0;
+  mask: url('/designally-mark.png') no-repeat center / contain;
+  -webkit-mask: url('/designally-mark.png') no-repeat center / contain;
+}
+
+.wordmark__d {
+  background-color: var(--be-ink);
+  clip-path: inset(0 26.21% 0 0);
+}
+
+/* The stop is the one part of this identity that has always been the accent. */
+.wordmark__dot {
+  background-color: var(--be-rust);
+  clip-path: inset(0 0 0 73.79%);
 }
 
 /* Desktop navigation. Below 64em the four items plus the wordmark and the
@@ -569,13 +594,40 @@
   .site-footer__masthead { grid-column: auto; }
 }
 
+/* THE SAME MARK AS THE HEADER'S, at masthead size and reversed out of the
+   footer's ochre. It is the header's lockup enlarged rather than a second
+   treatment: the D takes the paper the footer's type is set in, and the stop
+   keeps the accent. */
 .site-footer__mark {
-  font-weight: 800;
-  font-size: clamp(28px, 6vw, 34px);
-  line-height: 1.05;
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
+  position: relative;
+  display: block;
+  inline-size: clamp(56px, 11vw, 74px);
+  aspect-ratio: 290 / 256;
   margin: 0 0 24px;
+}
+
+.site-footer__mark i {
+  position: absolute;
+  inset: 0;
+  mask: url('/designally-mark.png') no-repeat center / contain;
+  -webkit-mask: url('/designally-mark.png') no-repeat center / contain;
+}
+
+/* White, not the paper off-white: on the ochre band the warm #f9f6f4 read as a
+   tinted D rather than a reversed one, and this is the only place in the
+   identity where the letter is knocked out of a colour. */
+.site-footer__mark-d {
+  background-color: var(--be-white);
+  clip-path: inset(0 26.21% 0 0);
+}
+
+/* WHITE HERE, AND ONLY HERE. Everywhere else the stop is the accent; on the
+   ochre band an orange stop is one warm colour on another, so the lockup is
+   knocked out whole. Two layers still, because the mask needs them — they just
+   happen to be the same value on this ground. */
+.site-footer__mark-dot {
+  background-color: var(--be-white);
+  clip-path: inset(0 0 0 73.79%);
 }
 
 .site-footer__blurb {

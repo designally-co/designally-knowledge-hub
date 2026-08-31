@@ -139,11 +139,18 @@
 }
 
 /* With a photograph in it the frame stops being a shape and becomes a window:
-   the ratio gives way to the picture's own, and the tint and pattern go with
-   it. */
+   the ratio gives way to the picture's own, and the tint, the pattern, the
+   border and the corners go with it. The radius belonged to the placeholder —
+   a reserved space is an object on the page and wants a shape; a photograph is
+   not an object, it is what you are looking at, and rounding it crops the
+   corners of the room. */
 .about-why__figure:has(img) {
   aspect-ratio: auto;
-  border-color: transparent;
+  /* `border: 0`, not a transparent one: a transparent border still occupies a
+     pixel on each side, so the picture sat two pixels narrower than the text
+     under it. */
+  border: 0;
+  border-radius: 0;
   background: none;
 }
 

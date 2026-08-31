@@ -39,7 +39,13 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
 
         <div className="site-footer__cols">
           <div className="site-footer__masthead">
-            <p className="site-footer__mark">Designally</p>
+            {/* The mark, at masthead size. The word was set in caps here and
+                the header carries the lockup now; one identity, two sizes. The
+                two layers are decoration — the label says the name once. */}
+            <p aria-label="Designally" className="site-footer__mark" role="img">
+              <i aria-hidden="true" className="site-footer__mark-d" />
+              <i aria-hidden="true" className="site-footer__mark-dot" />
+            </p>
             <p className="site-footer__blurb">{dict.footer.blurb}</p>
             <p className="site-footer__label site-footer__label--social">{dict.footer.social}</p>
             {/* Only channels with a real destination. The TikTok icon was

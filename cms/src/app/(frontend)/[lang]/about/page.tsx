@@ -23,17 +23,17 @@ import { getDictionary, isLocale, localeHref, type Locale } from '@/lib/i18n'
  */
 
 /**
- * The studio photograph, when there is one.
+ * The studio photograph.
  *
- * The composition has a figure beside "Why we exist" and this repo has no
- * photograph to put in it — the three images in `/public` are the newsletter's
- * illustration, the phones artwork and the footer's texture, none of which is a
- * picture of anybody working. So the frame holds its own place until one
- * arrives, and swapping it in is one line: drop a file in `/public` and name it
- * here. Nothing else changes; the figure gives up its placeholder shape to the
- * picture's own ratio on its own.
+ * Supplied as a 830x467 PNG at 717K and shipped as a WebP at 49K — the same
+ * pixels, a fifteenth of the bytes, on a picture that sits above the fold of
+ * the page's second section.
+ *
+ * The frame it goes in held its own place until this arrived (see the figure in
+ * about.css): with an image in it the placeholder's ratio, tint, pattern and
+ * border all stand down and the picture's own proportions take over.
  */
-const STUDIO_IMAGE: null | string = null
+const STUDIO_IMAGE: null | string = '/about-studio.webp'
 
 export const revalidate = 3600
 
@@ -110,8 +110,13 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
                   the window and gives up its own ratio to the picture's. */}
               <figure className="about-why__figure">
                 {STUDIO_IMAGE ? (
+                  /* `alt=""`: the sentence beside it says what the section
+                     means, and a description of the room would be read out
+                     before that sentence without adding to it. The dimensions
+                     are the file's own, so the space is reserved before it
+                     loads. */
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img alt="" loading="lazy" src={STUDIO_IMAGE} />
+                  <img alt="" height={467} loading="lazy" src={STUDIO_IMAGE} width={830} />
                 ) : null}
               </figure>
 

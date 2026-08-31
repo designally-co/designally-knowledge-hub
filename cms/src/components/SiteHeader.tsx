@@ -27,7 +27,31 @@ import {
  * collapses into the drawer.
  */
 
-const WORDMARK = 'Designally'
+/**
+ * The mark, not the word.
+ *
+ * Ported from designally-platform's `FlatMark` — the D in ink with the full
+ * stop in the accent, which is the approved lockup; `DESIGNALLY` set in caps
+ * was retired there on 19 August 2026 and is not reintroduced here.
+ *
+ * IT IS ONE FILE, MASKED TWICE. `designally-mark.png` is a white D. on
+ * transparency, so it cannot simply be recoloured — but it splits: the D runs
+ * to 73.79% of the width and the stop begins there. Two layers masked by the
+ * same artwork and clipped either side of that seam give each its own colour
+ * while both stay registered to one drawing. The percentages are the
+ * platform's measured ones, not a redraw.
+ *
+ * The whole lockup is one `role="img"` carrying the company's name: the two
+ * layers are decoration, and a screen reader should hear "Designally" once.
+ */
+function Wordmark() {
+  return (
+    <span aria-label="Designally" className="wordmark__mark" role="img">
+      <i aria-hidden="true" className="wordmark__d" />
+      <i aria-hidden="true" className="wordmark__dot" />
+    </span>
+  )
+}
 
 /** Category listing page, in the given locale. */
 function categoryAnchor(category: Category, locale: Locale): string {
@@ -166,8 +190,8 @@ function Drawer({ onClose, returnFocusTo, locale, dict }: DrawerProps) {
       <div className="drawer-scrim" onClick={onClose} />
       <div className="drawer" role="dialog" aria-modal="true" aria-label={dict.nav.menu} ref={panelRef}>
         <div className="drawer__head">
-          <span className="wordmark" aria-hidden="true">
-            {WORDMARK}
+          <span className="wordmark">
+            <Wordmark />
           </span>
           <button
             type="button"
@@ -279,7 +303,7 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
       >
         <div className="shell site-header__bar">
           <Link className="wordmark" href={localeHref(locale, '/')} onFocus={closeNow}>
-            {WORDMARK}
+            <Wordmark />
           </Link>
 
           <nav className="site-nav" aria-label={dict.nav.menu} ref={navRef}>
