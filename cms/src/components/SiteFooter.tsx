@@ -78,21 +78,6 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
                 </li>
               ))}
               <li>
-                <Link className="site-footer__col-link" href={localeHref(locale, '/about')}>
-                  {dict.footer.about}
-                </Link>
-              </li>
-              <li>
-                <Link className="site-footer__col-link" href={localeHref(locale, '/newsletter')}>
-                  {dict.footer.newsletter}
-                </Link>
-              </li>
-              <li>
-                <Link className="site-footer__col-link" href={localeHref(locale, '/contact')}>
-                  {dict.footer.contact}
-                </Link>
-              </li>
-              <li>
                 <Link className="site-footer__col-link" href={localeHref(locale, '/resources')}>
                   {dict.footer.resources}
                 </Link>
@@ -109,6 +94,35 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
                   </Link>
                 </li>
               ))}
+            </ul>
+          </FooterNavGroup>
+
+          {/* INFORMATION — the pages about the publication rather than in it,
+              and last in the row. They were in Explore, which is where the
+              reading is: a category, a tag and "Contact" are not the same kind
+              of destination.
+
+              THERE IS NO POLICY LINK YET. The column was asked for with one,
+              and this site has no editorial-policy page to point it at — a
+              footer link to a 404 is the same trade the social icons already
+              refused. Add the page and it goes here. */}
+          <FooterNavGroup label={dict.footer.information}>
+            <ul className="site-footer__col-list">
+              <li>
+                <Link className="site-footer__col-link" href={localeHref(locale, '/about')}>
+                  {dict.footer.about}
+                </Link>
+              </li>
+              <li>
+                <Link className="site-footer__col-link" href={localeHref(locale, '/contact')}>
+                  {dict.footer.contact}
+                </Link>
+              </li>
+              <li>
+                <Link className="site-footer__col-link" href={localeHref(locale, '/newsletter')}>
+                  {dict.footer.newsletter}
+                </Link>
+              </li>
             </ul>
           </FooterNavGroup>
         </div>

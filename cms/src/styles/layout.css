@@ -562,7 +562,10 @@
 }
 
 @media (min-width: 64em) {
-  .site-footer__cols { grid-template-columns: 1.6fr 1fr 1fr; }
+  /* Four tracks, not three: the masthead, then Explore, Information and Topics.
+     The masthead keeps the widest one — it holds the wordmark, a three-line
+     blurb and the social row, where the others hold four links each. */
+  .site-footer__cols { grid-template-columns: 1.6fr 1fr 1fr 1fr; }
   .site-footer__masthead { grid-column: auto; }
 }
 

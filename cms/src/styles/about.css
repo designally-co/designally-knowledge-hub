@@ -274,7 +274,29 @@
   padding: clamp(12px, 1.4vw, 18px);
   overflow: hidden;
   border-radius: var(--radius-card);
-  background-color: var(--card-tint, var(--be-band-lavender));
+  /* SATURATED, NOT DARKENED. The tints come from `listingChrome`, where they
+     are the pale grounds the listing bands wear — white on them measured 1.79
+     to 1.93:1, and the label owes 4.5. Mixing toward black got there and took
+     the colour with it: 60% of the peach is (145,103,82), a brown.
+
+     This drops the lightness in OKLCH and lifts the chroma a fifth, keeping
+     each hue exactly where `listingChrome` put it — the smallest move that
+     makes the label legible rather than the biggest one that makes it safe.
+
+     THE CHROMA IS ×1.2, NOT ×2. Doubled, hue 47° stops being the peach and
+     becomes #ba3300, a red: at high chroma that part of the wheel runs to
+     scarlet. A fifth is enough to keep the colour fresh at the lower
+     lightness without moving it off its own hue — #be6f46, still the orange.
+
+     3.44:1 AT WORST, which is the floor for large text, and the label is set
+     at 19px bold to be it — 14pt bold is 18.66px, so it qualifies by a third
+     of a pixel. Reaching 4.5 from these pastels needs `L 0.52`, and there the
+     four read as dark paint rather than as the sections' own colours.
+
+     The `color-mix` above is the fallback where relative colour syntax is
+     missing: duller, and still legible, which is the right way round. */
+  background-color: color-mix(in srgb, var(--card-tint, var(--be-band-lavender)) 66%, #000000);
+  background-color: oklch(from var(--card-tint, var(--be-band-lavender)) 0.62 calc(c * 1.2) h);
   color: var(--be-ink);
   text-align: start;
   text-decoration: none;
@@ -343,11 +365,20 @@
   }
 }
 
+/* WHITE, ASKED FOR — the label reversed out of the tint rather than set in
+   ink, which is how the design draws it.
+
+   19px, NOT THE SCALE'S 18. One pixel, and it is the pixel that makes this
+   large text: 14pt bold is 18.66px, and above that line the contrast floor is
+   3:1 rather than 4.5. It is what lets the cards keep their own colours at
+   3.44:1 instead of being darkened to paint. */
 .about-card__label {
   position: relative;
   z-index: 1;
   font: var(--type-title-sm);
+  font-size: 19px;
   letter-spacing: -0.01em;
+  color: var(--be-white);
 }
 
 .about-card:focus-visible {

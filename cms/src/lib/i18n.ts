@@ -66,6 +66,8 @@ export type Dictionary = {
     about: string
     contact: string
     newsletter: string
+    /** The fourth column's own heading. */
+    information: string
     rights: string // "All rights reserved."
   }
   cta: {
@@ -239,7 +241,8 @@ const en: Dictionary = {
   },
   footer: {
     tagline: ['Stay curious.', 'Make thoughtful things.'],
-    blurb: 'A library of design templates, articles and resources — your creative design ally.',
+    blurb:
+      'A publication about how brands, interfaces and creative systems are researched, designed and built.',
     social: 'Social',
     explore: 'Explore',
     topics: 'Topics',
@@ -247,6 +250,7 @@ const en: Dictionary = {
     about: 'About',
     contact: 'Contact',
     newsletter: 'Newsletter',
+    information: 'Information',
     rights: 'All rights reserved.',
   },
   cta: {
@@ -328,7 +332,7 @@ const en: Dictionary = {
     principlesTitle: ['Clear. Useful.', 'Honest.'],
     principles: [
       {
-        title: 'Explain the decisions',
+        title: 'Client Discovery Brief',
         body: 'We explain how decisions are made, not only how the final work looks.',
       },
       {
@@ -471,7 +475,8 @@ const th: Dictionary = {
   },
   footer: {
     tagline: ['อยากรู้อยู่เสมอ', 'สร้างสิ่งที่ใส่ใจ'],
-    blurb: 'คลังเทมเพลต บทความ และรีซอร์สด้านดีไซน์ — พันธมิตรด้านการออกแบบของคุณ',
+    blurb:
+      'คลังความรู้ว่าด้วยการค้นคว้า ออกแบบ และสร้างแบรนด์ อินเทอร์เฟซ และระบบงานสร้างสรรค์',
     social: 'โซเชียล',
     explore: 'สำรวจ',
     topics: 'หัวข้อ',
@@ -479,6 +484,7 @@ const th: Dictionary = {
     about: 'เกี่ยวกับเรา',
     contact: 'ติดต่อเรา',
     newsletter: 'จดหมายข่าว',
+    information: 'ข้อมูล',
     rights: 'สงวนลิขสิทธิ์',
   },
   cta: {
@@ -558,7 +564,9 @@ const th: Dictionary = {
     principlesTitle: ['ชัดเจน มีประโยชน์', 'และตรงไปตรงมา'],
     principles: [
       {
-        title: 'อธิบายการตัดสินใจ',
+        /* Left in English: it names a document the studio produces, not a
+           sentence — the Thai list keeps the term the team uses for it. */
+        title: 'Client Discovery Brief',
         body: 'เราอธิบายว่าการตัดสินใจเกิดขึ้นอย่างไร ไม่ใช่แค่ว่างานสุดท้ายหน้าตาเป็นอย่างไร',
       },
       {
