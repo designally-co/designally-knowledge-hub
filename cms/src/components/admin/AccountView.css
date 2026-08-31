@@ -1,0 +1,154 @@
+/*
+ * The account screen, in the shape the rest of this admin uses.
+ *
+ * Everything here is scoped to `body.da-account`, which AccountView adds: the
+ * route has no class of its own, and the elements that need changing —
+ * Payload's document header, its auth block, its settings panel — are shared
+ * with screens that must not change.
+ */
+
+/* ---- one header, not three ---------------------------------------------- */
+
+/*
+ * THE SAME BAR THE ARTICLE OVERVIEW REMOVED. It carried "Last Modified" and
+ * "Created" as a strip of type across the top of the page, Save on the end, and
+ * a dots menu holding Copy to locale and Delete — deleting the account you are
+ * signed in with, two clicks from a screen you visit to change your name.
+ *
+ * Save moves to the header band (AccountView), the timestamps move to the rail
+ * (ArticleMeta, which never cared which collection it was reading), and the
+ * menu goes: nothing in it belongs on this page.
+ */
+body.da-account .doc-controls,
+body.da-account .doc-controls__divider,
+body.da-account .doc-header {
+  display: none;
+}
+
+/* ---- the sheet, which was drawn around nothing --------------------------- */
+
+/*
+ * WHY THIS PAGE LOOKED WRONG. The theme's sheet rule is on
+ * `.document-fields__main .render-fields.document-fields__fields`, and on every
+ * other screen that container holds the document. On Users it holds two hidden
+ * inputs and nothing else — the email, the password controls and the API key
+ * live in `.auth-fields`, which Payload renders BEFORE it. So the page printed
+ * its fields on the bare page and drew an empty 56px sheet underneath them.
+ *
+ * The empty one goes; `.auth-fields` becomes the sheet it should always have
+ * been.
+ */
+body.da-account .render-fields.document-fields__fields {
+  display: none;
+}
+
+body.da-account .auth-fields {
+  /* Payload's own bottom margin came with it — 32px, which stacked on the
+     1.5rem below to leave 55 between the two panels. One source of spacing:
+     the panel underneath owns it. */
+  margin-block-end: 0;
+  padding: 2rem;
+  border-radius: var(--style-radius-sheet);
+  background-color: #ffffff;
+}
+
+/* The email and its label sit in the sheet's own inset now, so Payload's inner
+   width cap — sized for a page with no sheet around it — would leave the field
+   ending halfway across. */
+body.da-account .auth-fields .login-fields,
+body.da-account .auth-fields__api-key {
+  max-inline-size: none;
+}
+
+/*
+ * CHANGE PASSWORD AND FORCE UNLOCK ARE GONE, because neither can do anything
+ * here. `POST /api/users/login` is refused outright by a `beforeLogin` hook —
+ * see Users.ts — so a password set on this screen could never be typed
+ * anywhere, and a lockout that only password attempts can cause can never
+ * happen. Two buttons that look like account security and are decoration.
+ */
+body.da-account .auth-fields__controls {
+  display: none;
+}
+
+/* ---- what the key is for ------------------------------------------------- */
+
+.da-account__note {
+  margin: 0.75rem 0 0;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--style-radius-s);
+  background-color: var(--da-orange-tint);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--da-orange-mark);
+}
+
+/* ---- what is not here ---------------------------------------------------- */
+
+/*
+ * PAYLOAD'S SETTINGS BLOCK IS GONE. It held two things: a language select for
+ * the ADMIN's own interface language, which offered exactly one option because
+ * no second admin language is configured; and Reset Preferences, which clears
+ * remembered sort orders and page sizes. Neither earned a panel on the one
+ * screen a person visits to see who they are signed in as.
+ *
+ * Reset comes back the day somebody needs it — it is one line — and the
+ * language select the day `i18n.supportedLanguages` gains a second entry.
+ */
+body.da-account .payload-settings {
+  display: none;
+}
+
+/* ---- one column, not two ------------------------------------------------- */
+
+/*
+ * THE RAIL BECOMES THE NEXT BLOCK DOWN. Every other document in this admin has
+ * two columns because it has two kinds of content: the thing itself on the left
+ * and the decisions about it on the right. This screen has one field, a key,
+ * and the way out — three blocks of the same kind — so they read down a single
+ * column instead of leaving a 325px rail holding two short paragraphs beside a
+ * sheet holding three lines.
+ */
+body.da-account .document-fields {
+  display: block;
+}
+
+body.da-account .document-fields__main,
+body.da-account .document-fields__sidebar-wrap,
+body.da-account .document-fields__sidebar,
+body.da-account .document-fields__sidebar-fields {
+  inline-size: 100%;
+  max-inline-size: none;
+}
+
+/*
+ * THE TWO PANELS SHARE ONE BOX. Stacked, they were not aligned: the main column
+ * insets its content by 60px on the left and nothing on the right, while the
+ * rail's own container insets by 30 and 60 the other way — measured, a sheet at
+ * x335 w791 over a panel at x305 w762, two edges out on both sides.
+ *
+ * The rail's padding goes and the wrapper takes the main column's, so the two
+ * are one column with one edge.
+ */
+body.da-account .document-fields__sidebar-fields {
+  padding: 0;
+}
+
+body.da-account .document-fields__sidebar-wrap {
+  /* 60px is Payload's gutter, which the main column above is already using. */
+  padding: 0 0 60px 60px;
+  margin-block-start: 1.5rem;
+}
+
+/* The page's bottom inset belonged to the main column while it was the last
+   thing on the page. The rail is now, and it carries it above; leaving both
+   left 150px between the two panels. */
+body.da-account .document-fields__main > .gutter {
+  padding-block-end: 0;
+}
+
+/* Payload pins the sidebar while the main column scrolls. Below the sheet
+   rather than beside it, sticking would leave it floating over the page. */
+body.da-account .document-fields__sidebar {
+  position: static;
+}

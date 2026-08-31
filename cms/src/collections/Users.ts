@@ -76,6 +76,43 @@ export const Users: CollectionConfig = {
   fields: [
     // Email added by default
     {
+      // RENDERS NOTHING IN THE RAIL. It portals Save into the header band and a
+      // heading into Payload's settings block, and marks the body so
+      // AccountView.css can reach a screen that has no class of its own. A `ui`
+      // field is the only slot Payload offers on the account route.
+      name: 'accountView',
+      type: 'ui',
+      admin: {
+        disableListColumn: true,
+        position: 'sidebar',
+        components: { Field: '/components/admin/AccountView#AccountView' },
+      },
+    },
+    {
+      // Says what the API key is for, beside the API key. It is the credential
+      // Content Studio publishes with, and regenerating it stops that product
+      // working until the new one is pasted in.
+      name: 'apiKeyNote',
+      type: 'ui',
+      admin: {
+        disableListColumn: true,
+        position: 'sidebar',
+        components: { Field: '/components/admin/AccountView#ApiKeyNote' },
+      },
+    },
+    {
+      // Last modified and Created, in the rail. They were a strip of type
+      // across the top of the page, in the bar this screen no longer has — the
+      // same move the article overview made, with the same component.
+      name: 'documentMeta',
+      type: 'ui',
+      admin: {
+        disableListColumn: true,
+        position: 'sidebar',
+        components: { Field: '/components/admin/ArticleActions#ArticleMeta' },
+      },
+    },
+    {
       // Sign out, on the account screen rather than in the nav. It renders only
       // on your OWN user document — see SignOut.
       name: 'signOut',
