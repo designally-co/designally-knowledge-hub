@@ -1,8 +1,6 @@
 'use client'
 
 import React from 'react'
-import Link from 'next/link'
-import { createPortal } from 'react-dom'
 import { DefaultEditView, useDocumentInfo } from '@payloadcms/ui'
 import type { DocumentViewClientProps } from 'payload'
 
@@ -54,68 +52,6 @@ export function ArticleOverview(props: DocumentViewClientProps) {
   )
 }
 
-/**
- * The way back, placed INTO the document's own control bar.
- *
- * A PORTAL, BECAUSE THE BAR IS NOT MINE TO RENDER. Writing mode hides every
- * other piece of admin chrome and leaves one bar — Payload's `doc-controls`,
- * kept because it owns Save, which is not worth reimplementing. This view
- * renders below that bar, so the only way to put a control inside it is to send
- * one there. The alternative slot Payload offers for view actions renders in the
- * app header, which is precisely the bar writing mode removes.
- *
- * IT REPLACES A GREAT DEAL. With the header, the breadcrumb and the tabs gone,
- * this is the only way out of the writing surface that is not the browser's back
- * button — so it is a real link to a real URL, and it says where it goes.
- */
-function WriteBack() {
-  const { id } = useDocumentInfo()
-  const [host, setHost] = React.useState<Element | null>(null)
-
-  /* The bar is a sibling rendered above this view, so it exists by the time an
-     effect runs — but not necessarily on the first frame after a client-side
-     navigation, hence the retry rather than a single query. */
-  React.useEffect(() => {
-    let frame = 0
-    let tries = 0
-    const find = () => {
-      const el = document.querySelector('.doc-controls__content')
-      if (el) return setHost(el)
-      if (tries++ < 30) frame = requestAnimationFrame(find)
-    }
-    find()
-    return () => cancelAnimationFrame(frame)
-  }, [])
-
-  if (!host || !id) return null
-
-  return createPortal(
-    <Link
-      aria-label="Back to the article"
-      className="da-iconbtn da-writeback"
-      href={`/admin/collections/articles/${id}`}
-      title="Back to the article"
-    >
-      <svg
-        aria-hidden="true"
-        fill="none"
-        height="18"
-        viewBox="0 0 18 18"
-        width="18"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M11 3.5L5.5 9l5.5 5.5"
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="1.75"
-        />
-      </svg>
-    </Link>,
-    host,
-  )
-}
 
 /**
  * The writing layer: title, deck, cover and body, and nothing else.
@@ -135,7 +71,6 @@ export function ArticleWrite(props: DocumentViewClientProps) {
 
   return (
     <div className="da-doc da-doc--write">
-      <WriteBack />
       <DefaultEditView {...props} />
     </div>
   )

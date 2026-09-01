@@ -1292,20 +1292,15 @@ body:has(.app-header__actions .da-bar) .doc-tabs {
 }
 
 /*
- * THE CONTROL BAR IS HIDDEN EVERYWHERE EXCEPT THE WRITING SURFACE, WHICH IS THE
- * ONE SCREEN THAT NEEDS IT. Writing mode hides the app header — the whole point
- * is a page with the article and one bar — and keeps Payload's control bar
- * instead, with the way out portalled into it (ArticleViews.tsx). It owns Save
- * there.
+ * AND SO DOES THE CONTROL BAR, ON EVERY SCREEN INCLUDING THE WRITING SURFACE.
  *
- * `:has()` DOES NOT CARE THAT THE HEADER IS HIDDEN. `.da-bar` is still in the
- * DOM inside `.app-header__actions` on this screen, so the selector above
- * matched and took the writing surface's only bar with it: no back control, no
- * Save, nothing at the top of the page at all. Measured, after I had already
- * called the screen unaffected on the strength of a stale screenshot.
+ * That screen used to be the exception: it hid the app header and kept this bar
+ * instead, because the bar owned Save. It no longer does — DocActions puts Save
+ * and ⋯ in the band on every document screen, the writing surface included — so
+ * the exception would now be a second bar under the first.
  */
-body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls,
-body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls__divider {
+body:has(.app-header__actions .da-bar) .doc-controls,
+body:has(.app-header__actions .da-bar) .doc-controls__divider {
   display: none;
 }
 

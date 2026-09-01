@@ -65,6 +65,54 @@
   letter-spacing: -0.01em;
 }
 
+/* ---- cancel, on the writing surface -------------------------------------- */
+
+/*
+ * THE PAIR SAVE NEEDED. Same height and same pill as Save so the two read as
+ * one control with two answers, and the opposite treatment inside it: white
+ * with the Edge, where Save is the only filled thing on the screen. It is the
+ * ⋯ disc's styling in a shape with a word in it — same border, same ground,
+ * same states — because it stands where that disc used to.
+ */
+.da-bar__cancel {
+  display: inline-flex;
+  align-items: center;
+  block-size: 36px;
+  padding: 0 1.0625rem;
+  border: 1px solid var(--da-hairline);
+  border-radius: 999px;
+  background-color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--da-ink-2);
+  text-decoration: none;
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    border-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease),
+    transform 0.12s var(--da-ease);
+}
+
+@media (hover: hover) {
+  .da-bar__cancel:hover {
+    border-color: var(--da-ink-3);
+    color: var(--da-ink);
+    text-decoration: none;
+  }
+}
+
+.da-bar__cancel:active {
+  background-color: var(--da-warm-white);
+  transform: scale(0.97);
+}
+
+.da-bar__cancel:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}
+
 /* ---- the trigger --------------------------------------------------------- */
 
 .da-bar__menu {

@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { createPortal } from 'react-dom'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 /* THE ICONS ARE LUCIDE'S OWN, from the package this product already ships,
    rather than paths copied out of it by hand. Same library the nav's glyphs
    come from — those are masked into Payload's markup because there is no
@@ -91,9 +91,13 @@ type DocBarProps = {
   rows: MenuRow[]
   /** The sentence under "Delete permanently", when there is more to say. */
   deleteWarning?: string
+  /** A control to the left of Save. The writing surface puts Cancel here. */
+  before?: React.ReactNode
+  /** False on a screen where there is nothing behind the ⋯ worth showing. */
+  menu?: boolean
 }
 
-function DocBar({ collection, deleteWarning, noun, rows }: DocBarProps) {
+function DocBar({ before, collection, deleteWarning, menu = true, noun, rows }: DocBarProps) {
   const { id } = useDocumentInfo()
   const host = useHeaderSlot()
   const modified = useFormModified()
@@ -107,6 +111,8 @@ function DocBar({ collection, deleteWarning, noun, rows }: DocBarProps) {
           this is. */}
       {modified ? <p className="da-bar__unsaved">Unsaved changes</p> : null}
 
+      {before}
+
       {/* Payload's own `SaveButton` rather than a button of mine wired to
           `submit()`: it already knows about validation state, the
           disabled-while-saving case and the keyboard shortcut. */}
@@ -114,13 +120,15 @@ function DocBar({ collection, deleteWarning, noun, rows }: DocBarProps) {
         <SaveButton />
       </div>
 
-      <DocMenu
-        collection={collection}
-        deleteWarning={deleteWarning}
-        id={id}
-        noun={noun}
-        rows={rows}
-      />
+      {menu ? (
+        <DocMenu
+          collection={collection}
+          deleteWarning={deleteWarning}
+          id={id}
+          noun={noun}
+          rows={rows}
+        />
+      ) : null}
     </div>,
     host,
   )
@@ -414,6 +422,10 @@ const ICON = { size: 20, strokeWidth: 2 } as const
 export function ArticleActions() {
   const { id } = useDocumentInfo()
   const modified = useFormModified()
+  /* The two layers share one form and one component, so this bar is the bar on
+     both — and "Edit article" is a link to the page you are already reading
+     when you are already on the writing surface. */
+  const writing = usePathname()?.endsWith('/write') ?? false
   const slug = useFormFields(([fields]) => fields?.slug?.value)
   const status = useFormFields(([fields]) => fields?.status?.value)
 
@@ -428,7 +440,7 @@ export function ArticleActions() {
      to the writing surface with an unsaved edit in the rail would discard it.
      The note says so — the platform's own device for the one sentence a menu
      still holds. */
-  if (id) {
+  if (id && !writing) {
     rows.push({
       disabled: modified,
       href: `/admin/collections/articles/${id}/write`,
@@ -460,7 +472,60 @@ export function ArticleActions() {
     })
   }
 
+  /*
+   * THE WRITING SURFACE CARRIES TWO CONTROLS AND NOTHING ELSE.
+   *
+   * Its ⋯ held View on site, Copy link and Delete — three things to do to an
+   * article, none of them a thing to do mid-sentence, and all three are one
+   * click away on the overview the breadcrumb above already returns to. The
+   * back disc went with it for the same reason: the crumb is a way out, and two
+   * ways out on a screen with two controls is one too many.
+   *
+   * CANCEL IS THE PAIR SAVE NEEDED. A screen that can be saved should say how
+   * to leave it without saving, and "the browser's back button" is not an
+   * answer. It goes to the overview — one layer up, where you came from.
+   */
+  if (writing) {
+    return (
+      <DocBar
+        before={<CancelWriting id={id} modified={modified} />}
+        collection="articles"
+        menu={false}
+        noun="article"
+        rows={[]}
+      />
+    )
+  }
+
   return <DocBar collection="articles" noun="article" rows={rows} />
+}
+
+/**
+ * Leave the writing surface without saving.
+ *
+ * IT ASKS WHEN THERE IS SOMETHING TO LOSE. A Cancel that silently discards a
+ * paragraph is worse than no Cancel; with a clean form there is nothing to
+ * confirm and it just goes. `window.confirm` rather than a panel of my own: it
+ * is one line, it cannot be missed, and the platform's in-place confirmation —
+ * the one the ⋯ menu uses for Delete — needs a panel to live in, which this bar
+ * does not have.
+ */
+function CancelWriting({ id, modified }: { id: number | string | undefined; modified: boolean }) {
+  if (!id) return null
+
+  return (
+    <Link
+      className="da-bar__cancel"
+      href={`/admin/collections/articles/${id}`}
+      onClick={(event) => {
+        if (modified && !window.confirm('Leave without saving? This edit will be lost.')) {
+          event.preventDefault()
+        }
+      }}
+    >
+      Cancel
+    </Link>
+  )
 }
 
 /* ---- resources ----------------------------------------------------------- */

@@ -78,18 +78,28 @@ body.da-overview .doc-controls {
   display: none;
 }
 
-/* ---- writing mode: the article, and one bar ------------------------------ */
+/* ---- writing mode: the same shell, a different document ------------------ */
 
 /*
- * THREE STACKED BARS BECOME ONE. Measured on the way in: the app header at 65px
- * (logo, hamburger, breadcrumb, locale), the document tabs at 39px, and the
- * control bar at another 65 — 169px of chrome above an article, three separate
- * rows of navigation offering to take you somewhere else while you write.
+ * IT USED TO REMOVE THE ADMIN. Writing mode hid the nav, the app header, the
+ * breadcrumb, the hamburger and the tabs, and kept one bar — Payload's
+ * `doc-controls` — so the page was the article and nothing else. Measured on
+ * the way in, that removed 169px of chrome and three rows of navigation
+ * offering to take you somewhere else mid-sentence.
  *
- * The one that survives is Payload's `doc-controls`, because it owns Save. The
- * back link is portalled into it (ArticleViews.tsx), so leaving is still one
- * click and the bar is the only thing between the top of the window and the
- * headline.
+ * IT ALSO MADE THIS THE ONE SCREEN IN THE ADMIN WITH NO WAY TO GET ANYWHERE.
+ * Every other screen is nav on the left, one band across the top with the
+ * breadcrumb in it and Save and ⋯ on the end. Two of those are now shared by
+ * four collections, and this was the exception — a different shell for the
+ * screen people spend the longest in, reached from the screen that looks
+ * nothing like it.
+ *
+ * So the shell stays and the DOCUMENT changes: white paper instead of a sheet,
+ * no rail, no labels, the article at its own measure. The bar that survived is
+ * the one that goes now — with the app header back it is a second bar under the
+ * first, and the header already carries Save and ⋯ (DocActions) for every other
+ * screen. See `body:has(.app-header__actions .da-bar)` in custom.scss, which
+ * hides Payload's control bar wherever ours mounts, this screen included.
  *
  * SCOPED TO `body.da-writing`, WHICH THE VIEW ADDS AND REMOVES. All of this sits
  * outside the view's own markup, so it cannot be reached from a class on it —
@@ -97,178 +107,35 @@ body.da-overview .doc-controls {
  * effect's cleanup is for.
  */
 
-body.da-writing .app-header,
-/* The hamburger is its own sticky element, outside the header. Left in place it
-   is a control that opens a nav writing mode has already hidden. */
-body.da-writing .template-default__nav-toggler-wrapper,
-body.da-writing .step-nav,
 /* THE DOCUMENT HEADER, WHICH IS THE HEADLINE A SECOND TIME. It holds an `h1` of
    the article's title — already the first thing in the editor below it — and
    hiding only the breadcrumb inside it left the container behind: 22px of empty
-   height above the control bar. That is what made the bar appear to sit low and
-   then jump up on the first scroll, because 22px is exactly how far a sticky
-   element travels before it reaches `top: 0`. */
+   height above the bar. */
 body.da-writing .doc-header,
-body.da-writing .doc-tabs,
-/* Last Modified / Created: provenance, and not a thing you act on mid-sentence. */
-body.da-writing .doc-controls__meta,
-body.da-writing .doc-controls__divider,
-/* THE RAIL'S COLLAPSE ARROW, which is portalled to `document.body` so that the
-   nav's own scroll box cannot clip it — which also means it is not inside the
-   nav this view hides, and it stayed on screen as a chevron floating in the
-   top-left corner offering to collapse a column that is not there. */
-body.da-writing .da-brand__toggle {
+body.da-writing .doc-tabs {
   display: none;
 }
 
-/* The dot menu is Duplicate and Delete. Both are real actions and both belong on
-   the layer that manages the article — neither is something to have one click
-   away from the caret. */
-body.da-writing .doc-controls__dots,
-body.da-writing .doc-controls__popup {
-  display: none;
+/* THE COLUMN SITS IN THE MIDDLE. Payload insets the main column by 60px on the
+   left and nothing on the right — right, when a 325px rail is holding the other
+   side. Writing mode hides that rail, so the same padding left the article 278px
+   from one edge and 219 from the other. Even padding, even margins. */
+body.da-writing .document-fields__main > .gutter {
+  padding-inline: 60px;
 }
 
-/* THE NAV IS HIDDEN WITHOUT BEING REMOVED, because it is a grid ITEM and the
-   shell is a two-column grid. `display: none` took it out of the grid, the
-   document wrap auto-placed itself into the column the nav had been holding —
-   which is 0px wide while the nav is collapsed — and the entire article
-   rendered one character wide down the left edge of the screen. Keeping the nav
-   in flow keeps the wrap in the column that has the width; the track is pinned
-   to 0 so an EXPANDED nav cannot leave 275px of empty gutter beside the
-   writing either. */
-/* THE COLLAPSED RAIL WAS WINNING. `body.da-nav-collapsed .template-default`
-   pins the track to 68px and carries the same weight as this rule, so with the
-   rail collapsed the writing surface started 68px in and left an empty grey
-   strip down its left edge. Named together with the collapsed class, this is
-   one class heavier and the track is 0 either way. */
-body.da-writing .template-default,
-body.da-writing.da-nav-collapsed .template-default {
-  grid-template-columns: 0 1fr;
-}
-
-/* AND THE PAGE'S MEASURE IS NOT THIS PAGE'S. Every other screen is capped at
-   1200 and centred; here that cap fell on the bar as well, which stopped it
-   68px short of one edge and 131 short of the other with the page's grey either
-   side of a white bar. The writing surface spans the window and sets its own
-   measure on the article itself. */
-body.da-writing .template-default__wrap > * {
-  max-inline-size: none;
-  margin-inline: 0;
-}
-
-body.da-writing .nav {
-  visibility: hidden;
-  pointer-events: none;
-}
-
-/* The header's height is reserved further up the layout; with the header gone
-   the reservation is a gap. */
-body.da-writing .template-default__wrap {
-  padding-block-start: 0;
-}
-
-/* The surviving bar, as a bar: it stays put while the article scrolls under it,
-   so Save and the way out are always where you left them. */
-body.da-writing .doc-controls {
-  position: sticky;
-  inset-block-start: 0;
-  z-index: 10;
-  border-block-end: 1px solid var(--da-divider);
-  background-color: #ffffff;
-}
-
-/* ---- paper, not a card on a page ----------------------------------------- */
+/* ---- the page it sits on ------------------------------------------------- */
 
 /*
- * WRITING MODE HAS NO SHEET. Everywhere else in the admin the parchment page
- * carries white cards, and that inversion is what separates a document from the
- * decisions about it. Here there is only the document: a card drawn around the
- * one thing on screen divides it from nothing, and its border and radius are two
- * more edges to look at while writing. So the page turns white and the sheet
- * stops painting itself.
+ * IT USED TO TURN THE PAGE WHITE. Writing mode painted the shell, the wrap, the
+ * edit view and the sheet all `#ffffff` and had the sheet stop drawing itself —
+ * on a screen with no nav, no header and one bar, a card around the only thing
+ * present divided it from nothing, and its border and radius were two more
+ * edges to look at while writing.
  *
- * ITS PADDING STAYS. With the card gone the inset is no longer the sheet's
- * margin — it is what holds the text at its measure, and the column width is
- * calculated from it (custom.scss, "the two columns"). Removing it would widen
- * the line by 4rem past the measure the whole surface is built around.
+ * The shell is back, so the page is the page: the same parchment ground under
+ * the same white sheet as every other document in this admin. What still makes
+ * this screen different is what is INSIDE the sheet — the article set as
+ * prose, no labels, no rail — and that is the right place for the difference.
  */
-body.da-writing,
-body.da-writing .template-default,
-body.da-writing .template-default__wrap,
-body.da-writing .collection-edit,
-body.da-writing .document-fields {
-  background-color: #ffffff;
-}
 
-body.da-writing .document-fields__main .render-fields.document-fields__fields {
-  background-color: transparent;
-  border: 0;
-  border-radius: 0;
-}
-
-/* THE COLUMN'S SIDE RULES, WHICH ONLY EXIST ONCE THE PAGE IS WHITE. The edit
-   column carries a 1px `#f3f3f3` border down each side — the same value as the
-   parchment page, so everywhere else in the admin it is invisible by
-   construction. Against white paper it becomes two thin lines running the full
-   height of the article. */
-body.da-writing .document-fields__edit {
-  border-inline: 0;
-}
-
-body.da-writing .doc-controls__content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-/* ---- the way back -------------------------------------------------------- */
-
-/* The shared `.da-iconbtn` carries the shape, the states and the focus ring;
-   this only nudges it back into the bar's own inset so the glyph sits level
-   with Save on the far side. */
-/* AN OUTLINED DISC, like the ⋯ on the overview it returns to. The shared
-   `.da-iconbtn` is a ghost — a glyph with the ground appearing only under the
-   pointer — which is right in a rail of several small controls and wrong as the
-   only way out of a screen with nothing else on it. White with the Edge around
-   it is an object rather than a mark, and it is the treatment the platform
-   gives a toolbar control standing on its own.
-
-   The negative inset is gone with it: a bordered disc has a visible left edge,
-   and pulling it half a step out of the bar's own inset would put that edge out
-   of line with everything beneath.
-
-   `.da-iconbtn.da-writeback`, TWO CLASSES. The shared rule sets `border: 0` and
-   a transparent ground at one class, in a file that loads after this one — a
-   single class here lost both, measured as `0px none` on an element whose rule
-   plainly asks for a border. */
-.da-iconbtn.da-writeback {
-  /* 36px, WHICH IS THE OTHER ONE'S SIZE. The shared icon button is 44 — the
-     touch floor, right for a rail of controls — and beside a 36px Save in a
-     66px bar it was the largest thing on the writing surface. This is the same
-     object as `.da-bar__more` on the overview: same diameter, same Edge, same
-     ground, same states. Two screens, one control. */
-  inline-size: 36px;
-  block-size: 36px;
-  border: 1px solid var(--da-hairline);
-  background-color: #ffffff;
-  text-decoration: none;
-  transition:
-    background-color var(--da-dur-feedback) var(--da-ease),
-    border-color var(--da-dur-feedback) var(--da-ease),
-    color var(--da-dur-feedback) var(--da-ease),
-    transform 0.12s var(--da-ease);
-}
-
-@media (hover: hover) {
-  .da-iconbtn.da-writeback:hover {
-    border-color: var(--da-ink-3);
-    background-color: #ffffff;
-    color: var(--da-ink);
-  }
-}
-
-.da-iconbtn.da-writeback:active {
-  background-color: var(--da-warm-white);
-  transform: scale(0.94);
-}
