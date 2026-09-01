@@ -205,7 +205,9 @@
       "Bash(curl -s -o /dev/null -w \"public:%{http_code}\\\\n\" --max-time 60 http://localhost:3001/resources/the-ai-image-prompt-building-cheat-sheet)",
       "Bash(curl -s -o /dev/null -w \"admin:%{http_code} \" --max-time 180 http://localhost:3001/admin/collections/resources/6)",
       "Bash(curl -s --max-time 180 http://localhost:3001/resources/the-ai-image-prompt-building-cheat-sheet)",
-      "Bash(echo \"assert exit: $?\")"
+      "Bash(echo \"assert exit: $?\")",
+      "Bash(grep -n '#{\\\\$sheet}\\\\|#{\\\\$picker}' 'app/\\(payload\\)/custom.scss')",
+      "Bash(echo \"IMPORTMAP: $?\")"
     ]
   }
 }

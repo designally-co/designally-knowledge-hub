@@ -66,8 +66,50 @@ function useHost(selector: string) {
   return host
 }
 
-/** The header's action slot. */
-const useHeaderSlot = () => useHost('.app-header__actions')
+/**
+ * Where this bar belongs: the header band, or the sheet it is standing in.
+ *
+ * THE SAME FORM OPENS IN TWO PLACES. A media document is usually a screen, and
+ * its Save goes into the band across the top of that screen. But "Create New" in
+ * the picker opens the SAME form inside a drawer over an article — and the bar
+ * kept portalling into the app header, which by then is behind a sheet and
+ * belongs to a different document. The window showed two Saves stacked in one
+ * corner, both hidden, and the sheet had no way to save at all.
+ *
+ * An anchor in the form answers it: whatever the form is standing in, we are
+ * standing in it too. Inside a sheet the bar goes to the foot of that sheet and
+ * the heading — Payload writes "[Untitled]" over a document that has never been
+ * saved — is replaced by the name of what you are making.
+ */
+function useBarSlots() {
+  const anchor = React.useRef<HTMLSpanElement | null>(null)
+  const [slots, setSlots] = React.useState<null | {
+    foot: Element
+    sheet: boolean
+    title: Element | null
+  }>(null)
+
+  React.useEffect(() => {
+    let frame = 0
+    let tries = 0
+    const find = () => {
+      const sheet = anchor.current?.closest('.drawer__content') ?? null
+      const foot = sheet ?? document.querySelector('.app-header__actions')
+      if (foot) {
+        return setSlots({
+          foot,
+          sheet: Boolean(sheet),
+          title: sheet?.querySelector('.doc-drawer__header-text') ?? null,
+        })
+      }
+      if (tries++ < 30) frame = requestAnimationFrame(find)
+    }
+    find()
+    return () => cancelAnimationFrame(frame)
+  }, [])
+
+  return { anchor, slots }
+}
 
 /** One row of the ⋯ menu, above the delete that every document gets. */
 type MenuRow = {
@@ -99,38 +141,59 @@ type DocBarProps = {
 
 function DocBar({ before, collection, deleteWarning, menu = true, noun, rows }: DocBarProps) {
   const { id } = useDocumentInfo()
-  const host = useHeaderSlot()
+  const { anchor, slots } = useBarSlots()
   const modified = useFormModified()
 
-  if (!host) return null
+  /* NOT IN A SHEET. Open file, Copy link and Delete all speak about a document
+     that exists somewhere to be opened, linked or removed; in a drawer you are
+     making one, and the ⋯ would be three rows that cannot be used yet. The X in
+     the corner is the other way out. */
+  const showMenu = menu && !slots?.sheet
 
-  return createPortal(
-    <div className="da-bar">
-      {/* THE STATE, IN WORDS. Save is filled whether or not there is anything to
-          write, so the button cannot be the thing that tells you there is —
-          this is. */}
-      {modified ? <p className="da-bar__unsaved">Unsaved changes</p> : null}
+  return (
+    <>
+      {/* Not rendered — read. `closest` off this tells the bar which of the two
+          places it is in; a `ui` field has no other way to know. */}
+      <span hidden ref={anchor} />
 
-      {before}
+      {slots
+        ? createPortal(
+            <div className={slots.sheet ? 'da-bar da-bar--sheet' : 'da-bar'}>
+              {/* THE STATE, IN WORDS. Save is filled whether or not there is
+                  anything to write, so the button cannot be the thing that tells
+                  you there is — this is. */}
+              {modified ? <p className="da-bar__unsaved">Unsaved changes</p> : null}
 
-      {/* Payload's own `SaveButton` rather than a button of mine wired to
-          `submit()`: it already knows about validation state, the
-          disabled-while-saving case and the keyboard shortcut. */}
-      <div className="da-bar__save">
-        <SaveButton />
-      </div>
+              {before}
 
-      {menu ? (
-        <DocMenu
-          collection={collection}
-          deleteWarning={deleteWarning}
-          id={id}
-          noun={noun}
-          rows={rows}
-        />
-      ) : null}
-    </div>,
-    host,
+              {/* Payload's own `SaveButton` rather than a button of mine wired to
+                  `submit()`: it already knows about validation state, the
+                  disabled-while-saving case and the keyboard shortcut. */}
+              <div className="da-bar__save">
+                <SaveButton />
+              </div>
+
+              {showMenu ? (
+                <DocMenu
+                  collection={collection}
+                  deleteWarning={deleteWarning}
+                  id={id}
+                  noun={noun}
+                  rows={rows}
+                />
+              ) : null}
+            </div>,
+            slots.foot,
+          )
+        : null}
+
+      {/* "[Untitled]" is what Payload calls a document with no title yet, which
+          is a true thing to say and a poor heading for the sheet asking you to
+          make one. */}
+      {slots?.sheet && slots.title && !id
+        ? createPortal(<span className="da-sheet__title">New {noun}</span>, slots.title)
+        : null}
+    </>
   )
 }
 

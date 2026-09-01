@@ -1668,6 +1668,15 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>');
 }
 
+/* TWO SHEETS, ONE SELECTOR. `$sheet` is anything of ours that opens over the
+   screen you were on: the "Choose from existing" picker, and the document drawer
+   "Create New" opens beside it. They are the same object and they now say so in
+   one place — everything below the width is shared. `$picker` is the half of it
+   that is about a table. */
+$sheet: '.payload__modal-container .payload__modal-item:is(:has(.collection-list), .doc-drawer)';
+$picker: '.payload__modal-container .payload__modal-item:has(.collection-list)';
+$doc: '.payload__modal-container .payload__modal-item.doc-drawer';
+
 /* =============================================================================
    The picker, as a popup sheet
 
@@ -1685,7 +1694,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    answers in it, and clicking the page behind is neither of them.
    ========================================================================== */
 
-.payload__modal-container .payload__modal-item:has(.collection-list) {
+#{$sheet} {
   inset: 0;
   display: grid;
   place-items: center;
@@ -1698,12 +1707,12 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
 
 /* The scrim, the click-catcher and the panel share one cell; auto-placed they
    would be three rows with the sheet in the second. */
-.payload__modal-container .payload__modal-item:has(.collection-list) > * {
+#{$sheet} > * {
   grid-area: 1 / 1;
 }
 
-.payload__modal-container .payload__modal-item:has(.collection-list) .drawer__blur-bg,
-.payload__modal-container .payload__modal-item:has(.collection-list) .drawer__close {
+#{$sheet} .drawer__blur-bg,
+#{$sheet} .drawer__close {
   position: absolute;
   inset: 0;
   inline-size: auto;
@@ -1714,22 +1723,17 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
 
 /* Payload's own fog: `#f3f3f3` at 0.75 on one pseudo-element and an 8px
    backdrop blur on the other, neither reachable by styling the element. */
-.payload__modal-container .payload__modal-item:has(.collection-list) .drawer__blur-bg::before,
-.payload__modal-container .payload__modal-item:has(.collection-list) .drawer__blur-bg::after {
+#{$sheet} .drawer__blur-bg::before,
+#{$sheet} .drawer__blur-bg::after {
   content: none;
 }
 
-.payload__modal-container .payload__modal-item:has(.collection-list) .drawer__content {
+#{$sheet} .drawer__content {
   --sheet-pad: 6px;
   position: relative;
   inset: auto;
   display: flex;
   flex-direction: column;
-  /* Wider and taller than the cropper's: this one holds a table, and a picker
-     that shows three rows is a picker you scroll instead of read. The width is
-     an `!important` for the same reason it is there — Payload writes it as an
-     inline style, which no stylesheet beats. */
-  inline-size: min(64rem, 100%) !important;
   block-size: auto;
   max-block-size: min(44rem, 100%);
   min-block-size: 0;
@@ -1743,9 +1747,30 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .payload__modal-container .payload__modal-item:has(.collection-list) .drawer__content {
+  #{$sheet} .drawer__content {
     animation: none;
   }
+}
+
+/* THE ONE THING THE TWO DO NOT SHARE. The picker is wider and taller than the
+   cropper because it holds a table, and a picker that shows three rows is a
+   picker you scroll instead of read; the document drawer holds two fields and a
+   dropzone, and at 64rem they would be a line of writing across an empty room.
+
+   `!important` on both for the same reason it was there — Payload writes the
+   width as an inline style, which no stylesheet beats. */
+#{$picker} .drawer__content {
+  inline-size: min(64rem, 100%) !important;
+}
+
+#{$doc} .drawer__content {
+  inline-size: min(44rem, 100%) !important;
+  /* 48 where the picker takes 44: a dropzone, two fields and the bar come to
+     700px, and at the picker's cap the sheet was 40px short of its own contents
+     — a scrollbar down the side of a form that fits, and the 15px it takes out
+     of every row beside it. Anything genuinely longer than this still scrolls,
+     which is what the cap is for. */
+  max-block-size: min(48rem, 100%);
 }
 
 /*
@@ -1762,7 +1787,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
  * the header and the pagination sit in it, and the rows have a window of their
  * own — 26rem of it, which is eight rows at this row height.
  */
-.payload__modal-container .payload__modal-item:has(.collection-list) .drawer__content > .gutter {
+#{$sheet} .drawer__content > .gutter {
   flex: 1 1 auto;
   min-block-size: 0;
   margin: 0;
@@ -1785,16 +1810,16 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
  * close disc stays in the corner above it, out in the margin to the right of the
  * content column, which is why the head can come up this far without meeting it.
  */
-.payload__modal-container .payload__modal-item:has(.collection-list) .collection-list > .gutter {
+#{$picker} .collection-list > .gutter {
   padding: 45px 1.5rem 1.5rem;
   overflow: visible;
 }
 
-.payload__modal-container .payload__modal-item:has(.collection-list) .collection-list {
+#{$picker} .collection-list {
   padding-block-start: 0;
 }
 
-.payload__modal-container .payload__modal-item:has(.collection-list) .list-drawer__header {
+#{$picker} .list-drawer__header {
   margin-block-start: 0;
 }
 
@@ -1802,7 +1827,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    content column already; a 45px padding on the right of the controls — Payload
    reserving room for the Columns and Filters pills, which a picker does not show
    — was holding the field short of the edge everything else lines up on. */
-.payload__modal-container .payload__modal-item:has(.collection-list) .list-controls {
+#{$picker} .list-controls {
   padding-inline-end: 0;
 }
 
@@ -1816,7 +1841,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    22rem, not 26: the sheet is capped at 44rem, and the header, the search, the
    pagination and the tile's own padding take the rest of it — at 26 the sheet
    itself gained a scrollbar, which is the thing this was undoing. */
-.payload__modal-container .payload__modal-item:has(.collection-list) .collection-list__tables {
+#{$picker} .collection-list__tables {
   max-block-size: 22rem;
   overflow: auto;
 }
@@ -1826,7 +1851,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    header — 541px of a 960px sheet — and the disc came to rest in the middle of
    the band beside the search. With nothing above it positioned, the nearest
    positioned ancestor is the sheet itself. */
-.payload__modal-container .payload__modal-item:has(.collection-list) .close-modal-button {
+#{$sheet} :is(.close-modal-button, .doc-drawer__header-close) {
   position: absolute;
   /* THE SAME GAP ABOVE IT AS BESIDE IT. A close disc reads as the corner of the
      sheet, and a corner is only a corner if the two edges meeting at it are the
@@ -1854,7 +1879,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
 }
 
 @media (hover: hover) {
-  .payload__modal-container .payload__modal-item:has(.collection-list) .close-modal-button:hover {
+  #{$sheet} :is(.close-modal-button, .doc-drawer__header-close):hover {
     border-color: var(--da-ink-3);
     color: var(--da-ink);
   }
@@ -1864,11 +1889,11 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    button's own colour. Payload's is a 20px `M14 6L6 14` with square caps, which
    is a different mark at a different weight from the one the lightbox and the
    file's own controls use. */
-.payload__modal-container .payload__modal-item:has(.collection-list) .close-modal-button svg {
+#{$sheet} :is(.close-modal-button, .doc-drawer__header-close) svg {
   display: none;
 }
 
-.payload__modal-container .payload__modal-item:has(.collection-list) .close-modal-button::before {
+#{$sheet} :is(.close-modal-button, .doc-drawer__header-close)::before {
   content: '';
   inline-size: 18px;
   block-size: 18px;
@@ -1881,6 +1906,122 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   -webkit-mask-size: contain;
   mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
   -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+}
+
+/* ---- the document drawer, in the same sheet ----------------------------- */
+
+/*
+ * "CREATE NEW" OPENS THE SAME QUESTION, so it opens in the same shape.
+ *
+ * It was Payload's slide-over: a white panel from the right edge of the window
+ * to 120px short of the left, full height, its heading 60px in and its two
+ * fields floating in the middle of 1300px of nothing — over a picker that had
+ * just been made a centred sheet. Two answers to "something is being asked of
+ * you", one after the other, in one flow.
+ *
+ * Everything above this line already applies to it: the dim, the tile, the
+ * corner disc, the open. What is left is what is inside — Payload lays a full
+ * document screen out in there, and a document screen in a 44rem sheet is a
+ * column of gutters inside gutters.
+ */
+#{$doc} .drawer__content > .gutter {
+  /* The form is the scroll here — there is no table to give it to. */
+  overflow: auto;
+  /* So the corner disc measures itself against the sheet and not against this,
+     the way it does in the picker. */
+  position: static;
+}
+
+#{$doc} .collection-edit {
+  /* 45 + the tile's 6 and its hairline = the 52 the picker keeps. */
+  padding: 45px;
+}
+
+/* Payload's own inset on the field column, 60px of it on each side, inside the
+   one the sheet already keeps — and it takes it twice, once as a margin and once
+   as a `calc()` off the width, so both have to go or the column stays short down
+   its right-hand side. */
+#{$doc} .document-fields__edit {
+  inline-size: auto;
+  margin-inline: 0;
+}
+
+/* Payload's gutters, all the way down: the header keeps one, the form keeps one,
+   and the fields keep a third with a max width inside it. The sheet states the
+   inset once, above. */
+#{$doc} :is(.doc-drawer__header, .collection-edit__form > .gutter, .document-fields__edit) {
+  padding: 0;
+  max-inline-size: none;
+}
+
+#{$doc} .document-fields {
+  padding: 0;
+}
+
+/* Heading tight to the sentence under it, both clear of the fields. The 46px
+   above it is the same allowance the list drawer's header carries — room for a
+   close bar that is not there. The rule under it is the last divider in a screen
+   that has none. */
+#{$doc} .doc-drawer__header {
+  margin-block: 0 4px;
+  border-block-end: 0;
+}
+
+#{$doc} .doc-drawer__header-text {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--da-section-size);
+  font-weight: 600;
+  line-height: var(--da-label-line);
+  color: var(--da-ink);
+}
+
+#{$doc} .doc-drawer__after-header {
+  margin-block-start: 4px;
+}
+
+#{$doc} .custom-view-description {
+  font-size: var(--da-note-size);
+  line-height: var(--da-label-line);
+  color: var(--da-ink-3);
+}
+
+/* Payload's control strip stays gone in here too — the bar at the foot is the
+   one that saves this form. */
+#{$doc} .doc-controls {
+  display: none;
+}
+
+/*
+ * SAVE AT THE FOOT OF THE SHEET, not in the band behind it.
+ *
+ * The bar portals into the header on a screen because that band is the screen's;
+ * inside a sheet the band belongs to the document UNDERNEATH, and that is where
+ * this one was landing — two Saves in one corner, both behind the drawer, and no
+ * way to save what was in front of you. See `useBarSlots` in DocActions.
+ *
+ * A sibling of the scrolling gutter rather than a row inside it, so it stays at
+ * the bottom edge however long the form gets.
+ */
+#{$doc} .da-bar--sheet {
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  padding: 20px 45px 45px;
+}
+
+/* 15, WHERE THE PICKER USES 9. Same 16px gap, different box to count from: the
+   picker's disc hangs off the panel inside the tile, and this one off the tile
+   itself, because the panel here is the scrolling one — a disc positioned inside
+   it would scroll away with the form. */
+#{$doc} .doc-drawer__header-close {
+  inset-block-start: 15px;
+  inset-inline-end: 15px;
+}
+
+/* Payload names an unsaved document "[Untitled]" and renders it as the heading.
+   Ours goes in beside it (see DocActions); this takes theirs away. */
+#{$doc} .doc-drawer__header-text:has(.da-sheet__title) .render-title {
+  display: none;
 }
 
 /* ---- empty: the same well the article's cover uses ---------------------- */
