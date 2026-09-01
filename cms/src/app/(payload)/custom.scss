@@ -1341,22 +1341,46 @@ body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls__divider {
   padding: 1.25rem 1.25rem 1.5rem;
 }
 
-/* ---- the file panel is a sheet too -------------------------------------- */
+/* ---- the file goes IN the sheet ----------------------------------------- */
 
 /*
- * THE MEDIA SCREEN DREW TWO KINDS OF BOX. Payload renders the uploaded file —
- * thumbnail, name, size, the control that clears it — OUTSIDE `.render-fields`,
- * so the sheet rule above never reached it: measured, a #fafaf9 panel at an 8px
- * radius sitting directly above a #ffffff sheet at 34, both 1080 wide. Two
- * objects, one screen, no reason.
+ * THE MEDIA SCREEN DREW TWO BOXES FOR ONE DOCUMENT. Payload renders the
+ * uploaded file — thumbnail, name, size, the control that clears it — OUTSIDE
+ * `.render-fields`, so the sheet rule above never reached it: measured, a
+ * #fafaf9 panel at an 8px radius above a #ffffff sheet at 34. Matching their
+ * ground and corner made them the same object twice; it did not make them one.
  *
- * It takes the sheet's ground and the sheet's corner. It keeps its own padding,
- * which is Payload's and is already right for a 96px thumbnail.
+ * They are siblings inside the main column's gutter, so THE GUTTER BECOMES THE
+ * SHEET and both of them become plain blocks on it. The file is then genuinely
+ * inside the document rather than a card stacked above it — which is what it
+ * is: this collection's document is a file with two fields about it.
+ *
+ * THE WIDTH DOES NOT MOVE. The gutter's 60px of horizontal padding is what
+ * inset the old sheet inside it, so it becomes 60px of margin and the new sheet
+ * lands on exactly the width the old one had — 1072 at this viewport, the same
+ * as an article's. The padding it gives up is replaced with the sheet's own.
  */
-.field-type.file-field {
-  background-color: #ffffff;
-  border: 0;
+.collection-edit--media .document-fields__main > .gutter {
+  margin-inline: 60px;
+  padding: 1.75rem 2rem 2rem;
   border-radius: var(--style-radius-sheet);
+  background-color: #ffffff;
+}
+
+/* Both children give up the sheet treatment, because the thing around them has
+   it now. Without this the page draws a card inside a card. */
+.collection-edit--media .field-type.file-field,
+.collection-edit--media .document-fields__main .render-fields.document-fields__fields {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+/* One gap between the file and the first field asking about it, the same size
+   the sheet puts between any two of its blocks. */
+.collection-edit--media .field-type.file-field {
+  margin-block-end: 1.5rem;
 }
 
 /* The two lines beside the thumbnail are the file's name and its facts, which
