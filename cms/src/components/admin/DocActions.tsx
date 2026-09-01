@@ -537,17 +537,44 @@ export function MediaActions() {
   React.useEffect(() => {
     if (!url) return
 
+    /* NAMES FOR THE THREE DISCS, while we are already in here.
+     *
+     * Payload gives the two image actions their name as visible text, which the
+     * stylesheet clips to draw them as glyphs — so the accessible name survives
+     * and the TOOLTIP does not, because `title` cannot be set from CSS. Remove
+     * is worse: it is an icon-only button with no text and no `aria-label`, so
+     * it had no name at all, before any of this.
+     *
+     * Both are one attribute each, and this is the only component mounted on
+     * the screen that can set them. */
+    const NAMES: [string, string][] = [
+      ['.file-field__previewSizes', 'Preview sizes'],
+      ['.file-field__edit', 'Edit image'],
+      ['.file-details__remove', 'Remove file'],
+    ]
+
     const swap = () => {
       const img = document.querySelector<HTMLImageElement>('.file-details .thumbnail img')
       // The guard is what keeps this from feeding itself: setting `src` is an
       // attribute mutation, which is one of the things being watched.
       if (img && img.getAttribute('src') !== url) img.setAttribute('src', url)
+
+      for (const [selector, name] of NAMES) {
+        const el = document.querySelector<HTMLElement>(selector)
+        if (!el) continue
+        if (el.getAttribute('title') !== name) el.setAttribute('title', name)
+        // Only where there is no text to name it — overriding a visible label
+        // with an invisible one is how a button ends up called two things.
+        if (!el.textContent?.trim() && el.getAttribute('aria-label') !== name) {
+          el.setAttribute('aria-label', name)
+        }
+      }
     }
 
     swap()
     const watch = new MutationObserver(swap)
     watch.observe(document.body, {
-      attributeFilter: ['src'],
+      attributeFilter: ['src', 'title', 'aria-label'],
       attributes: true,
       childList: true,
       subtree: true,
