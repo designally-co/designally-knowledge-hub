@@ -89,7 +89,12 @@
      number — the grid track, the panel, the floating selection bar and the
      collapse control's two positions — and they have to agree or the rail and
      the things pinned to its edge come apart. */
-  --da-rail: 84px;
+  /* 78 = 1.25rem + 41 + 1.25rem: the inset, the widest collapsed control (the
+     mark's box) and the same inset again. The number is derived from what the
+     rail holds rather than chosen, which is why it is not a round one — at 84
+     the content sat 15px from the left and 28 from the right, and read as
+     pushed against the near edge. */
+  --da-rail: 78px;
 
   /* =========================================================================
      Three roles of small type, and nothing else
@@ -697,7 +702,10 @@ a:focus-visible,
 .nav__scroll {
   padding-block-start: calc(var(--app-header-height) + 0.5rem);
   padding-block-end: 1rem;
-  padding-inline: 1rem;
+  /* 1.25rem, and the SAME in both states: this is what centres the column in
+     the collapsed rail, and changing it on collapse is what would move the
+     icons. */
+  padding-inline: 1.25rem;
 }
 
 /* Rows at 44px, like every other control in this admin. In a rail four
@@ -4475,13 +4483,29 @@ body.da-nav-collapsed .da-navfoot__who {
  * broke: glyph centres measured at 42 collapsed against a mark at 36, where
  * left-aligned they read 35 in both states.
  */
+/* The mark's box does the same, for the same reason: it is a link with a hover
+   ground, and a 26px mark in a 54px box is a mark with 7px on one side and 21
+   on the other. */
+body.da-nav-collapsed .da-brand {
+  flex: 0 0 auto;
+  inline-size: fit-content;
+}
+
 body.da-nav-collapsed .nav .nav__link {
   justify-content: flex-start;
+  /* THE BOX SHRINKS TO THE GLYPH, so the glyph is centred in it without moving.
+     Left full width it kept the rail's 54px of content — 11px of padding on one
+     side of an 18px mark and 25 on the other, which put the icon off-centre in
+     its own hover pill. `fit-content` makes the pill the glyph plus its two
+     equal insets; the left edge, and so the icon, stays exactly where the
+     expanded nav has it. */
+  inline-size: fit-content;
 }
 
 body.da-nav-collapsed .da-navfoot__who-link {
   flex: 0 0 auto;
   justify-content: flex-start;
+  inline-size: fit-content;
 }
 
 /* Sign-out drops below the avatar; side by side they would overflow the rail.
