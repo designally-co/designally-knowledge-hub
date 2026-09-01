@@ -3073,7 +3073,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
      heading clipped off the top of it. */
   display: flex;
   flex-direction: column;
-  inline-size: min(56rem, 100%) !important;
+  inline-size: min(64rem, 100%) !important;
   block-size: auto;
   /* AS TALL AS WHAT IS IN IT. The 34rem cap made the column of numbers taller
      than the sheet, so it scrolled — a scrollbar inside a dialog holding two
@@ -3180,6 +3180,14 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   flex-direction: column;
   gap: 0;
   padding: 1.25rem 1.5rem;
+  /* AND PAYLOAD'S MARGINS GO, or the padding is not what sets the gap: 20px
+     under the first section and 34.6 over the second, which is why both gaps
+     measured ~76 and the ratio came out 1:1 when it was asked to be 1:2. The
+     spacing is the padding and nothing else now:
+
+       section → section   1.25rem + 1.25rem  = 37.5px
+       section → buttons   1.25rem + 3.75rem  = 75px          */
+  margin: 0;
 }
 
 /* The heading row does not stretch. Inside a column flex its children were
@@ -3236,12 +3244,74 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   gap: 0.75rem;
 }
 
-/* And a label sits on its field, at the 5px every other label in this admin
-   keeps. */
+/*
+ * THE LABEL GOES INSIDE THE FIELD.
+ *
+ * "Width (px)" and "Height (px)" are four words for a box with 1200 in it, and
+ * they were stacked above it — a two-line control for a four-digit number, on a
+ * sheet where every millimetre of the picture beside it is worth more. Inside,
+ * the box IS the label and the number: the name small and quiet on top, the
+ * value under it, one object instead of two.
+ *
+ * THE WRAPPER BECOMES THE FIELD, which is what makes this possible without
+ * markup: `.edit-upload__input` holds the label as bare text and the input as
+ * siblings, so it takes the Edge, the corner and the ground, and the `input`
+ * inside gives all three up.
+ */
 .payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__input {
   display: flex;
   flex-direction: column;
-  gap: 0.3125rem;
+  /* The inset of a field that holds two lines: even top and bottom, and the
+     horizontal one matching the pills below it so a number and a button start
+     on the same edge. */
+  gap: 0.0625rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-m);
+  background-color: #ffffff;
+  /* The label's own type, which is the one this admin gives a small caps name —
+     `.da-facts__label` on the media document uses the same. */
+  /* Sentence case, not small caps. WIDTH (PX) shouted a word that is already
+     the smallest thing in the sheet, and the letter-spacing that makes caps
+     readable made it wider than the number under it. */
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--da-ink-3);
+  transition: border-color var(--da-dur-feedback) var(--da-ease);
+}
+
+/* The ring goes on the box, because the box is the field now. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__input:focus-within {
+  border-color: var(--da-ink-3);
+}
+
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__input input {
+  inline-size: 100%;
+  min-inline-size: 0;
+  /* AND ITS HEIGHT, WHICH WAS 40px OF CONTROL. The input still carried the size
+     of a standalone field, so the number sat in a 40px box inside a box — 24px
+     of air above it and 8 below, in a field whose own padding was even. Its
+     line is its height now. */
+  block-size: auto;
+  min-block-size: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--da-ink);
+}
+
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__input input:focus {
+  outline: none;
+  box-shadow: none;
 }
 
 /*
@@ -3272,11 +3342,18 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
      set by the column beside it — two sections and two buttons — and the image
      fills that height, so its width follows from its own ratio rather than from
      a share of the sheet. `auto`, not `1fr`. */
-  grid-template-columns: auto 18rem;
+  /* 22rem, NOT 18. Two equal pills side by side need room for the longer
+     label: "Apply Changes" is 136px of text and padding, so a pair of them plus
+     the gap and the column's own inset comes to 328 — in an 18rem column each
+     pill was squeezed to 107 and the words ran out of their own pill. */
+  grid-template-columns: auto 22rem;
   grid-template-areas:
     'crop side'
     'crop actions';
-  grid-template-rows: 1fr auto;
+  /* BOTH ROWS ARE THEIR CONTENT. With the first row at `1fr` the buttons were
+     pinned to the bottom of whatever height the picture happened to make, so
+     the gap above them was leftover space rather than a decision. */
+  grid-template-rows: auto auto;
   block-size: 100%;
 }
 
@@ -3294,7 +3371,12 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   place-items: center;
   padding: 1.5rem;
   min-inline-size: 0;
-  min-block-size: 0;
+  /* A FLOOR, SO THE EXTRA WIDTH REACHES THE PICTURE. The sheet's height comes
+     from the column of controls beside it, and the picture fills that height —
+     so widening the sheet on its own would have bought air around a picture of
+     exactly the same size. 30rem of height gives it the room the width opened
+     up: at 4:3 that is 600px of picture in a 690px column. */
+  min-block-size: 30rem;
 }
 
 /* NO RULE ABOVE THEM. The two buttons are the end of a sheet, not a section of
@@ -3302,11 +3384,27 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    seam where the eye already stops. */
 .edit-upload__header {
   grid-area: actions;
-  align-items: center;
-  justify-content: flex-end;
-  /* The column's own inset, so Apply's right edge lines up with the inputs
-     above it and Cancel sits on the same left-hand air. */
-  padding: 0 1.5rem 1.5rem;
+  /* THE BOTTOM OF THE ROW, WHICH IS THE BOTTOM OF THE PICTURE. When the image
+     is taller than the two questions beside it, the leftover height falls into
+     this row — and centred in it the buttons floated somewhere above the
+     picture's lower edge. Pinned to the end, their inset is the picture's own
+     1.5rem and the two line up. */
+  align-items: flex-end;
+  justify-content: stretch;
+  /* TWICE THE GAP BETWEEN THE TWO QUESTIONS, which is the whole point of it:
+     Crop and Focal Point are two of a kind and the answers are not. Measured
+     from the last field of a section:
+
+       section → section   41px
+       section → buttons   82px
+
+     Measured rather than derived: the fields carry a little of their own
+     spacing, so the two paddings on their own came out 41 and 98 — a ratio of
+     2.4. The number that is right is the one on screen.
+
+     The right and bottom insets are the column's own, so Apply's edge lines up
+     with the fields above it. */
+  padding: 2.6875rem 1.5rem 1.5rem;
   /* Payload puts a rule under this row; it was a header once. */
   border: 0;
 }
@@ -3315,11 +3413,25 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    for a page-width header — measured 350px inside a 270px column, so the pair
    hung 80px out of the sheet on the left. */
 .payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__actions {
-  inline-size: auto;
+  /* THE ROW IS THE COLUMN'S WIDTH, which is what makes the two halves equal and
+     puts the same inset on both ends: shrink-wrapped it sat 222px wide in a
+     330px column, so the pair floated 85px off the right edge with the fields
+     above them reaching it. */
+  inline-size: 100%;
   min-inline-size: 0;
   gap: 0.5rem;
   margin: 0;
   padding: 0;
+}
+
+/* ONE SIZE FOR BOTH ANSWERS. "Apply Changes" is 136px of pill and "Cancel" 78,
+   so the pair read as a big decision and a small one when they are two answers
+   to the same question. They share the row: same width, same height, the fill
+   telling you which is which. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__actions .btn {
+  flex: 1 1 0;
+  justify-content: center;
+  min-inline-size: 0;
 }
 
 .payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__header {
@@ -3331,7 +3443,28 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    are — the picture beside it decides that — and stretching them down it would
    space two related things by however tall the picture happens to be. */
 .payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar {
-  align-self: start;
+  /* STRETCH, WITH THE CONTENT STILL AT THE TOP. `align-self: start` kept the
+     two questions where they belong and shrank the column to their height —
+     which broke the divider: the line ran down the sections, stopped, and
+     picked up again at the buttons. Stretched, the border is one line from the
+     top of the sheet to the bottom; `flex-start` is what keeps the questions
+     from spreading down it. */
+  align-self: stretch;
+  justify-content: flex-start;
+  /* AND ITS TOP INSET GOES, so the first heading starts on the picture's top
+     edge. Payload gives this column 34.6px of padding meant for a page; with
+     the group's own 1.5rem it put "Crop" 35px below the picture beside it —
+     two columns of one sheet starting on two different lines. */
+  padding-block-start: 0;
+}
+
+/* The first question takes the picture's own inset, so the two columns begin
+   together. */
+/* 1.25rem, not 1.5: the heading's own half-leading is ~4px, so a box inset that
+   matched the picture's put the WORD four pixels below the picture's top edge.
+   Type aligns to type, not to boxes. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__groupWrap:first-child {
+  padding-block-start: 1.25rem;
 }
 
 /* AND THE PICTURE FILLS ITS COLUMN. It was sized by its own width and left
