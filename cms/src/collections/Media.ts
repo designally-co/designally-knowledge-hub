@@ -108,6 +108,17 @@ export const Media: CollectionConfig = {
       },
     },
     {
+      /* Type, dimensions and size, each under its own word — replacing the one
+         line Payload runs them together on. Portalled under the filename; see
+         MediaFacts. */
+      name: 'mediaFacts',
+      type: 'ui',
+      admin: {
+        disableListColumn: true,
+        components: { Field: '/components/admin/DocActions#MediaFacts' },
+      },
+    },
+    {
       // The pair that used to be a strip of type across the top of the screen.
       name: 'documentMeta',
       type: 'ui',

@@ -47,24 +47,27 @@ import './DocActions.css'
  * the popover, its keyboard, the confirmation, the deletion — is shared.
  */
 
-/** The header's action slot, which exists a frame or two after a client-side nav. */
-function useHeaderSlot() {
+/** A host that may not exist on the first frame after a client-side nav. */
+function useHost(selector: string) {
   const [host, setHost] = React.useState<Element | null>(null)
 
   React.useEffect(() => {
     let frame = 0
     let tries = 0
     const find = () => {
-      const el = document.querySelector('.app-header__actions')
+      const el = document.querySelector(selector)
       if (el) return setHost(el)
       if (tries++ < 30) frame = requestAnimationFrame(find)
     }
     find()
     return () => cancelAnimationFrame(frame)
-  }, [])
+  }, [selector])
 
   return host
 }
+
+/** The header's action slot. */
+const useHeaderSlot = () => useHost('.app-header__actions')
 
 /** One row of the ⋯ menu, above the delete that every document gets. */
 type MenuRow = {
@@ -611,6 +614,71 @@ export function MediaActions() {
       noun="file"
       rows={rows}
     />
+  )
+}
+
+/**
+ * What the file IS, as three labelled facts.
+ *
+ * PAYLOAD RUNS THEM TOGETHER: "108KB - 1280x720 - image/jpeg", one line, three
+ * facts, two hyphens doing the work of punctuation, under a filename that is a
+ * fourth. Nothing in it is labelled, so every reader parses the same string
+ * again — and the one people actually come for, the dimensions, is in the
+ * middle where it is hardest to find.
+ *
+ * The same three, from the fields Payload already stores, each under its own
+ * word. `image/jpeg` becomes JPEG because the MIME type is how a server names a
+ * file and not how a person does; 1280x720 becomes 1280 × 720 with the sign
+ * that means "by"; 108KB becomes 108 KB, which is a number and a unit rather
+ * than a word.
+ *
+ * Portalled into Payload's own `.file-meta`, so it sits under the filename
+ * where the line it replaces was — see the CSS that hides that line.
+ */
+export function MediaFacts() {
+  const { savedDocumentData } = useDocumentInfo()
+  const host = useHost('.file-meta')
+
+  if (!host) return null
+
+  const width = Number(savedDocumentData?.width)
+  const height = Number(savedDocumentData?.height)
+  const bytes = Number(savedDocumentData?.filesize)
+  const mime = typeof savedDocumentData?.mimeType === 'string' ? savedDocumentData.mimeType : ''
+
+  /* `image/svg+xml` → SVG, `application/pdf` → PDF. The subtype is the part
+     with the name in it; `+xml` is a serialisation note meant for parsers. */
+  const type = mime ? (mime.split('/')[1] ?? mime).split('+')[0].toUpperCase() : null
+
+  /* Binary units, because that is what an operating system will show for the
+     same file. One decimal past a megabyte and none below it: "1.4 MB" is worth
+     reading, "108.3 KB" is three characters of noise. */
+  const size = Number.isFinite(bytes)
+    ? bytes >= 1024 * 1024
+      ? `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+      : `${Math.max(1, Math.round(bytes / 1024))} KB`
+    : null
+
+  const facts: [string, string][] = []
+  if (type) facts.push(['Type', type])
+  // A PDF and a font have no pixels. Nothing is drawn rather than "0 × 0".
+  if (Number.isFinite(width) && Number.isFinite(height) && width > 0) {
+    facts.push(['Dimensions', `${width} × ${height}`])
+  }
+  if (size) facts.push(['Size', size])
+
+  if (!facts.length) return null
+
+  return createPortal(
+    <dl className="da-facts">
+      {facts.map(([label, value]) => (
+        <div className="da-facts__row" key={label}>
+          <dt className="da-facts__label">{label}</dt>
+          <dd className="da-facts__value">{value}</dd>
+        </div>
+      ))}
+    </dl>,
+    host,
   )
 }
 

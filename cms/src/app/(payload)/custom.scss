@@ -1496,8 +1496,57 @@ body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls__divider {
    against the thumbnail with 28px of inset. */
 .collection-edit--media .file-details .file-meta {
   grid-area: meta;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
   margin: 0;
   padding: 0;
+}
+
+/* PAYLOAD'S RUN-ON LINE GOES. "108KB - 1280x720 - image/jpeg" is three facts,
+   two hyphens doing the work of punctuation, and no labels — every reader
+   parses the same string again, and the one they came for is in the middle.
+   MediaFacts renders the same three underneath, each under its own word. */
+.collection-edit--media .file-meta__size-type {
+  display: none;
+}
+
+/* THREE FACTS, SIDE BY SIDE, EACH UNDER ITS NAME. A column of label/value rows
+   is what the timestamps at the foot of this sheet do, and it is right for a
+   pair; three short values read faster as a row, and it keeps the block one
+   line deep instead of three. */
+.da-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 2.25rem;
+  margin: 0;
+}
+
+.da-facts__row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.da-facts__label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--da-ink-3);
+}
+
+.da-facts__value {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--da-note-size);
+  font-weight: 600;
+  line-height: 1.4;
+  /* Tabular figures: three values in a row, and a `1` that is narrower than a
+     `0` makes them look badly aligned when they are not. */
+  font-variant-numeric: tabular-nums;
+  color: var(--da-ink);
 }
 
 /* ON THE PICTURE, TOP RIGHT. The strip above it was 36px of sheet spent on

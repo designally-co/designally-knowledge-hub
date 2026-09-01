@@ -41,6 +41,7 @@ import { ResourceActions as ResourceActions_786ca5ea86bf3b6eb17e3ea797a584ce } f
 import { MediaPreviewCell as MediaPreviewCell_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
 import { QuietTextCell as QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
 import { MediaActions as MediaActions_786ca5ea86bf3b6eb17e3ea797a584ce } from '../../../components/admin/DocActions'
+import { MediaFacts as MediaFacts_786ca5ea86bf3b6eb17e3ea797a584ce } from '../../../components/admin/DocActions'
 import { AccountView as AccountView_368b90cdbf59bfc4abaa6771bb6dcf15 } from '../../../components/admin/AccountView'
 import { ApiKeyNote as ApiKeyNote_368b90cdbf59bfc4abaa6771bb6dcf15 } from '../../../components/admin/AccountView'
 import { SignOut as SignOut_ecde4383348bf1e963734111aebbf434 } from '../../../components/admin/SignOut'
@@ -96,6 +97,7 @@ export const importMap = {
   "/components/admin/MediaCells#MediaPreviewCell": MediaPreviewCell_caa40f712cc60fbbf39decd6b126e7a1,
   "/components/admin/MediaCells#QuietTextCell": QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1,
   "/components/admin/DocActions#MediaActions": MediaActions_786ca5ea86bf3b6eb17e3ea797a584ce,
+  "/components/admin/DocActions#MediaFacts": MediaFacts_786ca5ea86bf3b6eb17e3ea797a584ce,
   "/components/admin/AccountView#AccountView": AccountView_368b90cdbf59bfc4abaa6771bb6dcf15,
   "/components/admin/AccountView#ApiKeyNote": ApiKeyNote_368b90cdbf59bfc4abaa6771bb6dcf15,
   "/components/admin/SignOut#SignOut": SignOut_ecde4383348bf1e963734111aebbf434,
