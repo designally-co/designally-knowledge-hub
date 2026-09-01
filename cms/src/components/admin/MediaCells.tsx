@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Thumbnail, useCellProps } from '@payloadcms/ui'
+import { Thumbnail, useListDrawerContext } from '@payloadcms/ui'
 
 import './MediaCells.css'
 
@@ -40,11 +40,17 @@ import './MediaCells.css'
  * the first column silently destroyed "Choose from existing": the drawer filled
  * with pictures that could not be picked, and nothing errored.
  *
- * THE HANDLE EXISTS AFTER ALL, one level up. `RenderDefaultCell` builds those
- * props — the drawer's `onClick` included — and publishes them on a context it
- * exports as `useCellProps()`. Reading that gives a custom cell exactly what
- * `DefaultCell` is given, so this one can do what Payload's does: a button that
- * selects while a drawer is open, a link to the file otherwise.
+ * THE HANDLE IS THE DRAWER ITSELF. `RenderDefaultCell` publishes its props on a
+ * context — `useCellProps()` — but that is no use here: the table renders each
+ * column into `renderedCells` on the SERVER, so a custom cell is never inside
+ * that provider and reads null. Tried, and the row fell through to its link:
+ * clicking a picture asked "Leave without saving" instead of choosing it.
+ *
+ * `useListDrawerContext()` is a different thing. The drawer's provider wraps the
+ * whole list, so it IS an ancestor of this cell once hydrated, and it carries
+ * `isInDrawer` and the same `onSelect` that Payload's own first cell calls. So
+ * this one makes the same swap: a button that selects while a drawer is open, a
+ * link to the file otherwise.
  */
 
 type MediaRow = {
@@ -69,11 +75,9 @@ type CellProps = {
  * collection accepts PDFs, which have no image at all.
  */
 export const MediaRowTitle: React.FC<CellProps & { link?: boolean }> = ({ cellData, rowData }) => {
-  /* Everything `DefaultCell` gets, including the drawer's select handler on the
-     first column. See the note above. */
-  const cellProps = useCellProps() as
-    | { link?: boolean; onClick?: (args: unknown) => void }
-    | null
+  /* `{}` outside a drawer — the context's own default — so this is safe on the
+     full list, where the row is a link. See the note above. */
+  const { isInDrawer, onSelect } = useListDrawerContext()
 
   const name =
     typeof cellData === 'string' && cellData.trim() ? cellData : rowData?.filename || 'Untitled'
@@ -91,14 +95,22 @@ export const MediaRowTitle: React.FC<CellProps & { link?: boolean }> = ({ cellDa
     </>
   )
 
+  const id = rowData?.id
+
   /* In a drawer the row is a chooser, not a link — the same swap Payload makes,
-     made from the same handler. */
-  if (typeof cellProps?.onClick === 'function') {
+     from the same handler it would have called. */
+  if (isInDrawer && typeof onSelect === 'function') {
     return (
       <button
         className="da-row__id da-row__id--pick"
         onClick={() =>
-          cellProps.onClick?.({ cellData, collectionSlug: 'media', rowData })
+          onSelect({
+            collectionSlug: 'media',
+            /* `Data` is Payload's own index-signature type; the row shape here
+               is a narrowed view of the same object. */
+            doc: (rowData ?? {}) as Record<string, unknown>,
+            docID: String(id),
+          })
         }
         type="button"
       >
@@ -107,8 +119,7 @@ export const MediaRowTitle: React.FC<CellProps & { link?: boolean }> = ({ cellDa
     )
   }
 
-  const id = rowData?.id
-  if (cellProps?.link === false || id === undefined) {
+  if (id === undefined) {
     return <span className="da-row__id">{inner}</span>
   }
 

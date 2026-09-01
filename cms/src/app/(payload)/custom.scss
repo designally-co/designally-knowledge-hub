@@ -1668,6 +1668,131 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>');
 }
 
+/* =============================================================================
+   The picker, as a popup sheet
+
+   "Choose from existing" opened Payload's list drawer: a white panel filling
+   the window with no dim behind it, the table running to its edges, and a bare
+   × floating beside the search field. Nothing said it was temporary and nothing
+   said what it was over.
+
+   It is the same object the cropper is — a tile at the card radius with 6px of
+   padding, the Edge around it, the page dimmed behind — because it is the same
+   kind of thing: a question asked over the screen you were on.
+
+   ONE DIFFERENCE, AND IT IS DELIBERATE. This one closes on a click outside. A
+   picker is a question you may decline; the cropper is a decision with two
+   answers in it, and clicking the page behind is neither of them.
+   ========================================================================== */
+
+.payload__modal-container .payload__modal-item:has(.collection-list) {
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  inline-size: auto;
+  block-size: auto;
+  min-block-size: 0;
+  background-color: color-mix(in srgb, var(--da-ink) 55%, transparent);
+}
+
+/* The scrim, the click-catcher and the panel share one cell; auto-placed they
+   would be three rows with the sheet in the second. */
+.payload__modal-container .payload__modal-item:has(.collection-list) > * {
+  grid-area: 1 / 1;
+}
+
+.payload__modal-container .payload__modal-item:has(.collection-list) .drawer__blur-bg,
+.payload__modal-container .payload__modal-item:has(.collection-list) .drawer__close {
+  position: absolute;
+  inset: 0;
+  inline-size: auto;
+  block-size: auto;
+  background: none;
+  opacity: 1;
+}
+
+/* Payload's own fog: `#f3f3f3` at 0.75 on one pseudo-element and an 8px
+   backdrop blur on the other, neither reachable by styling the element. */
+.payload__modal-container .payload__modal-item:has(.collection-list) .drawer__blur-bg::before,
+.payload__modal-container .payload__modal-item:has(.collection-list) .drawer__blur-bg::after {
+  content: none;
+}
+
+.payload__modal-container .payload__modal-item:has(.collection-list) .drawer__content {
+  --sheet-pad: 6px;
+  position: relative;
+  inset: auto;
+  display: flex;
+  flex-direction: column;
+  /* Wider and taller than the cropper's: this one holds a table, and a picker
+     that shows three rows is a picker you scroll instead of read. The width is
+     an `!important` for the same reason it is there — Payload writes it as an
+     inline style, which no stylesheet beats. */
+  inline-size: min(64rem, 100%) !important;
+  block-size: auto;
+  max-block-size: min(44rem, 100%);
+  min-block-size: 0;
+  padding: var(--sheet-pad);
+  overflow: hidden;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-card);
+  background-color: #ffffff;
+  animation: da-sheet-open var(--da-dur-feedback) var(--da-ease);
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .payload__modal-container .payload__modal-item:has(.collection-list) .drawer__content {
+    animation: none;
+  }
+}
+
+/* The list scrolls inside the tile at the tile's own concentric corner, and
+   Payload's page gutter — margins that bleed a list out to a page's edges —
+   stands down inside it. */
+.payload__modal-container .payload__modal-item:has(.collection-list) .drawer__content > .gutter {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  margin: 0;
+  padding: 1.25rem 1.5rem 1.5rem;
+  overflow: auto;
+  border-radius: calc(var(--style-radius-card) - var(--sheet-pad));
+}
+
+/* The way out, as the disc every other way out in this admin is — and out of
+   the header row, which is a heading and a search field. */
+.payload__modal-container .payload__modal-item:has(.collection-list) .close-modal-button {
+  position: absolute;
+  inset-block-start: 1.25rem;
+  inset-inline-end: 1.25rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  inline-size: 36px;
+  block-size: 36px;
+  padding: 0;
+  border: 1px solid var(--da-hairline);
+  border-radius: 999px;
+  background-color: #ffffff;
+  color: var(--da-ink-3);
+  transition:
+    border-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .payload__modal-container .payload__modal-item:has(.collection-list) .close-modal-button:hover {
+    border-color: var(--da-ink-3);
+    color: var(--da-ink);
+  }
+}
+
+/* The search field keeps clear of it. */
+.payload__modal-container .payload__modal-item:has(.collection-list) .list-header {
+  padding-inline-end: 3.25rem;
+}
+
 /* ---- empty: the same well the article's cover uses ---------------------- */
 
 /*
