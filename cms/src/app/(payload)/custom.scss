@@ -2986,6 +2986,21 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   block-size: auto;
 }
 
+/*
+ * A MODAL IS ANSWERED, NOT DISMISSED. Payload lays an invisible close button
+ * over the whole backdrop, so a click anywhere outside the tile closed the
+ * cropper — tested, and a click at 200,600 took it away with whatever crop was
+ * set. This is a decision with two answers in it: Apply Changes writes the crop
+ * and the focal point, Cancel discards them, and there is no third thing a
+ * stray click should mean.
+ *
+ * The backdrop stops taking the pointer. Escape still cancels, which is what
+ * Escape means everywhere else in this admin and is the same answer Cancel is.
+ */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__close {
+  pointer-events: none;
+}
+
 .payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__blur-bg {
   background-color: color-mix(in srgb, var(--da-ink) 62%, transparent);
   backdrop-filter: blur(4px);
