@@ -2993,21 +2993,95 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
 }
 
 /*
- * THE PANEL, AND THE ONE `!important` IN THIS FILE. Payload writes the width as
- * an INLINE STYLE — `width: calc(100% - (1 * var(--gutter-h)))`, computed per
- * drawer depth — and an inline style cannot be beaten from a stylesheet by
- * specificity at any length. That is why the dialog stayed 1072 wide through
- * two attempts at capping it.
+ * THE PANEL IS THE PLATFORM'S POPUP SHEET, not a page in a frame. `.barmenu` —
+ * the tile the ⋯ menu opens — is a canvas tile at the card radius with 6px of
+ * padding, held to the page by the Edge and never by a shadow, grown out of the
+ * press in 180ms. Every number below is that object's.
+ *
+ * The difference from a page is the 6px: what is inside sits ON the tile at its
+ * own concentric corner rather than running to the edges of a slab.
+ *
+ * AND THE ONE `!important` IN THIS FILE. Payload writes the width as an INLINE
+ * STYLE — `width: calc(100% - (1 * var(--gutter-h)))`, computed per drawer
+ * depth — and an inline style cannot be beaten from a stylesheet by specificity
+ * at any length. That is why the dialog stayed 1072 wide through two attempts
+ * at capping it.
  */
 .payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__content {
+  --sheet-pad: 6px;
   position: relative;
   inset: auto;
-  inline-size: min(56rem, 100%) !important;
+  /* A COLUMN, so what is inside is bound by the tile rather than sizing it.
+     `height: 100%` on the child could not do this: the tile's own height is
+     `auto` clamped by a maximum, and a percentage against `auto` falls back to
+     content — measured, 603px of content inside a 510px tile, with the Crop
+     heading clipped off the top of it. */
+  display: flex;
+  flex-direction: column;
+  inline-size: min(48rem, 100%) !important;
   block-size: auto;
-  max-block-size: min(38rem, 100%);
+  max-block-size: min(34rem, 100%);
+  padding: var(--sheet-pad);
   overflow: hidden;
   border: 1px solid var(--da-hairline);
-  border-radius: var(--style-radius-sheet);
+  border-radius: var(--style-radius-card);
+  background-color: #ffffff;
+  /* A popover is a response to a press: it grows, it does not fade in over the
+     page. Centred rather than cornered, because this one is not hanging off a
+     control — it is over the whole window. */
+  animation: da-sheet-open var(--da-dur-feedback) var(--da-ease);
+  transform-origin: center;
+}
+
+@keyframes da-sheet-open {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__content {
+    animation: none;
+  }
+}
+
+/* CONCENTRIC CORNERS. The tile is 18 with 6 of padding, so what sits on it
+   takes 12 — a corner that follows the one behind it instead of cutting a
+   crescent out of it. */
+/* THERE IS A `.gutter` BETWEEN THE TILE AND THE CROPPER, and the cropper bleeds
+   out of it: measured, a 603px block starting 107px ABOVE the 496px wrapper it
+   sits in — Payload's page gutter, with negative margins pulling the tool back
+   out to the edges it was insetting. Inside a 6px tile neither is wanted: the
+   wrapper carries the height down and the bleed goes. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__content > .gutter {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-block-size: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  block-size: auto;
+  margin: 0;
+  overflow: hidden;
+  border-radius: calc(var(--style-radius-card) - var(--sheet-pad));
+  background-color: var(--da-warm-white);
+}
+
+/* The picture sits on the tile's own ground; the column of numbers is the white
+   card on it, which is the same figure-and-ground the document screens use. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar,
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__header {
+  background-color: #ffffff;
+}
+
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar {
+  border-inline-start: 1px solid var(--da-divider);
 }
 
 /* The crop area and the numbers beside it, in whatever height is left. */
@@ -3021,7 +3095,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    being cropped. Scoped through the drawer for the weight to beat Payload's
    own — a bare `.edit-upload__sidebar` lost, measured as 410 either way. */
 .payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar {
-  inline-size: 20rem;
+  inline-size: 18rem;
   flex: 0 0 auto;
   /* AND THE MINIMUM, AGAIN. A flex item's `min-width: auto` is its content's
      min-content size, and it outranks a width — 410px of number fields held the
@@ -3128,7 +3202,14 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
 .edit-upload__header {
   order: 2;
   justify-content: flex-end;
+  padding: 0.75rem 1rem;
   border-block-start: 1px solid var(--da-divider);
+}
+
+/* THE SAME `.btn` MARGINS, A THIRD TIME. 27.69px above and below each of these
+   two made a 100px footer out of a 37px button row. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__actions .btn {
+  margin: 0;
 }
 
 /* "Crop" and "Focal Point" are sections, and take the size this admin gives a
