@@ -3001,10 +3001,40 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   pointer-events: none;
 }
 
-.payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__blur-bg {
-  background-color: color-mix(in srgb, var(--da-ink) 62%, transparent);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+/*
+ * NO SCRIM. THE PAGE IS LEFT ALONE.
+ *
+ * There were two dims stacked here — this layer at 62% of the ink and Payload's
+ * own click-catcher painting `#33373d` at 10% over it — which covered the
+ * screen in flat grey: the nav, the band and the document washed out to
+ * nothing. Not a dimmed page but a sheet of grey with a dialog on it.
+ *
+ * Both go. What makes this a modal is that it is the only thing that answers —
+ * the backdrop takes no clicks, so Apply and Cancel are the only ways out —
+ * and the sheet says so by being a white tile with the Edge around it on a page
+ * that is plainly still there. A wash was doing the same job twice, badly.
+ */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__blur-bg,
+.payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__close {
+  background: none;
+  opacity: 1;
+}
+
+/*
+ * AND THE GREY ITSELF, WHICH IS ON TWO PSEUDO-ELEMENTS. This is where it
+ * actually was, and why removing backgrounds from the elements changed nothing:
+ *
+ *   .drawer__blur-bg::before   #f3f3f3 at 0.75 — the flat parchment wash over
+ *                              the whole window, the giant grey
+ *   .drawer__blur-bg::after    backdrop-filter: blur(8px) — the reason the nav
+ *                              and the header behind it read as smudges
+ *
+ * Both are Payload's, both fill the screen, and neither is reachable by styling
+ * the element they hang off. `content: none` stops them being generated at all.
+ */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__blur-bg::before,
+.payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__blur-bg::after {
+  content: none;
 }
 
 /*
