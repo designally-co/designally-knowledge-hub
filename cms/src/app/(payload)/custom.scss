@@ -1283,12 +1283,29 @@ html {
  * on a cold load. The alternative is a class per collection set from JS, which
  * has exactly the same timing and one more thing to forget.
  */
-body:has(.app-header__actions .da-bar) .doc-controls,
-body:has(.app-header__actions .da-bar) .doc-controls__divider,
 /* The document header is an `h1` of the title, which the breadcrumb above it
-   and the Title field below it both already state. */
+   and the Title field below it both already state; the tab row offers the one
+   tab you are on. Neither comes back anywhere. */
 body:has(.app-header__actions .da-bar) .doc-header,
 body:has(.app-header__actions .da-bar) .doc-tabs {
+  display: none;
+}
+
+/*
+ * THE CONTROL BAR IS HIDDEN EVERYWHERE EXCEPT THE WRITING SURFACE, WHICH IS THE
+ * ONE SCREEN THAT NEEDS IT. Writing mode hides the app header — the whole point
+ * is a page with the article and one bar — and keeps Payload's control bar
+ * instead, with the way out portalled into it (ArticleViews.tsx). It owns Save
+ * there.
+ *
+ * `:has()` DOES NOT CARE THAT THE HEADER IS HIDDEN. `.da-bar` is still in the
+ * DOM inside `.app-header__actions` on this screen, so the selector above
+ * matched and took the writing surface's only bar with it: no back control, no
+ * Save, nothing at the top of the page at all. Measured, after I had already
+ * called the screen unaffected on the strength of a stale screenshot.
+ */
+body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls,
+body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls__divider {
   display: none;
 }
 
