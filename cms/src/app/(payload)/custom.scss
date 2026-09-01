@@ -2945,73 +2945,191 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
 /* ---- Edit Image ---------------------------------------------------------- */
 
 /*
- * IT OPENS INSIDE THE ADMIN, NOT OVER IT. Payload's drawer covers the window —
- * measured, 1407 wide from x60, with the nav and the header behind it — so
- * cropping a picture put you on a screen with no way to tell where you were and
- * no way out but its own two buttons.
+ * IT IS A DIALOG, NOT A SCREEN.
  *
- * Inset by the two fixed things it should not be covering: the nav on the left
- * and the band on top. Both are in the shell's own geometry — 275px of nav,
- * 68 when it is collapsed, and a 65px band — so the drawer starts where the
- * document starts.
+ * Payload's drawer covered the window — measured, 1407 wide from x60, with the
+ * nav and the header behind it — so cropping a picture put you on a screen with
+ * no way to tell where you were and no way out but its own two buttons. And
+ * there is not much in it: a picture, four numbers and two answers.
+ *
+ * Capped and centred, on a scrim, the same way the full-size view works. The
+ * scrim is lighter than that one — 62% of the ink against its 92% — because
+ * what is behind here is the admin rather than a page of nothing, and the nav
+ * and the band should still be legible through it. The picture in the lightbox
+ * has nothing to say to the page under it; this dialog is about the file the
+ * page behind is showing.
  */
-/* `.payload__modal-container` IS IN THE CHAIN TO WIN THE CASCADE, not for
-   reach. Payload's `.drawer` sets `height: 100vh` at one class from a stylesheet
-   that loads later; at equal weight the height stayed 1334 while the top moved
-   to 65, so the drawer overflowed the window by exactly the height of the band
-   and its container scrolled 32px to compensate — the header half-covered
-   again, from underneath this time. */
 .payload__modal-container .payload__modal-item:has(.edit-upload) {
-  inset-block-start: 65px;
-  inset-inline-start: 275px;
-  /* ALL FOUR SIDES, or only the origin moves. The drawer keeps its own
-     window-sized width and height otherwise: measured, 1452 × 1334 starting at
-     275,65 — the right-hand sidebar with Cancel and Apply in it hanging 275px
-     off the edge of the screen. Pinned to every edge, `auto` sizes it to what
-     is left. */
-  inset-block-end: 0;
-  inset-inline-end: 0;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
   inline-size: auto;
   block-size: auto;
-  /* AND THE MINIMUM, WHICH IS WHAT WAS ACTUALLY HOLDING IT. `.payload__modal-item`
-     carries `min-height: 100%` — of the full-window container — so `auto`
-     resolved back to 1334px however the height was written, and the drawer
-     stayed one band taller than the space it had. */
+  /* `.payload__modal-item` carries `min-height: 100%` — of the full-window
+     container — which pins the height however it is written. */
   min-block-size: 0;
 }
 
-body.da-nav-collapsed .payload__modal-container .payload__modal-item:has(.edit-upload) {
-  inset-inline-start: 68px;
+/* ONE CELL, THREE LAYERS. The scrim, Payload's click-catcher and the panel are
+   siblings; left to auto-placement they became three ROWS, and the panel sat in
+   the second one — measured, 454px of space above the dialog and 155 below. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) > * {
+  grid-area: 1 / 1;
 }
 
-/* The blur layer and the sheet inside it are positioned against the window too;
-   both are pinned to the item that now holds them. */
 .payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__blur-bg,
-.payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__content {
+.payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__close {
+  position: absolute;
   inset: 0;
   inline-size: auto;
   block-size: auto;
 }
 
+.payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__blur-bg {
+  background-color: color-mix(in srgb, var(--da-ink) 62%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
 /*
- * AND THE SHELL IS LIVE, NOT JUST VISIBLE. `.payload__modal-container` is a
- * full-window layer over everything — measured, `elementFromPoint` on the nav
- * and on the header both returned it — so uncovering them would have left two
- * pictures of controls that do not answer. The container stops taking the
- * pointer and the drawer inside it takes it back.
- *
- * What that gives up is click-outside-to-close, which this drawer never needed:
- * it has Cancel, and Cancel is the answer that also discards the crop.
+ * THE PANEL, AND THE ONE `!important` IN THIS FILE. Payload writes the width as
+ * an INLINE STYLE — `width: calc(100% - (1 * var(--gutter-h)))`, computed per
+ * drawer depth — and an inline style cannot be beaten from a stylesheet by
+ * specificity at any length. That is why the dialog stayed 1072 wide through
+ * two attempts at capping it.
  */
-.payload__modal-container:has(.edit-upload) {
-  pointer-events: none;
+.payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__content {
+  position: relative;
+  inset: auto;
+  inline-size: min(56rem, 100%) !important;
+  block-size: auto;
+  max-block-size: min(38rem, 100%);
+  overflow: hidden;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-sheet);
 }
 
-.payload__modal-container:has(.edit-upload) .payload__modal-item {
-  pointer-events: auto;
+/* The crop area and the numbers beside it, in whatever height is left. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload,
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__toolWrap {
+  min-block-size: 0;
 }
 
+/* 20rem for the sidebar, down from 410px: it holds two headings, two sentences
+   and four short number fields, and every pixel it gives up goes to the picture
+   being cropped. Scoped through the drawer for the weight to beat Payload's
+   own — a bare `.edit-upload__sidebar` lost, measured as 410 either way. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar {
+  inline-size: 20rem;
+  flex: 0 0 auto;
+  /* AND THE MINIMUM, AGAIN. A flex item's `min-width: auto` is its content's
+     min-content size, and it outranks a width — 410px of number fields held the
+     column at 410 however it was asked to be 300, inline styles included. */
+  min-inline-size: 0;
+}
 
+/*
+ * PROXIMITY, IN THE TWO SECTIONS BESIDE THE PICTURE. Measured: the heading 41px
+ * above its own sentence and that sentence 10px above the fields — so each
+ * description sat four times nearer the inputs it does not describe than the
+ * heading it belongs to, and the two sections read as four loose things.
+ *
+ * The same pair of numbers the rest of this admin uses: a hair inside a group,
+ * a clear beat between groups. The 41 was not spacing at all — it was 63px of
+ * padding inside an 83px-tall title row built for a heading of 20.
+ */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__groupWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 1.5rem;
+}
+
+/* The heading row does not stretch. Inside a column flex its children were
+   being handed the leftover height — a 20px heading in an 83px row, which is
+   where 31 of the 33px between it and its own sentence came from. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__titleWrap,
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__description,
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__inputsWrap {
+  flex: 0 0 auto;
+}
+
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__titleWrap {
+  padding-block: 0;
+  margin-block-end: 0.125rem;
+}
+
+/* AND THE RESET BUTTON'S OWN MARGINS, WHICH WERE THE OTHER 56px. Payload's
+   `.btn` carries 27.69px above and below — invisible on a control bar, and the
+   tallest thing in this row by a factor of three: a 27px button in an 83px row
+   beside a 20px heading. The row is as tall as what is in it now. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__titleWrap .btn {
+  margin: 0;
+}
+
+/* If a translation or a narrow window makes the two sections taller than the
+   dialog, the column scrolls rather than the dialog growing past the window. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar {
+  overflow-y: auto;
+}
+
+/* The section keeps its contents at the top; the space left over is space, not
+   something to spread between four lines. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__groupWrap {
+  justify-content: flex-start;
+}
+
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__description {
+  margin-block: 0 1.25rem;
+}
+
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__inputsWrap {
+  gap: 0.75rem;
+}
+
+/* And a label sits on its field, at the 5px every other label in this admin
+   keeps. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3125rem;
+}
+
+/*
+ * NO TITLE BAR. It said "Editing cover-5.jpg" over a picture of cover-5.jpg,
+ * inside a dialog opened from a screen whose breadcrumb — still visible behind
+ * it — says the same name a third time.
+ *
+ * What the bar held that is worth keeping is the pair of answers, and they move
+ * to the leading edge: this dialog is read left to right like everything else,
+ * and its two buttons were the one thing sitting alone on the right.
+ */
+.edit-upload__header h2 {
+  display: none;
+}
+
+/* THE ANSWERS GO LAST, WHICH IS WHERE THEY ARE READ. They were a title bar
+   across the top; with the title gone what is left is Cancel and Apply, and a
+   dialog is answered at the bottom of it. `.edit-upload` is a block with two
+   children, so it becomes a column and the header takes the end of it — a
+   footer in everything but name, with the Edge above it. */
+.edit-upload {
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+}
+
+.edit-upload__toolWrap {
+  order: 1;
+  flex: 1 1 auto;
+}
+
+.edit-upload__header {
+  order: 2;
+  justify-content: flex-end;
+  border-block-start: 1px solid var(--da-divider);
+}
 
 /* "Crop" and "Focal Point" are sections, and take the size this admin gives a
    section's name. */
