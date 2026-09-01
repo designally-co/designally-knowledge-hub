@@ -1419,6 +1419,50 @@ html {
   color: var(--da-ink-2);
 }
 
+/* ---- a heading and its sentence are one object --------------------------- */
+
+/*
+ * PROXIMITY, ON THE PANEL HEADERS. "References" and "Sources, listed at the
+ * end." are one thing: a name and the sentence explaining it. Payload spaced
+ * them 17px apart and then put the list 14px below — so the description sat
+ * NEARER the rows it describes than the heading it belongs to, and the eye
+ * grouped it downward. "SEO & sharing" was worse: 11px above, 12px below, no
+ * signal at all.
+ *
+ * Everywhere else in this admin already reads correctly — a label is 5px from
+ * its input and 23px from the next field, `Related` sets its hint 2px under its
+ * name — so this is the last place the rhythm broke, and it now uses the same
+ * pair of numbers: a hair inside the group, a clear beat between groups.
+ *
+ * Unscoped, so an array or group in any collection is spaced the same way.
+ */
+.array-field__header,
+.group-field__header > header {
+  /* These are flex columns, so the gap is what actually separates the title
+     from the description — the description's own margin sits on top of it, and
+     both had to go for the pair to close up. */
+  gap: 0.125rem;
+}
+
+.array-field__header > .field-description,
+.group-field__header .field-description {
+  margin-block-start: 0;
+}
+
+.group-field__header {
+  margin-block-end: 1.25rem;
+}
+
+/* 8px, WHICH IS ALSO 20. The array field is itself a flex column with an 11.5px
+   gap, so a header margin lands on top of that rather than instead of it —
+   1.25rem here measured 32px to the Add button while the group next to it
+   measured 19. The number that is even on screen is the one that matters. */
+.array-field__header {
+  margin-block-end: 0.5rem;
+}
+
+/* `Related` is spaced the same way, in its own file — see RelatedPicker.css. */
+
 /* The body is the panel — its editor surface should not draw a second one. */
 [data-field-path='body'] .rich-text-lexical__editor,
 [data-field-path='body'] .ContentEditable__root {
