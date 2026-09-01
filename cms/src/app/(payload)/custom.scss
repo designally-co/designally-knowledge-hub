@@ -1265,13 +1265,14 @@ html {
    and 46px on the right. Both are cancelled, so it sits in the sheet like
    every other block.
 
-   Its rule was `--da-warm-white`, drawn on the page; on a white card that is
-   the same colour as the card and the division disappears. It takes the
-   divider instead. */
+   Its top rule goes for the same reason References' did: the group is itself a
+   rounded warm-white panel, so Payload's line runs across the lid of a card
+   rather than between two blocks of text. The panel's own edge is the
+   division. */
 .group-field--top-level {
   padding: 1.5rem 0 0;
   margin-inline: 0;
-  border-block-start-color: var(--da-divider);
+  border-block-start: 0;
 }
 
 /* -----------------------------------------------------------------------------
@@ -1759,15 +1760,18 @@ html {
 /* ---- everything that is not the writing ---------------------------------- */
 
 /* References, related and SEO describe the article rather than being it, so
-   they sit after it, behind one rule. The divider is the only thing marking the
-   change and it is enough: above it you are writing, below it you are filing. */
+   they sit after it — and the gap says so on its own.
+
+   IT USED TO SAY IT WITH A LINE, and the line was drawn across a panel. Every
+   top-level field here is a warm-white box with an 8px radius; a rule along the
+   top of one of them meant squaring off its top two corners and stacking 2.5rem
+   of padding on the 0.875rem the panel already had — a rounded card with a flat
+   lid and a seam through it, which is what looked wrong. The break between
+   writing and filing is a wider gap now, which the panels' own edges are already
+   drawing. */
 .collection-edit--articles .document-fields__fields > .field-type:has(#field-references),
 .collection-edit--articles .document-fields__fields > .field-type.array-field {
   margin-block-start: 2.5rem;
-  padding-block-start: 2.5rem;
-  border-block-start: 1px solid var(--da-divider);
-  border-start-start-radius: 0;
-  border-start-end-radius: 0;
 }
 
 /* THE PANEL STAYS; ONLY THE HEADING IS GONE. "Cover image" named a box that
