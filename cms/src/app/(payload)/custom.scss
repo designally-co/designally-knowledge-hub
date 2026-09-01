@@ -3085,13 +3085,11 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   margin: 0;
   overflow: hidden;
   border-radius: calc(var(--style-radius-card) - var(--sheet-pad));
-  background-color: var(--da-warm-white);
-}
-
-/* The picture sits on the tile's own ground; the column of numbers is the white
-   card on it, which is the same figure-and-ground the document screens use. */
-.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar,
-.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__header {
+  /* WHITE, NOT WARM WHITE. The tile had the picture on the parchment ground and
+     the numbers on a white card beside it — the figure-and-ground the document
+     screens use, and wrong at this size: a 720px sheet is not a page, and the
+     grey read as something left over from one rather than as a surface. One
+     sheet, one colour, and the only tone inside it is the picture. */
   background-color: #ffffff;
 }
 
