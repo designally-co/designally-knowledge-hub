@@ -29,3 +29,38 @@
 .da-media-cell__none {
   color: var(--da-ink-4);
 }
+
+/* ---- the picture in front of the name ------------------------------------ */
+
+/* 40px here, matching the article rows' own thumbnail: the two lists sit one
+   click apart and a row is the same object in both. The 44 above is for the
+   standalone preview column, where the picture is the whole cell. */
+.da-row__id .da-media-thumb {
+  flex: 0 0 auto;
+  inline-size: 40px;
+  block-size: 40px;
+}
+
+/* IN A DRAWER THE ROW IS A BUTTON, because selecting is what it does there —
+   see MediaRowTitle. It gives up every button default and keeps the row's own
+   layout, so choosing a cover looks exactly like reading the list. */
+.da-row__id--pick {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .da-row__id--pick:hover .da-row__name {
+    color: var(--da-orange-mark);
+  }
+}
+
+.da-row__id--pick:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+  border-radius: var(--style-radius-s);
+}

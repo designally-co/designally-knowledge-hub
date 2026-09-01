@@ -1,7 +1,8 @@
 'use client'
 
 import React from 'react'
-import { Thumbnail } from '@payloadcms/ui'
+import Link from 'next/link'
+import { Thumbnail, useCellProps } from '@payloadcms/ui'
 
 import './MediaCells.css'
 
@@ -28,28 +29,26 @@ import './MediaCells.css'
  * `thumbnail` derivative when one exists, the original when it does not, which
  * is the SVG and PDF case.
  *
- * THE PICTURE GETS ITS OWN COLUMN, AND THAT IS NOT A STYLE CHOICE.
+ * THE PICTURE IS IN FRONT OF THE NAME, the way an article's cover is in front
+ * of its title — one column, recognised and read in one move.
  *
- * The obvious placement is the `alt` column, since `useAsTitle` is `alt` and
- * that column is the row's identity. It cannot go there. Payload hands a CUSTOM
- * cell only:
+ * IT USED TO BE A COLUMN OF ITS OWN, and the reason was real: Payload hands a
+ * custom cell only `cellData, collectionSlug, field, rowData, viewType, link`
+ * — measured, by logging the props — with no `onClick`. Selection inside a list
+ * drawer is wired by `DefaultCell`, which renders
+ * `button.default-cell__first-cell` when it is handed one, so a custom cell in
+ * the first column silently destroyed "Choose from existing": the drawer filled
+ * with pictures that could not be picked, and nothing errored.
  *
- *     cellData, collectionSlug, field, rowData, viewType, link
- *
- * — measured, by logging the props. No `onClick`. Selection inside a list
- * drawer is wired by `DefaultCell` itself, which renders
- * `button.default-cell__first-cell` when it is handed one; a custom cell is
- * never handed one and has no handle to call. So a custom cell on the title
- * column silently destroys "Choose from existing": the drawer fills with
- * pictures that cannot be picked, and nothing errors.
- *
- * Hence a separate `preview` column for the image, with `alt` left as Payload's
- * default cell so it keeps both its behaviours — the link in the list, the
- * select button in the drawer. The thumbnail is the recognition aid; the name
- * beside it stays the target.
+ * THE HANDLE EXISTS AFTER ALL, one level up. `RenderDefaultCell` builds those
+ * props — the drawer's `onClick` included — and publishes them on a context it
+ * exports as `useCellProps()`. Reading that gives a custom cell exactly what
+ * `DefaultCell` is given, so this one can do what Payload's does: a button that
+ * selects while a drawer is open, a link to the file otherwise.
  */
 
 type MediaRow = {
+  id?: number | string
   url?: string | null
   filename?: string | null
   mimeType?: string | null
@@ -61,7 +60,66 @@ type CellProps = {
   rowData?: MediaRow
 }
 
-/** The picture. The words live in the `alt` column beside it. */
+/**
+ * The file's row: the picture, then what it is called.
+ *
+ * `Thumbnail` is Payload's own — it ships the states this needs and they are
+ * easy to forget: a shimmer while the file loads, and a file icon when there is
+ * nothing to show. That second case is not an edge case here, since this
+ * collection accepts PDFs, which have no image at all.
+ */
+export const MediaRowTitle: React.FC<CellProps & { link?: boolean }> = ({ cellData, rowData }) => {
+  /* Everything `DefaultCell` gets, including the drawer's select handler on the
+     first column. See the note above. */
+  const cellProps = useCellProps() as
+    | { link?: boolean; onClick?: (args: unknown) => void }
+    | null
+
+  const name =
+    typeof cellData === 'string' && cellData.trim() ? cellData : rowData?.filename || 'Untitled'
+  const src = rowData?.sizes?.thumbnail?.url || rowData?.url || undefined
+
+  const inner = (
+    <>
+      <Thumbnail
+        className="da-media-thumb"
+        doc={{ filename: rowData?.filename ?? '' }}
+        fileSrc={src}
+        size="small"
+      />
+      <span className="da-row__name">{name}</span>
+    </>
+  )
+
+  /* In a drawer the row is a chooser, not a link — the same swap Payload makes,
+     made from the same handler. */
+  if (typeof cellProps?.onClick === 'function') {
+    return (
+      <button
+        className="da-row__id da-row__id--pick"
+        onClick={() =>
+          cellProps.onClick?.({ cellData, collectionSlug: 'media', rowData })
+        }
+        type="button"
+      >
+        {inner}
+      </button>
+    )
+  }
+
+  const id = rowData?.id
+  if (cellProps?.link === false || id === undefined) {
+    return <span className="da-row__id">{inner}</span>
+  }
+
+  return (
+    <Link className="da-row__id da-row__id--link" href={`/admin/collections/media/${String(id)}`}>
+      {inner}
+    </Link>
+  )
+}
+
+/** The picture on its own — kept for anywhere that still asks for the column. */
 export const MediaPreviewCell: React.FC<CellProps> = ({ rowData }) => {
   const src = rowData?.sizes?.thumbnail?.url || rowData?.url || undefined
 

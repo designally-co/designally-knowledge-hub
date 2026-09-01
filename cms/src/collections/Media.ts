@@ -30,23 +30,16 @@ export const Media: CollectionConfig = {
     // Updated At, Created At — four columns of words about files nobody could
     // see. Created At is dropped because for an uploaded asset it is the same
     // fact as Updated At in almost every row.
-    /* `alt` FIRST, then the picture. Payload attaches the drawer's select
-       button to whichever column comes first (`default-cell__first-cell`), and
-       only its own DefaultCell receives the handler — so a custom cell in that
-       slot leaves the row unselectable. Leading with the preview column was
-       tried and did exactly that. The name leads; the thumbnail sits beside
-       it. */
-    defaultColumns: ['alt', 'preview', 'credit', 'updatedAt'],
+    /* The picture is IN the name's column now (see MediaRowTitle), so the
+       separate preview column goes: a thumbnail and the words about it, read
+       in one move, the way an article's row works. */
+    defaultColumns: ['alt', 'credit', 'updatedAt'],
   },
   fields: [
     {
-      /* The picture, as its own column.
-       *
-       * NOT folded into `alt`, though that is the row's identity column and the
-       * obvious home for it. A custom Cell there would silently break "Choose
-       * from existing": Payload wires drawer selection inside its own
-       * `DefaultCell` and hands a custom cell no `onClick` to call, so the
-       * drawer would fill with pictures that cannot be picked. See MediaCells. */
+      /* The picture on its own. It is no longer a default column — the
+         thumbnail moved into the name — but the field stays so anyone who wants
+         the picture in a column of its own can add it from the column picker. */
       name: 'preview',
       type: 'ui',
       label: 'Preview',
@@ -75,6 +68,11 @@ export const Media: CollectionConfig = {
           required: true,
           admin: {
             description: 'Alt text (required for accessibility / WCAG 2.1 AA).',
+            components: {
+              /* The picture in front of the name, and the row's link or — in a
+                 drawer — its select button. See MediaRowTitle. */
+              Cell: '/components/admin/MediaCells#MediaRowTitle',
+            },
           },
         },
         {

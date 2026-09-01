@@ -39,6 +39,7 @@ import { ReturnToPlace as ReturnToPlace_bc9981d873c7bdb9b0e730495859686c } from 
 import { ArticleWrite as ArticleWrite_2189bbbf21ed1de1d6d01c49729884c2 } from '../../../components/admin/ArticleViews'
 import { ResourceActions as ResourceActions_786ca5ea86bf3b6eb17e3ea797a584ce } from '../../../components/admin/DocActions'
 import { MediaPreviewCell as MediaPreviewCell_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
+import { MediaRowTitle as MediaRowTitle_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
 import { QuietTextCell as QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
 import { MediaActions as MediaActions_786ca5ea86bf3b6eb17e3ea797a584ce } from '../../../components/admin/DocActions'
 import { MediaFacts as MediaFacts_786ca5ea86bf3b6eb17e3ea797a584ce } from '../../../components/admin/DocActions'
@@ -95,6 +96,7 @@ export const importMap = {
   "/components/admin/ArticleViews#ArticleWrite": ArticleWrite_2189bbbf21ed1de1d6d01c49729884c2,
   "/components/admin/DocActions#ResourceActions": ResourceActions_786ca5ea86bf3b6eb17e3ea797a584ce,
   "/components/admin/MediaCells#MediaPreviewCell": MediaPreviewCell_caa40f712cc60fbbf39decd6b126e7a1,
+  "/components/admin/MediaCells#MediaRowTitle": MediaRowTitle_caa40f712cc60fbbf39decd6b126e7a1,
   "/components/admin/MediaCells#QuietTextCell": QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1,
   "/components/admin/DocActions#MediaActions": MediaActions_786ca5ea86bf3b6eb17e3ea797a584ce,
   "/components/admin/DocActions#MediaFacts": MediaFacts_786ca5ea86bf3b6eb17e3ea797a584ce,
