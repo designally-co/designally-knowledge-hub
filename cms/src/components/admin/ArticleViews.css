@@ -137,8 +137,24 @@ body.da-writing .doc-controls__popup {
    in flow keeps the wrap in the column that has the width; the track is pinned
    to 0 so an EXPANDED nav cannot leave 275px of empty gutter beside the
    writing either. */
-body.da-writing .template-default {
+/* THE COLLAPSED RAIL WAS WINNING. `body.da-nav-collapsed .template-default`
+   pins the track to 68px and carries the same weight as this rule, so with the
+   rail collapsed the writing surface started 68px in and left an empty grey
+   strip down its left edge. Named together with the collapsed class, this is
+   one class heavier and the track is 0 either way. */
+body.da-writing .template-default,
+body.da-writing.da-nav-collapsed .template-default {
   grid-template-columns: 0 1fr;
+}
+
+/* AND THE PAGE'S MEASURE IS NOT THIS PAGE'S. Every other screen is capped at
+   1200 and centred; here that cap fell on the bar as well, which stopped it
+   68px short of one edge and 131 short of the other with the page's grey either
+   side of a white bar. The writing surface spans the window and sets its own
+   measure on the article itself. */
+body.da-writing .template-default__wrap > * {
+  max-inline-size: none;
+  margin-inline: 0;
 }
 
 body.da-writing .nav {
@@ -211,7 +227,48 @@ body.da-writing .doc-controls__content {
 /* The shared `.da-iconbtn` carries the shape, the states and the focus ring;
    this only nudges it back into the bar's own inset so the glyph sits level
    with Save on the far side. */
-.da-writeback {
-  margin-inline-start: -0.5rem;
+/* AN OUTLINED DISC, like the ⋯ on the overview it returns to. The shared
+   `.da-iconbtn` is a ghost — a glyph with the ground appearing only under the
+   pointer — which is right in a rail of several small controls and wrong as the
+   only way out of a screen with nothing else on it. White with the Edge around
+   it is an object rather than a mark, and it is the treatment the platform
+   gives a toolbar control standing on its own.
+
+   The negative inset is gone with it: a bordered disc has a visible left edge,
+   and pulling it half a step out of the bar's own inset would put that edge out
+   of line with everything beneath.
+
+   `.da-iconbtn.da-writeback`, TWO CLASSES. The shared rule sets `border: 0` and
+   a transparent ground at one class, in a file that loads after this one — a
+   single class here lost both, measured as `0px none` on an element whose rule
+   plainly asks for a border. */
+.da-iconbtn.da-writeback {
+  /* 36px, WHICH IS THE OTHER ONE'S SIZE. The shared icon button is 44 — the
+     touch floor, right for a rail of controls — and beside a 36px Save in a
+     66px bar it was the largest thing on the writing surface. This is the same
+     object as `.da-bar__more` on the overview: same diameter, same Edge, same
+     ground, same states. Two screens, one control. */
+  inline-size: 36px;
+  block-size: 36px;
+  border: 1px solid var(--da-hairline);
+  background-color: #ffffff;
   text-decoration: none;
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    border-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease),
+    transform 0.12s var(--da-ease);
+}
+
+@media (hover: hover) {
+  .da-iconbtn.da-writeback:hover {
+    border-color: var(--da-ink-3);
+    background-color: #ffffff;
+    color: var(--da-ink);
+  }
+}
+
+.da-iconbtn.da-writeback:active {
+  background-color: var(--da-warm-white);
+  transform: scale(0.94);
 }

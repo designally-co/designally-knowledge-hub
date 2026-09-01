@@ -134,9 +134,30 @@ body.da-account .document-fields__sidebar-fields {
   padding: 0;
 }
 
+/*
+ * THE COLUMN IS CAPPED, NOT THE PANELS. Capping each panel and centring it with
+ * `margin-inline: auto` looked right for the sheet and broke the one below it:
+ * a `max-inline-size` only limits, so the rail's panel kept its own shrink-
+ * wrapped 318px and the auto margins centred THAT — measured, a 780px sheet
+ * over a 318px panel, 231px apart at the left edge.
+ *
+ * The two containers take the measure instead. Both panels then fill it, so
+ * they are the same width and on the same edge because they are in the same
+ * column.
+ */
+body.da-account .document-fields__main > .gutter,
 body.da-account .document-fields__sidebar-wrap {
-  /* 60px is Payload's gutter, which the main column above is already using. */
-  padding: 0 0 60px 60px;
+  /* `inline-size`, not `max-inline-size`. A maximum only limits, and the main
+     column's gutter settled at 771px against the rail's 780 — nine pixels,
+     enough to see as two edges. An explicit width makes both containers the
+     same number rather than the same ceiling. */
+  inline-size: min(100%, 52rem);
+  margin-inline: auto;
+  padding-inline: 0;
+}
+
+body.da-account .document-fields__sidebar-wrap {
+  padding-block-end: 60px;
   margin-block-start: 1.5rem;
 }
 
@@ -152,3 +173,12 @@ body.da-account .document-fields__main > .gutter {
 body.da-account .document-fields__sidebar {
   position: static;
 }
+
+/*
+ * AND IT STOPS AT A COLUMN'S WIDTH — see the cap above. One column filling the
+ * content area is one email field drawn 1249px wide at 1600, with the eye
+ * travelling the whole screen to read a label and a value that need a fraction
+ * of it. 52rem is close to the width an article's own main column comes out at
+ * on a wide screen, so this reads as a document that happens to have no rail.
+ */
+

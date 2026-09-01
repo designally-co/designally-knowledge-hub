@@ -2332,7 +2332,21 @@ html {
   background-color: #ffffff;
 }
 
-.app-header,
+/* WHITE, LIKE THE NAV BESIDE IT. The band was transparent, sitting on the
+   page's own parchment — which read as furniture only because it happened to be
+   empty. It is a surface now, the same one the nav is, so the shell is white
+   and the page under it is the grey; and because it is sticky, content passing
+   beneath it goes behind a ground rather than through one.
+
+   PAINTED ON THE BAND, NOT ON BOTH. `.app-header__bg` is Payload's own layer
+   under the bar; colouring the two of them stacks one white on another and any
+   future translucency would be mixed twice. */
+.app-header {
+  border: 0;
+  background-color: #ffffff;
+  box-shadow: none;
+}
+
 .app-header__bg {
   border: 0;
   background-color: transparent;
@@ -2372,6 +2386,36 @@ html {
    gone with it. */
 .template-default {
   grid-template-columns: var(--nav-width, 275px) 1fr;
+}
+
+/*
+ * THE CONTENT STOPS AT A MEASURE. Beside a fixed 275px column the second track
+ * is `1fr`, so every screen in this admin grew with the monitor: measured at
+ * 1600, the articles table ran 1205px with 540 of it spent on the title column
+ * and a hand's width of nothing between the title and its tag. A list is easier
+ * to read at a width the eye can cross, not at whatever width the window
+ * happens to be.
+ *
+ * 1200px is what the four columns actually need — a two-line title at ~460, the
+ * tag, the status and the date, with the table's own insets — and it is enough
+ * for the document screens, whose main column and rail come to 1252 at 1600 and
+ * lose nothing meaningful at 1200.
+ *
+ * THE HEADER IS NOT IN IT. The cap was on `.template-default__wrap`, which
+ * holds the band as well as the page, so the breadcrumb and the actions were
+ * cut off at 1200 too and the band stopped short of the window. The band spans
+ * the whole column; what is capped is the page under it.
+ *
+ * CENTRED, so the space a wide monitor adds falls either side rather than all
+ * of it on the right.
+ */
+/* EVERY CHILD BUT THE BAND, rather than a list of view types. A collection list
+   is a `div`, a document is a `main` and the account adds a `.gutter` of its
+   own — naming them caught the documents and missed the lists, which went
+   straight back to 1310. */
+.template-default__wrap > *:not(.app-header) {
+  max-inline-size: 1200px;
+  margin-inline: auto;
 }
 
 .template-default__nav-toggler-wrapper {
