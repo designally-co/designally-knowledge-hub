@@ -1772,9 +1772,38 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   border-radius: calc(var(--style-radius-card) - var(--sheet-pad));
 }
 
+/*
+ * ONE INSET, ON ALL FOUR SIDES. The sides and the foot of this sheet sit 52px
+ * off its edge and the head sat 98, because four boxes were each contributing
+ * their own: the drawer 6px, the list 22.5, this gutter 18.75, and — the bulk of
+ * it — a 50px margin Payload puts above a header IN A DRAWER, room for a close
+ * bar that this sheet does not have. The name of the collection was floating in
+ * the middle of nothing.
+ *
+ * The two the sheet does not need are zeroed below and the rest is stated here
+ * once: 45 + the drawer's 6 = the 52 the other three sides already keep. The
+ * close disc stays in the corner above it, out in the margin to the right of the
+ * content column, which is why the head can come up this far without meeting it.
+ */
 .payload__modal-container .payload__modal-item:has(.collection-list) .collection-list > .gutter {
-  padding: 1.25rem 1.5rem 1.5rem;
+  padding: 45px 1.5rem 1.5rem;
   overflow: visible;
+}
+
+.payload__modal-container .payload__modal-item:has(.collection-list) .collection-list {
+  padding-block-start: 0;
+}
+
+.payload__modal-container .payload__modal-item:has(.collection-list) .list-drawer__header {
+  margin-block-start: 0;
+}
+
+/* AND THE SEARCH ENDS WHERE THE TABLE ENDS. Its row is the full width of the
+   content column already; a 45px padding on the right of the controls — Payload
+   reserving room for the Columns and Filters pills, which a picker does not show
+   — was holding the field short of the edge everything else lines up on. */
+.payload__modal-container .payload__modal-item:has(.collection-list) .list-controls {
+  padding-inline-end: 0;
 }
 
 /* THE ONE SCROLL ON THE SHEET, and it takes the whole table with it — column
@@ -1799,8 +1828,15 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    positioned ancestor is the sheet itself. */
 .payload__modal-container .payload__modal-item:has(.collection-list) .close-modal-button {
   position: absolute;
-  inset-block-start: 1rem;
-  inset-inline-end: 1rem;
+  /* ON THE COLUMN'S LINE, not the sheet's corner. The search field beneath it
+     now runs to the edge of the table, and a disc floating 37px further out
+     than everything under it was the only thing in the sheet not lined up with
+     anything.
+
+     45, not the 52 the content keeps: this resolves against the sheet's inner
+     box, which is already 7px in on every side — measured, not assumed. */
+  inset-block-start: 8px;
+  inset-inline-end: 45px;
   z-index: 3;
   display: grid;
   place-items: center;
@@ -1844,11 +1880,6 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   -webkit-mask-size: contain;
   mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
   -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
-}
-
-/* The search field keeps clear of the disc in the corner. */
-.payload__modal-container .payload__modal-item:has(.collection-list) .list-controls {
-  padding-inline-end: 3rem;
 }
 
 /* ---- empty: the same well the article's cover uses ---------------------- */
