@@ -14,22 +14,29 @@
  * the accent tint is reserved for the one state that means work is waiting.
  */
 
-/* "Thai translation" names a block in the rail, exactly as "Tag" and "Slug"
-   name the blocks above it, so it is a FIELD label and not a section heading —
-   the 15px step belongs to panels in the document, and one 15px line in a 13px
-   rail would read as the rail's title.
+/* A SECTION, NOT A FIELD. Everything above it in the rail names one control —
+   Tag, Status, Published Date, Slug — and this names a block with a state, a
+   sentence and an action in it, the same kind of thing References and SEO &
+   sharing are in the document. It reads from the section tokens, so the one
+   heading in the rail and the three in the document are one object.
 
-   It takes the label tokens rather than restating them. Two values here were
-   its own: the body face, where every other label in this rail is in the
-   display face, and ink-3 against their ink-2 — a third rendering of one role,
-   in the one place the difference sits three rows apart. */
+   It is also where the rail changes subject: above it the questions are about
+   the English article, below it about its translation. A rule already marks
+   that seam (custom.scss); the 15px step is the other half of the signal.
+
+   Two values here used to be its own — the body face, where every other label
+   in this rail is in the display face, and ink-3 against their ink-2. */
 .da-thai__label {
-  margin: 0 0 0.5rem;
+  /* 0.75rem, against a field label's 0.5. A section stands off its contents by
+     more than a label does; the rail's own density keeps it from being the 20px
+     the document's panels use. */
+  margin: 0 0 0.75rem;
   font-family: var(--font-display);
-  font-size: var(--da-label-size);
+  font-size: var(--da-section-size);
   font-weight: 600;
   line-height: var(--da-label-line);
-  color: var(--da-ink-2);
+  letter-spacing: -0.01em;
+  color: var(--da-ink);
 }
 
 /* ---- what state the translation is in ------------------------------------ */
