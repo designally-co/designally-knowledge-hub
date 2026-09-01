@@ -3075,7 +3075,12 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   flex-direction: column;
   inline-size: min(48rem, 100%) !important;
   block-size: auto;
-  max-block-size: min(34rem, 100%);
+  /* AS TALL AS WHAT IS IN IT. The 34rem cap made the column of numbers taller
+     than the sheet, so it scrolled — a scrollbar inside a dialog holding two
+     sections and four fields, with "Crop" pushed off the top of it. 100% is the
+     window minus the item's padding, which is a limit and not a size: the sheet
+     is its content until the window is smaller than that. */
+  max-block-size: 100%;
   padding: var(--sheet-pad);
   overflow: hidden;
   border: 1px solid var(--da-hairline);
@@ -3195,10 +3200,10 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   margin: 0;
 }
 
-/* If a translation or a narrow window makes the two sections taller than the
-   dialog, the column scrolls rather than the dialog growing past the window. */
-.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar {
-  overflow-y: auto;
+/* Nothing inside scrolls: the sheet takes the height instead. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar,
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__toolWrap {
+  overflow: visible;
 }
 
 /* The section keeps its contents at the top; the space left over is space, not
@@ -3252,11 +3257,14 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   flex: 1 1 auto;
 }
 
+/* NO RULE ABOVE THEM. The two buttons are the end of a sheet, not a section of
+   it — a line across the tile to say "the answers are below here" is drawing a
+   seam where the eye already stops. */
 .edit-upload__header {
   order: 2;
   justify-content: flex-end;
   padding: 0.75rem 1rem;
-  border-block-start: 1px solid var(--da-divider);
+  border-block-start: 0;
 }
 
 /* THE SAME `.btn` MARGINS, A THIRD TIME. 27.69px above and below each of these
