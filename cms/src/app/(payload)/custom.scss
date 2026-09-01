@@ -1777,7 +1777,14 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   overflow: visible;
 }
 
-/* 22rem, not 26: the sheet is capped at 44rem, and the header, the search, the
+/* THE ONE SCROLL ON THE SHEET, and it takes the whole table with it — column
+   names and all. A sticky header row was tried here and backed out: it wants
+   `.table`, the block around the table, to stop clipping, and what that bought
+   was a header floating over rows it did not quite cover. The list is six rows
+   deep and the columns are a picture, a name, a credit and a date; nobody loses
+   their place in that.
+
+   22rem, not 26: the sheet is capped at 44rem, and the header, the search, the
    pagination and the tile's own padding take the rest of it — at 26 the sheet
    itself gained a scrollbar, which is the thing this was undoing. */
 .payload__modal-container .payload__modal-item:has(.collection-list) .collection-list__tables {
