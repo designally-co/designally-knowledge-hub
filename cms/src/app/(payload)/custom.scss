@@ -3073,7 +3073,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
      heading clipped off the top of it. */
   display: flex;
   flex-direction: column;
-  inline-size: min(48rem, 100%) !important;
+  inline-size: min(56rem, 100%) !important;
   block-size: auto;
   /* AS TALL AS WHAT IS IN IT. The 34rem cap made the column of numbers taller
      than the sheet, so it scrolled — a scrollbar inside a dialog holding two
@@ -3138,7 +3138,11 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   background-color: #ffffff;
 }
 
-.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar {
+/* THE ONE DIVIDER LEFT, and it runs the full height of the sheet — on the
+   sections and on the buttons under them, because they are one column and the
+   line is what separates it from the picture. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar,
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__header {
   border-inline-start: 1px solid var(--da-divider);
 }
 
@@ -3153,8 +3157,8 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    being cropped. Scoped through the drawer for the weight to beat Payload's
    own — a bare `.edit-upload__sidebar` lost, measured as 410 either way. */
 .payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar {
-  inline-size: 18rem;
-  flex: 0 0 auto;
+  grid-area: side;
+  inline-size: auto;
   /* AND THE MINIMUM, AGAIN. A flex item's `min-width: auto` is its content's
      min-content size, and it outranks a width — 410px of number fields held the
      column at 410 however it was asked to be 300, inline styles included. */
@@ -3175,7 +3179,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 1.5rem;
+  padding: 1.25rem 1.5rem;
 }
 
 /* The heading row does not stretch. Inside a column flex its children were
@@ -3187,9 +3191,14 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   flex: 0 0 auto;
 }
 
+/* PROXIMITY, WITH THE SENTENCE GONE. The heading now names the two fields
+   directly under it, so it sits close to them — 0.5rem — while the sections
+   keep a clear beat apart (see the group's padding: 1.25rem each side of the
+   seam, so 2.5rem between one question and the next). Four times the gap
+   between groups that there is inside one. */
 .payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__titleWrap {
   padding-block: 0;
-  margin-block-end: 0.125rem;
+  margin-block-end: 0.5rem;
 }
 
 /* AND THE RESET BUTTON'S OWN MARGINS, WHICH WERE THE OTHER 56px. Payload's
@@ -3212,8 +3221,15 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   justify-content: flex-start;
 }
 
+/*
+ * THE SENTENCE UNDER EACH HEADING GOES. "Drag the corners of the selected area,
+ * draw a new area or adjust the values below" describes, in two lines, a dashed
+ * rectangle with handles on it that is six inches to the left — and the values
+ * it points at are directly underneath. The same is true of the focal point,
+ * whose crosshair is on the picture. Instructions for something you can see.
+ */
 .payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__description {
-  margin-block: 0 1.25rem;
+  display: none;
 }
 
 .payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__inputsWrap {
@@ -3241,30 +3257,97 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   display: none;
 }
 
-/* THE ANSWERS GO LAST, WHICH IS WHERE THEY ARE READ. They were a title bar
-   across the top; with the title gone what is left is Cancel and Apply, and a
-   dialog is answered at the bottom of it. `.edit-upload` is a block with two
-   children, so it becomes a column and the header takes the end of it — a
-   footer in everything but name, with the Edge above it. */
+/* THE ANSWERS BELONG TO THE COLUMN THEY ANSWER. Crop and Focal Point are asked
+   in the second column; Cancel and Apply are the answer to what was asked
+   there, so they sit under it rather than spanning the sheet.
+
+   ONE GRID, TWO COLUMNS, TWO ROWS. The picture spans both rows on the left;
+   the sections take the top of the right column and the buttons the bottom of
+   it. `display: contents` on Payload's `toolWrap` is what lets the picture and
+   the sections — its children — be placed in the same grid as the header,
+   which is their uncle. */
 .edit-upload {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  /* THE PICTURE'S COLUMN IS SIZED BY THE PICTURE. The height of this sheet is
+     set by the column beside it — two sections and two buttons — and the image
+     fills that height, so its width follows from its own ratio rather than from
+     a share of the sheet. `auto`, not `1fr`. */
+  grid-template-columns: auto 18rem;
+  grid-template-areas:
+    'crop side'
+    'crop actions';
+  grid-template-rows: 1fr auto;
   block-size: 100%;
 }
 
 .edit-upload__toolWrap {
-  order: 1;
-  flex: 1 1 auto;
+  display: contents;
+}
+
+/* THE PICTURE GETS THE SAME AIR THE NUMBERS DO. It was flush to the tile on
+   two sides — top and left — while the column beside it kept a 1.5rem inset, so
+   one half of the sheet had padding and the other did not. Centred in what is
+   left, because the crop area is taller than most pictures in it. */
+.edit-upload__crop {
+  grid-area: crop;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  min-inline-size: 0;
+  min-block-size: 0;
 }
 
 /* NO RULE ABOVE THEM. The two buttons are the end of a sheet, not a section of
    it — a line across the tile to say "the answers are below here" is drawing a
    seam where the eye already stops. */
 .edit-upload__header {
-  order: 2;
+  grid-area: actions;
+  align-items: center;
   justify-content: flex-end;
-  padding: 0.75rem 1rem;
-  border-block-start: 0;
+  /* The column's own inset, so Apply's right edge lines up with the inputs
+     above it and Cancel sits on the same left-hand air. */
+  padding: 0 1.5rem 1.5rem;
+  /* Payload puts a rule under this row; it was a header once. */
+  border: 0;
+}
+
+/* The row is as wide and as tall as the two buttons in it. Payload sizes this
+   for a page-width header — measured 350px inside a 270px column, so the pair
+   hung 80px out of the sheet on the left. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__actions {
+  inline-size: auto;
+  min-inline-size: 0;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__header {
+  block-size: auto;
+  min-block-size: 0;
+}
+
+/* THE TWO QUESTIONS ARE ONE GROUP, AT THE TOP. The column is taller than they
+   are — the picture beside it decides that — and stretching them down it would
+   space two related things by however tall the picture happens to be. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar {
+  align-self: start;
+}
+
+/* AND THE PICTURE FILLS ITS COLUMN. It was sized by its own width and left
+   floating in whatever height the sheet ended up with; the height is the
+   constraint now and the width follows the picture's ratio. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__crop .ReactCrop,
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__crop .ReactCrop > div {
+  block-size: 100%;
+  max-block-size: 100%;
+}
+
+.payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__crop img {
+  block-size: 100%;
+  inline-size: auto;
+  max-inline-size: 100%;
+  object-fit: contain;
 }
 
 /* THE SAME `.btn` MARGINS, A THIRD TIME. 27.69px above and below each of these
@@ -3329,10 +3412,11 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   }
 }
 
-/* The seam between the two sections, in the divider tone the rest of the admin
-   uses rather than Payload's own. */
+/* NO SEAM BETWEEN THE TWO SECTIONS. Crop and Focal Point are two questions in
+   one column, and the space between them says so; a rule as well is the same
+   thing said twice. */
 .edit-upload__groupWrap + .edit-upload__groupWrap {
-  border-block-start-color: var(--da-divider);
+  border-block-start: 0;
 }
 
 /* -----------------------------------------------------------------------------
