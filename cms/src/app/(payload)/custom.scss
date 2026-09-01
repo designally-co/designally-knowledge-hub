@@ -1748,25 +1748,73 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   }
 }
 
-/* The list scrolls inside the tile at the tile's own concentric corner, and
-   Payload's page gutter — margins that bleed a list out to a page's edges —
-   stands down inside it. */
+/*
+ * THE HEADER HOLDS AND THE TABLE SCROLLS.
+ *
+ * Scrolling the whole sheet took the collection's name, its description and the
+ * search field away with the rows — so the one control you need while hunting
+ * through a library left the screen the moment you started hunting.
+ *
+ * STICKY, NOT A SECOND SCROLL CONTAINER. Making the table its own scroller
+ * meant turning four nested boxes into flex columns, and Payload positions the
+ * drawer's own header inside them: measured, the rows ended up at y385 with the
+ * header drawn over them at 435, and the sheet came up empty. The sheet keeps
+ * its one scroll; the two rows that must not leave are pinned to the top of it,
+ * on the ground they sit on so the rows pass behind rather than through them.
+ */
 .payload__modal-container .payload__modal-item:has(.collection-list) .drawer__content > .gutter {
   flex: 1 1 auto;
   min-block-size: 0;
   margin: 0;
-  padding: 1.25rem 1.5rem 1.5rem;
+  padding: 0;
   overflow: auto;
   border-radius: calc(var(--style-radius-card) - var(--sheet-pad));
 }
 
+.payload__modal-container .payload__modal-item:has(.collection-list) .collection-list > .gutter {
+  padding: 1.25rem 1.5rem 1.5rem;
+  /* AND IT STOPS CLIPPING, or the sticky header below is pinned inside a box
+     that does not scroll — which is no stickiness at all. Measured: the header
+     travelled with the rows, 435 to 336 over a 99px scroll. */
+  overflow: visible;
+}
+
+.payload__modal-container .payload__modal-item:has(.collection-list) .list-header,
+.payload__modal-container .payload__modal-item:has(.collection-list) .list-controls {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 2;
+  background-color: #ffffff;
+}
+
+/* The name and the search are one block: the second sticks under the first
+   rather than at the top of the box, or they overlap as the rows go by. */
+.payload__modal-container .payload__modal-item:has(.collection-list) .list-header {
+  /* Full width, so the way out sits at the sheet's own right edge rather than
+     wherever the title happens to end — the row was 541 of a 960 sheet. */
+  inline-size: 100%;
+  padding-block-start: 1.25rem;
+}
+
+/* THE SEARCH STICKS BESIDE THE TITLE, NOT UNDER IT. Payload's controls row is
+   not a row at all — it is the field alone, 300px wide and right-aligned at
+   x847, where the title block ends at 847 to the pixel. Pinned to the same
+   line the two are one band across the sheet; pinned below it the field came
+   to rest on top of the table's own header. */
+.payload__modal-container .payload__modal-item:has(.collection-list) .list-controls {
+  inset-block-start: 0;
+  padding-block: 1.25rem 0.75rem;
+}
+
 /* The way out, as the disc every other way out in this admin is — and out of
    the header row, which is a heading and a search field. */
+/* IT SITS AT THE END OF THE HEADER ROW, in the flow. Absolute put it against
+   the nearest positioned ancestor, which — once the header became sticky — was
+   the header itself, so the disc drifted into the middle of the row beside the
+   search field. */
 .payload__modal-container .payload__modal-item:has(.collection-list) .close-modal-button {
-  position: absolute;
-  inset-block-start: 1.25rem;
-  inset-inline-end: 1.25rem;
-  z-index: 2;
+  position: static;
+  flex: 0 0 auto;
   display: grid;
   place-items: center;
   inline-size: 36px;
@@ -1788,9 +1836,32 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   }
 }
 
-/* The search field keeps clear of it. */
-.payload__modal-container .payload__modal-item:has(.collection-list) .list-header {
-  padding-inline-end: 3.25rem;
+/* THE SAME X AS EVERY OTHER CLOSE IN THIS ADMIN — Lucide's, masked, taking the
+   button's own colour. Payload's is a 20px `M14 6L6 14` with square caps, which
+   is a different mark at a different weight from the one the lightbox and the
+   file's own controls use. */
+.payload__modal-container .payload__modal-item:has(.collection-list) .close-modal-button svg {
+  display: none;
+}
+
+.payload__modal-container .payload__modal-item:has(.collection-list) .close-modal-button::before {
+  content: '';
+  inline-size: 18px;
+  block-size: 18px;
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+}
+
+/* The title, and the way out at the far end of its row. */
+.payload__modal-container .payload__modal-item:has(.collection-list) .list-header__actions {
+  margin-inline-start: auto;
 }
 
 /* ---- empty: the same well the article's cover uses ---------------------- */
