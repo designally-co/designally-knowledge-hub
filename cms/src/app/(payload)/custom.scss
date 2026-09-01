@@ -4286,7 +4286,12 @@ body.da-nav-collapsed .collection-list .list-selection {
 
   .da-brand__toggle {
     position: fixed;
-    z-index: 30;
+    /* 25: ABOVE THE NAV, BELOW A MODAL. It was 30 — the same layer as the modal
+       container — and it is portalled to `<body>`, so it comes later in the DOM
+       and won a tie it should not have been in: with the cropper open the whole
+       admin dimmed except this one 26px disc, sitting bright over the wash. The
+       nav is 20 and this still clears it. */
+    z-index: 25;
     /* Aligned to the MARK's centre, not to the top of the column: the mark's
        box centres at y87 and this is 26 tall, so 74 puts the two on one line.
        Measured rather than guessed — 4.75rem sat it 3px high. */
