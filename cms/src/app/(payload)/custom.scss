@@ -1362,6 +1362,13 @@ body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls__divider {
  */
 .collection-edit--media .document-fields__main > .gutter {
   margin-inline: 60px;
+  /* AND THE SHEET STARTS WHERE EVERY OTHER SHEET STARTS. The gutter's padding
+     was doing two jobs — insetting the sheet from the page on three sides, and
+     dropping it clear of the header on the fourth. Replacing all of it with the
+     sheet's own padding took the fourth away, and the media sheet began 34px
+     higher than an article's: measured y65 against y99. The top inset comes
+     back as margin. */
+  margin-block-start: 2.3077rem;
   padding: 1.75rem 2rem 2rem;
   border-radius: var(--style-radius-sheet);
   background-color: #ffffff;
@@ -1381,6 +1388,131 @@ body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls__divider {
    the sheet puts between any two of its blocks. */
 .collection-edit--media .field-type.file-field {
   margin-block-end: 1.5rem;
+}
+
+/*
+ * THE FILE BLOCK IS A PANEL LIKE THE FIELDS BESIDE IT. It came with Payload's
+ * own treatment — #fafaf9, a hairline, and `0 2px 2px -1px rgba(0,0,0,0.1)` —
+ * which is a card lifted off the page. Inside a sheet there is nothing to lift
+ * off, and this admin holds things to the page with the Edge and never with a
+ * shadow.
+ *
+ * It takes the ground the Alt and Credit panels take, so the three blocks in
+ * this sheet are three of the same object.
+ */
+.file-details {
+  border: 0;
+  box-shadow: none;
+  background-color: var(--da-warm-white);
+  border-radius: var(--style-radius-m);
+}
+
+/* ---- the file's actions, as icon buttons -------------------------------- */
+
+/*
+ * "Preview Sizes" and "Edit Image" were two pill-shaped labels on a row that
+ * already carries a name, a size, a type and a Remove — six pieces of text in a
+ * 142px band. They are the same kind of control as Remove beside them, so they
+ * are drawn as it is: a disc, an Edge, a glyph.
+ *
+ * THE LABEL IS CLIPPED, NOT REMOVED. Payload gives these buttons no `aria-label`
+ * — the text IS the accessible name — so `display: none` would leave two
+ * unnamed buttons. Clipped, the name survives; `title` cannot be added from CSS,
+ * so the tooltip is the one thing this trade gives up.
+ *
+ * MASKED LUCIDE, the same technique the nav's glyphs use: `mask-image` with
+ * `background-color: currentColor`, so the glyph takes the button's own colour
+ * through every state instead of being a second recoloured copy.
+ */
+.file-field__previewSizes,
+.file-field__edit {
+  position: relative;
+  inline-size: 36px;
+  block-size: 36px;
+  padding: 0;
+  border: 1px solid var(--da-hairline);
+  border-radius: 999px;
+  background-color: #ffffff;
+  color: var(--da-ink-3);
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    border-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease),
+    transform 0.12s var(--da-ease);
+}
+
+.file-field__previewSizes .btn__label,
+.file-field__edit .btn__label {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.file-field__previewSizes::before,
+.file-field__edit::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  inline-size: 18px;
+  block-size: 18px;
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+/* Preview Sizes — `images`: the same file at several sizes, which is what the
+   drawer it opens shows. */
+.file-field__previewSizes::before {
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 22H4a2 2 0 0 1-2-2V6"/><path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/><circle cx="12" cy="8" r="2"/><rect width="16" height="16" x="6" y="2" rx="2"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 22H4a2 2 0 0 1-2-2V6"/><path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/><circle cx="12" cy="8" r="2"/><rect width="16" height="16" x="6" y="2" rx="2"/></svg>');
+}
+
+/* Edit Image — `crop`, not `pencil`: what that drawer does is crop and focal
+   point, and the pencil in this admin already means "edit the article". */
+.file-field__edit::before {
+  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>');
+  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>');
+}
+
+@media (hover: hover) {
+  .file-field__previewSizes:hover,
+  .file-field__edit:hover {
+    border-color: var(--da-ink-3);
+    background-color: #ffffff;
+    color: var(--da-ink);
+  }
+}
+
+.file-field__previewSizes:active,
+.file-field__edit:active {
+  background-color: var(--da-warm-white);
+  transform: scale(0.94);
+}
+
+/* Remove takes the same disc, so the row's three controls are one set. It was
+   27px with a hairline of its own. */
+.file-details__remove {
+  inline-size: 36px;
+  block-size: 36px;
+  border: 1px solid var(--da-hairline);
+  border-radius: 999px;
+  background-color: #ffffff;
+  color: var(--da-ink-3);
+}
+
+@media (hover: hover) {
+  .file-details__remove:hover {
+    border-color: var(--da-ink-3);
+    color: var(--da-ink);
+  }
 }
 
 /* The two lines beside the thumbnail are the file's name and its facts, which
