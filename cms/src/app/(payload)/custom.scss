@@ -1561,7 +1561,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
 
    `align-self: start` keeps them off the vertical centre of a 405px cell, and
    `z-index` puts them over an image that comes later in the DOM. */
-.collection-edit--media .file-field__previewSizes,
+.collection-edit--media .da-expand,
 .collection-edit--media .file-field__edit,
 .collection-edit--media .file-details__remove {
   grid-row: 1;
@@ -1574,7 +1574,14 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   border-color: var(--da-ink-4);
 }
 
+/* PAYLOAD'S PREVIEW BUTTON IS GONE, ours stands in its column — see
+   MediaLightbox. Its drawer answered a different question: which derivative do
+   you want, of a set nobody here chooses between. */
 .collection-edit--media .file-field__previewSizes {
+  display: none;
+}
+
+.collection-edit--media .da-expand {
   grid-column: 2;
 }
 
@@ -1779,9 +1786,11 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
  * `background-color: currentColor`, so the glyph takes the button's own colour
  * through every state instead of being a second recoloured copy.
  */
-.file-field__previewSizes,
+.da-expand,
 .file-field__edit {
   position: relative;
+  display: grid;
+  place-items: center;
   inline-size: 36px;
   block-size: 36px;
   padding: 0;
@@ -1796,7 +1805,6 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
     transform 0.12s var(--da-ease);
 }
 
-.file-field__previewSizes .btn__label,
 .file-field__edit .btn__label {
   position: absolute;
   inline-size: 1px;
@@ -1806,7 +1814,6 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   white-space: nowrap;
 }
 
-.file-field__previewSizes::before,
 .file-field__edit::before {
   content: '';
   position: absolute;
@@ -1823,13 +1830,6 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   -webkit-mask-size: contain;
 }
 
-/* Preview Sizes — `images`: the same file at several sizes, which is what the
-   drawer it opens shows. */
-.file-field__previewSizes::before {
-  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 22H4a2 2 0 0 1-2-2V6"/><path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/><circle cx="12" cy="8" r="2"/><rect width="16" height="16" x="6" y="2" rx="2"/></svg>');
-  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 22H4a2 2 0 0 1-2-2V6"/><path d="m22 13-1.296-1.296a2.41 2.41 0 0 0-3.408 0L11 18"/><circle cx="12" cy="8" r="2"/><rect width="16" height="16" x="6" y="2" rx="2"/></svg>');
-}
-
 /* Edit Image — `crop`, not `pencil`: what that drawer does is crop and focal
    point, and the pencil in this admin already means "edit the article". */
 .file-field__edit::before {
@@ -1838,7 +1838,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
 }
 
 @media (hover: hover) {
-  .file-field__previewSizes:hover,
+  .da-expand:hover,
   .file-field__edit:hover {
     border-color: var(--da-ink-3);
     background-color: #ffffff;
@@ -1846,7 +1846,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   }
 }
 
-.file-field__previewSizes:active,
+.da-expand:active,
 .file-field__edit:active {
   background-color: var(--da-warm-white);
   transform: scale(0.94);
@@ -2800,6 +2800,74 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   }
 }
 
+/* ---- the file, full screen ----------------------------------------------- */
+
+/*
+ * ONE PICTURE AND ONE CONTROL. The ground is the admin's own ink rather than
+ * black — 92% of it, so the page underneath is still faintly there and the
+ * thing is plainly temporary — and the picture is capped by the window on both
+ * axes, which is the whole point of the control that opens it.
+ */
+.da-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 3rem;
+  background-color: color-mix(in srgb, var(--da-ink) 92%, transparent);
+  /* The page behind resolves to a wash rather than a picture, so nothing
+     competes with the one on top. */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.da-lightbox__img {
+  max-inline-size: 100%;
+  /* `100%` of a grid area that already has the padding taken out, so the
+     picture never runs under the close button or off the bottom. */
+  max-block-size: 100%;
+  inline-size: auto;
+  block-size: auto;
+  border-radius: var(--style-radius-s);
+  /* The one shadow in this admin. Everything else is held to a page by the
+     Edge; there is no page here, and an edge drawn on top of a photograph is
+     just a line on the photograph. */
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.da-lightbox__close {
+  position: fixed;
+  inset-block-start: 1.25rem;
+  inset-inline-end: 1.25rem;
+  display: grid;
+  place-items: center;
+  inline-size: 36px;
+  block-size: 36px;
+  padding: 0;
+  border: 1px solid var(--da-ink-4);
+  border-radius: 999px;
+  background-color: #ffffff;
+  color: var(--da-ink-3);
+  cursor: pointer;
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    border-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .da-lightbox__close:hover {
+    border-color: var(--da-ink-3);
+    color: var(--da-ink);
+  }
+}
+
+.da-lightbox__close:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 3px;
+}
+
 /* ---- Preview Sizes ------------------------------------------------------- */
 
 /* A FILENAME IS NOT A LINK TO THE SITE. Payload draws every one of them in the
@@ -2875,6 +2943,75 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
 }
 
 /* ---- Edit Image ---------------------------------------------------------- */
+
+/*
+ * IT OPENS INSIDE THE ADMIN, NOT OVER IT. Payload's drawer covers the window —
+ * measured, 1407 wide from x60, with the nav and the header behind it — so
+ * cropping a picture put you on a screen with no way to tell where you were and
+ * no way out but its own two buttons.
+ *
+ * Inset by the two fixed things it should not be covering: the nav on the left
+ * and the band on top. Both are in the shell's own geometry — 275px of nav,
+ * 68 when it is collapsed, and a 65px band — so the drawer starts where the
+ * document starts.
+ */
+/* `.payload__modal-container` IS IN THE CHAIN TO WIN THE CASCADE, not for
+   reach. Payload's `.drawer` sets `height: 100vh` at one class from a stylesheet
+   that loads later; at equal weight the height stayed 1334 while the top moved
+   to 65, so the drawer overflowed the window by exactly the height of the band
+   and its container scrolled 32px to compensate — the header half-covered
+   again, from underneath this time. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) {
+  inset-block-start: 65px;
+  inset-inline-start: 275px;
+  /* ALL FOUR SIDES, or only the origin moves. The drawer keeps its own
+     window-sized width and height otherwise: measured, 1452 × 1334 starting at
+     275,65 — the right-hand sidebar with Cancel and Apply in it hanging 275px
+     off the edge of the screen. Pinned to every edge, `auto` sizes it to what
+     is left. */
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  inline-size: auto;
+  block-size: auto;
+  /* AND THE MINIMUM, WHICH IS WHAT WAS ACTUALLY HOLDING IT. `.payload__modal-item`
+     carries `min-height: 100%` — of the full-window container — so `auto`
+     resolved back to 1334px however the height was written, and the drawer
+     stayed one band taller than the space it had. */
+  min-block-size: 0;
+}
+
+body.da-nav-collapsed .payload__modal-container .payload__modal-item:has(.edit-upload) {
+  inset-inline-start: 68px;
+}
+
+/* The blur layer and the sheet inside it are positioned against the window too;
+   both are pinned to the item that now holds them. */
+.payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__blur-bg,
+.payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__content {
+  inset: 0;
+  inline-size: auto;
+  block-size: auto;
+}
+
+/*
+ * AND THE SHELL IS LIVE, NOT JUST VISIBLE. `.payload__modal-container` is a
+ * full-window layer over everything — measured, `elementFromPoint` on the nav
+ * and on the header both returned it — so uncovering them would have left two
+ * pictures of controls that do not answer. The container stops taking the
+ * pointer and the drawer inside it takes it back.
+ *
+ * What that gives up is click-outside-to-close, which this drawer never needed:
+ * it has Cancel, and Cancel is the answer that also discards the crop.
+ */
+.payload__modal-container:has(.edit-upload) {
+  pointer-events: none;
+}
+
+.payload__modal-container:has(.edit-upload) .payload__modal-item {
+  pointer-events: auto;
+}
+
+
 
 /* "Crop" and "Focal Point" are sections, and take the size this admin gives a
    section's name. */

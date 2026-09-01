@@ -8,7 +8,7 @@ import { usePathname, useRouter } from 'next/navigation'
    rather than paths copied out of it by hand. Same library the nav's glyphs
    come from — those are masked into Payload's markup because there is no
    component to render there; here the markup is mine, so the components are. */
-import { Check, Ellipsis, ExternalLink, Link2, Pencil, Trash2 } from 'lucide-react'
+import { Check, Ellipsis, ExternalLink, Expand, Link2, Pencil, Trash2, X } from 'lucide-react'
 import { SaveButton, useDocumentInfo, useFormFields, useFormModified } from '@payloadcms/ui'
 
 import './DocActions.css'
@@ -672,13 +672,18 @@ export function MediaActions() {
     )
   }
 
+  const alt = typeof savedDocumentData?.alt === 'string' ? savedDocumentData.alt : ''
+
   return (
-    <DocBar
-      collection="media"
-      deleteWarning="Anything using it — a cover, a card, a download — loses its file."
-      noun="file"
-      rows={rows}
-    />
+    <>
+      <DocBar
+        collection="media"
+        deleteWarning="Anything using it — a cover, a card, a download — loses its file."
+        noun="file"
+        rows={rows}
+      />
+      {url ? <MediaLightbox alt={alt} url={url} /> : null}
+    </>
   )
 }
 
@@ -744,6 +749,112 @@ export function MediaFacts() {
       ))}
     </dl>,
     host,
+  )
+}
+
+/**
+ * The file at full size, over everything.
+ *
+ * IT REPLACES PAYLOAD'S "PREVIEW SIZES", which answered a different question:
+ * it opened a drawer listing the derivatives — original, card, thumbnail — each
+ * with its filename and byte count, for choosing between them. Nobody on this
+ * install chooses between them; the sizes are generated and the site picks. What
+ * the control is reached for is "let me see the picture", and 600px in a sheet
+ * is not seeing it.
+ *
+ * So it opens the file itself, as large as the window allows, on a ground dark
+ * enough to judge an edge against — and carries one control, because there is
+ * one thing to do next.
+ *
+ * THE BUTTON IS OURS TOO. Payload's is hidden (custom.scss) rather than
+ * intercepted: a click handler that has to cancel someone else's is a race with
+ * whatever they change next, and this way the disc in the corner and the thing
+ * it opens are the same component's.
+ */
+function MediaLightbox({ alt, url }: { alt: string; url: string }) {
+  const [open, setOpen] = React.useState(false)
+  const slot = useHost('.file-details > header')
+  const closer = React.useRef<HTMLButtonElement | null>(null)
+  const opener = React.useRef<HTMLButtonElement | null>(null)
+
+  /* Escape closes and hands focus back to the disc that opened it — the half of
+     "press Escape" that usually goes missing. */
+  React.useEffect(() => {
+    if (!open) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setOpen(false)
+      opener.current?.focus()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [open])
+
+  /* The page behind must not scroll while a full-screen thing is over it. */
+  React.useEffect(() => {
+    if (!open) return
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    closer.current?.focus()
+    return () => {
+      document.body.style.overflow = previous
+    }
+  }, [open])
+
+  if (!slot) return null
+
+  return (
+    <>
+      {createPortal(
+        <button
+          aria-label="View full size"
+          className="da-expand"
+          onClick={() => setOpen(true)}
+          ref={opener}
+          title="View full size"
+          type="button"
+        >
+          <Expand aria-hidden="true" size={18} strokeWidth={2} />
+        </button>,
+        slot,
+      )}
+
+      {open
+        ? createPortal(
+            /* The ground closes on a click, which is what a dark field around a
+               picture has meant since the first lightbox. The picture itself
+               does not, so a mis-click on the thing you came to look at is not
+               the thing that dismisses it. */
+            <div
+              aria-label={alt || 'Full size'}
+              aria-modal="true"
+              className="da-lightbox"
+              onClick={() => setOpen(false)}
+              role="dialog"
+            >
+              <button
+                aria-label="Close"
+                className="da-lightbox__close"
+                onClick={() => setOpen(false)}
+                ref={closer}
+                title="Close"
+                type="button"
+              >
+                <X aria-hidden="true" size={18} strokeWidth={2} />
+              </button>
+
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                alt={alt}
+                className="da-lightbox__img"
+                onClick={(event) => event.stopPropagation()}
+                src={url}
+              />
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
   )
 }
 
