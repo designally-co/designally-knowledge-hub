@@ -2964,6 +2964,16 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   display: grid;
   place-items: center;
   padding: 2rem;
+  /* THE DIM, ON THE ONE LAYER THAT IS ACTUALLY FULL SCREEN. Payload's own
+     backdrop sits inside this item's padding — measured 1437 × 1304 against a
+     1467 × 1334 window — so a wash painted there stops 15px short of every
+     edge. This element is pinned to all four.
+
+     The ink at 55%, which is a dim and not a curtain: the nav and the band read
+     through it as the page they are, and the sheet is plainly the thing to
+     answer. Darker is the full-size view's job (92%), where there is nothing
+     behind worth keeping. */
+  background-color: color-mix(in srgb, var(--da-ink) 55%, transparent);
   inline-size: auto;
   block-size: auto;
   /* `.payload__modal-item` carries `min-height: 100%` — of the full-window
