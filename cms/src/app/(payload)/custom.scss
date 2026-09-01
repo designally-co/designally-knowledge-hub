@@ -1749,72 +1749,52 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
 }
 
 /*
- * THE HEADER HOLDS AND THE TABLE SCROLLS.
+ * THE HEADER HOLDS AND THE TABLE SCROLLS — and now the table is the only thing
+ * that does, so nothing has to be pinned.
  *
- * Scrolling the whole sheet took the collection's name, its description and the
- * search field away with the rows — so the one control you need while hunting
- * through a library left the screen the moment you started hunting.
+ * The sheet scrolled as a whole first, which took the collection's name and the
+ * search field away with the rows. Sticky held them there, but a sticky header
+ * is a header that LOOKS fixed while the box behind it still moves: the table's
+ * own header row slid under it, the pagination went past, and the search had to
+ * be pinned to the same line as the title to stop the two colliding.
  *
- * STICKY, NOT A SECOND SCROLL CONTAINER. Making the table its own scroller
- * meant turning four nested boxes into flex columns, and Payload positions the
- * drawer's own header inside them: measured, the rows ended up at y385 with the
- * header drawn over them at 435, and the sheet came up empty. The sheet keeps
- * its one scroll; the two rows that must not leave are pinned to the top of it,
- * on the ground they sit on so the rows pass behind rather than through them.
+ * Capping the table is simpler and truer. The sheet is as tall as its contents,
+ * the header and the pagination sit in it, and the rows have a window of their
+ * own — 26rem of it, which is eight rows at this row height.
  */
 .payload__modal-container .payload__modal-item:has(.collection-list) .drawer__content > .gutter {
   flex: 1 1 auto;
   min-block-size: 0;
   margin: 0;
   padding: 0;
-  overflow: auto;
+  /* No scroll here: the one scroll is the table's. */
+  overflow: hidden;
   border-radius: calc(var(--style-radius-card) - var(--sheet-pad));
 }
 
 .payload__modal-container .payload__modal-item:has(.collection-list) .collection-list > .gutter {
   padding: 1.25rem 1.5rem 1.5rem;
-  /* AND IT STOPS CLIPPING, or the sticky header below is pinned inside a box
-     that does not scroll — which is no stickiness at all. Measured: the header
-     travelled with the rows, 435 to 336 over a 99px scroll. */
   overflow: visible;
 }
 
-.payload__modal-container .payload__modal-item:has(.collection-list) .list-header,
-.payload__modal-container .payload__modal-item:has(.collection-list) .list-controls {
-  position: sticky;
-  inset-block-start: 0;
-  z-index: 2;
-  background-color: #ffffff;
+/* 22rem, not 26: the sheet is capped at 44rem, and the header, the search, the
+   pagination and the tile's own padding take the rest of it — at 26 the sheet
+   itself gained a scrollbar, which is the thing this was undoing. */
+.payload__modal-container .payload__modal-item:has(.collection-list) .collection-list__tables {
+  max-block-size: 22rem;
+  overflow: auto;
 }
 
-/* The name and the search are one block: the second sticks under the first
-   rather than at the top of the box, or they overlap as the rows go by. */
-.payload__modal-container .payload__modal-item:has(.collection-list) .list-header {
-  /* Full width, so the way out sits at the sheet's own right edge rather than
-     wherever the title happens to end — the row was 541 of a 960 sheet. */
-  inline-size: 100%;
-  padding-block-start: 1.25rem;
-}
-
-/* THE SEARCH STICKS BESIDE THE TITLE, NOT UNDER IT. Payload's controls row is
-   not a row at all — it is the field alone, 300px wide and right-aligned at
-   x847, where the title block ends at 847 to the pixel. Pinned to the same
-   line the two are one band across the sheet; pinned below it the field came
-   to rest on top of the table's own header. */
-.payload__modal-container .payload__modal-item:has(.collection-list) .list-controls {
-  inset-block-start: 0;
-  padding-block: 1.25rem 0.75rem;
-}
-
-/* The way out, as the disc every other way out in this admin is — and out of
-   the header row, which is a heading and a search field. */
-/* IT SITS AT THE END OF THE HEADER ROW, in the flow. Absolute put it against
-   the nearest positioned ancestor, which — once the header became sticky — was
-   the header itself, so the disc drifted into the middle of the row beside the
-   search field. */
+/* THE SHEET'S TOP-RIGHT CORNER. It could not go there while the header was
+   sticky: sticky makes a containing block, so `absolute` resolved against the
+   header — 541px of a 960px sheet — and the disc came to rest in the middle of
+   the band beside the search. With nothing above it positioned, the nearest
+   positioned ancestor is the sheet itself. */
 .payload__modal-container .payload__modal-item:has(.collection-list) .close-modal-button {
-  position: static;
-  flex: 0 0 auto;
+  position: absolute;
+  inset-block-start: 1rem;
+  inset-inline-end: 1rem;
+  z-index: 3;
   display: grid;
   place-items: center;
   inline-size: 36px;
@@ -1859,9 +1839,9 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
 }
 
-/* The title, and the way out at the far end of its row. */
-.payload__modal-container .payload__modal-item:has(.collection-list) .list-header__actions {
-  margin-inline-start: auto;
+/* The search field keeps clear of the disc in the corner. */
+.payload__modal-container .payload__modal-item:has(.collection-list) .list-controls {
+  padding-inline-end: 3rem;
 }
 
 /* ---- empty: the same well the article's cover uses ---------------------- */
