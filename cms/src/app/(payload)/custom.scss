@@ -1368,10 +1368,17 @@ body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls__divider {
 /* A MEASURE, BECAUSE THERE IS NO RAIL TO TAKE ONE. Every other document is a
    sheet plus a 325px column of decisions, which leaves the sheet at ~734. This
    collection has two fields and no rail, so the sheet was taking the whole
-   content width — 1072 at 1600, an Alt input a metre wide. 52rem is the account
-   screen's measure, the other screen in this admin with nothing beside it. */
+   content width — 1072 at 1600, an Alt input a metre wide.
+
+   44rem, not the account screen's 52. That screen holds an email, a key and a
+   way out — three controls that want a comfortable line. This one holds a
+   picture and two short strings, and the picture is the reason to be here: at
+   780 it was the biggest thing on any screen in this admin, wider than an
+   article's own sheet, for a document with less in it than any other. 660
+   leaves the file large enough to judge a crop by and the two inputs at a
+   length someone can read across. */
 .collection-edit--media .document-fields__main > .gutter {
-  inline-size: min(100% - 120px, 52rem);
+  inline-size: min(100% - 120px, 44rem);
   margin-inline: auto;
   /* AND IT STARTS WHERE EVERY OTHER SHEET STARTS. The gutter's padding was
      doing two jobs — insetting the sheet from the page on three sides, and
