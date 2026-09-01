@@ -89,6 +89,15 @@
      number — the grid track, the panel, the floating selection bar and the
      collapse control's two positions — and they have to agree or the rail and
      the things pinned to its edge come apart. */
+  /* 243 = 1.25rem + 205 + 1.25rem: the inset, the widest thing the nav holds —
+     the signed-in row at the foot of it — and the same inset again. Payload
+     ships 275, which left 32px of column that nothing reached.
+
+     IT IS A FITTED WIDTH, so it follows what is in the nav: a longer address in
+     that row than `website.team@designally.co` would be truncated rather than
+     widening the column. That is the trade of asking for no slack. */
+  --nav-width: 243px;
+
   /* 78 = 1.25rem + 41 + 1.25rem: the inset, the widest collapsed control (the
      mark's box) and the same inset again. The number is derived from what the
      rail holds rather than chosen, which is why it is not a round one — at 84
@@ -4458,6 +4467,16 @@ body.da-nav-collapsed .template-default {
    rail's edge, and its inset then started the icons at x26 — everything hard
    against the right with 26px of dead space on the left. The scroller fills its
    parent, and the inset is spent once, by Payload. */
+.nav {
+  inline-size: var(--nav-width);
+  /* THE EDGE BETWEEN THE NAV AND THE PAGE. It had none: the two met as white
+     against parchment, which is a boundary only while the page beside it is
+     grey — a white sheet running to the top of the content column met the nav
+     with nothing between them. The divider tone, so it reads as a seam rather
+     than as a rule. */
+  border-inline-end: 1px solid var(--da-divider);
+}
+
 body.da-nav-collapsed .nav {
   inline-size: var(--da-rail);
 }
