@@ -61,7 +61,9 @@
   margin: 1rem 0 0;
   font-family: var(--font-body);
   font-size: 19px;
-  font-weight: 300;
+  /* 400, with the writing surface's deck and body — Poppins Light at 19px is
+     faint over a paragraph. See custom.scss. */
+  font-weight: 400;
   line-height: 1.65;
   color: var(--da-ink);
 }

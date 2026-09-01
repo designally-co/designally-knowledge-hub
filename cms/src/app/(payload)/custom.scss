@@ -2199,7 +2199,13 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   min-block-size: 0;
   font-family: var(--font-body);
   font-size: 19px;
-  font-weight: 300;
+  /* 400, NOT THE CI'S LIGHT 300. Poppins is a geometric sans — thin strokes,
+     open counters — and at Light it holds up in a headline or a caption and
+     falls apart in a paragraph: on a white sheet, at 19px, over several hundred
+     words, it is faint rather than quiet. Reported from production as
+     unreadable, and it is the same weight in the editor, so both move. The
+     size, the leading and the ink are unchanged; only the stroke is. */
+  font-weight: 400;
   line-height: 1.65;
   letter-spacing: 0;
   color: var(--da-ink);
@@ -2266,7 +2272,8 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   min-block-size: 24rem;
   font-family: var(--font-body);
   font-size: 19px;
-  font-weight: 300;
+  /* See the deck above: Light is not a reading weight at this size. */
+  font-weight: 400;
   line-height: 1.65;
   color: var(--da-ink);
 }
@@ -2442,7 +2449,12 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   border-inline-start: 2px solid var(--da-hairline);
   font-family: var(--font-display);
   font-size: 22px;
-  font-weight: 300;
+  /* AND THIS ONE NEVER EXISTED. The display face is loaded at 400, 600 and 700
+     — see the font import at the top of this file — so a request for 300 was
+     either synthesised into a fake light or rounded back to 400 depending on
+     the browser. It is 400, which is what it was always going to render as at
+     best. */
+  font-weight: 400;
   line-height: 1.4;
   color: var(--da-ink);
 }
