@@ -2752,6 +2752,192 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    is not dropped to `--da-ink-4`, which owes 4.5 and does not have it. */
 
 
+
+/* =============================================================================
+   The two drawers behind the file's actions
+
+   THEY WERE NEVER TOUCHED. Preview Sizes and Edit Image open over a screen that
+   has been through every rule in this file and land on Payload's defaults:
+   filenames in the ACCENT — which in this admin means a link to the public site
+   — the "205KB - 1200x900 - image/jpeg" line the media document stopped
+   printing, a bare × for the way out, and section headings in the body face.
+
+   The markup is Payload's and stays; what changes is the vocabulary, so a
+   drawer opened from this admin looks like it belongs to it.
+   ========================================================================== */
+
+/* ---- the drawer's own header --------------------------------------------- */
+
+.drawer__header__title {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--da-ink);
+}
+
+/* The way out, as the disc every other way out in this admin is. */
+.drawer__header__close {
+  display: grid;
+  place-items: center;
+  inline-size: 36px;
+  block-size: 36px;
+  padding: 0;
+  border: 1px solid var(--da-hairline);
+  border-radius: 999px;
+  background-color: #ffffff;
+  color: var(--da-ink-3);
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    border-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .drawer__header__close:hover {
+    border-color: var(--da-ink-3);
+    color: var(--da-ink);
+  }
+}
+
+/* ---- Preview Sizes ------------------------------------------------------- */
+
+/* A FILENAME IS NOT A LINK TO THE SITE. Payload draws every one of them in the
+   accent, which is the colour this admin spends on the one action it wants you
+   to take. They are files; they take ink, and the underline on hover is what
+   says they can be opened. */
+.preview-sizes .file-meta__url a,
+.preview-sizes__sizeMeta .file-meta__url a {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--da-ink);
+  text-decoration: none;
+}
+
+.preview-sizes .file-meta__url a:hover {
+  text-decoration: underline;
+}
+
+/* The same run-on line the document dropped: kept here, because there are four
+   of them and a labelled grid would be four grids — but quiet, and at the size
+   the rest of this admin gives a note. */
+.preview-sizes .file-meta__size-type {
+  font-size: var(--da-note-size);
+  line-height: 1.5;
+  color: var(--da-ink-3);
+}
+
+/* "Original", "card", "thumbnail" — the name of the size, which is the thing
+   you are choosing between. It was 15px in secondary ink, the same as the file
+   details under it. */
+.preview-sizes__sizeName {
+  font-family: var(--font-display);
+  font-size: var(--da-label-size);
+  font-weight: 600;
+  line-height: var(--da-label-line);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--da-ink-3);
+}
+
+/* Each size is a row you can pick: a panel with the Edge, and the current one
+   marked by the warm white this admin uses for a chosen thing rather than by a
+   grey block with no border. */
+.preview-sizes__sizeOption {
+  border: 1px solid var(--da-divider);
+  border-radius: var(--style-radius-m);
+  background-color: #ffffff;
+  transition:
+    border-color var(--da-dur-feedback) var(--da-ease),
+    background-color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .preview-sizes__sizeOption:hover {
+    border-color: var(--da-hairline);
+  }
+}
+
+.preview-sizes__sizeOption.preview-sizes--selected {
+  border-color: var(--da-ink-4);
+  background-color: var(--da-warm-white);
+}
+
+/* The picture being previewed. NO GROUND BEHIND IT: the element is the `img`
+   itself, drawn into a box taller than the picture, so a warm-white background
+   showed as two bands above and below rather than as a surface. */
+.preview-sizes__preview {
+  border-radius: var(--style-radius-s);
+}
+
+.preview-sizes__image img {
+  border-radius: var(--style-radius-s);
+}
+
+/* ---- Edit Image ---------------------------------------------------------- */
+
+/* "Crop" and "Focal Point" are sections, and take the size this admin gives a
+   section's name. */
+.edit-upload__titleWrap h3 {
+  font-family: var(--font-display);
+  font-size: var(--da-section-size);
+  font-weight: 600;
+  line-height: var(--da-label-line);
+  letter-spacing: -0.01em;
+  color: var(--da-ink);
+}
+
+.edit-upload__description {
+  font-size: var(--da-note-size);
+  line-height: 1.5;
+  color: var(--da-ink-3);
+}
+
+/* Width, Height, X %, Y % — field labels, and drawn as field labels.
+   THEY ARE BARE TEXT, not `<label>` elements: `.edit-upload__input` holds the
+   words and the input as siblings, so there is nothing to select but the
+   container. Its type becomes the label's and the input takes the control's
+   back. */
+.edit-upload__input {
+  font-family: var(--font-display);
+  font-size: var(--da-label-size);
+  font-weight: 600;
+  line-height: var(--da-label-line);
+  color: var(--da-ink-2);
+}
+
+.edit-upload__input input {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--da-ink);
+}
+
+/* Reset was accent-red text, which reads as the drawer's primary action rather
+   than as the small undo it is. */
+.edit-upload__titleWrap button {
+  font-family: var(--font-display);
+  font-size: var(--da-note-size);
+  font-weight: 600;
+  color: var(--da-ink-3);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  transition: color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .edit-upload__titleWrap button:hover {
+    color: var(--da-ink);
+  }
+}
+
+/* The seam between the two sections, in the divider tone the rest of the admin
+   uses rather than Payload's own. */
+.edit-upload__groupWrap + .edit-upload__groupWrap {
+  border-block-start-color: var(--da-divider);
+}
+
 /* -----------------------------------------------------------------------------
    Sign-in is Google only
 
