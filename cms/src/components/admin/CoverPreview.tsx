@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { useFormFields } from '@payloadcms/ui'
+import { useForm, useFormFields } from '@payloadcms/ui'
 
 import './CoverPreview.css'
 
@@ -52,6 +52,9 @@ export function useCover() {
   const coverImage = useFormFields(([fields]) => fields?.coverImage?.value)
   const coverUrl = useFormFields(([fields]) => fields?.coverUrl?.value)
   const dispatchFields = useFormFields(([, dispatch]) => dispatch)
+  /* SEE `commit` BELOW — dispatching a value does not make the form dirty, and
+     an undirty form does not save. */
+  const { setModified } = useForm()
 
   const [uploaded, setUploaded] = React.useState<MediaDoc | null>(null)
 
@@ -93,12 +96,14 @@ export function useCover() {
   /* Clears whatever is currently WINNING, not both. With a library image over a
      URL, the first Remove drops the library image and the URL cover comes back
      into view; the second clears that. You remove what you can see. */
-  const remove = () =>
+  const remove = () => {
     dispatchFields({
       type: 'UPDATE',
       path: fromLibrary ? 'coverImage' : 'coverUrl',
       value: fromLibrary ? null : '',
     })
+    setModified(true)
+  }
 
   return {
     src: uploaded?.url || url || '',
@@ -180,6 +185,13 @@ function CoverEmpty({ onPasteUrl }: { onPasteUrl: () => void }) {
  */
 function CoverUrlEntry({ onDone }: { onDone: () => void }) {
   const dispatchFields = useFormFields(([, dispatch]) => dispatch)
+  /* DISPATCHING A VALUE IS NOT THE SAME AS TYPING ONE. `UPDATE` writes the field
+     but leaves the form's `modified` flag alone, and Payload's Save is a no-op
+     on an unmodified form — measured, as a pasted cover URL that showed in the
+     box, survived until Save, and then never reached the database: no PATCH was
+     sent at all. Touching any other field made it save, which is how it stayed
+     hidden. The flag is set explicitly. */
+  const { setModified } = useForm()
   const [value, setValue] = React.useState('')
   const ref = React.useRef<HTMLInputElement | null>(null)
 
@@ -191,6 +203,7 @@ function CoverUrlEntry({ onDone }: { onDone: () => void }) {
     const next = value.trim()
     if (!next) return
     dispatchFields({ type: 'UPDATE', path: 'coverUrl', value: next })
+    setModified(true)
     onDone()
   }
 
