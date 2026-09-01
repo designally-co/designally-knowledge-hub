@@ -170,15 +170,25 @@
   /* Radii. The pill is the action signal, so it belongs to buttons and chips
      and to nothing you type into: a pill field reads as a button that happens
      to hold text. Inputs take the card radii instead. */
-  --style-radius-s: 8px;
-  --style-radius-m: 11px;
-  --style-radius-l: 18px;
-  /* The top of the system's ladder, which this file was missing: `card` 26 and
-     `sheet` 34 (globals.css `--r-card` / `--r-sheet`). Without them the document
+  --style-radius-s: 6px;
+  --style-radius-m: 9px;
+  --style-radius-l: 14px;
+  /* The top of the system's ladder, which this file was missing: `card` and
+     `sheet` (globals.css `--r-card` / `--r-sheet`). Without them the document
      sheets were drawn at `lg` — the radius of a large CONTROL — so the biggest
-     surfaces in the admin curved like the smallest ones. */
-  --style-radius-card: 26px;
-  --style-radius-sheet: 34px;
+     surfaces in the admin curved like the smallest ones.
+
+     THE WHOLE LADDER COMES DOWN A STEP. It was ported from the marketing site,
+     where a card is one object on a wide page and a 34px corner is a shape you
+     notice on purpose. An admin is dozens of nested rectangles — a sheet
+     holding panels holding inputs — and at those radii the nesting reads as
+     softness rather than as structure: measured, a sheet at 34 with panels at
+     11 inside it, each corner arguing with the one behind it.
+
+     16 on the sheet, 18 on a card, and the three control steps down with them.
+     The proportions are the same; every corner is quieter. */
+  --style-radius-card: 18px;
+  --style-radius-sheet: 16px;
 
   /* THE MEASURE. 68 characters of the body face at its own size — the width the
      editor was designed around and the one thing on the screen that was already
