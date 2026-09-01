@@ -48,24 +48,17 @@ function coverOf(r: ArticleDoc): string | undefined {
 }
 
 /**
- * The picture a share card should use: the SEO override when one is set,
- * otherwise the cover. A cover IS a share image — it is already the article's
- * own picture, sized for a hero — so making someone choose a second one for
- * every article would be a field that is only ever filled with the same value.
- * The override exists for the cases where the two genuinely differ: a cover
- * that is mostly texture, or one whose subject sits where a 1.91:1 card crops.
+ * The picture a share card uses: the cover, always.
+ *
+ * A COVER IS A SHARE IMAGE — it is already the article's own picture, sized for
+ * a hero. There used to be an override in the SEO panel for the cases where the
+ * two genuinely differ (a cover that is mostly texture, one whose subject sits
+ * where a 1.91:1 card crops), and it read `seo.ogImage ?? cover`. Nobody ever
+ * set it — 0 of 22 articles — so the `??` only ever resolved right, and the
+ * field has been retired. See `seoField` in collections/shared.ts.
  */
-function seoOverrideOf(r: { seo?: { ogImage?: unknown } | null }): string | undefined {
-  const og = r.seo?.ogImage
-  if (og && typeof og === 'object') {
-    const media = og as Media
-    if (media.url) return media.url
-  }
-  return undefined
-}
-
 function shareImageOf(r: ArticleDoc): string | undefined {
-  return seoOverrideOf(r) ?? coverOf(r)
+  return coverOf(r)
 }
 
 /**
@@ -325,9 +318,6 @@ export interface ResourceDetail extends ResourceItem {
   fileSize?: string
   licence?: string
   files: { url: string; filename: string; format: string }[]
-  /** For the social share card. A resource has no cover to fall back on — its
-   *  artwork comes from its category — so this is the SEO override or nothing. */
-  shareImage?: string
 }
 
 function toResourceItem(r: Resource, locale: Locale): ResourceItem {
@@ -461,7 +451,6 @@ export async function getResourceBySlug(
       return {
         ...toResourceItem(r, locale),
         description: r.description ?? undefined,
-        shareImage: seoOverrideOf(r),
         fileSize: r.fileSize ?? undefined,
         licence: r.licence ?? undefined,
         files,

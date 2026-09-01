@@ -113,13 +113,23 @@ export const translateToThaiField: Field = {
 /**
  * Per-item search and share metadata.
  *
- * A FUNCTION, not a constant, because the share image behaves differently in
- * the two collections that use it: an article falls back to its own cover, and
- * a resource has no image field to fall back to — its artwork comes from its
- * category. One shared description could only be true of one of them, and a
- * field that explains itself wrongly is worse than one that says nothing.
+ * THE SHARE IMAGE IS THE COVER, and it is no longer asked for. The panel used
+ * to end with an upload — "the cover above is used automatically, only set one
+ * here if the share card needs a different picture" — for the case where the
+ * two genuinely differ: a cover that is mostly texture, or one whose subject
+ * sits where a 1.91:1 card crops.
+ *
+ * It was set on 0 of 22 articles and 0 of 6 resources. A field nobody has ever
+ * filled is a question asked of every writer for the benefit of none, and the
+ * fallback it existed to override was already doing the whole job. The share
+ * card takes the cover; when the crop is wrong, the fix is the cover.
+ *
+ * A CONSTANT AGAIN. It was a function because the note under that upload had to
+ * be true of two collections that differ — an article has a cover to fall back
+ * to and a resource does not. With the upload gone there is nothing left that
+ * differs, so there is no parameter.
  */
-export const seoField = (shareImageNote: string): Field => ({
+export const seoField: Field = {
   type: 'group',
   name: 'seo',
   label: 'SEO & sharing',
@@ -128,16 +138,19 @@ export const seoField = (shareImageNote: string): Field => ({
     { name: 'metaTitle', type: 'text', localized: true },
     { name: 'metaDescription', type: 'textarea', localized: true },
     {
+      /* HIDDEN, NOT DELETED — the same call `fileSize` made, for the same
+         reason. Both databases are pushed rather than migrated, and dropping a
+         column that way stops on an interactive prompt, which hangs a boot. The
+         field leaves the screen and the frontend stops reading it; the empty
+         column stays where it is until there is a migration to take it. */
       name: 'ogImage',
       type: 'upload',
       relationTo: 'media',
-      // "Og" is Open Graph, which is jargon and was read as a typo. The label
-      // says what it is for; the description says when to touch it.
       label: 'Share image',
-      admin: { description: shareImageNote },
+      admin: { hidden: true },
     },
   ],
-})
+}
 
 /* Typed as `TextField`, not `Field`. Articles spread this to swap in their own
    control, and spreading the `Field` union widens it back to something no

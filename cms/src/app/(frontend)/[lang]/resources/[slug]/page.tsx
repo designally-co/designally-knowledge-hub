@@ -44,9 +44,12 @@ export async function generateMetadata({
   if (!resource) return { title: getDictionary(locale).resources.notFound }
   // A resource has no dek — its description is the only prose it carries.
   const description = resource.description?.split(/\n{2,}/)[0]?.trim()
-  /* No cover to fall back on: a resource's artwork comes from its category, so
-     the share image is whatever the SEO panel was given, or nothing. */
-  const image = resource.shareImage
+  /* NO SHARE IMAGE, and none is faked. A resource has no picture anywhere in
+     the CMS — its artwork comes from its category, drawn as an SVG on the card,
+     which is not something a crawler can render. The SEO panel used to offer an
+     upload for this and it was filled on 0 of 6 resources; with it retired the
+     card is a title and a line of description, which is what it has always
+     actually been. An article's card still carries the article's cover. */
   return {
     title: resource.title,
     description,
@@ -54,13 +57,11 @@ export async function generateMetadata({
       type: 'article',
       title: resource.title,
       description,
-      ...(image ? { images: [{ url: image }] } : {}),
     },
     twitter: {
-      card: image ? 'summary_large_image' : 'summary',
+      card: 'summary',
       title: resource.title,
       description,
-      ...(image ? { images: [image] } : {}),
     },
   }
 }

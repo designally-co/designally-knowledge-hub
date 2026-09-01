@@ -142,7 +142,7 @@ export const Resources: CollectionConfig = {
       },
     },
 
-    seoField('The picture shown when this download is shared.'),
+    seoField,
 
     /* Retired: `fileSize` was a text box asking a person to total up bytes the
        upload had already measured, and it was empty on every resource in both

@@ -43,9 +43,9 @@ export async function generateMetadata({
   /* The share card. Until now the page emitted a title and a description and
      nothing else, so an article pasted into Slack, LINE or LinkedIn arrived as
      a bare link — no picture, no headline. The image is the article's own
-     cover unless the SEO panel overrides it; `shareImage` resolves that, and
-     `metadataBase` in the layout makes an uploaded cover's relative path
-     absolute, which a crawler needs. */
+     cover: there used to be an override in the SEO panel, which nobody ever
+     set, so the cover is now the whole answer. `metadataBase` in the layout
+     makes its relative path absolute, which a crawler needs. */
   const image = article.shareImage
   return {
     title: article.title,

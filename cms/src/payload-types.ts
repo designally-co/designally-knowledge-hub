@@ -172,9 +172,6 @@ export interface Article {
   seo?: {
     metaTitle?: string | null;
     metaDescription?: string | null;
-    /**
-     * The cover above is used automatically. Only set one here if the share card needs a different picture — a cover that is mostly texture, or one whose subject gets cropped out.
-     */
     ogImage?: (number | null) | Media;
   };
   /**
@@ -328,9 +325,6 @@ export interface Resource {
   seo?: {
     metaTitle?: string | null;
     metaDescription?: string | null;
-    /**
-     * The picture shown when this download is shared.
-     */
     ogImage?: (number | null) | Media;
   };
   fileSize?: string | null;
