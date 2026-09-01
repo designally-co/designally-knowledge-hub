@@ -27,18 +27,20 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { RelatedPicker as RelatedPicker_3eb131fbfe4b0bc8a64b3e8c3b6ff916 } from '../../../components/admin/RelatedPicker'
-import { ArticleActions as ArticleActions_820209e87154fb77fa550708666ace60 } from '../../../components/admin/ArticleActions'
+import { ArticleActions as ArticleActions_786ca5ea86bf3b6eb17e3ea797a584ce } from '../../../components/admin/DocActions'
 import { TagCell as TagCell_07f513c68167caf320c51b8dc6c45309 } from '../../../components/admin/ListCells'
 import { StatusCell as StatusCell_07f513c68167caf320c51b8dc6c45309 } from '../../../components/admin/ListCells'
 import { TranslateToThaiButton as TranslateToThaiButton_c8d0b70ea2b3169c421567a646db02b1 } from '../../../components/admin/TranslateToThaiButton'
-import { ArticleMeta as ArticleMeta_820209e87154fb77fa550708666ace60 } from '../../../components/admin/ArticleActions'
+import { DocMeta as DocMeta_786ca5ea86bf3b6eb17e3ea797a584ce } from '../../../components/admin/DocActions'
 import { RememberList as RememberList_bc9981d873c7bdb9b0e730495859686c } from '../../../components/admin/ListReturn'
 import { LocaleSwitch as LocaleSwitch_4ef13d4fc6ce28dbd550419ec8c51c88 } from '../../../components/admin/LocaleSwitch'
 import { ArticleOverview as ArticleOverview_2189bbbf21ed1de1d6d01c49729884c2 } from '../../../components/admin/ArticleViews'
 import { ReturnToPlace as ReturnToPlace_bc9981d873c7bdb9b0e730495859686c } from '../../../components/admin/ListReturn'
 import { ArticleWrite as ArticleWrite_2189bbbf21ed1de1d6d01c49729884c2 } from '../../../components/admin/ArticleViews'
+import { ResourceActions as ResourceActions_786ca5ea86bf3b6eb17e3ea797a584ce } from '../../../components/admin/DocActions'
 import { MediaPreviewCell as MediaPreviewCell_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
 import { QuietTextCell as QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
+import { MediaActions as MediaActions_786ca5ea86bf3b6eb17e3ea797a584ce } from '../../../components/admin/DocActions'
 import { AccountView as AccountView_368b90cdbf59bfc4abaa6771bb6dcf15 } from '../../../components/admin/AccountView'
 import { ApiKeyNote as ApiKeyNote_368b90cdbf59bfc4abaa6771bb6dcf15 } from '../../../components/admin/AccountView'
 import { SignOut as SignOut_ecde4383348bf1e963734111aebbf434 } from '../../../components/admin/SignOut'
@@ -80,18 +82,20 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/components/admin/RelatedPicker#RelatedPicker": RelatedPicker_3eb131fbfe4b0bc8a64b3e8c3b6ff916,
-  "/components/admin/ArticleActions#ArticleActions": ArticleActions_820209e87154fb77fa550708666ace60,
+  "/components/admin/DocActions#ArticleActions": ArticleActions_786ca5ea86bf3b6eb17e3ea797a584ce,
   "/components/admin/ListCells#TagCell": TagCell_07f513c68167caf320c51b8dc6c45309,
   "/components/admin/ListCells#StatusCell": StatusCell_07f513c68167caf320c51b8dc6c45309,
   "/components/admin/TranslateToThaiButton#TranslateToThaiButton": TranslateToThaiButton_c8d0b70ea2b3169c421567a646db02b1,
-  "/components/admin/ArticleActions#ArticleMeta": ArticleMeta_820209e87154fb77fa550708666ace60,
+  "/components/admin/DocActions#DocMeta": DocMeta_786ca5ea86bf3b6eb17e3ea797a584ce,
   "/components/admin/ListReturn#RememberList": RememberList_bc9981d873c7bdb9b0e730495859686c,
   "/components/admin/LocaleSwitch#LocaleSwitch": LocaleSwitch_4ef13d4fc6ce28dbd550419ec8c51c88,
   "/components/admin/ArticleViews#ArticleOverview": ArticleOverview_2189bbbf21ed1de1d6d01c49729884c2,
   "/components/admin/ListReturn#ReturnToPlace": ReturnToPlace_bc9981d873c7bdb9b0e730495859686c,
   "/components/admin/ArticleViews#ArticleWrite": ArticleWrite_2189bbbf21ed1de1d6d01c49729884c2,
+  "/components/admin/DocActions#ResourceActions": ResourceActions_786ca5ea86bf3b6eb17e3ea797a584ce,
   "/components/admin/MediaCells#MediaPreviewCell": MediaPreviewCell_caa40f712cc60fbbf39decd6b126e7a1,
   "/components/admin/MediaCells#QuietTextCell": QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1,
+  "/components/admin/DocActions#MediaActions": MediaActions_786ca5ea86bf3b6eb17e3ea797a584ce,
   "/components/admin/AccountView#AccountView": AccountView_368b90cdbf59bfc4abaa6771bb6dcf15,
   "/components/admin/AccountView#ApiKeyNote": ApiKeyNote_368b90cdbf59bfc4abaa6771bb6dcf15,
   "/components/admin/SignOut#SignOut": SignOut_ecde4383348bf1e963734111aebbf434,

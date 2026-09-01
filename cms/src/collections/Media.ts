@@ -76,6 +76,31 @@ export const Media: CollectionConfig = {
         },
       },
     },
+    {
+      /* Save and the ⋯ menu, portalled into the header band — the same control
+       * the article and resource screens carry. It renders nothing where it
+       * stands; a `ui` field simply has to live inside the form to reach form
+       * context, and this collection has no rail to put it in.
+       *
+       * NO RAIL, DELIBERATELY. Two fields and a file do not divide into a
+       * document and a column of decisions about it, and a 325px sidebar
+       * holding two timestamps would be the account screen's mistake again. */
+      name: 'mediaActions',
+      type: 'ui',
+      admin: {
+        disableListColumn: true,
+        components: { Field: '/components/admin/DocActions#MediaActions' },
+      },
+    },
+    {
+      // The pair that used to be a strip of type across the top of the screen.
+      name: 'documentMeta',
+      type: 'ui',
+      admin: {
+        disableListColumn: true,
+        components: { Field: '/components/admin/DocActions#DocMeta' },
+      },
+    },
   ],
   upload: {
     staticDir: 'media',

@@ -109,7 +109,7 @@ export const Users: CollectionConfig = {
       admin: {
         disableListColumn: true,
         position: 'sidebar',
-        components: { Field: '/components/admin/ArticleActions#ArticleMeta' },
+        components: { Field: '/components/admin/DocActions#DocMeta' },
       },
     },
     {

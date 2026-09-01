@@ -157,6 +157,23 @@ export const Resources: CollectionConfig = {
     },
 
     // ---- The rail ----------------------------------------------------------
+    {
+      // Save and the ⋯ menu, portalled into the header band — the same control
+      // the article screen carries, from the same component. It is declared in
+      // the rail because a `ui` field has to live somewhere inside the form to
+      // reach form context; it renders nothing where it stands.
+      name: 'resourceActions',
+      type: 'ui',
+      admin: {
+        // A `ui` field is a component, not data, and Payload would otherwise
+        // offer it in the column picker — where it would render a header bar
+        // inside a table cell.
+        disableListColumn: true,
+        position: 'sidebar',
+        components: { Field: '/components/admin/DocActions#ResourceActions' },
+      },
+    },
+
     // The same four questions as an article, asked in the same order: is it
     // live, where is it filed, what is its address, and one action at the end.
     // Status and its date are one question in two parts, so they share a row.
@@ -179,6 +196,20 @@ export const Resources: CollectionConfig = {
 
     // An action rather than a property, so it closes the rail — as on Articles.
     translateToThaiField,
+
+    {
+      // When it was last touched and when it was made. It was a strip of type
+      // across the top of the screen, in Payload's control bar; that bar is
+      // gone, and provenance belongs at the end of the column rather than above
+      // the document.
+      name: 'documentMeta',
+      type: 'ui',
+      admin: {
+        disableListColumn: true,
+        position: 'sidebar',
+        components: { Field: '/components/admin/DocActions#DocMeta' },
+      },
+    },
   ],
 }
 

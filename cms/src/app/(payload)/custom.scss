@@ -1264,8 +1264,36 @@ html {
   padding-block-end: 0.875rem;
 }
 
+/* ---- one bar, on every document screen ----------------------------------- */
+
+/*
+ * PAYLOAD'S CONTROL BAR GOES WHERE OURS ARRIVES. It is a 65px strip holding
+ * "Last Modified" and "Created" as running text, Save on the end and a dot menu
+ * — above a document tab row offering the one tab the screen is already on.
+ * Articles lost both a while ago; Resources and Media were still wearing them,
+ * with the header band above sitting empty.
+ *
+ * MATCHED ON THE NEW BAR RATHER THAN ON A COLLECTION. `.da-bar` is what
+ * DocActions portals into the header, so this reads: if this screen has been
+ * given the header cluster, it does not also get Payload's. Nothing to keep in
+ * step when the next collection is treated — registering the field is the whole
+ * change — and no screen can end up with neither.
+ *
+ * The bar exists a frame after mount, so there is a flicker of the old chrome
+ * on a cold load. The alternative is a class per collection set from JS, which
+ * has exactly the same timing and one more thing to forget.
+ */
+body:has(.app-header__actions .da-bar) .doc-controls,
+body:has(.app-header__actions .da-bar) .doc-controls__divider,
+/* The document header is an `h1` of the title, which the breadcrumb above it
+   and the Title field below it both already state. */
+body:has(.app-header__actions .da-bar) .doc-header,
+body:has(.app-header__actions .da-bar) .doc-tabs {
+  display: none;
+}
+
 /* The two sheets.
-   
+
    ONLY THE RAIL'S SELECTOR NEEDED TIGHTENING. `.document-fields__sidebar-fields
    .render-fields` is a descendant selector and also matched the nested
    `.render-fields` Payload puts inside a `row`, so a row in the rail drew a
@@ -1294,6 +1322,48 @@ html {
 
 .document-fields__sidebar-fields > .render-fields {
   padding: 1.25rem 1.25rem 1.5rem;
+}
+
+/* ---- the file panel is a sheet too -------------------------------------- */
+
+/*
+ * THE MEDIA SCREEN DREW TWO KINDS OF BOX. Payload renders the uploaded file —
+ * thumbnail, name, size, the control that clears it — OUTSIDE `.render-fields`,
+ * so the sheet rule above never reached it: measured, a #fafaf9 panel at an 8px
+ * radius sitting directly above a #ffffff sheet at 34, both 1080 wide. Two
+ * objects, one screen, no reason.
+ *
+ * It takes the sheet's ground and the sheet's corner. It keeps its own padding,
+ * which is Payload's and is already right for a 96px thumbnail.
+ */
+.field-type.file-field {
+  background-color: #ffffff;
+  border: 0;
+  border-radius: var(--style-radius-sheet);
+}
+
+/* The two lines beside the thumbnail are the file's name and its facts, which
+   is the section-and-note pair the rest of the admin draws — so they are drawn
+   that way. The name was 15px in the ACCENT, which in this admin means "a link
+   to the public site", and the facts under it were 15px ink-2: the same size as
+   the name, in nearly the same ink. */
+.file-field .file-meta__url a {
+  font-family: var(--font-display);
+  font-size: var(--da-section-size);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--da-ink);
+  text-decoration: none;
+}
+
+.file-field .file-meta__url a:hover {
+  text-decoration: underline;
+}
+
+.file-field .file-meta__size-type {
+  font-size: var(--da-note-size);
+  line-height: 1.5;
+  color: var(--da-ink-3);
 }
 
 /* The SEO group came with 40px/60px of its own padding and negative side

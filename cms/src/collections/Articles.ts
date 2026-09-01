@@ -318,7 +318,7 @@ export const Articles: CollectionConfig = {
         // table cell — "Article Read" tried to put a whole article in one.
         disableListColumn: true,
         position: 'sidebar',
-        components: { Field: '/components/admin/ArticleActions#ArticleActions' },
+        components: { Field: '/components/admin/DocActions#ArticleActions' },
       },
     },
     /* THE TAG COMES BEFORE THE STATUS, in the rail and in the list, and it has to
@@ -373,7 +373,7 @@ export const Articles: CollectionConfig = {
         // table cell — "Article Read" tried to put a whole article in one.
         disableListColumn: true,
         position: 'sidebar',
-        components: { Field: '/components/admin/ArticleActions#ArticleMeta' },
+        components: { Field: '/components/admin/DocActions#DocMeta' },
       },
     },
     // NOTE: there are deliberately no "Thai" and "Summary" columns in the list.
