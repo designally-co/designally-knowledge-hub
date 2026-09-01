@@ -288,11 +288,11 @@ export interface Resource {
   id: number;
   title: string;
   /**
-   * What is in the download and what it is for. Plain text — a few short paragraphs. Also used as the search description.
+   * What the download is for. Also the search description.
    */
   description?: string | null;
   /**
-   * One entry per downloadable file. A resource can ship several formats — the card and page list them all.
+   * One entry per file — several formats are fine.
    */
   files?:
     | {

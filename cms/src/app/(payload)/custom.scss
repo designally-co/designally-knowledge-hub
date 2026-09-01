@@ -1919,6 +1919,33 @@ body:has(.app-header__actions .da-bar) .doc-tabs {
   margin-block-start: 2.5rem;
 }
 
+/* ---- the resource itself, in one box ------------------------------------- */
+
+/*
+ * ITS NAME AND THE SENTENCE DESCRIBING IT ARE ONE THING. They were two panels
+ * with a 12px seam between them, which said they were separate decisions;
+ * everything BELOW them is a different kind of thing — the files, the terms,
+ * the metadata — and that is where a seam belongs.
+ *
+ * The row is a direct child of the sheet, so it takes the panel treatment every
+ * top-level field gets and the two fields inside become plain blocks on it. All
+ * that is left to say is that they stack: a Payload row lays its fields out in
+ * a line, which would put a one-line title beside a four-line textarea.
+ */
+.da-intro > .render-fields {
+  display: flex;
+  flex-direction: column;
+  /* The same 1.25rem the sheet puts between any two fields, so grouping them
+     changes what the box says and not how densely it is set. */
+  gap: 1.25rem;
+  margin: 0;
+}
+
+.da-intro > .render-fields > .field-type {
+  inline-size: 100%;
+  margin: 0;
+}
+
 /* THE PANEL STAYS; ONLY THE HEADING IS GONE. "Cover image" named a box that
    now names itself — the empty state says what it is in its own middle — but
    the warm-white ground still does real work: it is what makes the picture, the

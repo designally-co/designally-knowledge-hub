@@ -99,26 +99,51 @@ export const Resources: CollectionConfig = {
     // ---- Main column -------------------------------------------------------
     // See Articles: the locale banner goes above everything the locale affects.
     localeGuardField,
-    titleField,
+
+    /* WHAT IT IS CALLED AND WHAT IT IS, IN ONE BOX. They were two panels, and
+       the seam between them was saying that the name and the sentence
+       describing it are separate decisions — they are the same decision, made
+       twice. Everything below is a different KIND of thing: the files, the
+       terms, the metadata. This is the resource itself.
+
+       A `row`, which is PRESENTATIONAL ONLY — unlike `group` it does not nest
+       the data, so `title` and `description` stay exactly where they are in the
+       API and in every existing document. The theme paints direct children of
+       the sheet as panels, so wrapping them makes the row the panel and the two
+       fields plain blocks inside it; `da-intro` stacks them (see custom.scss),
+       since a row lays its fields out side by side by default. */
     {
-      // A resource has one piece of prose, not a dek and a body. There is no
-      // summary field: the card shows title, category and formats, and this is
-      // what the resource page prints.
-      name: 'description',
-      type: 'textarea',
-      localized: true,
-      admin: {
-        description:
-          'What is in the download and what it is for. Plain text — a few short paragraphs. Also used as the search description.',
-      },
+      type: 'row',
+      admin: { className: 'da-intro' },
+      fields: [
+        titleField,
+        {
+          // A resource has one piece of prose, not a dek and a body. There is no
+          // summary field: the card shows title, category and formats, and this
+          // is what the resource page prints.
+          name: 'description',
+          type: 'textarea',
+          localized: true,
+          admin: {
+            // Was three sentences: what it is for, that it is plain text, that
+            // it is a few short paragraphs, and that search reads it. The
+            // textarea already says "plain text" by being one, and its height
+            // says "short". What is left is the part that is not visible.
+            description: 'What the download is for. Also the search description.',
+          },
+        },
+      ],
     },
+
     {
       name: 'files',
       type: 'array',
       labels: { singular: 'File', plural: 'Files' },
       admin: {
-        description:
-          'One entry per downloadable file. A resource can ship several formats — the card and page list them all.',
+        // "The card and page list them all" described the public site to
+        // somebody filling in a form. What they need to know is that more than
+        // one row is allowed.
+        description: 'One entry per file — several formats are fine.',
       },
       fields: [
         { name: 'file', type: 'upload', relationTo: 'media', required: true },
