@@ -521,6 +521,39 @@ export function MediaActions() {
   const { savedDocumentData } = useDocumentInfo()
 
   const url = typeof savedDocumentData?.url === 'string' ? savedDocumentData.url : null
+
+  /* THE FILE, NOT THE THUMBNAIL OF IT. This screen draws the picture at the
+     sheet's full width, and Payload was filling that with `adminThumbnail` —
+     the 400px derivative — so a 1280px photograph arrived as a 400px file
+     stretched to 720 and looked it.
+
+     The collection is right to point `adminThumbnail` at the small one: it is
+     what the LIST loads, forty rows at a time. Only this one `img` wants the
+     original, so only this one `img` is repointed.
+
+     THE OBSERVER IS THE POINT. Payload re-renders this block after a save and
+     after the image editor closes, which puts the derivative back; without
+     watching for that the picture silently softens the first time you save. */
+  React.useEffect(() => {
+    if (!url) return
+
+    const swap = () => {
+      const img = document.querySelector<HTMLImageElement>('.file-details .thumbnail img')
+      // The guard is what keeps this from feeding itself: setting `src` is an
+      // attribute mutation, which is one of the things being watched.
+      if (img && img.getAttribute('src') !== url) img.setAttribute('src', url)
+    }
+
+    swap()
+    const watch = new MutationObserver(swap)
+    watch.observe(document.body, {
+      attributeFilter: ['src'],
+      attributes: true,
+      childList: true,
+      subtree: true,
+    })
+    return () => watch.disconnect()
+  }, [url])
   const absolute = url && typeof window !== 'undefined' ? `${window.location.origin}${url}` : url
   const { copied, copy } = useCopy(absolute)
 

@@ -1341,33 +1341,43 @@ body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls__divider {
   padding: 1.25rem 1.25rem 1.5rem;
 }
 
-/* ---- the file goes IN the sheet ----------------------------------------- */
+/* -----------------------------------------------------------------------------
+   The media document: one sheet, read top to bottom
 
-/*
- * THE MEDIA SCREEN DREW TWO BOXES FOR ONE DOCUMENT. Payload renders the
- * uploaded file — thumbnail, name, size, the control that clears it — OUTSIDE
- * `.render-fields`, so the sheet rule above never reached it: measured, a
- * #fafaf9 panel at an 8px radius above a #ffffff sheet at 34. Matching their
- * ground and corner made them the same object twice; it did not make them one.
- *
- * They are siblings inside the main column's gutter, so THE GUTTER BECOMES THE
- * SHEET and both of them become plain blocks on it. The file is then genuinely
- * inside the document rather than a card stacked above it — which is what it
- * is: this collection's document is a file with two fields about it.
- *
- * THE WIDTH DOES NOT MOVE. The gutter's 60px of horizontal padding is what
- * inset the old sheet inside it, so it becomes 60px of margin and the new sheet
- * lands on exactly the width the old one had — 1072 at this viewport, the same
- * as an article's. The padding it gives up is replaced with the sheet's own.
- */
+   THE SCREEN DREW TWO BOXES FOR ONE DOCUMENT. Payload renders the uploaded file
+   — thumbnail, name, size, the control that clears it — OUTSIDE
+   `.render-fields`, so the sheet rule never reached it: measured, a #fafaf9
+   panel at an 8px radius above a #ffffff sheet at 34. Matching their ground and
+   corner made them the same object twice; it did not make them one.
+
+   They are siblings inside the main column's gutter, so THE GUTTER IS THE SHEET
+   and both become plain blocks on it. What the sheet then holds, in order:
+
+     the actions          top right, three discs
+     the file             full width, at its own ratio
+     name, size, type     stacked on the sheet's left edge
+     Alt, Credit          the two things anyone types here
+     last modified        provenance, closing the column
+
+   That is the order the questions are asked in: what IS this, then what do you
+   call it. It used to be a 140px thumbnail with the name beside it and the
+   fields underneath — a row of chrome above a form, on a screen whose entire
+   subject is a picture nobody could see.
+   ========================================================================== */
+
+/* A MEASURE, BECAUSE THERE IS NO RAIL TO TAKE ONE. Every other document is a
+   sheet plus a 325px column of decisions, which leaves the sheet at ~734. This
+   collection has two fields and no rail, so the sheet was taking the whole
+   content width — 1072 at 1600, an Alt input a metre wide. 52rem is the account
+   screen's measure, the other screen in this admin with nothing beside it. */
 .collection-edit--media .document-fields__main > .gutter {
-  margin-inline: 60px;
-  /* AND THE SHEET STARTS WHERE EVERY OTHER SHEET STARTS. The gutter's padding
-     was doing two jobs — insetting the sheet from the page on three sides, and
+  inline-size: min(100% - 120px, 52rem);
+  margin-inline: auto;
+  /* AND IT STARTS WHERE EVERY OTHER SHEET STARTS. The gutter's padding was
+     doing two jobs — insetting the sheet from the page on three sides, and
      dropping it clear of the header on the fourth. Replacing all of it with the
-     sheet's own padding took the fourth away, and the media sheet began 34px
-     higher than an article's: measured y65 against y99. The top inset comes
-     back as margin. */
+     sheet's own padding took the fourth away, and this sheet began 34px higher
+     than an article's: measured y65 against y99. */
   margin-block-start: 2.3077rem;
   padding: 1.75rem 2rem 2rem;
   border-radius: var(--style-radius-sheet);
@@ -1384,27 +1394,117 @@ body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls__divider {
   background-color: transparent;
 }
 
-/* One gap between the file and the first field asking about it, the same size
-   the sheet puts between any two of its blocks. */
 .collection-edit--media .field-type.file-field {
   margin-block-end: 1.5rem;
 }
 
-/*
- * THE FILE BLOCK IS A PANEL LIKE THE FIELDS BESIDE IT. It came with Payload's
- * own treatment — #fafaf9, a hairline, and `0 2px 2px -1px rgba(0,0,0,0.1)` —
- * which is a card lifted off the page. Inside a sheet there is nothing to lift
- * off, and this admin holds things to the page with the Edge and never with a
- * shadow.
- *
- * It takes the ground the Alt and Credit panels take, so the three blocks in
- * this sheet are three of the same object.
- */
-.file-details {
+/* AND SO DOES THE FILE BLOCK ITSELF. It came with Payload's card treatment —
+   #fafaf9, a hairline, and `0 2px 2px -1px rgba(0,0,0,0.1)`. Inside a sheet
+   there is nothing to lift off, this admin holds things to the page with the
+   Edge and never with a shadow, and anything left around the picture would stop
+   it reaching the sheet's own edges. */
+.collection-edit--media .file-details {
+  padding: 0;
   border: 0;
   box-shadow: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+/*
+ * THREE ROWS OUT OF A FLEX ROW.
+ *
+ * Payload lays the header out as `thumbnail | main-detail | remove`, and the
+ * two image actions live INSIDE main-detail beside the name — so the three
+ * controls that belong together are not siblings, and no amount of ordering on
+ * one flex line produces the layout above.
+ *
+ * `display: contents` on the wrapper is what makes it possible: main-detail
+ * stops generating a box and its children become items of THIS grid, so the
+ * name and the two buttons can be placed in different rows. Named areas then
+ * put each item where it belongs regardless of which exist — a PDF or an SVG
+ * has no Preview Sizes and no Edit Image, and those columns simply collapse to
+ * zero rather than leaving a hole where a button would have been.
+ */
+/* EVERY LAYOUT RULE BELOW IS SCOPED TO THIS COLLECTION'S DOCUMENT. `.file-details`
+   is Payload's block for ANY upload field — a resource's attached files, the
+   drawer that picks a cover — and turning it into a three-row grid there would
+   put a full-width picture inside a table row. The disc styling further down is
+   deliberately not scoped: those three controls are the same control wherever
+   they appear. */
+.collection-edit--media .file-details > header {
+  display: grid;
+  /* `max-content`, NOT `auto`, on the three action columns. The rows below span
+     all four, and a spanning item's width is distributed into `auto` columns —
+     measured, that pushed the two image actions to the LEFT edge and left the
+     free space between them and Remove. Fixed to their content, the `1fr`
+     absorbs the row and the three discs sit together on the right. */
+  grid-template-columns: minmax(0, 1fr) max-content max-content max-content;
+  grid-template-areas:
+    '.     preview edit remove'
+    'media media   media media'
+    'meta  meta    meta  meta';
+  column-gap: 0.5rem;
+  row-gap: 1rem;
+  align-items: center;
+}
+
+/* TWO WRAPPERS, NOT ONE. Payload nests the image actions a level deeper again,
+   in `.file-field__upload-actions` inside main-detail — so promoting only the
+   outer one made that wrapper the grid item and left the buttons inside it,
+   auto-placed at the left of row 1 with the columns measuring 697.5 / 0 / 0 / 0.
+   Both wrappers stand down, and the three controls are items of this grid. */
+.collection-edit--media .file-details__main-detail,
+.collection-edit--media .file-field__upload-actions {
+  display: contents;
+}
+
+/* THE FILE, AT THE SHEET'S FULL WIDTH AND ITS OWN RATIO. It was a 140px square
+   with `object-fit: cover`, which is a thumbnail: the one thing this screen
+   exists to show, cropped to a stamp. Width comes from the sheet, height from
+   the picture. */
+.collection-edit--media .file-details .thumbnail {
+  grid-area: media;
+  inline-size: 100%;
+  block-size: auto;
+  /* Payload's `.thumbnail--size-medium` is `width: 140px; max-height: 140px`,
+     and it was the MAXIMUM that kept winning: the image inside grew to its full
+     405px while its container stayed 140 and clipped it. */
+  max-block-size: none;
+  border-radius: var(--style-radius-s);
+  overflow: hidden;
   background-color: var(--da-warm-white);
-  border-radius: var(--style-radius-m);
+}
+
+.collection-edit--media .file-details .thumbnail img,
+.collection-edit--media .file-details .thumbnail svg {
+  inline-size: 100%;
+  block-size: auto;
+  object-fit: contain;
+}
+
+/* The facts, stacked, on the sheet's left edge — Payload had them centred
+   against the thumbnail with 28px of inset. */
+.collection-edit--media .file-details .file-meta {
+  grid-area: meta;
+  margin: 0;
+  padding: 0;
+}
+
+.collection-edit--media .file-field__previewSizes {
+  grid-area: preview;
+}
+
+.collection-edit--media .file-field__edit {
+  grid-area: edit;
+}
+
+/* Remove was `position: absolute; top: 23px; right: 23px` — floated over the
+   block rather than laid out in it, which is why it sat on its own line 39px
+   below the other two. In the flow it takes its place at the end of the row. */
+.collection-edit--media .file-details__remove {
+  position: static;
+  grid-area: remove;
 }
 
 /* ---- the file's actions, as icon buttons -------------------------------- */
