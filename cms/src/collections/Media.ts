@@ -56,25 +56,40 @@ export const Media: CollectionConfig = {
         },
       },
     },
+    /* THE TWO THINGS ANYONE TYPES HERE, IN ONE BOX. They were two panels with a
+       seam between them, and the seam was claiming they are separate decisions
+       — they are the same one, made about the same file, on a screen where
+       everything else is the file itself. Same wrapper the resource's title and
+       description use; see `da-intro` in custom.scss.
+
+       A `row` is PRESENTATIONAL ONLY — unlike a group it does not nest the data
+       — so `alt` and `credit` stay where they are in the API, which matters:
+       every article cover reads `alt` through the media relation. */
     {
-      name: 'alt',
-      type: 'text',
-      required: true,
-      admin: {
-        description: 'Alt text (required for accessibility / WCAG 2.1 AA).',
-      },
-    },
-    {
-      name: 'credit',
-      type: 'text',
-      admin: {
-        description: 'Optional attribution for the asset.',
-        components: {
-          // Empty renders as an em dash rather than Payload's `<No Credit>`,
-          // which is developer syntax shown to an editor.
-          Cell: '/components/admin/MediaCells#QuietTextCell',
+      type: 'row',
+      admin: { className: 'da-intro' },
+      fields: [
+        {
+          name: 'alt',
+          type: 'text',
+          required: true,
+          admin: {
+            description: 'Alt text (required for accessibility / WCAG 2.1 AA).',
+          },
         },
-      },
+        {
+          name: 'credit',
+          type: 'text',
+          admin: {
+            description: 'Optional attribution for the asset.',
+            components: {
+              // Empty renders as an em dash rather than Payload's `<No Credit>`,
+              // which is developer syntax shown to an editor.
+              Cell: '/components/admin/MediaCells#QuietTextCell',
+            },
+          },
+        },
+      ],
     },
     {
       /* Save and the ⋯ menu, portalled into the header band — the same control

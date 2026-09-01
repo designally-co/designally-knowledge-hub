@@ -1434,19 +1434,21 @@ body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls__divider {
    they appear. */
 .collection-edit--media .file-details > header {
   display: grid;
-  /* `max-content`, NOT `auto`, on the three action columns. The rows below span
-     all four, and a spanning item's width is distributed into `auto` columns —
+  /* `max-content`, NOT `auto`, on the three action columns. The media spans all
+     four, and a spanning item's width is distributed into `auto` columns —
      measured, that pushed the two image actions to the LEFT edge and left the
      free space between them and Remove. Fixed to their content, the `1fr`
      absorbs the row and the three discs sit together on the right. */
   grid-template-columns: minmax(0, 1fr) max-content max-content max-content;
+  /* THE ACTIONS ARE IN THE PICTURE'S OWN CELL, not in a strip above it. They
+     are named by column and row below rather than by area, because three items
+     cannot share one area without stacking on each other — placed explicitly,
+     they overlap the media that spans beneath them. */
   grid-template-areas:
-    '.     preview edit remove'
-    'media media   media media'
-    'meta  meta    meta  meta';
+    'media media media media'
+    'meta  meta  meta  meta';
   column-gap: 0.5rem;
   row-gap: 1rem;
-  align-items: center;
 }
 
 /* TWO WRAPPERS, NOT ONE. Payload nests the image actions a level deeper again,
@@ -1491,12 +1493,32 @@ body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls__divider {
   padding: 0;
 }
 
+/* ON THE PICTURE, TOP RIGHT. The strip above it was 36px of sheet spent on
+   three controls that belong to the thing underneath them; over the picture
+   they are where the hand already is, and the file starts at the top of the
+   sheet.
+
+   `align-self: start` keeps them off the vertical centre of a 405px cell, and
+   `z-index` puts them over an image that comes later in the DOM. */
+.collection-edit--media .file-field__previewSizes,
+.collection-edit--media .file-field__edit,
+.collection-edit--media .file-details__remove {
+  grid-row: 1;
+  align-self: start;
+  z-index: 1;
+  margin-block-start: 0.75rem;
+  /* A DARKER EDGE THAN THE 36px DISCS ELSEWHERE. Those sit on the sheet, where
+     the hairline is enough; these sit on whatever the picture happens to be,
+     and a white disc with a #cecfd3 ring disappears into a pale one. */
+  border-color: var(--da-ink-4);
+}
+
 .collection-edit--media .file-field__previewSizes {
-  grid-area: preview;
+  grid-column: 2;
 }
 
 .collection-edit--media .file-field__edit {
-  grid-area: edit;
+  grid-column: 3;
 }
 
 /* Remove was `position: absolute; top: 23px; right: 23px` — floated over the
@@ -1522,8 +1544,10 @@ body:has(.app-header__actions .da-bar):not(.da-writing) .doc-controls__divider {
      the tallest item is what sizes a grid row: 36 + 27.69 = the 63.69px row
      that pushed the action strip 24px down the sheet. Zeroing the top alone
      fixed the wrong half. */
-  margin: 0;
-  grid-area: remove;
+  /* The right-hand end of the row, so its own margin is what insets the group
+     from the picture's edge. */
+  margin: 0.75rem 0.75rem 0 0;
+  grid-column: 4;
 }
 
 /* THE TRASH, NOT THE CROSS. Payload draws an `x` here, which in this admin
