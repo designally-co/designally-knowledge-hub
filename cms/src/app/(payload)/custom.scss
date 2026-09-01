@@ -85,6 +85,12 @@
   --da-hairline: #cecfd3; /* card and input borders */
   --da-divider: #e6e8eb; /* internal dividers */
 
+  /* The nav, collapsed. Held as a token because five rules need the same
+     number — the grid track, the panel, the floating selection bar and the
+     collapse control's two positions — and they have to agree or the rail and
+     the things pinned to its edge come apart. */
+  --da-rail: 84px;
+
   /* =========================================================================
      Three roles of small type, and nothing else
 
@@ -4412,8 +4418,14 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
 /* ---- the collapsed rail -------------------------------------------------- */
 
 /*
- * A 68px rail: the mark, four glyphs and the avatar. Everything that is a WORD
+ * An 84px rail: the mark, four glyphs and the avatar. Everything that is a WORD
  * goes, and nothing that is a TARGET does.
+ *
+ * IT WAS 68, WHICH IS THE WIDTH OF THE GLYPHS AND NOTHING ELSE. The mark keeps
+ * its expanded inset — 20px, so that collapsing does not move the one element
+ * on screen that should be nailed down — and at 68 that left 20px on the far
+ * side of a 28px mark: a rail sized to its icons with the logo wedged into it.
+ * 84 gives the column the same air on both sides of what it holds.
  *
  * THE MARK DOES NOT MOVE. Earlier versions of this shrank the rail's padding and
  * the mark with it, so collapsing slid the logo 15px left and took 2px off it —
@@ -4425,7 +4437,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
  * edge instead (below), so nothing inside the column has to make room for it.
  */
 body.da-nav-collapsed .template-default {
-  grid-template-columns: 68px 1fr;
+  grid-template-columns: var(--da-rail) 1fr;
 }
 
 /* THE PANEL HAS TO SHRINK TOO, not just the track it sits in. Payload gives
@@ -4439,7 +4451,7 @@ body.da-nav-collapsed .template-default {
    against the right with 26px of dead space on the left. The scroller fills its
    parent, and the inset is spent once, by Payload. */
 body.da-nav-collapsed .nav {
-  inline-size: 68px;
+  inline-size: var(--da-rail);
 }
 
 body.da-nav-collapsed .nav__scroll {
@@ -4474,7 +4486,7 @@ body.da-nav-collapsed .da-navfoot__account {
 /* The floating selection bar is centred on the content column, so it has to
    know the column moved. */
 body.da-nav-collapsed .collection-list .list-selection {
-  inset-inline-start: 68px;
+  inset-inline-start: var(--da-rail);
 }
 
 /* ---- the collapse control, on the edge ----------------------------------- */
@@ -4531,7 +4543,7 @@ body.da-nav-collapsed .collection-list .list-selection {
   }
 
   body.da-nav-collapsed .da-brand__toggle {
-    inset-inline-start: 68px;
+    inset-inline-start: var(--da-rail);
   }
 
   @media (hover: hover) {
