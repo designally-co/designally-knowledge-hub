@@ -14,15 +14,22 @@
  * the accent tint is reserved for the one state that means work is waiting.
  */
 
+/* "Thai translation" names a block in the rail, exactly as "Tag" and "Slug"
+   name the blocks above it, so it is a FIELD label and not a section heading —
+   the 15px step belongs to panels in the document, and one 15px line in a 13px
+   rail would read as the rail's title.
+
+   It takes the label tokens rather than restating them. Two values here were
+   its own: the body face, where every other label in this rail is in the
+   display face, and ink-3 against their ink-2 — a third rendering of one role,
+   in the one place the difference sits three rows apart. */
 .da-thai__label {
   margin: 0 0 0.5rem;
-  font-size: 13px;
+  font-family: var(--font-display);
+  font-size: var(--da-label-size);
   font-weight: 600;
-  /* 20px, matching `.field-label` exactly. A unitless 1.4 gave 18.2px here,
-     which is a third line-height for a label that sits directly beneath two
-     others in the same rail. */
-  line-height: 20px;
-  color: var(--da-ink-3);
+  line-height: var(--da-label-line);
+  color: var(--da-ink-2);
 }
 
 /* ---- what state the translation is in ------------------------------------ */

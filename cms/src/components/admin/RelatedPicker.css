@@ -6,17 +6,22 @@
    themselves are white objects on that panel rather than panels again.
    ========================================================================== */
 
+/* The same object as "References" and "SEO & sharing" — a panel's name — so it
+   reads from the tokens those are set from rather than restating a size here.
+   It was 0.9375rem, which on a 15px root resolves to 14.06px against their 13:
+   two panels stacked in one column, a pixel apart, in different inks. */
 .rel__label {
   display: block;
   font-family: var(--font-display);
-  font-size: 0.9375rem;
+  font-size: var(--da-section-size);
   font-weight: 600;
+  line-height: var(--da-label-line);
   letter-spacing: -0.01em;
   color: var(--da-ink);
 }
 
 .rel__hint {
-  font-size: 0.8125rem;
+  font-size: var(--da-note-size);
   line-height: 1.5;
   color: var(--da-ink-3);
   /* 2px above, 20px below: the hint belongs to the name over it, not to the

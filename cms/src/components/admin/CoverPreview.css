@@ -53,7 +53,7 @@
 .da-coverprev__broken {
   margin: 0;
   padding: 1rem;
-  font-size: 0.8125rem;
+  font-size: var(--da-note-size);
   line-height: 1.5;
   text-align: center;
   color: var(--da-critical);
@@ -162,7 +162,7 @@
 
 .da-coverprev__ways-text {
   margin: 0;
-  font-size: 0.8125rem;
+  font-size: var(--da-note-size);
   line-height: 1.5;
   color: var(--da-ink-3);
 }

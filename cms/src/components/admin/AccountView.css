@@ -78,7 +78,7 @@ body.da-account .auth-fields__controls {
   padding: 0.625rem 0.875rem;
   border-radius: var(--style-radius-s);
   background-color: var(--da-orange-tint);
-  font-size: 0.8125rem;
+  font-size: var(--da-note-size);
   line-height: 1.5;
   color: var(--da-orange-mark);
 }

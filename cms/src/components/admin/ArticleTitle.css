@@ -52,7 +52,7 @@
 
 .da-title__error {
   margin: 0.375rem 0 0;
-  font-size: 0.8125rem;
+  font-size: var(--da-note-size);
   line-height: 1.5;
   color: var(--da-critical);
 }

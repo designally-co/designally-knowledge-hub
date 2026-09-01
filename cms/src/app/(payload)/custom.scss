@@ -85,6 +85,26 @@
   --da-hairline: #cecfd3; /* card and input borders */
   --da-divider: #e6e8eb; /* internal dividers */
 
+  /* =========================================================================
+     Three roles of small type, and nothing else
+
+     THE FORM HAS EXACTLY THREE KINDS OF TEXT AROUND ITS INPUTS: the name of a
+     SECTION (References, Related, SEO & sharing, Files), the name of a FIELD
+     (Title, Meta Title, Tag, Slug), and the SENTENCE that explains either. They
+     were being drawn seven different ways — "References" at 13px grey against
+     "Related" at 14.06px black; descriptions at 15px in the document and 12px
+     in the rail; a rail heading in the body face while its neighbours were in
+     the display face; and, worst, the 15px description sitting UNDER a 13px
+     heading, which put the explanation above the thing it explains.
+
+     Stated once here so a component file and this stylesheet cannot drift: see
+     RelatedPicker.css and TranslateToThaiButton.css, which read these.
+     ====================================================================== */
+  --da-section-size: 15px; /* a panel's name */
+  --da-label-size: 13px; /* a field's name */
+  --da-note-size: 13px; /* the sentence under either */
+  --da-label-line: 20px; /* one leading for both names */
+
   /* Semantic tones. */
   --da-affirm: #107f54;
   --da-caution: #a06000;
@@ -244,11 +264,28 @@ p,
   line-height: 1.6;
 }
 
-/* Field labels — small, quiet, and not competing with the value under them. */
+/* Field labels — small, quiet, and not competing with the value under them.
+
+   ONE RULE FOR EVERY LABEL ON EVERY SCREEN. This used to set ink-3 here and
+   ink-2 again in two later rules that reached only the main column's top-level
+   fields and the rail, so "Tag" was #262a30 and "Meta Title", eight rows below
+   it, was #53575e — the same role in two colours because of where it sat in the
+   tree. The darker one is right and it is now the only one. */
 .field-label {
   font-weight: 600;
-  font-size: 13px;
+  font-size: var(--da-label-size);
+  line-height: var(--da-label-line);
   letter-spacing: 0;
+  color: var(--da-ink-2);
+}
+
+/* The sentence under a label or a section name. One size everywhere: it was
+   15px in the document and 12px in the rail — the same explanatory voice at a
+   quarter's difference in size, and at 15px it outweighed the 13px label above
+   it. */
+.field-description {
+  font-size: var(--da-note-size);
+  line-height: 1.5;
   color: var(--da-ink-3);
 }
 
@@ -1390,33 +1427,27 @@ html {
   display: none;
 }
 
-/* Main-column field labels: the display face and a darker ink, so a heading
-   over the document reads as a heading and the rail's labels stay quieter.
+/* A SECTION'S NAME, WHICH IS NOT A FIELD'S NAME. References, Related, Files and
+   SEO & sharing each head a panel that owns a sentence and several controls;
+   Title and Meta Title name one input. Two roles, and until now three
+   renderings: the array and group titles were pinned to the label's own 13px
+   (they had been falling through to Payload's 20px h3, which was worse), while
+   `Related` — a component, so outside that rule — drew itself at 14.06px in a
+   darker ink. Two panels, one above the other, in two sizes.
 
-   TWO THINGS WERE WRONG WITH THIS RULE.
+   A section takes the 15px step the rest of this admin's UI text uses; a field
+   keeps 13. The distance between them is the hierarchy.
 
-   It asked for `0.8125rem` while the base `.field-label` asks for `13px`. The
-   admin's root is 15px, so the rem resolved to 12.19px — the same intended
-   size expressed in two units, landing on two different numbers, on labels
-   sitting inches apart. Now stated in the same unit as the rule it is
-   overriding.
-
-   And it only reached labels that are DIRECT children of `.field-type`, which
-   a plain text field's label is. An array puts its label inside
-   `h3.array-field__title` and a group inside `h3.group-field__title`, so
-   "Files" and "SEO & sharing" fell through to the base treatment and rendered
-   as rail labels in the middle of the document — three renderings of one role.
-   The h3 also carried its own line-height, which is where the third value
-   (16.25px) came from, so that is pinned here too. */
-.document-fields__main .document-fields__fields > .field-type > .field-label,
-.document-fields__main .document-fields__fields > .field-type .array-field__title > .field-label,
-.document-fields__main .document-fields__fields > .field-type .group-field__title > .field-label,
-.document-fields__main .document-fields__fields > .da-coverprev > .field-label {
+   `.rel__label` is not listed: it is styled in RelatedPicker.css from the same
+   tokens, because a component's own file is where its selector lives. */
+.array-field__title > .field-label,
+.group-field__title > .field-label {
   font-family: var(--font-display);
-  font-size: 13px;
+  font-size: var(--da-section-size);
   font-weight: 600;
-  line-height: 20px;
-  color: var(--da-ink-2);
+  line-height: var(--da-label-line);
+  letter-spacing: -0.01em;
+  color: var(--da-ink);
 }
 
 /* ---- a heading and its sentence are one object --------------------------- */
@@ -2079,27 +2110,21 @@ html {
   margin-block-start: 1.75rem;
 }
 
-/* ---- the rail's own type scale ------------------------------------------- */
+/* ---- the rail has no type scale of its own ------------------------------- */
 
-/* THE HELPER TEXT WAS BIGGER THAN THE LABEL IT EXPLAINS. Measured: labels at
-   13px/600 and descriptions at 15px/400, both in the same `--da-ink-3` — so the
-   least important line in every block was the largest thing in it, and the only
-   signals separating the two were weight and typeface, one of which the size
-   was actively contradicting.
+/* IT USED TO. The helper text here was bigger than the label it explained —
+   labels at 13px/600 and descriptions at 15px/400 in the same ink — so this
+   file darkened the rail's labels and dropped its descriptions to 12px, and
+   fixed the rail alone. The document beside it kept the inversion, and the two
+   columns ended up with two scales: the same sentence 12px in one and 15px in
+   the other.
 
-   The label goes darker and the description goes smaller, so the order reads the
-   same way twice. `--da-ink-3` is kept for the description rather than dropping
-   to `--da-ink-4`: at 12px the lighter tone measures 4.06:1 and small text owes
-   4.5. */
-.document-fields__sidebar-fields .field-label {
-  color: var(--da-ink-2);
-}
+   Both are corrected at the source now — see `.field-label` and
+   `.field-description` near the top of this file — so the rail simply inherits,
+   and there is one size for a label and one for a note on every screen.
 
-.document-fields__sidebar-fields .field-description {
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--da-ink-3);
-}
+   `--da-ink-3` on the note stays as it was: at 13px it measures 6.54:1, and it
+   is not dropped to `--da-ink-4`, which owes 4.5 and does not have it. */
 
 
 /* -----------------------------------------------------------------------------
