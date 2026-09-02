@@ -187,12 +187,7 @@
   padding: 0 34px;
   border: 0;
   border-radius: 999px;
-  /* THE ORANGE YOU READ. 15px of white at 600 is not "large text" — it needs
-     4.5:1 and white on `--da-orange` is 3.24. The door to the whole admin is
-     not the place to be 27% short of the floor. The mark orange takes it to
-     4.94; the disc above and the cut behind it keep `--da-orange`, because a
-     logo and a line are recognised rather than read. */
-  background-color: var(--da-orange-mark);
+  background-color: var(--da-orange);
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 600;
@@ -211,10 +206,7 @@
 
 @media (hover: hover) {
   .sl-cta:hover {
-    /* Darker than the resting fill, not lighter: `--da-orange-deep` is 4.22:1
-       against white, which would make pointing at this button the moment its
-       label stopped passing. */
-    background-color: color-mix(in srgb, var(--da-orange-mark) 90%, var(--da-charcoal));
+    background-color: var(--da-orange-deep);
     color: #ffffff;
     box-shadow:
       0 2px 4px rgb(199 63 41 / 0.18),

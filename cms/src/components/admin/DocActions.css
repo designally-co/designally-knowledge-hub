@@ -42,17 +42,14 @@
   margin: 0;
 }
 
-/* THE ORANGE YOU READ. White on `--da-orange` is 3.24:1 and this label is
-   13.1px, so the most-pressed control in the admin had the least legible words
-   on it. `--da-orange-mark` is the palette's own answer — "what you reach for
-   when a thing has to be READ" — and takes it to 4.94. The hover follows,
-   because `--da-orange-deep` at 4.22 would have been a pressed state that fails
-   under a resting one that passes. Same values as `.btn--style-primary` in
-   custom.scss, which this rule shadows for the bar's own pill. */
+/* Designally Orange with a white label — the brand's pair, and the same values
+   as `.btn--style-primary` in custom.scss, which this rule shadows for the bar's
+   own pill. See the note there: the 3.24:1 is a known and accepted exception,
+   not an oversight. */
 .da-bar__save .form-submit .btn--style-primary {
-  --bg-color: var(--da-orange-mark);
+  --bg-color: var(--da-orange);
   --color: #ffffff;
-  --hover-bg: color-mix(in srgb, var(--da-orange-mark) 90%, var(--da-charcoal));
+  --hover-bg: var(--da-orange-deep);
   --hover-color: #ffffff;
   block-size: 36px;
   min-block-size: 36px;
