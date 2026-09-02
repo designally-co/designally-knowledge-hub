@@ -44,6 +44,48 @@ export function ArticleTitle({ path, field }: { path: string; field?: { label?: 
     fit()
   }, [fit, value])
 
+  /*
+   * AND AGAIN WHENEVER THE BOX CHANGES WIDTH.
+   *
+   * Measuring once, at mount, measures whatever width the column happened to
+   * have on the first paint — and the height it sets then is the height it keeps
+   * for the rest of the session. On a phone that was catastrophic and silent:
+   * measured on a 375px screen, a title that needs 245px was holding 2203, and
+   * the deck, the cover and the body sat two thousand pixels below the last line
+   * of a headline. Nothing looked broken; the article was simply somewhere else.
+   *
+   * WIDTH ONLY, and that is not fussiness — `fit` sets the height, which resizes
+   * the element, which fires the observer. Comparing the width is what keeps it
+   * from feeding itself.
+   */
+  React.useEffect(() => {
+    const el = ref.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+
+    let last = el.clientWidth
+    const watch = new ResizeObserver(() => {
+      const width = el.clientWidth
+      if (width === last) return
+      last = width
+      fit()
+    })
+    watch.observe(el)
+    return () => watch.disconnect()
+  }, [fit])
+
+  /* The display face changes where the lines break, so the height measured
+     against the fallback is the wrong one. */
+  React.useEffect(() => {
+    if (typeof document === 'undefined' || !document.fonts) return
+    let cancelled = false
+    void document.fonts.ready.then(() => {
+      if (!cancelled) fit()
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [fit])
+
   return (
     <div className="field-type text da-title">
       {/* Clipped, not removed: the placeholder names the box on screen, but a

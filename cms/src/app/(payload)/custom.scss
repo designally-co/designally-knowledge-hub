@@ -1037,10 +1037,59 @@ svg.graphic-icon,
   }
 }
 
+/*
+ * THE BAND SHRINKS THE TRAIL, NOT THE CONTROLS.
+ *
+ * Payload's header is a flex row of [breadcrumb][actions], and the breadcrumb's
+ * wrapper carries `min-width: auto` — the default, and the one that means "never
+ * shrink below your contents". So on a narrow screen the trail kept its full
+ * width and pushed Save and Cancel off the side of the window: measured at
+ * 375px, the actions started at 359 and ended at 505. There was no way to save
+ * an article on a phone, and nothing about the screen said so.
+ *
+ * The crumb already knows how to truncate — see `.step-nav__last` below. It just
+ * needed permission to.
+ */
+.app-header__step-nav-wrapper {
+  min-inline-size: 0;
+  /* And it CLIPS what will not fit. Allowed to shrink but not to clip, the trail
+     kept drawing at its full width inside a 23px box — "Articles /" painted
+     straight through "Unsaved changes" and the Cancel beside it. */
+  overflow: hidden;
+}
+
+.app-header__actions-wrapper {
+  flex: 0 0 auto;
+}
+
+/* Payload caps its own action slot at 150px, which is fine for the two icon
+   buttons it puts there and not for a bar with a state, a Cancel and a Save. */
+.app-header__actions:has(.da-bar) {
+  max-inline-size: none;
+}
+
 /* The separator is punctuation, not content. */
 .step-nav > span:not([class]) {
   flex: 0 0 auto;
   color: var(--da-hairline);
+}
+
+/* ON A PHONE THE TRAIL IS THE WAY BACK, and nothing else. On a document the
+   last crumb is that document's own title, set in 34px immediately below the
+   band — a duplicate, competing for room with Save. It goes, and so does the
+   separator before it: "Articles /" with nothing after the slash reads as
+   something that failed to load.
+ 
+   ONLY WHERE THERE IS SOMETHING LEFT. On a list the last crumb is the ONLY
+   crumb — "Articles", the name of the screen — and hiding it emptied the band
+   down to a hamburger. The `a` that is not the home icon is what says there is a
+   trail here: a list has the icon and a name, a document has the icon, a link
+   back, and its own title. */
+@media (max-width: 30rem) {
+  .step-nav:has(a:not(.step-nav__home)) .step-nav__last,
+  .step-nav:has(a:not(.step-nav__home)) > span:not([class]):has(+ .step-nav__last) {
+    display: none;
+  }
 }
 
 /* WEIGHT, NOT SIZE, MARKS WHERE YOU ARE — and it truncates rather than wraps.
@@ -4353,6 +4402,93 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
    gone with it. */
 .template-default {
   grid-template-columns: var(--nav-width, 275px) 1fr;
+}
+
+/*
+ * AND ON A PHONE IT IS A DRAWER AGAIN, because the reasoning above is about a
+ * desktop CMS: "there is nothing to gain from hiding four destinations" holds
+ * when the column costs 243 of 1440. It costs 243 of 375 here, and the grid was
+ * still handing it that track — so the nav sat full-width underneath the article
+ * it was supposed to sit beside, invisible, while the hamburger that opens it
+ * toggled a class that changed nothing on screen.
+ *
+ * IT STARTS BELOW THE BAND, which is the whole trick: the toggler stays exposed
+ * while the drawer and its scrim cover everything else, so the way out is the
+ * control your thumb is already on. A scrim over the band would cover the one
+ * button that closes it.
+ */
+@media (max-width: 48rem) {
+  /* THE PAGE SPANS EVERY TRACK, and it has to be said this way. Payload's own
+     narrow-screen rule collapses the first column to zero — `0px 375px`,
+     measured — and taking the nav out of the flow to float it made the PAGE the
+     first in-flow item, which put a whole article inside a column 0 pixels wide.
+     The screen went blank below the band and nothing errored. */
+  .template-default__wrap {
+    grid-column: 1 / -1;
+  }
+
+  /*
+   * THE BAND IS NOT UNDER GLASS.
+   *
+   * Payload lays an element over the whole header on a narrow screen —
+   * `.template-default__nav-toggler-container`, 375x55, measured — to catch the
+   * tap that opens the nav. Its own button inside it is 0x0 here, because this
+   * admin drew its own hamburger in the band years ago and hid Payload's. So the
+   * layer caught every tap in the band and did nothing with any of them: Save,
+   * Cancel, the breadcrumb and the hamburger were all under glass. Clicking them
+   * in code worked, which is exactly how it stayed hidden.
+   *
+   * The layer stops taking pointers; the controls underneath get them back.
+   */
+  .template-default__nav-toggler-container {
+    pointer-events: none;
+  }
+
+  .nav {
+    position: fixed;
+    inset-block: 55px 0;
+    inset-inline-start: 0;
+    z-index: 60;
+    inline-size: min(var(--nav-width), 80vw);
+    transform: translateX(-100%);
+    transition: transform var(--da-dur-move, 0.24s) var(--da-ease);
+  }
+
+  .template-default--nav-open .nav {
+    transform: none;
+  }
+
+  /* A COLLAPSED RAIL IS A DESKTOP PREFERENCE, and it is remembered — so someone
+     who collapsed it on a laptop would find a 78px drawer with the words taken
+     out of it on their phone, which is a rail with nothing to sit beside. In a
+     drawer the nav is always the whole nav. */
+  body.da-nav-collapsed .template-default {
+    grid-template-columns: revert;
+  }
+
+  body.da-nav-collapsed .nav {
+    inline-size: min(var(--nav-width), 80vw);
+  }
+
+  body.da-nav-collapsed .nav .nav__link-label,
+  body.da-nav-collapsed .da-brand__name,
+  body.da-nav-collapsed .da-navfoot__who {
+    display: revert;
+  }
+
+  .template-default--nav-open::before {
+    content: '';
+    position: fixed;
+    inset: 55px 0 0;
+    z-index: 55;
+    background-color: color-mix(in srgb, var(--da-ink) 45%, transparent);
+  }
+}
+
+@media (max-width: 48rem) and (prefers-reduced-motion: reduce) {
+  .nav {
+    transition: none;
+  }
 }
 
 /*

@@ -444,3 +444,19 @@
 .da-meta__value {
   color: var(--da-ink-2);
 }
+
+/* The short form of the state, for a band that has to hold four things in
+   375px. Both are in the markup; this chooses. */
+.da-bar__unsaved-short {
+  display: none;
+}
+
+@media (max-width: 30rem) {
+  .da-bar__unsaved-long {
+    display: none;
+  }
+
+  .da-bar__unsaved-short {
+    display: inline;
+  }
+}

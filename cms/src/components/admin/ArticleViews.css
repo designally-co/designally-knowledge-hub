@@ -124,6 +124,27 @@ body.da-writing .document-fields__main > .gutter {
   padding-inline: 60px;
 }
 
+/*
+ * AND ON A PHONE IT IS THE WHOLE SCREEN.
+ *
+ * 60px here plus Payload's own 30 inside it is 90 a side — a third of a 375px
+ * screen gone from each edge, leaving a 195px column for a 34px headline, which
+ * is four words to a line. The two insets collapse into one small one: 16px, and
+ * the article gets the rest.
+ *
+ * Writing is the one thing this screen does, so the column takes the width. The
+ * rail is already hidden here and the header band is one line.
+ */
+@media (max-width: 48rem) {
+  body.da-writing .document-fields__main > .gutter {
+    padding-inline: 1rem;
+  }
+
+  body.da-writing .render-fields.document-fields__fields {
+    padding-inline: 0;
+  }
+}
+
 /* ---- the page it sits on ------------------------------------------------- */
 
 /*

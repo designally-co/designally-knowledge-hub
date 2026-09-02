@@ -162,7 +162,17 @@ function DocBar({ before, collection, deleteWarning, menu = true, noun, rows }: 
               {/* THE STATE, IN WORDS. Save is filled whether or not there is
                   anything to write, so the button cannot be the thing that tells
                   you there is — this is. */}
-              {modified ? <p className="da-bar__unsaved">Unsaved changes</p> : null}
+              {/* TWO LENGTHS OF THE SAME SENTENCE. On a phone the band holds a
+                  way back, a state and two controls in 375px, and "Unsaved
+                  changes" is the only part of that with a shorter honest form.
+                  CSS picks; both are in the markup so neither is a content hack.
+                  See `.da-bar__unsaved-short` in DocActions.css. */}
+              {modified ? (
+                <p className="da-bar__unsaved">
+                  <span className="da-bar__unsaved-long">Unsaved changes</span>
+                  <span className="da-bar__unsaved-short">Unsaved</span>
+                </p>
+              ) : null}
 
               {before}
 
