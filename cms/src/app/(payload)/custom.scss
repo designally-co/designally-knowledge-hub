@@ -347,28 +347,21 @@ p,
    through four locals, so re-pointing those themes every primary button in the
    admin at once, including ones this file has never seen. */
 /*
- * THE ORANGE YOU READ, NOT THE ORANGE YOU RECOGNISE — the system's own
- * distinction, applied to the one control it matters most on.
+ * DESIGNALLY ORANGE, WITH A WHITE LABEL. The brand's own pair, and the brand
+ * rule decides it — not this file.
  *
- * `#ef6148` carrying white text measures 3.24:1. That is under AA for anything
- * below 18.66px bold, and this label is 13px — so the single most-pressed
- * control in the admin had the least legible words on it. The palette already
- * answers this: `--da-orange-mark` is, in the token block's own words, "what you
- * reach for when a thing has to be READ", and white on it is 4.94:1.
- *
- * IT DOES NOT SPREAD. The nav's indicator bar, the mark's disc and the accent
- * icon button all keep `--da-orange`: a 3px bar and a glyph are recognised, not
- * read, and white on orange clears the 3:1 that non-text contrast asks for.
- *
- * THE HOVER HAD TO MOVE TOO. `--da-orange-deep` is 4.22:1 — it was failing as
- * the pressed state of a button that now passes at rest, which is backwards.
- * Ten per cent of the charcoal takes it below the resting fill in luminance and
- * therefore above it in contrast.
+ * A KNOWN EXCEPTION, WRITTEN DOWN SO IT STAYS ONE. White on `#ef6148` measures
+ * 3.24:1, which is under the 4.5 AA asks of a 13px label; a sweep of the admin
+ * flagged it and it was changed to the darker `--da-orange-mark` for a while.
+ * That was overruled: the filled button is the brand's, and the colour is not a
+ * decision this stylesheet gets to make. Anyone reading this later should know
+ * the number is deliberate rather than missed — and that the fix, if the rule
+ * ever moves, is one line here and one in DocActions.css.
  */
 .btn--style-primary {
   --color: #ffffff;
-  --bg-color: var(--da-orange-mark);
-  --hover-bg: color-mix(in srgb, var(--da-orange-mark) 90%, var(--da-charcoal));
+  --bg-color: var(--da-orange);
+  --hover-bg: var(--da-orange-deep);
   --hover-color: #ffffff;
 }
 
@@ -5638,5 +5631,119 @@ body.da-nav-collapsed .collection-list .list-selection {
 
   .nav {
     padding-inline-start: env(safe-area-inset-left);
+  }
+}
+
+/* =============================================================================
+   The band's own control, and the row under it
+   ========================================================================== */
+
+/*
+ * THE HAMBURGER IS AN ICON BUTTON LIKE EVERY OTHER ICON BUTTON HERE. Payload's
+ * is a filled grey tile with three hairlines drawn by three nested divs — a
+ * different object from the close disc, the ⋯ and the pair on the cover, which
+ * are all a white ground, a hairline edge and one ink glyph. It read as a piece
+ * of another product parked in the corner of this one.
+ *
+ * The glyph is Lucide's, masked, the way every other borrowed glyph in this file
+ * is drawn — and it becomes the X when the drawer is open, because a control
+ * that opens a thing and closes it should say which it is about to do.
+ */
+@media (max-width: 48rem) {
+  .app-header__mobile-nav-toggler {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 44px;
+    block-size: 44px;
+    padding: 0;
+    border: 1px solid var(--da-hairline);
+    border-radius: var(--style-radius-s);
+    background-color: #ffffff;
+    color: var(--da-ink-2);
+    transition:
+      border-color var(--da-dur-feedback) var(--da-ease),
+      color var(--da-dur-feedback) var(--da-ease);
+  }
+
+  @media (hover: hover) {
+    .app-header__mobile-nav-toggler:hover {
+      border-color: var(--da-ink-3);
+    }
+  }
+
+  /* Payload's three lines go; the glyph below replaces them. */
+  .app-header__mobile-nav-toggler > * {
+    display: none;
+  }
+
+  .app-header__mobile-nav-toggler::before {
+    content: '';
+    inline-size: 20px;
+    block-size: 20px;
+    background-color: currentColor;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>');
+    -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>');
+  }
+
+  .template-default--nav-open .app-header__mobile-nav-toggler::before {
+    mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+    -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+  }
+
+  /*
+   * THE SEARCH AND THE LANGUAGE SHARE A LINE. They were stacked, which spent two
+   * bands of a 375px card on one field and two three-letter buttons — and the
+   * field, being alone on its line, still did not fill it.
+   *
+   * The search takes what is left after the toggle, so a collection that has no
+   * Thai — media, users — gets the whole line for its field rather than a field
+   * of the width the localised ones happen to need.
+   */
+  .collection-list .list-header {
+    flex: 1 1 100%;
+  }
+
+  .collection-list .list-controls {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  .collection-list .da-locale {
+    flex: 0 0 auto;
+  }
+
+  .collection-list .search-bar,
+  .collection-list .search-filter,
+  .collection-list .search-filter__input {
+    inline-size: 100%;
+    max-inline-size: none;
+  }
+
+  /*
+   * AND THE TABLE STOPS AT THE CARD'S PADDING. It is shifted out of it on
+   * purpose — `position: relative; left: -16px` with 16px of padding putting the
+   * content back, which is Payload's way of letting a table bleed to a page's
+   * edge while its cells stay on the grid. Inside a card it only makes one side
+   * ragged: measured, the table's box at x16 against a heading and a search
+   * field at x32, and its own right edge at 327 against the card's 359.
+   *
+   * The shift goes and the padding that compensated for it goes with it.
+   */
+  .collection-list__tables .table {
+    position: static;
+    inset-inline-start: 0;
+    left: 0;
+    /* The width carries the bleed as well as the offset — take the shift away on
+       its own and the box lines up on the left and runs 16px off the screen on
+       the right. */
+    inline-size: 100%;
+    padding-inline-start: 0;
+    margin-inline: 0;
   }
 }
