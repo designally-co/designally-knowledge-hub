@@ -5364,6 +5364,40 @@ body.da-nav-collapsed .collection-list .list-selection {
     align-self: flex-start;
   }
 
+  /*
+   * "COLLAPSE ALL" AND "SHOW ALL" STEP OUT OF A CROWDED HEADING. An array's
+   * header is its name, two bulk toggles and a menu on one line — four things
+   * across 285px, with the panel's own sentence under them. The two toggles are
+   * the ones that give: every row carries its own chevron, so the capability is
+   * still there one tap at a time, and this collection's arrays run to two or
+   * three files rather than thirty.
+   *
+   * The ⋯ stays, because what is behind it — copy, paste, clear — has no other
+   * way in.
+   */
+  .array-field__header-actions > li:not(:has(.popup)) {
+    display: none;
+  }
+
+  /*
+   * AND THE RESIZE GRIP GOES, because the box already grows on its own. Payload
+   * sets `field-sizing: content` on a textarea that has something in it, so the
+   * corner was never the thing sizing this control — it was a 15px drag target
+   * on a phone, aimed at a box that had already fitted itself to its text.
+   *
+   * The declaration is repeated here without Payload's `:not(:empty)`, so an
+   * EMPTY box is sized too: four lines to start with rather than two, which is
+   * the difference between a field that looks like it wants a sentence and one
+   * that looks like it wants a word. The cap keeps a long description from
+   * taking the whole screen before you can reach anything below it.
+   */
+  .field-type.textarea textarea {
+    resize: none;
+    min-block-size: 6.5rem;
+    max-block-size: 60vh;
+    field-sizing: content;
+  }
+
   /* ---- the sheets ------------------------------------------------------- */
 
   /* 2rem of frame around a sheet is right when the sheet is 960px wide inside
