@@ -4954,6 +4954,21 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
 /* ---- the selection bar --------------------------------------------------- */
 
 /*
+ * AND THE EMPTY ONE IS NOT DRAWN AT ALL. Payload renders the bar's wrapper
+ * whether or not anything is selected — `.collection-list__list-selection`, and
+ * an empty `…__list-selection-actions` inside it — and it comes with the warm
+ * white on it. Fixed to the bottom of the window at 32px tall, that is a grey
+ * strip lying across the foot of every list with nothing in it and nothing to
+ * say: measured at 375, a 375x32 box at y780 containing no text.
+ *
+ * The bar itself is untouched. This hides the container only while its actions
+ * are empty, which is exactly the state in which it means nothing.
+ */
+.collection-list__list-selection:not(:has(.collection-list__list-selection-actions > *)) {
+  display: none;
+}
+
+/*
  * WHERE IT WENT WRONG. Payload renders `.list-selection` as a sibling of the
  * heading and the controls. Once the card became a flex row so those two could
  * share a line, the bar became a third item in that row and landed mid-header,
