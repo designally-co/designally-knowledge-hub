@@ -5341,6 +5341,29 @@ body.da-nav-collapsed .collection-list .list-selection {
     margin-inline: 0;
   }
 
+  /*
+   * THE TWO DOORS STACK RATHER THAN WRAP. "Add a file", "or", "Choose from
+   * library" come to 281px of pills and the row they sit in is 255 wide at this
+   * size, so the line broke where it ran out — after the "or", which left the
+   * word hanging off the end of the first button with the second one under it.
+   *
+   * A column puts each of the three on its own line in the order they are read.
+   * It is the same sentence, set down the page instead of across it.
+   */
+  .field-type.upload .upload__dropzoneContent__buttons {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* The word centres itself between the two when they share a line, which is
+     what `align-self: center` is for up the page — and stacked, it put "or"
+     under the far end of the first pill instead of at the start of the line the
+     other two begin on. */
+  .field-type.upload .upload__dropzoneContent__orText {
+    align-self: flex-start;
+  }
+
   /* ---- the sheets ------------------------------------------------------- */
 
   /* 2rem of frame around a sheet is right when the sheet is 960px wide inside
