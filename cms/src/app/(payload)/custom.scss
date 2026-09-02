@@ -5650,25 +5650,33 @@ body.da-nav-collapsed .collection-list .list-selection {
  * that opens a thing and closes it should say which it is about to do.
  */
 @media (max-width: 48rem) {
+  /* NO BOX AROUND IT. The glyph is the control — a rectangle drawn around three
+     lines in the corner of a band that has no other framed thing in it reads as
+     a button someone forgot to finish. The 44px target stays; it is simply not
+     drawn. */
   .app-header__mobile-nav-toggler {
     display: inline-grid;
     place-items: center;
     inline-size: 44px;
     block-size: 44px;
     padding: 0;
-    border: 1px solid var(--da-hairline);
-    border-radius: var(--style-radius-s);
-    background-color: #ffffff;
+    border: 0;
+    background: none;
     color: var(--da-ink-2);
-    transition:
-      border-color var(--da-dur-feedback) var(--da-ease),
-      color var(--da-dur-feedback) var(--da-ease);
+    transition: color var(--da-dur-feedback) var(--da-ease);
   }
 
   @media (hover: hover) {
     .app-header__mobile-nav-toggler:hover {
-      border-color: var(--da-ink-3);
+      color: var(--da-ink);
     }
+  }
+
+  /* The ring has to be drawn on something, and there is no box any more. */
+  .app-header__mobile-nav-toggler:focus-visible {
+    outline: 2px solid var(--da-focus);
+    outline-offset: -2px;
+    border-radius: var(--style-radius-s);
   }
 
   /* Payload's three lines go; the glyph below replaces them. */
@@ -5723,6 +5731,28 @@ body.da-nav-collapsed .collection-list .list-selection {
   .collection-list .search-filter__input {
     inline-size: 100%;
     max-inline-size: none;
+  }
+
+  /*
+   * ONE FILL IN THE SEARCH FIELD, NOT TWO. Payload tints the wrapper `#fafaf9`
+   * and the input inside it `#f3f3f3` — two greys a shade apart, stacked, so the
+   * field had a faint second edge inside its own rounded corner. The wrapper
+   * carries the shape; the input carries the colour.
+   */
+  .search-filter {
+    background-color: transparent;
+  }
+
+  /*
+   * AND THE BAND'S CONTROLS REACH ITS EDGE. The action slot keeps 22.5px of
+   * trailing padding — measured, Save ending at 336 in a band whose own inset is
+   * 16 — so the row stopped short of the edge every other thing on the screen
+   * lines up with, and the band looked narrower than it is.
+   */
+  .app-header__actions-wrapper,
+  .app-header__actions {
+    padding-inline-end: 0;
+    margin-inline-end: 0;
   }
 
   /*

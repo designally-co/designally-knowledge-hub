@@ -22,12 +22,21 @@
   background-color: var(--da-warm-white);
 }
 
+/*
+ * TWO CIRCLES, NOT TWO CHIPS. A language is two letters, and a 44x36 pill around
+ * two letters is a shape sized by the padding rather than by what is in it — on
+ * a phone that pair took 99px of a row the search field needed. A circle is the
+ * smallest honest container for a two-letter label, and the two of them together
+ * are narrower than one of the pills was.
+ */
 .da-locale__opt {
+  display: grid;
+  place-items: center;
+  inline-size: 36px;
+  block-size: 36px;
   min-block-size: 36px;
-  /* Two-letter labels, so the chips are sized rather than hugged — "EN" and
-     "TH" set to their own width would be two different-sized buttons. */
-  min-inline-size: 44px;
-  padding: 0 0.625rem;
+  min-inline-size: 36px;
+  padding: 0;
   border: 0;
   border-radius: 999px;
   background: none;
