@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 /**
@@ -41,7 +42,14 @@ import { useRouter } from 'next/navigation'
 
 /** The picker's own toggler — one file, handed to the drawer. */
 const IN_PICKER = '.list-drawer .list-header__create-new-button'
-const TOGGLER = '.list-header__create-new-button'
+/* TWO CLASSES FOR ONE BUTTON, because Payload draws it twice: a `button` in a
+   list drawer, and an `<a>` to /create on the collection's own list — which is
+   why preventing the click matters as much as renaming it. */
+/* And the one on an upload field itself — a resource's file row. Same act, same
+   name, same chooser. */
+const IN_FIELD = '.upload__createNewToggler'
+const TOGGLER =
+  '.list-header__create-new-button, .list-create-new-doc__create-new-button, .upload__createNewToggler'
 const DROP_INPUT = '.doc-drawer input.file-field__hidden-input'
 
 /**
@@ -62,6 +70,15 @@ type Kind = 'many' | 'no' | 'one'
 function kindOf(button: HTMLElement): Kind {
   const known = button.dataset.daUpload as Kind | undefined
   if (known) return known
+
+  /* "Add new Media" in the drawer, "Create new Media" on the list — and "Create
+     new Article" on a collection this must not touch. */
+  /* An upload field in this project always relates to media, and it is always
+     one file: the row it sits in holds one. */
+  if (button.matches(IN_FIELD)) {
+    button.dataset.daUpload = 'one'
+    return 'one'
+  }
 
   const name = button.getAttribute('aria-label') || ''
   const media = /\bmedia\b/i.test(name) || Boolean(button.closest('.collection-list--media'))
@@ -90,6 +107,9 @@ export function UploadNew({ children }: { children?: React.ReactNode }) {
      a stale render's value. */
   const busy = React.useRef(false)
   const [progress, setProgress] = React.useState<null | { done: number; total: number }>(null)
+  /* The files that did not make it. Named, because a batch that quietly drops
+     one is worse than a batch that fails: the list looks complete. */
+  const [refused, setRefused] = React.useState<string[]>([])
 
   React.useEffect(() => {
     /* Set while we drive the toggler ourselves, so our own click passes through
@@ -102,10 +122,16 @@ export function UploadNew({ children }: { children?: React.ReactNode }) {
     input.accept = 'image/*,application/pdf,image/svg+xml'
     document.body.appendChild(input)
 
-    /* IN THE PICKER: one file, into the drawer Payload was going to open. */
+    /* ONE FILE, INTO THE DRAWER PAYLOAD WAS GOING TO OPEN — whichever button
+       was pressed to get here: the picker's, or the one on a resource's file
+       row. Both open the same media drawer; it simply arrives with the file in
+       it now. */
+    let opener: HTMLElement | null = null
+
     const toDrawer = async (file: File) => {
       passing = true
-      document.querySelector<HTMLButtonElement>(IN_PICKER)?.click()
+      const button = opener ?? document.querySelector<HTMLButtonElement>(IN_PICKER)
+      button?.click()
       passing = false
 
       const target = (await when(DROP_INPUT)) as HTMLInputElement | null
@@ -125,23 +151,32 @@ export function UploadNew({ children }: { children?: React.ReactNode }) {
      * twenty times in a row is what made bulk upload unusable. */
     const toLibrary = async (files: File[]) => {
       busy.current = true
+      setRefused([])
       setProgress({ done: 0, total: files.length })
+
+      /* One bad file does not take the rest of the batch down with it — a
+         corrupt image in a folder of twelve should cost you that image, not the
+         morning. But it is not silent either: the ones that did not make it are
+         named afterwards, because a batch that quietly drops one leaves a list
+         that looks complete. */
+      const lost: string[] = []
 
       for (let i = 0; i < files.length; i++) {
         const body = new FormData()
         body.append('file', files[i])
         body.append('_payload', JSON.stringify({}))
         try {
-          await fetch('/api/media', { body, credentials: 'include', method: 'POST' })
+          const res = await fetch('/api/media', { body, credentials: 'include', method: 'POST' })
+          if (!res.ok) lost.push(files[i].name)
         } catch {
-          /* One bad file does not take the rest of the batch down with it; the
-             list is the report — whatever arrived is in it. */
+          lost.push(files[i].name)
         }
         setProgress({ done: i + 1, total: files.length })
       }
 
       busy.current = false
       setProgress(null)
+      setRefused(lost)
       router.refresh()
     }
 
@@ -164,6 +199,7 @@ export function UploadNew({ children }: { children?: React.ReactNode }) {
       if (kind === 'no') return
       event.preventDefault()
       event.stopPropagation()
+      opener = button
       input.multiple = kind === 'many'
       input.click()
     }
@@ -198,6 +234,14 @@ export function UploadNew({ children }: { children?: React.ReactNode }) {
       )) {
         for (const [was, now] of SAY) if (el.textContent === was) el.textContent = now
       }
+
+      /* Payload's "Or" between the two doors — a capital in the middle of a
+         sentence made of two buttons. */
+      for (const el of document.querySelectorAll<HTMLElement>(
+        '.upload__dropzoneContent__orText',
+      )) {
+        if (el.textContent !== 'or') el.textContent = 'or'
+      }
     }
 
     input.addEventListener('change', onPick)
@@ -225,6 +269,28 @@ export function UploadNew({ children }: { children?: React.ReactNode }) {
         <p aria-live="polite" className="da-uploading" role="status">
           Uploading {progress.done + 1 > progress.total ? progress.total : progress.done + 1} of{' '}
           {progress.total}…
+        </p>
+      ) : null}
+
+      {/* NAMED, NOT COUNTED. "2 files failed" sends you looking for which two;
+          the names are what you need to try again with. It stays until it is
+          dismissed — the list behind it has already refreshed with everything
+          that did arrive. */}
+      {refused.length ? (
+        <p aria-live="polite" className="da-uploading da-uploading--refused" role="status">
+          <span>
+            {refused.slice(0, 3).join(', ')}
+            {refused.length > 3 ? ` and ${refused.length - 3} more` : ''}{' '}
+            {refused.length === 1 ? 'could not be uploaded.' : 'could not be uploaded.'}
+          </span>
+          <button
+            aria-label="Dismiss"
+            className="da-uploading__dismiss"
+            onClick={() => setRefused([])}
+            type="button"
+          >
+            <X aria-hidden="true" size={14} strokeWidth={2} />
+          </button>
         </p>
       ) : null}
     </>

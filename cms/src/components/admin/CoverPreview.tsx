@@ -160,12 +160,21 @@ function useUpload({
   const [staged, setStaged] = React.useState<string | null>(null)
   const [error, setError] = React.useState<null | string>(null)
 
-  /* The object URL is the picture you see while the real one is still on its
-     way — revoked on the way out, or the tab keeps the file alive. */
-  React.useEffect(() => () => {
-    if (staged) URL.revokeObjectURL(staged)
-    abort.current?.abort()
+  /* TWO CLEANUPS, BECAUSE THEY RUN AT DIFFERENT TIMES — and putting them in one
+     effect keyed on `staged` made the upload cancel itself. Staging the local
+     preview IS a change to `staged`, so the effect tore down the moment the file
+     started going up and took the request with it: measured, as a POST that
+     reached the server and was aborted before the client could read what came
+     back. The file arrived in the library and the cover was never set.
+
+     The preview URL is released when it is replaced or the box goes away. The
+     request is abandoned only if the box itself goes away. */
+  React.useEffect(() => {
+    if (!staged) return
+    return () => URL.revokeObjectURL(staged)
   }, [staged])
+
+  React.useEffect(() => () => abort.current?.abort(), [])
 
   const send = async (file: File) => {
     setError(null)
@@ -342,6 +351,7 @@ function CoverEmpty({
 function CoverDescribe({
   focus,
   mediaId,
+  onActive,
   onSaved,
 }: {
   /* True only for a file that arrived a second ago. Taking the caret is right
@@ -349,16 +359,19 @@ function CoverDescribe({
      it grabbed you out of the title. */
   focus: boolean
   mediaId: number | string
+  /* Tells the box to keep this open while it is being used — see below. */
+  onActive: (active: boolean) => void
   onSaved: () => void
 }) {
   const [value, setValue] = React.useState('')
   const [saving, setSaving] = React.useState(false)
   const [failed, setFailed] = React.useState(false)
+  const written = React.useRef('')
   const input = React.useRef<HTMLInputElement | null>(null)
 
-  const commit = async () => {
+  const commit = React.useCallback(async () => {
     const alt = value.trim()
-    if (!alt || saving) return
+    if (!alt || alt === written.current || saving) return
     setSaving(true)
     setFailed(false)
     try {
@@ -369,13 +382,34 @@ function CoverDescribe({
         method: 'PATCH',
       })
       if (!res.ok) throw new Error('patch failed')
+      written.current = alt
       onSaved()
     } catch {
       setFailed(true)
     } finally {
       setSaving(false)
     }
-  }
+  }, [mediaId, onSaved, saving, value])
+
+  /*
+   * IT SAVES AS YOU TYPE, and not only when you leave.
+   *
+   * Blur was the whole story first, and it puts a race in the one place that
+   * cannot afford one: pressing Save moves focus out of here, so the write of
+   * the description and the save of the article start together — and the article
+   * is refused for a missing description that is sitting on the screen, typed.
+   * A second's pause commits instead, which is long before anyone's hand reaches
+   * Save, and blur and Enter still commit immediately for anyone faster.
+   *
+   * `written` is what stops it saying the same thing twice: an unchanged value
+   * is not a write.
+   */
+  React.useEffect(() => {
+    const next = value.trim()
+    if (!next || next === written.current) return
+    const timer = setTimeout(() => void commit(), 700)
+    return () => clearTimeout(timer)
+  }, [commit, value])
 
   return (
     <div className="da-coverprev__describe">
@@ -386,7 +420,11 @@ function CoverDescribe({
         autoFocus={focus}
         className="da-coverprev__describe-input"
         id="da-cover-alt"
-        onBlur={() => void commit()}
+        onBlur={() => {
+          void commit()
+          onActive(false)
+        }}
+        onFocus={() => onActive(true)}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
@@ -538,6 +576,11 @@ export function CoverPreview() {
      you just chose — and not, on every visit afterwards, for one that came from
      somewhere else and is somebody else's to describe. */
   const [justAdded, setJustAdded] = React.useState<number | string | null>(null)
+  /* THE STRIP OUTLIVES THE PROBLEM IT SOLVES, for exactly as long as someone is
+     using it. Without this, the description saving mid-sentence would take the
+     field away mid-sentence: the moment `alt` lands the picture is no longer
+     undescribed, and the reason for the strip is gone. It leaves when you do. */
+  const [describing, setDescribing] = React.useState(false)
 
   const upload = useUpload({
     onDone: (doc) => {
@@ -562,17 +605,25 @@ export function CoverPreview() {
   /* THE PICTURE IS THERE BEFORE THE SERVER HAS IT. The file being uploaded is
      drawn at the size it will be, from the copy already on this machine, so the
      box does not sit empty through a round trip and then jump. */
+  /* ONE ELEMENT, WHATEVER STATE THIS IS IN. The cover box is a single grid cell
+     with the picture's layer stacked on the drop target's — so everything this
+     field renders has to arrive as ONE item, or the second one is placed in the
+     same cell and disappears underneath the first. Measured: the description
+     strip was there, focused, accepting text, and drawn behind the photograph.
+     `.da-coverprev` is the column the two of them stack in. */
   if (upload.staged) {
     return (
-      <div className="da-coverprev__frame da-coverprev__frame--staged">
+      <div className="da-coverprev">
         {upload.field}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="" className="da-coverprev__img" src={upload.staged} />
-        <div className="da-coverprev__uploading">
-          <span className="da-coverprev__uploading-text">Uploading…</span>
-          <button className="da-coverprev__link" onClick={upload.cancel} type="button">
-            Cancel
-          </button>
+          <div className="da-coverprev__frame da-coverprev__frame--staged">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt="" className="da-coverprev__img" src={upload.staged} />
+          <div className="da-coverprev__uploading">
+            <span className="da-coverprev__uploading-text">Uploading…</span>
+            <button className="da-coverprev__link" onClick={upload.cancel} type="button">
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -580,7 +631,7 @@ export function CoverPreview() {
 
   if (!src && !loading) {
     return (
-      <>
+      <div className="da-coverprev">
         {upload.field}
         {urlMode ? (
           <CoverUrlEntry onDone={() => setUrlMode(false)} />
@@ -592,7 +643,7 @@ export function CoverPreview() {
             onRetry={add}
           />
         )}
-      </>
+      </div>
     )
   }
 
@@ -600,7 +651,11 @@ export function CoverPreview() {
     // Holding the frame while the media document resolves — see `loading`. It
     // takes no height of its own; the controls underneath keep the box at its
     // empty size until there is a real picture to open it.
-    return <div className="da-coverprev__frame da-coverprev__frame--loading" />
+    return (
+      <div className="da-coverprev">
+        <div className="da-coverprev__frame da-coverprev__frame--loading" />
+      </div>
+    )
   }
 
   /* ASKED FOR ANY UNDESCRIBED PICTURE ON THIS ARTICLE, not only one that arrived
@@ -612,7 +667,7 @@ export function CoverPreview() {
   const undescribed = fromLibrary && mediaId !== null && !alt?.trim()
 
   return (
-    <>
+    <div className="da-coverprev">
       {upload.field}
       <div className="da-coverprev__frame">
         {broken ? (
@@ -695,16 +750,17 @@ export function CoverPreview() {
         </button>
       </div>
 
-      {undescribed ? (
+      {undescribed || describing ? (
         <CoverDescribe
           focus={justAdded === mediaId}
-          mediaId={mediaId}
+          mediaId={mediaId as number | string}
+          onActive={setDescribing}
           onSaved={() => {
             setJustAdded(null)
             refresh()
           }}
         />
       ) : null}
-    </>
+    </div>
   )
 }

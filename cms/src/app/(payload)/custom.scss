@@ -1909,6 +1909,19 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
 }
 
 /*
+ * PAYLOAD'S BULK UPLOAD, REMOVED — because Upload beside it now IS the bulk one.
+ *
+ * Theirs opens a drawer holding a FORM PER FILE: drop twelve pictures and answer
+ * twelve documents, one at a time, before any of them exists. That is the shape
+ * this whole change was made to get rid of, and it was sitting next to a button
+ * called Create New that opened a thirteenth. One control on this screen takes
+ * files, and it takes as many as you give it.
+ */
+.list-header__title-actions button[aria-label='Bulk Upload'] {
+  display: none;
+}
+
+/*
  * A BATCH, WHILE IT IS GOING UP. Files land in the library one at a time — a
  * dozen parallel uploads of a photograph is how a dev server falls over — so
  * there is a real count to show. It sits where a toast would, but it is not one:
@@ -1916,6 +1929,9 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
  * happening. It leaves when the list refreshes with the files in it.
  */
 .da-uploading {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
   position: fixed;
   inset-block-end: 1.5rem;
   inset-inline-end: 1.5rem;
@@ -1929,6 +1945,32 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   font-size: var(--da-note-size);
   line-height: 1;
   color: var(--da-ink-2);
+}
+
+/* And the ones that did not make it, named. Critical, because something the
+   editor asked for did not happen; dismissible, because the list behind it is
+   already correct. */
+.da-uploading--refused {
+  color: var(--da-critical);
+}
+
+.da-uploading__dismiss {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  inline-size: 22px;
+  block-size: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: currentColor;
+  cursor: pointer;
+}
+
+.da-uploading__dismiss:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 1px;
 }
 
 /* ---- the document drawer, in the same sheet ----------------------------- */
@@ -2339,24 +2381,34 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   justify-content: flex-start;
 }
 
-/* ONE DOOR, NOT TWO — everywhere, not just on the cover. "Create New" opens an
-   upload dialog; "Choose from existing" opens the media drawer, which has its
-   own "Create New" at the top of it. Two buttons, one of which is a door into a
-   room containing the other door. The field-level one goes, and the "Or"
-   between them goes with it; uploading stays available inside the drawer and by
-   dragging a file onto the field.
-
-   The drag-and-drop line goes too: it advertises a gesture the field still
-   accepts, in a place where there is now one button to read instead of three
-   things. */
-.field-type.upload .upload__createNewToggler,
-.field-type.upload .upload__dropzoneContent__orText,
+/* BOTH DOORS ARE BACK, because one of them stopped being a door into a room
+   containing the other.
+ 
+   "Create New" was hidden here, and rightly: it opened a blank media document
+   whose only content was a dropzone, while "Choose from existing" opened the
+   library — which had a "Create New" of its own at the top. Two buttons, one of
+   which was the long way round to the other.
+ 
+   It opens the file chooser now (see UploadNew), so the pair is the same pair
+   the cover well offers and the same pair the library offers: the file comes off
+   your machine, or it comes out of the library. Both are named the same thing in
+   all three places.
+ 
+   The drag-and-drop line stays gone: it advertises a gesture the field still
+   accepts, in a place where there are two plain buttons to read instead. */
 .field-type.upload .upload__dragAndDropText {
   display: none;
 }
 
-/* The remaining button is the only way in, so it gets a real target rather than
-   Payload's 27px pill. */
+/* Both buttons get a real target rather than Payload's 27px pill, and the word
+   between them is a word, not a heading. */
+.field-type.upload .upload__dropzoneContent__orText {
+  align-self: center;
+  font-size: var(--da-note-size);
+  color: var(--da-ink-3);
+}
+
+.field-type.upload .upload__createNewToggler,
 .field-type.upload .upload__listToggler {
   min-block-size: 44px;
 }
@@ -2952,8 +3004,11 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   margin: 0;
 }
 
-/* The picture's layer sits above the controls'. */
-.field-type.row.da-cover > .render-fields > .field-type:has(.da-coverprev__frame) {
+/* The picture's layer sits above the controls'. `.da-coverprev` is the wrapper
+   the field puts everything in — see the note on it: two elements in a one-cell
+   grid are two things in the same cell. */
+.field-type.row.da-cover > .render-fields > .field-type:has(.da-coverprev__frame),
+.field-type.row.da-cover > .render-fields > .da-coverprev:has(.da-coverprev__frame) {
   z-index: 1;
 }
 

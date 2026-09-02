@@ -7,12 +7,29 @@
  * 4/3 well at the same size, so adding a cover moves nothing.
  */
 
+/*
+ * EVERYTHING THIS FIELD DRAWS, AS ONE ITEM. The box is a single grid cell with
+ * the picture's layer over the drop target's, so a field that returns two
+ * elements gets them placed in the same cell — which is exactly how the
+ * description strip came to be rendered, focused and invisible behind the
+ * photograph. The frame and the strip stack in here instead.
+ *
+ * TRANSPARENT TO THE MOUSE, except where there is something to use. Payload's
+ * drop target is the layer underneath and covers the whole box; a wrapper taking
+ * pointer events across all of it would swallow every file dropped on the middle.
+ */
 .da-coverprev {
   display: flex;
   flex-direction: column;
   /* The picture fills whatever is left after the heading and the footer, so the
      box never grows to fit them. */
   min-block-size: 0;
+  pointer-events: none;
+}
+
+.da-coverprev__frame,
+.da-coverprev__describe {
+  pointer-events: auto;
 }
 
 /* ---- the picture --------------------------------------------------------- */
@@ -271,6 +288,10 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4375rem;
+  /* They stack when the column is narrow — a rail on a laptop, the whole screen
+     on a phone — and a stacked pill that breaks its own label in half reads as
+     two controls. It wraps as a row or not at all. */
+  white-space: nowrap;
   min-block-size: 36px;
   padding: 0 0.875rem;
   border: 1px solid var(--da-hairline);

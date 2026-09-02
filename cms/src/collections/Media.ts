@@ -78,6 +78,14 @@ export const Media: CollectionConfig = {
            * (see Articles), and this list says which files are still waiting.
            * A file can arrive undescribed; it cannot go on a page that way. */
           name: 'alt',
+          /* THE FIELD IS `alt` AND THE WORD IS "Description". The name stays —
+             every article cover reads it through the media relation, and
+             renaming it is a migration for a word. The label is what an editor
+             sees, and "Alt" is a piece of HTML: the cover well asks you to
+             describe the picture, the list says a file needs a description, and
+             this is the same request in the same words. It also fixes the
+             search, which Payload builds from the label: "Search by Alt". */
+          label: 'Description',
           type: 'text',
           admin: {
             description:
