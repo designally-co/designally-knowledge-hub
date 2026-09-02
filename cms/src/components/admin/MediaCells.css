@@ -41,6 +41,33 @@
   block-size: 40px;
 }
 
+/*
+ * WHAT IT IS CALLED, AND WHAT IT STILL NEEDS.
+ *
+ * A file can arrive here undescribed now — dropped on an article, or one of a
+ * dozen landed at once — and the description is the single thing about it that
+ * no upload can supply. The row carries that as a second line under the name,
+ * so the library is where you find the ones still waiting.
+ *
+ * A LINE, NOT A BADGE. It reads as the end of the row's own sentence — this file
+ * is called cover-4.jpg, and it needs a description — rather than as a status
+ * chip you have to learn the colour of. The critical hue and 13px are the
+ * platform's, unchanged; it is small and quiet because it appears while nothing
+ * is wrong yet.
+ */
+.da-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-inline-size: 0;
+}
+
+.da-row__todo {
+  font-size: var(--da-note-size);
+  line-height: 1.35;
+  color: var(--da-critical);
+}
+
 /* IN A DRAWER THE ROW IS A BUTTON, because selecting is what it does there —
    see MediaRowTitle. It gives up every button default and keeps the row's own
    layout, so choosing a cover looks exactly like reading the list. */

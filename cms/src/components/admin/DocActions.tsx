@@ -665,6 +665,9 @@ export function MediaActions() {
      THE OBSERVER IS THE POINT. Payload re-renders this block after a save and
      after the image editor closes, which puts the derivative back; without
      watching for that the picture silently softens the first time you save. */
+  const filename =
+    typeof savedDocumentData?.filename === 'string' ? savedDocumentData.filename : ''
+
   React.useEffect(() => {
     if (!url) return
 
@@ -685,6 +688,17 @@ export function MediaActions() {
     ]
 
     const swap = () => {
+      /* A FILE THAT NOBODY HAS DESCRIBED YET IS NOT "[Untitled]". A description
+         is optional at the door now — files land in a batch and get described
+         after — and Payload names a document by the field it titles with, so an
+         undescribed one arrived in the breadcrumb as the word it uses for
+         nothing at all. It has a name: the file's own. */
+      if (filename) {
+        for (const el of document.querySelectorAll<HTMLElement>('.render-title')) {
+          if (el.textContent === '[Untitled]') el.textContent = filename
+        }
+      }
+
       const img = document.querySelector<HTMLImageElement>('.file-details .thumbnail img')
       // The guard is what keeps this from feeding itself: setting `src` is an
       // attribute mutation, which is one of the things being watched.
@@ -711,7 +725,7 @@ export function MediaActions() {
       subtree: true,
     })
     return () => watch.disconnect()
-  }, [url])
+  }, [filename, url])
   const absolute = url && typeof window !== 'undefined' ? `${window.location.origin}${url}` : url
   const { copied, copy } = useCopy(absolute)
 

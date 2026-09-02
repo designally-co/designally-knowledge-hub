@@ -1908,6 +1908,29 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
 }
 
+/*
+ * A BATCH, WHILE IT IS GOING UP. Files land in the library one at a time — a
+ * dozen parallel uploads of a photograph is how a dev server falls over — so
+ * there is a real count to show. It sits where a toast would, but it is not one:
+ * a toast announces something that already happened, and this is the thing still
+ * happening. It leaves when the list refreshes with the files in it.
+ */
+.da-uploading {
+  position: fixed;
+  inset-block-end: 1.5rem;
+  inset-inline-end: 1.5rem;
+  z-index: 60;
+  margin: 0;
+  padding: 0.6875rem 1rem;
+  border: 1px solid var(--da-hairline);
+  border-radius: 999px;
+  background-color: #ffffff;
+  font-family: var(--font-body);
+  font-size: var(--da-note-size);
+  line-height: 1;
+  color: var(--da-ink-2);
+}
+
 /* ---- the document drawer, in the same sheet ----------------------------- */
 
 /*

@@ -233,9 +233,9 @@ export interface Article {
 export interface Media {
   id: number;
   /**
-   * Alt text (required for accessibility / WCAG 2.1 AA).
+   * What the picture shows, for someone who cannot see it. Needed before it can go on a page.
    */
-  alt: string;
+  alt?: string | null;
   /**
    * Optional attribution for the asset.
    */

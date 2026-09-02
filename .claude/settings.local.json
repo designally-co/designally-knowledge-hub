@@ -207,7 +207,19 @@
       "Bash(curl -s --max-time 180 http://localhost:3001/resources/the-ai-image-prompt-building-cheat-sheet)",
       "Bash(echo \"assert exit: $?\")",
       "Bash(grep -n '#{\\\\$sheet}\\\\|#{\\\\$picker}' 'app/\\(payload\\)/custom.scss')",
-      "Bash(echo \"IMPORTMAP: $?\")"
+      "Bash(echo \"IMPORTMAP: $?\")",
+      "Bash(node /Users/admin/.claude/skills/impeccable/scripts/context.mjs --target cms/src/components/admin/CoverPreview.tsx)",
+      "Bash(sqlite3 designally-hub.db \".schema media\")",
+      "Bash(sqlite3 designally-hub.db \"select count\\(*\\) from media where alt is null or alt='';\")",
+      "Bash(node -e \"const l=require\\('lucide-react'\\);for\\(const n of ['Upload','Images','ImagePlus','Image','LibraryBig','RefreshCw','AlertCircle','X']\\)console.log\\(n, typeof l[n]\\)\")",
+      "Bash(cp designally-hub.db designally-hub.db.pre-alt-optional.bak)",
+      "Bash(sqlite3 designally-hub.db \"PRAGMA writable_schema=ON; UPDATE sqlite_master SET sql=replace\\(sql,'\\\\`alt\\\\` text NOT NULL','\\\\`alt\\\\` text'\\) WHERE type='table' AND name='media'; PRAGMA writable_schema=OFF;\")",
+      "Bash(sqlite3 designally-hub.db \"PRAGMA integrity_check;\")",
+      "Bash(sqlite3 designally-hub.db \"select count\\(*\\) from media;\")",
+      "Bash(sqlite3 designally-hub.db \"PRAGMA table_info\\(media\\);\")",
+      "Bash(awk -F'|' '$2==\"alt\"||$2==\"credit\"{print $2, \"notnull=\"$4}')",
+      "Bash(sqlite3 designally-hub.db \"insert into media \\(id, updated_at, created_at, filename\\) values \\(999,'x','x','probe.png'\\); select id, coalesce\\(alt,'<null>'\\) from media where id=999; delete from media where id=999; select count\\(*\\) from media;\")",
+      "Bash(node /Users/admin/.claude/skills/impeccable/scripts/detect.mjs --json cms/src/components/admin/CoverPreview.tsx cms/src/components/admin/CoverPreview.css cms/src/components/admin/MediaCells.tsx cms/src/components/admin/MediaCells.css cms/src/components/admin/UploadNew.tsx)"
     ]
   }
 }

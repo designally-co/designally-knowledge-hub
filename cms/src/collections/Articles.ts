@@ -237,6 +237,52 @@ export const Articles: CollectionConfig = {
               type: 'upload',
               relationTo: 'media',
               label: 'Cover image',
+              /*
+               * THE ACCESSIBILITY GATE, MOVED TO WHERE IT BITES.
+               *
+               * A description used to be required of the FILE, at the moment it
+               * entered the library — which is why putting a picture on an
+               * article opened a second document with its own Save, and why
+               * landing a batch of files was impossible. It bought nothing: a
+               * described file can still be left out of every page, and the
+               * thing WCAG 2.1 AA actually asks is that a published image
+               * carries a text alternative.
+               *
+               * So the file arrives undescribed and this refuses to let it onto
+               * a page that way. The cover well asks for the description in
+               * place (see CoverPreview) and the library lists what is still
+               * waiting (see MediaCells); this is the backstop under both, and
+               * it holds for the REST API too, not just the admin.
+               *
+               * Server-side only, by necessity — it reads the media document —
+               * so the guard is the honest one: with no `payload` to ask, do not
+               * pretend to have checked.
+               */
+              validate: async (value: unknown, options: unknown) => {
+                if (!value) return true
+                const req = (options as { req?: { payload?: unknown } })?.req
+                const payload = req?.payload as
+                  | { findByID: (args: Record<string, unknown>) => Promise<{ alt?: string | null }> }
+                  | undefined
+                if (!payload) return true
+
+                const id =
+                  typeof value === 'object' && value !== null
+                    ? (value as { id?: number | string }).id
+                    : (value as number | string)
+                if (id === undefined || id === null) return true
+
+                try {
+                  const media = await payload.findByID({ collection: 'media', depth: 0, id })
+                  if (media?.alt?.trim()) return true
+                } catch {
+                  /* A cover pointing at a file that is gone is a different
+                     fault, and not one to report as a missing description. */
+                  return true
+                }
+
+                return 'Describe the cover image before saving — a published picture needs a text alternative.'
+              },
             },
             {
               // No description. It read "Used only when no image is set." — a

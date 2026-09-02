@@ -63,11 +63,25 @@ export const Media: CollectionConfig = {
       admin: { className: 'da-intro' },
       fields: [
         {
+          /* NO LONGER REQUIRED HERE, and required harder somewhere better.
+           *
+           * A file could not exist without a description, which sounds like the
+           * accessible choice and was the opposite: it forced every way of
+           * getting a picture into the system to become a FORM. Dropping a cover
+           * on an article opened a document with its own Save; landing twenty
+           * files in the library at once was impossible, because twenty files is
+           * twenty forms.
+           *
+           * What actually matters is that nothing PUBLISHED carries an
+           * undescribed image, and that is now checked where it can be checked
+           * properly: `coverImage` on an article refuses to save without one
+           * (see Articles), and this list says which files are still waiting.
+           * A file can arrive undescribed; it cannot go on a page that way. */
           name: 'alt',
           type: 'text',
-          required: true,
           admin: {
-            description: 'Alt text (required for accessibility / WCAG 2.1 AA).',
+            description:
+              'What the picture shows, for someone who cannot see it. Needed before it can go on a page.',
             components: {
               /* The picture in front of the name, and the row's link or — in a
                  drawer — its select button. See MediaRowTitle. */
