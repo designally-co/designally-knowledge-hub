@@ -2662,6 +2662,24 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   color: var(--da-ink);
 }
 
+/*
+ * AND IT COMES DOWN ON A PHONE. 34 is sized against a 784px column; against 315
+ * it spends five lines on an average headline, so the screen opens on a title
+ * and nothing else — no deck, no cover, no first line of the article.
+ *
+ * HERE, AND NOT BESIDE THE COMPONENT'S OWN `.da-title__input`. That was the
+ * obvious place and it could not work: the size being overridden is written
+ * against an ID, which outranks every class rule in the admin whatever order
+ * they load in. Measured twice: 34px survived a rule in another file, then survived this
+ * one written above it.
+ */
+@media (max-width: 48rem) {
+  .collection-edit--articles #field-title {
+    font-size: 28px;
+    line-height: 1.18;
+  }
+}
+
 /* The deck is Poppins at the CI's own Light 300, one step down the ladder at
    `tagline` size. Light is what the system asks for in body copy and it is
    never more at home than under a headline. */
@@ -5273,11 +5291,11 @@ body.da-nav-collapsed .collection-list .list-selection {
    * deck, and the screen opens on a headline with nothing under it. 28 keeps it
    * plainly the largest thing on the page and gives the deck room to appear.
    *
-   * Both of them, because they are the same headline: the one you read on the
-   * document and the one you type on the writing surface.
+   * The writing surface's title takes the same size for the same reason, and
+   * takes it beside its own rule further down this file — that one is written
+   * against an ID and cannot be overridden from here.
    */
-  .da-articleread__title,
-  .da-title__input {
+  .da-articleread__title {
     font-size: 28px;
     line-height: 1.18;
   }

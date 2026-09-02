@@ -140,8 +140,19 @@ body.da-writing .document-fields__main > .gutter {
     padding-inline: 1rem;
   }
 
+  /*
+   * AND THE SHEET KEEPS ITS OWN INSET. This was zero, on the reasoning that two
+   * insets in a row are one too many at this width — and what that produced was
+   * a headline set flush against the white edge it sits on, an article whose
+   * every line ran into the corner radius, and a cover well the exact width of
+   * the sheet, so the grey box read as a gap cut through the page rather than a
+   * picture resting in it.
+   *
+   * The frame is what makes a sheet a sheet. 15 and 15: the same 30px of inset
+   * every other document screen in this admin keeps at this width.
+   */
   body.da-writing .render-fields.document-fields__fields {
-    padding-inline: 0;
+    padding-inline: 1rem;
   }
 }
 
