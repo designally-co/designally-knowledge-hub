@@ -4274,14 +4274,21 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
  * picture and the name. Tag, status and date are for scanning a library at a
  * desk. They are one tap away, in the document itself.
  *
+ * THE CHECKBOX GOES TOO. It is not a column of the list — it is the way into
+ * selecting several rows at once, which is desk work: choosing eight files and
+ * deleting them is not a thing done on a phone, and the control cost 53px of a
+ * 284px table to sit there in case it was. Selection is intact at every width
+ * above this one.
+ *
  * BY POSITION, BECAUSE THE HEADER CELLS HAVE NO NAMES. The body cells carry
  * `cell-title`, `cell-tag`, `cell-status`; their `th` carries nothing at all, so
  * a rule that hides a column by name hides the data and leaves its heading
- * standing. The third cell onwards is the same column in every one of these
- * three lists: select, then what the row IS, then the rest.
+ * standing. The second cell is the same column in every one of these three
+ * lists — select, then what the row IS, then the rest — so the second cell is
+ * the one that stays.
  *
  * NOT THE PICKER. Its table is inside a sheet, portalled out of the shell, and
- * it has no select column — so the third cell there is a different column. The
+ * it has no select column — so its second cell is a different column. The
  * ancestor is what keeps this to the real list screens.
  */
 @media (max-width: 48rem) {
@@ -4289,7 +4296,7 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
     inline-size: 100%;
   }
 
-  .template-default__wrap .collection-list table :is(th, td):nth-child(n + 3) {
+  .template-default__wrap .collection-list table :is(th, td):not(:nth-child(2)) {
     display: none;
   }
 }
