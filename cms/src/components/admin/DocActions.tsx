@@ -176,13 +176,11 @@ function DocBar({ before, collection, deleteWarning, menu = true, noun, rows }: 
 
               {before}
 
-              {/* Payload's own `SaveButton` rather than a button of mine wired to
-                  `submit()`: it already knows about validation state, the
-                  disabled-while-saving case and the keyboard shortcut. */}
-              <div className="da-bar__save">
-                <SaveButton />
-              </div>
-
+              {/* THE ⋯ COMES BEFORE SAVE, and the order is the point: the
+                  primary sits at the end of the row, where the eye stops and
+                  the thumb lands, with everything else leading up to it. Save
+                  after the menu also puts it beside Cancel on the surfaces that
+                  carry one, so the two answers to "am I done" are together. */}
               {showMenu ? (
                 <DocMenu
                   collection={collection}
@@ -192,6 +190,13 @@ function DocBar({ before, collection, deleteWarning, menu = true, noun, rows }: 
                   rows={rows}
                 />
               ) : null}
+
+              {/* Payload's own `SaveButton` rather than a button of mine wired to
+                  `submit()`: it already knows about validation state, the
+                  disabled-while-saving case and the keyboard shortcut. */}
+              <div className="da-bar__save">
+                <SaveButton />
+              </div>
             </div>,
             slots.foot,
           )
