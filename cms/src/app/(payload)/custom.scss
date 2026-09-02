@@ -5230,3 +5230,147 @@ body.da-nav-collapsed .collection-list .list-selection {
     }
   }
 }
+
+/* =============================================================================
+   The admin on a phone
+
+   The screens above were drawn for a desk: a nav column, a document column and
+   a rail beside it, with the insets that go with 1440px of width. Payload
+   stacks the columns on its own at this size, and what was left over was the
+   SPACING — gutters sized for a wide screen, kept at a narrow one, so a media
+   document gave 195px of its 375 to the file's own description and the cropper
+   held two columns where there is only room for one.
+
+   Nothing is hidden here and nothing is a different screen. Every inset that
+   was chosen against desktop width is restated against this one.
+   ========================================================================== */
+
+@media (max-width: 48rem) {
+  /*
+   * THE DOCUMENT COLUMN TAKES THE SCREEN. Measured on the media document: a
+   * 60px margin and a 30px padding on the same box, 90 a side, which left the
+   * description wrapping every three words down the middle of the phone. One
+   * inset, stated once, at the size a thumb needs to miss the edge.
+   */
+  .collection-edit .document-fields__edit {
+    margin-inline: 0;
+    padding-inline: 1rem;
+  }
+
+  /*
+   * AND THE CARD INSIDE IT KEEPS THE SAME INSET, not the 30px it holds on a
+   * desk. Together they were spending 90px of a 375px screen on frame: the
+   * article's own prose came out at 285px, which is thirty characters to a line
+   * — a paragraph broken into a column of fragments.
+   */
+  .collection-edit .render-fields.document-fields__fields {
+    padding-inline: 1rem;
+  }
+
+  /*
+   * THE HEADLINE COMES DOWN WITH THE COLUMN. 34px is the size of an article's
+   * title against 700px of measure; against 315 it is five lines before the
+   * deck, and the screen opens on a headline with nothing under it. 28 keeps it
+   * plainly the largest thing on the page and gives the deck room to appear.
+   *
+   * Both of them, because they are the same headline: the one you read on the
+   * document and the one you type on the writing surface.
+   */
+  .da-articleread__title,
+  .da-title__input {
+    font-size: 28px;
+    line-height: 1.18;
+  }
+
+  /*
+   * THE RAIL IS UNDER THE COLUMN NOW, NOT BESIDE IT, so it takes the column's
+   * inset instead of its own. Payload's is asymmetric on purpose — 30px on the
+   * left for the seam between the two, 16 on the right against the window — and
+   * stacked, that reads as a panel that failed to line up with the one above it:
+   * measured, the rail's card at x30 against the column's at x15, and its fields
+   * at x45 against x30.
+   */
+  .collection-edit .document-fields__sidebar-fields {
+    padding-inline: 1rem;
+  }
+
+  .collection-edit .document-fields__sidebar .render-fields {
+    padding-inline: 1rem;
+  }
+
+  /* THE MEDIA SHEET IS THE SAME BOX WITH A SMALLER FRAME. Its width is written
+     as `100% - 120px` — 60 a side, which is a frame on a desk and two thirds of
+     a phone. The sheet keeps its shape; the frame and its own padding come down
+     to the one inset everything else here uses. */
+  .collection-edit--media .document-fields__main > .gutter {
+    inline-size: min(100% - 2rem, 44rem);
+    padding: 1.25rem 1rem 1.5rem;
+  }
+
+  /*
+   * AND FIELDS IN A ROW LINE UP WITH FIELDS THAT ARE NOT. Payload gutters a
+   * row's children with a 5.77px side margin — the gap between two fields
+   * sharing a line. Stacked, which is what they do at this width, that margin
+   * is not a gap between anything: it is six pixels of indent on some fields
+   * and not others, measured at x55 against x49 down the rail. The gap moves to
+   * the container, where it only exists when there are two things to separate.
+   */
+  .row__fields {
+    gap: 0.75rem;
+  }
+
+  .row__fields > .field-type {
+    margin-inline: 0;
+  }
+
+  /* ---- the sheets ------------------------------------------------------- */
+
+  /* 2rem of frame around a sheet is right when the sheet is 960px wide inside
+     1467. Here it is a fifth of the screen spent on the wash behind it. */
+  .payload__modal-container .payload__modal-item:has(.collection-list),
+  .payload__modal-container .payload__modal-item.doc-drawer,
+  .payload__modal-container .payload__modal-item:has(.edit-upload) {
+    padding: 1rem;
+  }
+
+  /*
+   * THE CROPPER STACKS, and it is the one screen here that genuinely could not
+   * survive being narrowed. Its grid is `auto 22rem` — a picture beside a
+   * column of numbers — and at 375 the picture was squeezed to a sliver with
+   * the focal-point handle floating in it while the fields ran 30px past the
+   * sheet's own edge and "Apply Changes" was cut in half.
+   *
+   * Picture, then the numbers, then the two answers. The divider that separated
+   * the two columns becomes the line between the two stacked halves, which is
+   * the same job in the direction the sheet now runs.
+   */
+  .edit-upload {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'crop'
+      'side'
+      'actions';
+  }
+
+  .edit-upload__crop {
+    /* 30rem of picture is a desk decision; here it is more than the screen. */
+    min-block-size: 0;
+    padding: 1rem 1rem 1.25rem;
+  }
+
+  .payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__sidebar {
+    border-inline-start: 0;
+    border-block-start: 1px solid var(--da-divider);
+  }
+
+  .payload__modal-container .payload__modal-item:has(.edit-upload) .edit-upload__header {
+    border-inline-start: 0;
+  }
+
+  /* A sheet cannot be taller than the screen it opens on — true of a phone in
+     landscape long before it is true of a desk. */
+  .payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__content {
+    max-block-size: 100%;
+    overflow-y: auto;
+  }
+}
