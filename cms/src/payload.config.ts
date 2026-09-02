@@ -132,6 +132,10 @@ export default buildConfig({
         // Accessible names for the controls Payload draws as bare glyphs — the
         // pager's arrows, a panel's ⋯, a select's × and ⌄. See A11yNames.
         '/components/admin/A11yNames#A11yNames',
+        // What a drawer is expected to do on a phone — tap the page to dismiss,
+        // Escape, focus in and back out, and the page held still underneath.
+        // See NavDrawer.
+        '/components/admin/NavDrawer#NavDrawer',
       ],
       // The mark and "Knowledge Hub" at the head of the nav. It replaces
       // Payload's bare 34px disc, which had no accessible name. See NavBrand.

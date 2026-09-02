@@ -51,6 +51,7 @@ import { SignIn as SignIn_4ca1d6643189fb160fd7f4543c3fb84a } from '../../../comp
 import { NavBrand as NavBrand_d7dd6c791c113ce8ff240c7282294e70 } from '../../../components/admin/NavBrand'
 import { UploadNew as UploadNew_9ea8c7b6df2174f003e9de60d1f1b21d } from '../../../components/admin/UploadNew'
 import { A11yNames as A11yNames_8a3d7fd2a0d2427d29a01a1084d70db8 } from '../../../components/admin/A11yNames'
+import { NavDrawer as NavDrawer_85d6b3aca6594fd90419defe78500d2b } from '../../../components/admin/NavDrawer'
 import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
 import { DashboardRedirect as DashboardRedirect_ece04e350fec6f57c4af84d53a7af84d } from '../../../components/admin/DashboardRedirect'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -110,6 +111,7 @@ export const importMap = {
   "/components/admin/NavBrand#NavBrand": NavBrand_d7dd6c791c113ce8ff240c7282294e70,
   "/components/admin/UploadNew#UploadNew": UploadNew_9ea8c7b6df2174f003e9de60d1f1b21d,
   "/components/admin/A11yNames#A11yNames": A11yNames_8a3d7fd2a0d2427d29a01a1084d70db8,
+  "/components/admin/NavDrawer#NavDrawer": NavDrawer_85d6b3aca6594fd90419defe78500d2b,
   "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24,
   "/components/admin/DashboardRedirect#DashboardRedirect": DashboardRedirect_ece04e350fec6f57c4af84d53a7af84d,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1

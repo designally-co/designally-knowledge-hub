@@ -4575,31 +4575,9 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
     transform: none;
   }
 
-  /* A COLLAPSED RAIL IS A DESKTOP PREFERENCE, and it is remembered — so someone
-     who collapsed it on a laptop would find a 78px drawer with the words taken
-     out of it on their phone, which is a rail with nothing to sit beside. In a
-     drawer the nav is always the whole nav. */
-  body.da-nav-collapsed .template-default {
-    grid-template-columns: revert;
-  }
-
-  body.da-nav-collapsed .nav {
-    inline-size: min(var(--nav-width), 80vw);
-  }
-
-  body.da-nav-collapsed .nav .nav__link-label,
-  body.da-nav-collapsed .da-brand__name,
-  body.da-nav-collapsed .da-navfoot__who {
-    display: revert;
-  }
-
-  .template-default--nav-open::before {
-    content: '';
-    position: fixed;
-    inset: 55px 0 0;
-    z-index: 55;
-    background-color: color-mix(in srgb, var(--da-ink) 45%, transparent);
-  }
+  /* The wash behind the drawer is a real element now — see `.da-navscrim` at the
+     end of this file. A `::before` cannot be tapped, and tapping the page to
+     dismiss a drawer is the gesture everyone tries first. */
 }
 
 @media (max-width: 48rem) and (prefers-reduced-motion: reduce) {
@@ -5569,4 +5547,96 @@ body.da-nav-collapsed .collection-list .list-selection {
 .sort-column__button {
   display: inline-grid;
   place-items: center;
+}
+
+/* =============================================================================
+   The nav, as a drawer on a phone
+
+   The shell already slides it in from under the band. What it did not have was
+   any of the behaviour a drawer is expected to carry — you could not tap the
+   page to dismiss it, Escape did nothing, focus stayed behind it on the page it
+   was covering, and the page scrolled underneath. Those live in NavDrawer,
+   which renders the wash below and drives Payload's own toggler; this is what
+   they look like.
+
+   AND IT OPENED AS A RAIL. `body.da-nav-collapsed` is a desktop preference and
+   it is remembered, so anyone who had collapsed the nav on a laptop got a 78px
+   column of icons with the words taken out of it — a rail with nothing to sit
+   beside. The overrides for that were written in the shell section above and
+   lost to the collapsed rules further down the file; at the end, they win.
+   ========================================================================== */
+
+@media (max-width: 48rem) {
+  body.da-nav-collapsed .template-default {
+    grid-template-columns: revert;
+  }
+
+  body.da-nav-collapsed .nav {
+    inline-size: min(var(--nav-width), 80vw);
+  }
+
+  body.da-nav-collapsed .nav .nav__link-label,
+  body.da-nav-collapsed .da-brand__name,
+  body.da-nav-collapsed .da-navfoot__who {
+    display: revert;
+  }
+
+  /* The rail's own geometry goes with it: a 78px column centres its glyphs, and
+     in a 243px drawer that leaves every icon floating in the middle of nothing
+     with its label beside it. */
+  body.da-nav-collapsed .nav__scroll {
+    inline-size: 100%;
+  }
+
+  /* ---- the wash ---------------------------------------------------------- */
+
+  .da-navscrim {
+    position: fixed;
+    /* Below the band, so the control that closes the drawer is never under the
+       thing it opened. */
+    inset: 55px 0 0;
+    z-index: 55;
+    inline-size: 100%;
+    padding: 0;
+    border: 0;
+    background-color: color-mix(in srgb, var(--da-ink) 45%, transparent);
+    cursor: pointer;
+    /* It is a button with no label drawn: the ink IS the affordance, and the
+       accessible name is on the element (see NavDrawer). */
+    appearance: none;
+  }
+
+  /* The page does not move while a drawer is over it — scrolling the thing you
+     cannot see is how you lose your place in a list of forty articles. */
+  body.da-nav-open {
+    overflow: hidden;
+  }
+
+  /* ---- the hamburger ----------------------------------------------------- */
+
+  /* 27px is a mouse's target. This one is pressed with a thumb, at the top-left
+     corner of a phone, which is the furthest point from where a thumb rests —
+     so it gets the 44 that touch guidance asks for, without moving the glyph:
+     the box grows around it. */
+  .app-header__mobile-nav-toggler {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 44px;
+    block-size: 44px;
+  }
+
+  /* ---- the notch --------------------------------------------------------- */
+
+  /* A phone in landscape puts its camera cut-out in the side of the band and of
+     the drawer. On the band itself, not on the wrapper inside it: the wrapper
+     already carries the 16, and `max(16px, env(…))` there simply added a second
+     one — measured, the hamburger moved from x16 to x32 on a phone with no
+     notch at all. Bare `env()` is 0 where there is nothing to clear. */
+  .app-header {
+    padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
+  }
+
+  .nav {
+    padding-inline-start: env(safe-area-inset-left);
+  }
 }
