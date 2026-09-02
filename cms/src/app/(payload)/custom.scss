@@ -5777,15 +5777,18 @@ body.da-nav-collapsed .collection-list .list-selection {
    * against each other: the name, its sentence two pixels under it, and the
    * button clear of both. Proximity does the grouping — nothing is boxed.
    */
-  /* THE COLUMN IS THE HEADER ITSELF. `__content` holds the title and the button;
+  /* THE GRID IS THE HEADER ITSELF. `__content` holds the title and the button;
      the description is its SIBLING, so ordering inside `__content` could only
      ever move the button between the two — measured, exactly that: heading 99,
-     button 145, sentence 195. Both wrappers dissolve, and the three are ordered
-     against each other in one flow. */
+     button 145, sentence 195. Both wrappers dissolve with `display: contents`,
+     which puts all three directly in this grid to be placed against each other:
+     the heading and its sentence stack down the first column, and the button
+     sits in the second, on the heading's line, at the top right of the sheet. */
   .list-header {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: 12px;
   }
 
   .list-header__content,
@@ -5794,17 +5797,63 @@ body.da-nav-collapsed .collection-list .list-selection {
   }
 
   .list-header__title {
-    order: 0;
+    grid-area: 1 / 1;
   }
 
   .list-header__after-header-content {
-    order: 1;
-    margin-block-start: 2px;
+    grid-area: 2 / 1;
+    margin-block-start: 4px;
   }
 
-  .list-header__title-actions {
-    order: 2;
-    margin-block-start: 0.875rem;
+  /* The sentence sits inside this, and it carried 17px of its own space above
+     it — on top of the margin — which read as the heading and its own
+     description belonging to different groups. Measured: heading bottom 128,
+     wrapper 134, sentence 151. */
+  .collection-list__sub-header {
+    padding-block-start: 0;
+  }
+
+  /* IT SPANS BOTH ROWS SO THAT IT SETS THE HEIGHT OF NEITHER. Sitting in row 1
+     alone, the button — 44px against a 29px heading — made that row 44px tall
+     and the sentence started below the BUTTON rather than below the heading:
+     measured 19px where 4 was asked for. Spanning, its height is measured
+     against both rows together, which the heading and sentence already exceed.
+     It still draws at the top: `align-self: start`. */
+  /* Two elements, because the sheet's is not the list's. A collection screen
+     renders `.list-create-new-doc__create-new-button` inside
+     `.list-header__title-actions`; the picker renders a bare
+     `.list-header__create-new-button` with no wrapper at all. Named separately,
+     the sheet's button auto-placed itself into the same cell and drew straight
+     under the close disc — measured, button 247–336 against a disc at 307–343. */
+  .list-header__title-actions,
+  .list-header__create-new-button {
+    grid-area: 1 / 2 / span 2 / auto;
+    align-self: start;
+    justify-self: end;
+    margin: 0;
+  }
+
+  /* AND THE SHEET'S TOP RIGHT IS ALREADY SPOKEN FOR. The close disc sits in
+     that corner, so the header's second column has to end before it — 40px
+     buys the disc's 36 and a gap. The heading's column gives up that width;
+     the sentence takes one more line for it, which is the cheaper of the two. */
+  #{$sheet} .list-header {
+    padding-inline-end: 40px;
+  }
+
+  /* AND IT IS THE SAME SIZE AS EVERYTHING ELSE ON THE ROW BELOW IT. Payload
+     renders this as `btn--size-small`: 27px tall, against a 44px search field
+     and a 44px locale switch directly underneath. Three controls on one screen,
+     one of them a third smaller and under the 44px a thumb expects. */
+  .list-header__title-actions .btn,
+  .list-header__create-new-button .pill {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+    padding-inline: 1rem;
+    /* The sheet's is a `.pill` at a 3px radius — a square grey chip where the
+       list screen's is a full pill. One control, one shape. */
+    border-radius: 9999px;
   }
 
   /*
