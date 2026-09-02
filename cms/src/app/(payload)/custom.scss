@@ -2812,15 +2812,43 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
    a margin the editor owns rather than as a mistake. The placeholder's own 45px
    offset is correct again for the same reason, so that override is gone too. */
 
-/* THE GUTTER'S OWN RULE, KEPT. Lexical draws a full-height line down the gutter
-   as a `::before` with a 1px `#f3f3f3` left border. It was hidden while the
-   editor was pulled left and the gutter was empty space in the sheet's padding;
-   now that the body sits inside the gutter again, the line is what says so — it
-   marks the margin the handles live in rather than looking like a stray rule
-   beside the text. Recoloured, because `#f3f3f3` is the parchment page and is
-   invisible on the white writing surface. */
+/*
+ * THE GUTTER MOVES OUT OF THE COLUMN, and the article's words line up with its
+ * own title again — and with the same words on the document screen, which is
+ * where this started: the two pages showed one article at two different left
+ * edges, 45px apart, because only one of them had an editor in it.
+ *
+ * WHY THE LAST ATTEMPT FAILED, recorded above: pulling the editor left with the
+ * card unchanged left the handles nowhere to go, and they landed on the first
+ * characters. They are placed against the BLOCK — measured, the drag handle at
+ * its left minus 53 and the add handle minus 33 — so the only thing that
+ * actually makes room for them is room to the left of the text.
+ *
+ * So the card gives it. 3.75rem of padding is 56px, which clears the further of
+ * the two handles by 3, and both views take it: the writing surface needs the
+ * gutter and the document screen needs the same edge. The line that marked the
+ * old margin goes with it — it marked a margin inside the text column, and there
+ * is no longer one.
+ */
+@media (min-width: 48.0625rem) {
+  .collection-edit--articles .render-fields.document-fields__fields {
+    padding-inline: 3.75rem;
+  }
+
+  /* THE GUTTER STAYS AND THE BOX MOVES. Zeroing the padding was the obvious
+     way and it is the way that fails, exactly as the note above records —
+     measured again here: the handles sit at the EDITOR's left minus 8 and plus
+     12, not at the text's, so a box with no padding puts them on the first
+     characters. Keep the 45px, pull the box 45px left, and the text lands where
+     the title is while the handles stay in the room the card just made. */
+  .collection-edit--articles .ContentEditable__root {
+    margin-inline-start: -45px;
+    inline-size: calc(100% + 45px);
+  }
+}
+
 .collection-edit--articles .ContentEditable__root::before {
-  border-inline-start-color: var(--da-divider);
+  content: none;
 }
 
 /* ---- the add-block and drag handles -------------------------------------- */
@@ -2835,6 +2863,13 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
    together in the gutter and one being legible while the other is not would be
    worse than either. */
 .collection-edit--articles :is(.add-block-menu, .draggable-block-menu) {
+  /* AND THEY MOVE WITH THE GUTTER. They are absolutely positioned inside the
+     editor's WRAPPER and transformed by hand — `translate(-8px, …)` for the drag
+     handle and +12 for the add — so pulling the text left of the wrapper leaves
+     the plus sitting on the first characters. The same 45px, applied here,
+     keeps the pair where they have always been relative to the words: to the
+     left of them, in the margin the card now provides. */
+  margin-inline-start: -45px;
   inline-size: 28px;
   block-size: 28px;
   border-radius: var(--style-radius-s);
@@ -5295,7 +5330,7 @@ body.da-nav-collapsed .collection-list .list-selection {
    */
   .collection-edit .document-fields__edit {
     margin-inline: 0;
-    padding-inline: 1rem;
+    padding-inline: 16px;
   }
 
   /*
@@ -5305,7 +5340,7 @@ body.da-nav-collapsed .collection-list .list-selection {
    * — a paragraph broken into a column of fragments.
    */
   .collection-edit .render-fields.document-fields__fields {
-    padding-inline: 1rem;
+    padding-inline: 16px;
   }
 
   /*
@@ -5332,11 +5367,11 @@ body.da-nav-collapsed .collection-list .list-selection {
    * at x45 against x30.
    */
   .collection-edit .document-fields__sidebar-fields {
-    padding-inline: 1rem;
+    padding-inline: 16px;
   }
 
   .collection-edit .document-fields__sidebar .render-fields {
-    padding-inline: 1rem;
+    padding-inline: 16px;
   }
 
   /* THE MEDIA SHEET IS THE SAME BOX WITH A SMALLER FRAME. Its width is written
@@ -5344,8 +5379,8 @@ body.da-nav-collapsed .collection-list .list-selection {
      a phone. The sheet keeps its shape; the frame and its own padding come down
      to the one inset everything else here uses. */
   .collection-edit--media .document-fields__main > .gutter {
-    inline-size: min(100% - 2rem, 44rem);
-    padding: 1.25rem 1rem 1.5rem;
+    inline-size: min(100% - 32px, 44rem);
+    padding: 1.25rem 16px 1.5rem;
   }
 
   /*
@@ -5421,15 +5456,39 @@ body.da-nav-collapsed .collection-list .list-selection {
     field-sizing: content;
   }
 
-  /* ---- the sheets ------------------------------------------------------- */
+  /* ---- 16px from the glass ---------------------------------------------- */
 
-  /* 2rem of frame around a sheet is right when the sheet is 960px wide inside
-     1467. Here it is a fifth of the screen spent on the wash behind it. */
+  /* EVERY SHEET, THE SAME DISTANCE FROM THE EDGE OF THE SCREEN. A modal's frame
+     is 2rem on a desktop, where the sheet is 960px inside 1467 and the number
+     never binds; here it is a fifth of the screen spent on the wash behind it.
+     16 — and the insets below are the same 16, so a sheet laid over the page and
+     a sheet that is the page sit on the same line. */
   .payload__modal-container .payload__modal-item:has(.collection-list),
   .payload__modal-container .payload__modal-item.doc-drawer,
   .payload__modal-container .payload__modal-item:has(.edit-upload) {
-    padding: 1rem;
+    padding: 16px;
   }
+
+  /* The list is a sheet too, and the 22.5 that holds it off the screen is on
+     the page around it, not on the card. */
+  .collection-list {
+    padding-inline: 16px;
+  }
+
+  .collection-list > .gutter.collection-list__wrap {
+    padding-inline: 16px;
+  }
+
+  /* AND A SHEET FILLS WHAT THE FRAME LEAVES IT. The widths are written for a
+     desk — 64rem for the picker, 44 for the document drawer — and at this size
+     they resolve to less than the screen minus its 16, so the sheet floated with
+     29px of wash on either side of it while the frame said 16. */
+  #{$sheet} .drawer__content,
+  .payload__modal-container .payload__modal-item:has(.edit-upload) .drawer__content {
+    inline-size: 100% !important;
+  }
+
+  /* ---- the sheets ------------------------------------------------------- */
 
   /*
    * THE CROPPER STACKS, and it is the one screen here that genuinely could not

@@ -137,7 +137,7 @@ body.da-writing .document-fields__main > .gutter {
  */
 @media (max-width: 48rem) {
   body.da-writing .document-fields__main > .gutter {
-    padding-inline: 1rem;
+    padding-inline: 16px;
   }
 
   /*
@@ -152,7 +152,7 @@ body.da-writing .document-fields__main > .gutter {
    * every other document screen in this admin keeps at this width.
    */
   body.da-writing .render-fields.document-fields__fields {
-    padding-inline: 1rem;
+    padding-inline: 16px;
   }
 }
 
