@@ -4370,6 +4370,36 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   }
 }
 
+/*
+ * AND THE PICKER IS NARROWER STILL — IT IS A SHEET INSIDE A SCREEN.
+ *
+ * Choosing a picture is done on the picture and the description beside it.
+ * Credit is a field you fill in when you file something, not one you pick by,
+ * and it took a third of a 297px table to say "—" on every row while the
+ * description it sits next to was cut to "office-placeholde…". Gone at every
+ * width: on a desk it is no more useful for choosing, only less in the way.
+ *
+ * On a phone the rest goes with it. `updatedAt` is off the right edge of the
+ * sheet and only reachable by scrolling the table sideways, which is how the
+ * list screens read before they were cut to one column — same reasoning, same
+ * cut, and the description gets the whole width. Here the FIRST cell is the
+ * one that stays: a picker has no select column, so its first cell is already
+ * the picture and the name.
+ */
+#{$picker} .collection-list table :is(#heading-credit, .cell-credit) {
+  display: none;
+}
+
+@media (max-width: 48rem) {
+  #{$picker} .collection-list table {
+    inline-size: 100%;
+  }
+
+  #{$picker} .collection-list table :is(th, td):not(:first-child) {
+    display: none;
+  }
+}
+
 /* Payload's 23px gap under the tables opened a seam between the last row and
    the pagination that closes the card. */
 .collection-list__tables {
@@ -5833,12 +5863,19 @@ body.da-nav-collapsed .collection-list .list-selection {
     margin: 0;
   }
 
-  /* AND THE SHEET'S TOP RIGHT IS ALREADY SPOKEN FOR. The close disc sits in
-     that corner, so the header's second column has to end before it — 40px
-     buys the disc's 36 and a gap. The heading's column gives up that width;
-     the sentence takes one more line for it, which is the cheaper of the two. */
-  #{$sheet} .list-header {
-    padding-inline-end: 40px;
+  /* THE SHEET'S CORNER IS THE CLOSE BUTTON'S. Every sheet in this admin puts
+     the × there and nothing else, which is the whole reason it can be found
+     without looking. So in a sheet the action drops one row and sits beside the
+     sentence instead, right-aligned, directly under the disc: the two are on
+     the same edge, never on the same line, and neither has to squeeze past the
+     other. The heading's column gets its width back — the alternative was
+     reserving 40px of a 297px header for a control that is not even in the
+     grid, since the disc is positioned against the sheet. */
+  #{$sheet} :is(.list-header__title-actions, .list-header__create-new-button) {
+    grid-area: 2 / 2;
+    align-self: start;
+    /* Clear of the disc above it, which ends 1px into this row. */
+    margin-block-start: 8px;
   }
 
   /* AND IT IS THE SAME SIZE AS EVERYTHING ELSE ON THE ROW BELOW IT. Payload
