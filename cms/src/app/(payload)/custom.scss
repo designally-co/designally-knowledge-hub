@@ -5630,6 +5630,17 @@ body.da-nav-collapsed .collection-list .list-selection {
     inline-size: 100%;
   }
 
+  /*
+   * THE DRAWER STARTS AT ITS OWN TOP. `.nav__scroll` keeps 62.9px of padding
+   * above the mark — the room a permanent column needs to clear the header band
+   * it sits beside. A drawer already starts BELOW that band, so the two stacked:
+   * measured, the mark 63px down inside a panel whose own top edge is at 55, and
+   * the four links pushed a third of the way down the screen after it.
+   */
+  .nav__scroll {
+    padding-block-start: 16px;
+  }
+
   /* ---- the wash ---------------------------------------------------------- */
 
   .da-navscrim {
@@ -5751,6 +5762,49 @@ body.da-nav-collapsed .collection-list .list-selection {
   .template-default--nav-open .app-header__mobile-nav-toggler::before {
     mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
     -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+  }
+
+  /*
+   * THE HEADING AND ITS SENTENCE ARE ONE THING; THE BUTTON IS NOT.
+   *
+   * Payload pairs the heading with the action — "Articles" and "Create New" on
+   * one line — and drops the description below both, so the two halves of one
+   * statement sat 18px apart while a button that has nothing to do with either
+   * was welded to the first. On a phone that reads as a title with a control
+   * stuck to it and a caption adrift underneath.
+   *
+   * `display: contents` dissolves Payload's wrapper so the three can be ordered
+   * against each other: the name, its sentence two pixels under it, and the
+   * button clear of both. Proximity does the grouping — nothing is boxed.
+   */
+  /* THE COLUMN IS THE HEADER ITSELF. `__content` holds the title and the button;
+     the description is its SIBLING, so ordering inside `__content` could only
+     ever move the button between the two — measured, exactly that: heading 99,
+     button 145, sentence 195. Both wrappers dissolve, and the three are ordered
+     against each other in one flow. */
+  .list-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .list-header__content,
+  .list-header__title-and-actions {
+    display: contents;
+  }
+
+  .list-header__title {
+    order: 0;
+  }
+
+  .list-header__after-header-content {
+    order: 1;
+    margin-block-start: 2px;
+  }
+
+  .list-header__title-actions {
+    order: 2;
+    margin-block-start: 0.875rem;
   }
 
   /*
