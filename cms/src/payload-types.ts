@@ -131,7 +131,7 @@ export interface Article {
   id: number;
   title: string;
   /**
-   * One-sentence lede. Also the card excerpt.
+   * The lede, and the card excerpt.
    */
   summary?: string | null;
   bodyMarkdown?: string | null;
@@ -163,7 +163,7 @@ export interface Article {
       }[]
     | null;
   /**
-   * Up to four, shown at the foot of the article.
+   * Up to four, at the foot of the article.
    */
   related?: (number | Article)[] | null;
   /**
@@ -175,7 +175,7 @@ export interface Article {
     ogImage?: (number | null) | Media;
   };
   /**
-   * One tag per article; it sets the category.
+   * One per article. Sets the category.
    */
   tag:
     | 'Branding Systems'
@@ -213,12 +213,12 @@ export interface Article {
     | 'AI Design'
     | 'Future of Design';
   /**
-   * Draft is hidden from the public site.
+   * Drafts are hidden from the site.
    */
   status: 'draft' | 'published';
   publishedDate?: string | null;
   /**
-   * Auto-filled from the title. Used in the URL.
+   * From the title. Used in the URL.
    */
   slug?: string | null;
   updatedAt: string;
@@ -233,11 +233,11 @@ export interface Article {
 export interface Media {
   id: number;
   /**
-   * What the picture shows, for someone who cannot see it. Needed before it can go on a page.
+   * For readers who can't see it. Needed to publish.
    */
   alt?: string | null;
   /**
-   * Optional attribution for the asset.
+   * Optional.
    */
   credit?: string | null;
   updatedAt: string;
@@ -288,7 +288,7 @@ export interface Resource {
   id: number;
   title: string;
   /**
-   * What the download is for. Also the search description.
+   * What the download is for. Also used in search.
    */
   description?: string | null;
   /**
@@ -316,7 +316,7 @@ export interface Resource {
       }[]
     | null;
   /**
-   * Terms for this download, e.g. "Free for personal and commercial use".
+   * E.g. "Free for personal and commercial use".
    */
   licence?: string | null;
   /**
@@ -329,16 +329,16 @@ export interface Resource {
   };
   fileSize?: string | null;
   /**
-   * Draft is hidden from the public site.
+   * Drafts are hidden from the site.
    */
   status: 'draft' | 'published';
   publishedDate?: string | null;
   /**
-   * What this download is. Also decides the artwork and colour on the card.
+   * Sets the card's artwork and colour.
    */
   category: 'Templates' | 'Fonts' | 'Ebooks & Guides' | 'Wallpapers' | 'Icons';
   /**
-   * Auto-filled from the title. Used in the URL.
+   * From the title. Used in the URL.
    */
   slug?: string | null;
   updatedAt: string;

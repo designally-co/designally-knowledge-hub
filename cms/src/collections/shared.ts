@@ -43,7 +43,7 @@ export const statusField: Field = {
   ],
   admin: {
     position: 'sidebar',
-    description: 'Draft is hidden from the public site.',
+    description: 'Drafts are hidden from the site.',
     components: {
       // Shared by Articles and Resources on purpose: "draft" should look the
       // same wherever it appears, or the reader has to learn two vocabularies.
@@ -176,6 +176,6 @@ export const summaryField: Field = {
   label: 'Deck',
   admin: {
     placeholder: 'One-sentence lede — also the card excerpt',
-    description: 'One-sentence lede. Also the card excerpt.',
+    description: 'The lede, and the card excerpt.',
   },
 }

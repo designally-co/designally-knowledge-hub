@@ -28,7 +28,7 @@ export const slugField = (sourceField = 'title'): Field[] => [
     unique: true,
     admin: {
       position: 'sidebar',
-      description: 'Auto-filled from the title. Used in the URL.',
+      description: 'From the title. Used in the URL.',
     },
     hooks: {
       beforeValidate: [

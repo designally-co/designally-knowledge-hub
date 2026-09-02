@@ -5442,6 +5442,40 @@ body.da-nav-collapsed .collection-list .list-selection {
     field-sizing: content;
   }
 
+  /*
+   * AND 16 ON ALL FOUR SIDES OF EVERY SHEET. The insets were set edge by edge as
+   * each screen came up, and Payload's own verticals were left where they were —
+   * so a card was 16 at the sides and 30 at the top and bottom, the rail's was
+   * 18.75 and 22.5, and the media sheet a third pair. Four numbers doing one
+   * job, and none of them agreed with the 16 the sheet keeps from the screen.
+   *
+   * One value, on the four surfaces that are sheets. The page's own column keeps
+   * its vertical rhythm — the space above and below a card is the page's, not
+   * the card's.
+   */
+  .collection-list > .gutter.collection-list__wrap,
+  .collection-edit .render-fields.document-fields__fields,
+  .collection-edit .document-fields__sidebar .render-fields,
+  .collection-edit--media .document-fields__main > .gutter {
+    padding: 16px;
+  }
+
+  /* The two that open OVER the page keep the same number. Their 45px top was
+     room for the close disc, which sits 16 from the sheet's own top-right and is
+     36 tall — it clears the heading beside it at this width. */
+  #{$picker} .collection-list > .gutter,
+  #{$doc} .collection-edit {
+    padding: 16px;
+  }
+
+  /* AND ONLY ONE OF THEM. The list carries a 16px page inset of its own — right
+     on a screen, and a second frame inside a sheet that already has one: it put
+     the picker's heading 39px from the tile's edge against the 16 everything
+     else keeps. The sheet's padding is the one that applies here. */
+  #{$picker} .collection-list {
+    padding-inline: 0;
+  }
+
   /* ---- 16px from the glass ---------------------------------------------- */
 
   /* EVERY SHEET, THE SAME DISTANCE FROM THE EDGE OF THE SCREEN. A modal's frame

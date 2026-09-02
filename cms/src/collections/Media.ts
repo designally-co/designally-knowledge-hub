@@ -88,8 +88,12 @@ export const Media: CollectionConfig = {
           label: 'Description',
           type: 'text',
           admin: {
-            description:
-              'What the picture shows, for someone who cannot see it. Needed before it can go on a page.',
+            /* SHORT ENOUGH TO READ IN THE GLANCE IT GETS. It ran to two full
+               sentences under a one-line field — "What the picture shows, for
+               someone who cannot see it. Needed before it can go on a page." —
+               which is a paragraph explaining a box you have already understood.
+               Both facts survive: who it is for, and that it gates publishing. */
+            description: 'For readers who can\'t see it. Needed to publish.',
             components: {
               /* The picture in front of the name, and the row's link or — in a
                  drawer — its select button. See MediaRowTitle. */
@@ -101,7 +105,7 @@ export const Media: CollectionConfig = {
           name: 'credit',
           type: 'text',
           admin: {
-            description: 'Optional attribution for the asset.',
+            description: 'Optional.',
             components: {
               // Empty renders as an em dash rather than Payload's `<No Credit>`,
               // which is developer syntax shown to an editor.

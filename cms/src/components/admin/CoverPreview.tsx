@@ -440,7 +440,10 @@ function CoverDescribe({
       <p className="da-coverprev__describe-note">
         {failed
           ? 'That could not be saved. Try again.'
-          : 'For readers using a screen reader, and for search. The article will not save without it.'}
+          : /* The same words the file's own field uses, and as short. It sat at
+               two sentences under a one-line input — "For readers using a screen
+               reader, and for search. The article will not save without it." */
+            "For readers who can't see it. Needed to save."}
       </p>
     </div>
   )

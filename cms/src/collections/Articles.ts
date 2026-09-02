@@ -326,7 +326,7 @@ export const Articles: CollectionConfig = {
       hasMany: true,
       label: 'Related',
       admin: {
-        description: 'Up to four, shown at the foot of the article.',
+        description: 'Up to four, at the foot of the article.',
         components: {
           Field: '/components/admin/RelatedPicker#RelatedPicker',
         },
@@ -383,7 +383,7 @@ export const Articles: CollectionConfig = {
       required: true,
       admin: {
         position: 'sidebar',
-        description: 'One tag per article; it sets the category.',
+        description: 'One per article. Sets the category.',
         components: {
           // The list keeps its cell — a colour dot and the category beneath the
           // tag is worth having when scanning 30 rows. The EDITOR is a plain

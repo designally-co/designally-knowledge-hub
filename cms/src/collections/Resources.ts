@@ -129,7 +129,7 @@ export const Resources: CollectionConfig = {
             // it is a few short paragraphs, and that search reads it. The
             // textarea already says "plain text" by being one, and its height
             // says "short". What is left is the part that is not visible.
-            description: 'What the download is for. Also the search description.',
+            description: 'What the download is for. Also used in search.',
           },
         },
       ],
@@ -163,7 +163,7 @@ export const Resources: CollectionConfig = {
       name: 'licence',
       type: 'text',
       admin: {
-        description: 'Terms for this download, e.g. "Free for personal and commercial use".',
+        description: 'E.g. "Free for personal and commercial use".',
       },
     },
 
@@ -214,7 +214,7 @@ export const Resources: CollectionConfig = {
       options: RESOURCE_CATEGORY_OPTIONS,
       admin: {
         position: 'sidebar',
-        description: 'What this download is. Also decides the artwork and colour on the card.',
+        description: 'Sets the card\'s artwork and colour.',
       },
     },
     ...slugField('title'),
