@@ -346,10 +346,29 @@ p,
 /* Primary — the one accented action in a region. Payload drives its buttons
    through four locals, so re-pointing those themes every primary button in the
    admin at once, including ones this file has never seen. */
+/*
+ * THE ORANGE YOU READ, NOT THE ORANGE YOU RECOGNISE — the system's own
+ * distinction, applied to the one control it matters most on.
+ *
+ * `#ef6148` carrying white text measures 3.24:1. That is under AA for anything
+ * below 18.66px bold, and this label is 13px — so the single most-pressed
+ * control in the admin had the least legible words on it. The palette already
+ * answers this: `--da-orange-mark` is, in the token block's own words, "what you
+ * reach for when a thing has to be READ", and white on it is 4.94:1.
+ *
+ * IT DOES NOT SPREAD. The nav's indicator bar, the mark's disc and the accent
+ * icon button all keep `--da-orange`: a 3px bar and a glyph are recognised, not
+ * read, and white on orange clears the 3:1 that non-text contrast asks for.
+ *
+ * THE HOVER HAD TO MOVE TOO. `--da-orange-deep` is 4.22:1 — it was failing as
+ * the pressed state of a button that now passes at rest, which is backwards.
+ * Ten per cent of the charcoal takes it below the resting fill in luminance and
+ * therefore above it in contrast.
+ */
 .btn--style-primary {
   --color: #ffffff;
-  --bg-color: var(--da-orange);
-  --hover-bg: var(--da-orange-deep);
+  --bg-color: var(--da-orange-mark);
+  --hover-bg: color-mix(in srgb, var(--da-orange-mark) 90%, var(--da-charcoal));
   --hover-color: #ffffff;
 }
 
@@ -521,8 +540,12 @@ a:focus-visible,
   border-color: var(--da-focus);
 }
 
+/* INK-3, NOT INK-4. `#797d85` clears 4.5:1 on white and nothing else: the search
+   field's ground is the warm white, where the same grey measures 3.72 — and a
+   placeholder is the only text in an empty field, so it is doing the field's
+   labelling until something is typed. Ink-3 is 6.6:1 on that ground. */
 ::placeholder {
-  color: var(--da-ink-4);
+  color: var(--da-ink-3);
 }
 
 /* =============================================================================
@@ -5448,4 +5471,43 @@ body.da-nav-collapsed .collection-list .list-selection {
     max-block-size: 100%;
     overflow-y: auto;
   }
+}
+
+/* =============================================================================
+   The floor under every control
+
+   A sweep of the whole admin for contrast, accessible names and target size
+   turned up three kinds of defect. Two are fixed where they live — the primary
+   button's fill and the placeholder ink, both above; the names are set on the
+   elements themselves, because Payload renders them and they take no props (see
+   A11yNames). What is left is the third: controls smaller than a finger.
+
+   24px is WCAG 2.2's AA minimum and these were 20 and 23 — Payload's own sort
+   arrows, the × and ⌄ inside a select, and the × that clears a date. None of
+   them grow the row they sit in: they are glyphs in boxes with room around them
+   already, and the box is what changes.
+
+   THE BREADCRUMB'S LINKS ARE LEFT AT 23. WCAG 2.2 exempts a link inside a line
+   of text, which is what "Articles /" is — and giving it a 24px box would put a
+   click target taller than its own line into the middle of a sentence.
+   ========================================================================== */
+
+.sort-column__button,
+.popup-button.popup-button--default,
+.date-time-picker__clear-button,
+.copy-to-clipboard,
+.rs__clear-indicator,
+.rs__dropdown-indicator,
+.clear-indicator,
+.dropdown-indicator {
+  min-inline-size: 24px;
+  min-block-size: 24px;
+}
+
+/* The pager's arrows are 30px already; this is the pair beside them that is
+   not — and they sit in a row, so the target grows sideways rather than
+   pushing the line taller. */
+.sort-column__button {
+  display: inline-grid;
+  place-items: center;
 }

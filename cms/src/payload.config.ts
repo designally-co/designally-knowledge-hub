@@ -127,7 +127,12 @@ export default buildConfig({
       // "Upload new" in the media picker, and the file chooser it opens. A
       // provider because the button it works on is Payload's own, rendered into
       // a portal from a tree with no component of ours in it. See UploadNew.
-      providers: ['/components/admin/UploadNew#UploadNew'],
+      providers: [
+        '/components/admin/UploadNew#UploadNew',
+        // Accessible names for the controls Payload draws as bare glyphs — the
+        // pager's arrows, a panel's ⋯, a select's × and ⌄. See A11yNames.
+        '/components/admin/A11yNames#A11yNames',
+      ],
       // The mark and "Knowledge Hub" at the head of the nav. It replaces
       // Payload's bare 34px disc, which had no accessible name. See NavBrand.
       beforeNavLinks: ['/components/admin/NavBrand#NavBrand'],

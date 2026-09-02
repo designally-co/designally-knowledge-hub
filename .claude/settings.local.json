@@ -220,7 +220,8 @@
       "Bash(awk -F'|' '$2==\"alt\"||$2==\"credit\"{print $2, \"notnull=\"$4}')",
       "Bash(sqlite3 designally-hub.db \"insert into media \\(id, updated_at, created_at, filename\\) values \\(999,'x','x','probe.png'\\); select id, coalesce\\(alt,'<null>'\\) from media where id=999; delete from media where id=999; select count\\(*\\) from media;\")",
       "Bash(node /Users/admin/.claude/skills/impeccable/scripts/detect.mjs --json cms/src/components/admin/CoverPreview.tsx cms/src/components/admin/CoverPreview.css cms/src/components/admin/MediaCells.tsx cms/src/components/admin/MediaCells.css cms/src/components/admin/UploadNew.tsx)",
-      "Bash(node /Users/admin/.claude/skills/impeccable/scripts/detect.mjs --json cms/src/components/admin/CoverPreview.tsx cms/src/components/admin/CoverPreview.css cms/src/components/admin/UploadNew.tsx cms/src/components/admin/MediaCells.css)"
+      "Bash(node /Users/admin/.claude/skills/impeccable/scripts/detect.mjs --json cms/src/components/admin/CoverPreview.tsx cms/src/components/admin/CoverPreview.css cms/src/components/admin/UploadNew.tsx cms/src/components/admin/MediaCells.css)",
+      "Bash(node -e \"const fs=require\\('fs'\\);const s=fs.readFileSync\\('audit.js','utf8'\\);fs.writeFileSync\\('audit.min.txt',JSON.stringify\\(s\\)\\);console.log\\('chars',s.length\\)\")"
     ]
   }
 }

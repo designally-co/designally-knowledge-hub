@@ -60,7 +60,9 @@
   inline-size: 32px;
   block-size: 32px;
   border-radius: 50%;
-  background-color: var(--da-orange);
+  /* The readable orange, because initials are letters: white on `--da-orange` is
+     3.24:1 at 11px. See the note on `.btn--style-primary`. */
+  background-color: var(--da-orange-mark);
   font-family: var(--font-display);
   font-size: 0.6875rem;
   font-weight: 700;
