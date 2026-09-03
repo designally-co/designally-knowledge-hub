@@ -6074,8 +6074,15 @@ body.da-nav-collapsed .collection-list .list-selection {
     padding: 0;
   }
 
+  /* AND NOTHING BELOW THE PAGINATION EITHER. Payload gives the list a 22.5px
+     bottom padding and an 80px bottom margin — the second is room for the
+     selection bar that a list SCREEN fixes to the foot of the window. A picker
+     has no such bar, so the two were 102px of empty sheet under "1-7 of 7",
+     measured 120 from the pagination to the sheet's edge where the frame asks
+     for 16. */
   #{$picker} .collection-list {
-    margin-block-start: 0;
+    margin-block: 0;
+    padding-block-end: 0;
   }
 
   #{$sheet} .list-header__title {
