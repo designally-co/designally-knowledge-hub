@@ -6050,29 +6050,68 @@ body.da-nav-collapsed .collection-list .list-selection {
    * Static, it is a grid item like everything else and the row centres the two
    * against each other.
    */
+  /*
+   * ONE FRAME, 16px, ON ALL FOUR SIDES.
+   *
+   * It was built out of three paddings that never agreed: 6px on
+   * `.drawer__content`, a 5px margin on `.collection-list`, and the 16 the
+   * sheet's own wrap carries. Then the header's first row — 48px tall against a
+   * 19px heading and a 36px disc — centred each of them by a different amount.
+   * Measured from the sheet's edge: the heading 42 from the top and 23 from the
+   * left, the disc 32 from the top and 23 from the right. Four numbers where
+   * there should be one.
+   *
+   * The two strays go, the wrap's 16 is the frame, and both items sit at the
+   * top of the row rather than in the middle of it — so the heading's gap from
+   * the top is its gap from the left, and the disc's from the top is its gap
+   * from the right.
+   *
+   * THE HEADING TAKES THE DISC'S HEIGHT to stay on its centre line. Top-aligned
+   * as a 19px box against a 36px disc it would read high; as a 36px box with
+   * its text centred, the two share a top edge AND a middle.
+   */
+  #{$picker} .drawer__content {
+    padding: 0;
+  }
+
+  #{$picker} .collection-list {
+    margin-block-start: 0;
+  }
+
   #{$sheet} .list-header__title {
     grid-area: 1 / 1;
-    align-self: center;
+    align-self: start;
+    display: flex;
+    align-items: center;
+    min-block-size: 36px;
   }
 
   #{$sheet} .list-header__actions {
     grid-area: 1 / 2;
     justify-self: end;
-    align-self: center;
-    /* A 44px band, which is also the target the close did not have at 36. */
+    align-self: start;
+    /* 44px of target on a 36px disc — the extra hangs below, where there is
+       nothing to hit but the sentence's leading. */
     min-block-size: 44px;
   }
 
   #{$sheet} .list-drawer__header-close {
     position: static;
-    /* Payload pins it to `flex-start` inside its own box, which held the 36px
-       disc above the centre of the band it shares with the heading. */
-    align-self: center;
+    /* Its VISIBLE top edge is what the frame is measured to, so the disc sits
+       at the top of its target rather than in the middle of it. */
+    align-self: start;
   }
 
+  /*
+   * THE SENTENCE COMES UP AND STOPS SHORT. It sat 18px under the heading —
+   * most of which was the old row's spare height — and ran the full 297px, so
+   * the sheet opened on a wall of text the width of the table under it. Tight
+   * to the heading it belongs to, and stopped at a measure.
+   */
   #{$sheet} .list-header__after-header-content {
     grid-area: 2 / 1 / auto / -1;
-    margin-block-start: 4px;
+    margin-block-start: 2px;
+    max-inline-size: 30ch;
   }
 
   #{$sheet} :is(.list-header__title-actions, .list-header__create-new-button) {
@@ -6103,7 +6142,16 @@ body.da-nav-collapsed .collection-list .list-selection {
     overflow: visible;
   }
 
-  #{$picker} .drawer__content-children {
+  /* THE SAME SELECTOR THE DESKTOP RULE USES, OR IT DOES NOT LAND. That rule —
+     `#{$sheet} .drawer__content > .gutter { overflow: hidden }`, written when
+     the table was the one thing that scrolled — is five classes deep, and the
+     override was four, so it lost and the sheet stayed clipped. The first
+     version of this fix changed nothing on a phone for that reason: `overflow`
+     still computed to `hidden`, and the `scrollTop` I tested with moves a
+     hidden box just as happily as a scrolling one, which is why the test passed
+     and the sheet did not scroll. Same shape, inside the phone query, later in
+     the file. */
+  #{$picker} .drawer__content > .gutter {
     overflow-y: auto;
     overscroll-behavior: contain;
     /* A flex item will not shrink below its content without this, and a
