@@ -239,7 +239,11 @@
       "Bash(awk 'NR>4200 && /render-fields|document-fields/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")",
       "Bash(awk 'NR>4200 && /nav__scroll|\\\\.nav \\\\{|\\\\.nav$|da-nav-open|template-default--nav-open/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")",
       "Bash(S3_BUCKET=placeholder S3_ENDPOINT=https://placeholder.r2.cloudflarestorage.com S3_ACCESS_KEY_ID=placeholder S3_SECRET_ACCESS_KEY=placeholder npx payload generate:importmap)",
-      "Bash(echo \"EXIT: $?\")"
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://designally-knowledge-hub.vercel.app/admin)",
+      "Bash(chmod +x /private/tmp/claude-501/-Users-admin-MegaMind-Designally-Knowledge-Hub/2ae0bf05-b603-4d24-9dc6-cd751e31c791/scratchpad/deploycheck.sh)",
+      "Bash(/private/tmp/claude-501/-Users-admin-MegaMind-Designally-Knowledge-Hub/2ae0bf05-b603-4d24-9dc6-cd751e31c791/scratchpad/deploycheck.sh)",
+      "Bash(awk 'NR>5400 && NR<5560 && \\(/list-controls/ || /da-locale/ || /search-bar/\\) {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")"
     ]
   }
 }

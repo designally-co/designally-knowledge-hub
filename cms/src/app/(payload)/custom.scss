@@ -6125,8 +6125,25 @@ body.da-nav-collapsed .collection-list .list-selection {
     flex: 1 1 100%;
   }
 
+  /*
+   * A BASIS THAT IS NEITHER THE CONTENT NOR NOTHING.
+   *
+   * `auto` puts the field's own content width into the decision about whether
+   * it and the toggle fit on one line, so the row held at 375, held at 360, and
+   * broke at 320 — the toggle dropped onto a line of its own. It breaks at any
+   * width on a device rendering text larger than this one, which is how it was
+   * found: on a real phone rather than here.
+   *
+   * 0 is worse. The heading above is `flex: 1 1 100%`, and 100% + 0 fits on one
+   * line exactly — so the controls climbed up beside the heading, which then
+   * grew and left the field 0px wide. Measured, and visibly gone.
+   *
+   * 40% is small enough to sit beside an 83px toggle at any phone width and
+   * large enough that 100% + 40% cannot share a line with the heading. The
+   * field then grows into whatever is left.
+   */
   .collection-list .list-controls {
-    flex: 1 1 auto;
+    flex: 1 1 40%;
     min-inline-size: 0;
   }
 
