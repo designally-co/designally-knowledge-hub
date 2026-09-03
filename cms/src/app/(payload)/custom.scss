@@ -5033,6 +5033,44 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
 .collection-list__tables { order: 3; }
 .collection-list .page-controls { order: 4; }
 
+/* ---- the checkbox -------------------------------------------------------- */
+
+/*
+ * ON IS THE BRAND COLOUR. Payload's checked box is a dark tick on white, which
+ * is the same weight as its own border — a checked row and an unchecked one
+ * differ by a small grey mark, and at a glance down a list of twenty-two you
+ * are counting ticks rather than seeing a block of chosen rows. Filled, the
+ * state is the shape of the control rather than a detail inside it.
+ *
+ * White on the orange is 3.24:1. As a graphical object a tick needs 3:1, so
+ * this clears it — and it is the same white-on-orange the brand rule already
+ * sets for the primary button.
+ *
+ * The header's box takes it too. Its dash means "some of them", which is a
+ * selection state like any other and belongs in the same colour.
+ */
+.checkbox-input--checked .checkbox-input__input,
+.checkbox-input__input:has(> .checkbox-input__icon.partial) {
+  border-color: var(--da-orange);
+  background-color: var(--da-orange);
+}
+
+.checkbox-input--checked .checkbox-input__input .stroke,
+.checkbox-input__input:has(> .checkbox-input__icon.partial) .stroke {
+  stroke: #ffffff;
+}
+
+/*
+ * AND THE FLASH UNDER A THUMB IS OURS AS WELL. Chrome paints every tap with
+ * `rgba(51, 181, 229, 0.4)` — a light blue that belongs to Android, not to
+ * this admin, and the one colour on the whole product nobody chose. It is the
+ * first feedback any tap gives, so it is worth the two lines: the brand at a
+ * sixteenth, which reads as a wash rather than a colour.
+ */
+html {
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--da-orange) 16%, transparent);
+}
+
 /* ---- the selection bar --------------------------------------------------- */
 
 /*

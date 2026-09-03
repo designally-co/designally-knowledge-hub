@@ -13,10 +13,13 @@
     display: table-cell;
   }
 
-  /* The box is the smallest thing on the row and the row is the target, so it
-     needs room around it rather than a hit area of its own. */
+  /* BOTH CELLS, OR THEY DO NOT LINE UP. The header's keeps Payload's 15px while
+     the row's took 4, and the select-all sat 11px to the right of the column it
+     selects — measured, x48 against x37. One value, stated once, for the two
+     cells that hold the same control. */
+  body.da-selecting .template-default__wrap .collection-list table th#heading-_select,
   body.da-selecting .template-default__wrap .collection-list table td.cell-_select {
-    padding-inline: 4px 0;
+    padding-inline: 8px 0;
   }
 
   /* A press that is about to become a selection should not also be the browser
