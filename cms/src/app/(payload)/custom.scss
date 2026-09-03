@@ -1851,21 +1851,6 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   background-color: #ffffff;
   animation: da-sheet-open var(--da-dur-feedback) var(--da-ease);
   transform-origin: center;
-  /*
-   * AND PAYLOAD'S OWN MOTION GOES, OR TWO OF THEM RUN AT ONCE.
-   *
-   * `.drawer__content` ships `transform: translate(calc(var(--base) * 4))`
-   * with `transition: all .2s linear`, going to `translate(0)` when the drawer
-   * opens — a panel sliding in from the right edge, which is exactly right for
-   * the slide-over Payload draws and exactly wrong for what this is now. A
-   * centred sheet that arrives sideways reads as a drawer that has been caught
-   * in the wrong place, and it was running UNDER the scale-and-fade above, so
-   * the sheet slid and scaled at the same time on two different curves.
-   *
-   * The keyframe is the whole motion: from 0.97 and transparent, over 180ms.
-   */
-  transform: none;
-  transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -6170,6 +6155,25 @@ body.da-nav-collapsed .collection-list .list-selection {
      hidden box just as happily as a scrolling one, which is why the test passed
      and the sheet did not scroll. Same shape, inside the phone query, later in
      the file. */
+  /*
+   * ONE MOTION ON OPEN, ON A PHONE.
+   *
+   * `.drawer__content` ships `transform: translate(calc(var(--base) * 4))`
+   * with `transition: all .2s linear`, going to `translate(0)` when it opens —
+   * a panel sliding in from the right edge. That is right for the slide-over
+   * Payload draws and wrong for the centred sheet this becomes at this width,
+   * and it was running UNDER our own scale-and-fade, so the sheet slid and
+   * scaled at once on two different curves.
+   *
+   * Payload's goes and the keyframe is the whole motion: from 0.97 and
+   * transparent, over 180ms. Only here — the desktop sheet keeps what it has
+   * always had.
+   */
+  #{$sheet} .drawer__content {
+    transform: none;
+    transition: none;
+  }
+
   #{$picker} .drawer__content > .gutter {
     overflow-y: auto;
     overscroll-behavior: contain;
