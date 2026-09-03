@@ -5061,6 +5061,29 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
 }
 
 /*
+ * AND THE RING IS THE ADMIN'S RING. Payload draws focus on the checkbox as
+ * `box-shadow: 0 0 3px 3px rgb(36, 164, 223)` — a blue halo, on the same input
+ * whose opacity is 0, so it hangs around the box rather than on it. Every other
+ * control in this admin takes a 2px steel outline; this one had a glow in a
+ * colour the product does not use.
+ *
+ * The shadow goes and the ring moves to the box you can actually see.
+ */
+/* Through `.checkbox-input__input`, which is how Payload reaches it: a shorter
+   selector lost the moment `:focus-visible` actually matched, and the glow came
+   back on the first keyboard focus — measured, `0 0 3px 3px rgb(36,164,223)`
+   still on the input with our own ring already drawn around the box. */
+.checkbox-input .checkbox-input__input input:focus,
+.checkbox-input .checkbox-input__input input:focus-visible {
+  box-shadow: none;
+}
+
+.checkbox-input:has(input:focus-visible) .checkbox-input__input {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}
+
+/*
  * AND THE FLASH UNDER A THUMB IS OURS AS WELL. Chrome paints every tap with
  * `rgba(51, 181, 229, 0.4)` — a light blue that belongs to Android, not to
  * this admin, and the one colour on the whole product nobody chose. It is the
@@ -5768,6 +5791,30 @@ body.da-nav-collapsed .collection-list .list-selection {
    * measured, the mark 63px down inside a panel whose own top edge is at 55, and
    * the four links pushed a third of the way down the screen after it.
    */
+  /*
+   * THE FOOT OF THE LIST, ON ONE COLUMN'S WIDTH. Payload lays the paginator,
+   * the count and the per-page control out as one row that wraps: at 375 the
+   * pages land against the left edge and the two below them sit shoulder to
+   * shoulder in the middle of nothing, 20px apart, with 98px of empty card to
+   * their right.
+   *
+   * The pages are the control here, so they take the width and centre in it.
+   * The two readings underneath take an edge each — which is what the space
+   * between them is for, rather than a gap chosen by eye.
+   */
+  .page-controls {
+    justify-content: space-between;
+  }
+
+  .page-controls .paginator {
+    inline-size: 100%;
+    justify-content: center;
+  }
+
+  .page-controls .page-controls__page-info {
+    margin-inline: 0;
+  }
+
   .nav__scroll {
     padding-block-start: 16px;
     /* And it ends above the home indicator rather than under it. */
