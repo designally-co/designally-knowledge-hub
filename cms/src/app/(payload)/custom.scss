@@ -6174,30 +6174,69 @@ body.da-nav-collapsed .collection-list .list-selection {
     transition: none;
   }
 
-  #{$picker} .drawer__content > .gutter {
+  /*
+   * =========================================================================
+   * THE SHEET SCROLLS BY BEING THE THING THE LOCK IS HOLDING.
+   *
+   * Payload's modal comes from `@faceless-ui/modal`, which calls
+   * `disableBodyScroll(modalRef.current)` from `body-scroll-lock` when a drawer
+   * opens. On iOS that library binds a non-passive `touchmove` on the document
+   * and cancels it unless the touch is inside the element it was given, with
+   * two tests against THAT element:
+   *
+   *     if (targetElement.scrollTop === 0 && clientY > 0) preventDefault()
+   *     if (isTargetElementTotallyScrolled(targetElement) && clientY < 0) preventDefault()
+   *
+   * The element it is given is `.payload__modal-item` — a grid box, `inset: 0`,
+   * `overflow: hidden`, with the sheet centred in it. It never scrolls, so its
+   * `scrollTop` is permanently 0 and `scrollHeight === clientHeight`: the first
+   * test cancels every downward drag and the second cancels every upward one.
+   * Every touch inside the sheet is killed before it reaches whatever we made
+   * scrollable underneath.
+   *
+   * That is why this looked fixed in a desktop emulator and was not fixed on a
+   * phone. A mouse wheel is not a `touchmove`, so the emulator never ran the
+   * code that breaks it, and the checks are gated on `isIosDevice`.
+   *
+   * So the scroller has to BE that element. It takes the overflow; the sheet
+   * inside becomes as tall as its content and stops capping itself; the inner
+   * gutter goes back to no scroll at all. Now `scrollTop` moves, both tests
+   * fail honestly, and the library's own `stopPropagation` lets the scroll
+   * happen.
+   *
+   * `align-items: start`, because a grid item taller than its box is clipped at
+   * the TOP when it is centred — you would lose the heading rather than gain a
+   * scroll.
+   * =========================================================================
+   */
+  #{$picker} {
+    align-items: start;
     overflow-y: auto;
     overscroll-behavior: contain;
-    /* A flex item will not shrink below its content without this, and a
-       scroller that cannot shrink never scrolls. */
-    min-block-size: 0;
-    /*
-     * AND ITS HEIGHT COMES FROM THE FLEX, NOT FROM A PERCENTAGE.
-     *
-     * Payload gives it `height: 100%`, and the sheet above it is `block-size:
-     * auto` with a `max-block-size` — a height that is CLAMPED but never SET.
-     * A percentage against that is the one thing engines disagree about: this
-     * pane resolved it to a definite 658px and scrolled; a browser that
-     * resolves it to `auto` gives the child its full 943px, which then
-     * overflows a parent with `overflow: hidden` and cannot be scrolled at
-     * all. Same stylesheet, opposite outcome — which is why this was fixed
-     * here twice and still broken on a phone.
-     *
-     * `auto` hands the sizing back to the flex line, where `flex: 1 1 auto`
-     * and `min-block-size: 0` already say what to do, in every engine.
-     */
-    block-size: auto;
-    /* Momentum on older iOS, ignored everywhere it is not needed. */
     -webkit-overflow-scrolling: touch;
+  }
+
+  #{$picker} .drawer__content {
+    /* As tall as it needs to be; the modal item is what clips and scrolls. */
+    max-block-size: none;
+  }
+
+  /* NO STICKY CLOSE, THOUGH I TRIED IT. `position: sticky` is confined to its
+     own parent, and the disc's parent is the header — so it could only ever
+     slide the header's own height and then leave with it. Pinning the whole
+     header instead is the thing this sheet already rejected once: a header that
+     LOOKS fixed while the box behind it moves. The sheet is 141px taller than
+     the screen at seven rows; scrolling back up to the × is the honest cost. */
+
+  /* NO SCROLL LEFT IN HERE. Payload gives this `height: 100%` and `overflow:
+     auto`; both go, so the sheet is one column of content and the modal item
+     above is the only thing with a scrollbar. `block-size: auto` also settles
+     the percentage that engines disagreed about — clamped-not-set parents
+     resolved it to a definite height here and to `auto` elsewhere, which is a
+     second reason this behaved differently on a phone. */
+  #{$picker} .drawer__content > .gutter {
+    overflow: visible;
+    block-size: auto;
   }
 
   /* AND IT IS THE SAME SIZE AS EVERYTHING ELSE ON THE ROW BELOW IT. Payload
