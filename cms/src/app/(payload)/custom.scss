@@ -5863,19 +5863,66 @@ body.da-nav-collapsed .collection-list .list-selection {
     margin: 0;
   }
 
-  /* THE SHEET'S CORNER IS THE CLOSE BUTTON'S. Every sheet in this admin puts
-     the × there and nothing else, which is the whole reason it can be found
-     without looking. So in a sheet the action drops one row and sits beside the
-     sentence instead, right-aligned, directly under the disc: the two are on
-     the same edge, never on the same line, and neither has to squeeze past the
-     other. The heading's column gets its width back — the alternative was
-     reserving 40px of a 297px header for a control that is not even in the
-     grid, since the disc is positioned against the sheet. */
+  /*
+   * A SHEET GETS A TOOLBAR, WHICH IS WHAT EVERY SYSTEM THAT HAS ANSWERED THIS
+   * QUESTION ALREADY DOES.
+   *
+   * Apple's HIG, on a sheet's top toolbar: Cancel on the leading edge, Done on
+   * the trailing — and never a third. Material 3's full-screen dialog names the
+   * same three parts, close affordance and action at the two ends. Uppy's
+   * dashboard bar has exactly those slots in its class names — `-back`,
+   * `-title`, `-addMore` — and keeps its twelve upload sources in the BODY,
+   * never in the header. Measured on all three.
+   *
+   * So the action and the close sit at opposite ends of one line, and the
+   * heading follows underneath. M3 says that part outright: a headline that
+   * does not fit a bar belongs in the content area rather than truncated in it.
+   * Which is the whole win here — the sentence is no longer sharing its row
+   * with a button and gets the full 297px.
+   *
+   * THE DISC HAS TO REJOIN THE FLOW FOR THIS. Payload positions it `absolute,
+   * top 9px right 9px` against the drawer, 12px above where the header even
+   * starts, so nothing laid out in the header could ever line up with it.
+   * Static, it is a grid item like everything else and the row centres the two
+   * against each other.
+   */
+  /* BOTH TO THE TOP OF THE ROW, NOT BOTH TO ITS MIDDLE. The row measures 48px
+     while the two controls are 44, and centring each in it left them 2px apart
+     — centred on a track neither of them fills. Aligned to the same edge, two
+     boxes of the same height have the same centre whatever the row does. */
   #{$sheet} :is(.list-header__title-actions, .list-header__create-new-button) {
-    grid-area: 2 / 2;
+    grid-area: 1 / 1;
+    justify-self: start;
     align-self: start;
-    /* Clear of the disc above it, which ends 1px into this row. */
-    margin-block-start: 8px;
+    margin: 0;
+  }
+
+  #{$sheet} .list-header__actions {
+    grid-area: 1 / 2;
+    justify-self: end;
+    align-self: start;
+    /* The same 44px band as the action opposite it, so the two centre on each
+       other rather than on their own differing heights — the disc is 36 and was
+       landing 2px high. It buys the close a 44px target as well, which it did
+       not have at 36. */
+    min-block-size: 44px;
+  }
+
+  #{$sheet} .list-drawer__header-close {
+    position: static;
+    /* Payload pins it to `flex-start` inside its own box, which held the 36px
+       disc 4px above the centre of the 44px band it now shares with the
+       action. */
+    align-self: center;
+  }
+
+  #{$sheet} .list-header__title {
+    grid-area: 2 / 1 / auto / -1;
+    margin-block-start: 0.75rem;
+  }
+
+  #{$sheet} .list-header__after-header-content {
+    grid-area: 3 / 1 / auto / -1;
   }
 
   /* AND IT IS THE SAME SIZE AS EVERYTHING ELSE ON THE ROW BELOW IT. Payload
