@@ -380,7 +380,20 @@ export const Articles: CollectionConfig = {
       name: 'tag',
       type: 'select',
       options: TAG_SELECT_OPTIONS,
-      required: true,
+      /* REQUIRED TO PUBLISH, NOT TO SAVE — the same gate the cover's
+         description takes above, for the same reason. Filing is a decision
+         about a finished article, and `required: true` asked for it before the
+         first sentence existed: creating an article now opens the writing
+         surface, where the sidebar this field lives in is not on screen, so a
+         hard requirement would have failed the save and named a field nobody
+         could see. A draft is hidden from the site, and `categoryForTag` is
+         read-time, so an untagged draft costs nothing. */
+      validate: (value: unknown, options: unknown) => {
+        if (value) return true
+        const status = (options as { data?: { status?: string } })?.data?.status
+        if (status === 'published') return 'Choose a tag before publishing. It sets the category.'
+        return true
+      },
       admin: {
         position: 'sidebar',
         description: 'One per article. Sets the category.',

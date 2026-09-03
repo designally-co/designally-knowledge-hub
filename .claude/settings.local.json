@@ -235,7 +235,8 @@
       "Bash(grep -rn \"#[0-9a-fA-F]\\\\{3,8\\\\}\" components/ --include=\"*.css\")",
       "Bash(awk -F: '{print $1}')",
       "Bash(awk 'NR>4300 && /doc-header/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")",
-      "Bash(awk 'NR>4200 && /doc-header|step-nav__home/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")"
+      "Bash(awk 'NR>4200 && /doc-header|step-nav__home/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")",
+      "Bash(awk 'NR>4200 && /render-fields|document-fields/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")"
     ]
   }
 }

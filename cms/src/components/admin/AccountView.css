@@ -165,6 +165,23 @@ body.da-account .document-fields__sidebar-wrap {
   margin-block-start: 1.5rem;
 }
 
+/* AND ON A PHONE THEY SIT 16px IN, like every other sheet in the admin. The
+   `padding-inline: 0` above is what centres them against each other on a desk,
+   and it was running at every width — so this was the one screen whose panels
+   ran edge to edge, with 30px of padding inside them against everyone else's
+   16. The rule lives here rather than with the other mobile insets because the
+   rule it corrects is here, and this file loads last. */
+@media (max-width: 48rem) {
+  body.da-account .document-fields__main > .gutter,
+  body.da-account .document-fields__sidebar-wrap {
+    padding-inline: 16px;
+  }
+
+  body.da-account .auth-fields {
+    padding: 16px;
+  }
+}
+
 /* The page's bottom inset belonged to the main column while it was the last
    thing on the page. The rail is now, and it carries it above; leaving both
    left 150px between the two panels. */

@@ -34,19 +34,34 @@ import './ArticleViews.css'
  * Route: /admin/collections/articles/:id
  */
 export function ArticleOverview(props: DocumentViewClientProps) {
+  /* EXCEPT WHEN THERE IS NO ARTICLE YET. Payload has no create route of its
+     own to point at a view, so "Create New" lands here — on the layer built for
+     reading a finished article and changing its settings. On a new document
+     that layer has nothing to show: an "Untitled" heading, a line saying the
+     article has no body yet, and four panels of metadata about an article
+     nobody has written. The first thing anyone wants after pressing Create New
+     is the page they write on.
+     `id` is what separates the two: undefined until the first save. */
+  const { id } = useDocumentInfo()
+  const creating = !id
+
   /* A BODY CLASS, FOR THE SAME REASON THE WRITING SURFACE NEEDS ONE. The
      document tabs are a sibling of this component rendered above it, not a
      descendant, so no class on this div can reach them — scoping the rule to
      `.da-doc--overview` left the tabs row on screen and only two of the three
      headers went. Removed again on the way out, so every other document in the
-     admin keeps its tabs. */
+     admin keeps its tabs.
+
+     Keyed on `creating`, so the first save — which gives the document an id and
+     sends the browser to its own URL — swaps one class for the other. */
   React.useEffect(() => {
-    document.body.classList.add('da-overview')
-    return () => document.body.classList.remove('da-overview')
-  }, [])
+    const layer = creating ? 'da-writing' : 'da-overview'
+    document.body.classList.add(layer)
+    return () => document.body.classList.remove(layer)
+  }, [creating])
 
   return (
-    <div className="da-doc da-doc--overview">
+    <div className={`da-doc ${creating ? 'da-doc--write' : 'da-doc--overview'}`}>
       <DefaultEditView {...props} />
     </div>
   )
