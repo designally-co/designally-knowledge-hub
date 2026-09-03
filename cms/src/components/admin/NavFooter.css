@@ -84,11 +84,15 @@
 
 /* The address is long and the column is 275px, so it truncates rather than
    wrapping the block to three lines. */
+/* INK-3, NOT INK-4. At 11px the quietest ink measured 4.13:1 against this
+   panel — under AA, and the only unaccepted contrast failure left in the
+   admin. Ink-3 is 6.5:1 here and still plainly secondary to the name above it,
+   which is near-black at 600. */
 .da-navfoot__email {
   overflow: hidden;
   font-size: 0.6875rem;
   line-height: 1.4;
-  color: var(--da-ink-4);
+  color: var(--da-ink-3);
   text-overflow: ellipsis;
   white-space: nowrap;
 }

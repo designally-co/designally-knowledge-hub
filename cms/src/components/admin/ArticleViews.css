@@ -111,7 +111,10 @@ body.da-overview .doc-controls {
    the article's title — already the first thing in the editor below it — and
    hiding only the breadcrumb inside it left the container behind: 22px of empty
    height above the bar. */
-body.da-writing .doc-header,
+/* Only the tabs. The header itself is CLIPPED rather than removed — it holds
+   the screen's only `h1`, and this screen's visible title is a textarea, which
+   is a form control and not a heading. Removed, the writing surface had no
+   heading at all for a screen reader to land on. See the clip in custom.scss. */
 body.da-writing .doc-tabs {
   display: none;
 }

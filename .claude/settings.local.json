@@ -225,7 +225,17 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/admin/collections/articles --max-time 10)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/api/media?limit=1 --max-time 10)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:3001/admin/collections/articles\" --max-time 15)",
-      "Bash(grep -n '^\\\\$sheet\\\\|^\\\\$picker\\\\|^\\\\$doc' 'app/\\(payload\\)/custom.scss')"
+      "Bash(grep -n '^\\\\$sheet\\\\|^\\\\$picker\\\\|^\\\\$doc' 'app/\\(payload\\)/custom.scss')",
+      "Skill(impeccable)",
+      "Skill(impeccable:*)",
+      "Bash(node /Users/admin/.claude/skills/impeccable/scripts/context.mjs --target cms/src/app/\\\\\\(payload\\\\\\)/custom.scss)",
+      "Bash(node /Users/admin/.claude/skills/impeccable/scripts/detect.mjs --json \"cms/src/app/\\(payload\\)/custom.scss\" cms/src/components/admin)",
+      "Bash(node -e \"const s=require\\('fs'\\).readFileSync\\('aud2.js','utf8'\\);console.log\\(JSON.stringify\\(s\\).length\\)\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" https://designally-knowledge-hub.vercel.app/)",
+      "Bash(grep -rn \"#[0-9a-fA-F]\\\\{3,8\\\\}\" components/ --include=\"*.css\")",
+      "Bash(awk -F: '{print $1}')",
+      "Bash(awk 'NR>4300 && /doc-header/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")",
+      "Bash(awk 'NR>4200 && /doc-header|step-nav__home/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")"
     ]
   }
 }

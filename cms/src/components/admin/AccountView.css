@@ -20,10 +20,14 @@
  * menu goes: nothing in it belongs on this page.
  */
 body.da-account .doc-controls,
-body.da-account .doc-controls__divider,
-body.da-account .doc-header {
+body.da-account .doc-controls__divider {
   display: none;
 }
+
+/* The header is CLIPPED rather than removed, like every other document screen:
+   it carries the page's only `h1`, and a screen reader arriving here otherwise
+   found a form with no name on it. See the clip in custom.scss — this screen
+   has the bar, so it inherits that rule; all this does is stop overriding it. */
 
 /* ---- the sheet, which was drawn around nothing --------------------------- */
 

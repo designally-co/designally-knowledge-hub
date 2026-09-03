@@ -298,7 +298,7 @@
      open into rather than the neutral the others take. */
   .da-bar__item--danger:not(:disabled):hover,
   .da-bar__item--danger:not(:disabled):hover svg {
-    background-color: #fcf0f0;
+    background-color: var(--da-critical-tint);
     color: var(--da-critical);
   }
 }
@@ -354,14 +354,14 @@
   padding: 0.875rem;
   border: 1px solid var(--da-hairline);
   border-radius: var(--style-radius-card);
-  background-color: #fcf0f0;
+  background-color: var(--da-critical-tint);
 }
 
 .da-bar__question {
   margin: 0;
   font-size: 0.8125rem;
   line-height: 1.5;
-  color: #8f1c22;
+  color: var(--da-critical-ink);
 }
 
 .da-bar__row {
@@ -398,7 +398,7 @@
   background: none;
   font-family: var(--font-body);
   font-size: 0.8125rem;
-  color: #8f1c22;
+  color: var(--da-critical-ink);
   text-decoration: underline;
   text-underline-offset: 2px;
   cursor: pointer;

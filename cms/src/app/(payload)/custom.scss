@@ -129,6 +129,12 @@
   --da-affirm: #107f54;
   --da-caution: #a06000;
   --da-critical: #d32830;
+  /* The wash a destructive action opens into, and the ink that reads on it.
+     `--da-critical` itself is 4.58:1 on that wash — passing, but only just, and
+     the darker is 8:1. Both lived as literals inside DocActions.css, the only
+     off-palette colours left in the admin; here they are the system's. */
+  --da-critical-tint: #fcf0f0;
+  --da-critical-ink: #8f1c22;
 
   /* Motion. No bounce, no spring. */
   --da-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -1042,8 +1048,19 @@ svg.graphic-icon,
   color: var(--da-ink-3);
 }
 
-.step-nav a {
+/* 24px of height whatever the type does. The crumb is a real target — it is
+   how you get back to the list — and it measured 52×23, one pixel under the
+   floor WCAG 2.2 sets for a control that is not inline in a sentence. The
+   inline-flex is what lets the box grow past the text without moving it. */
+.step-nav a:not(.step-nav__home) {
+  display: inline-flex;
   flex: 0 0 auto;
+  align-items: center;
+  min-block-size: 24px;
+  color: var(--da-ink-3);
+}
+
+.step-nav a {
   color: var(--da-ink-3);
 }
 
@@ -1383,8 +1400,33 @@ html {
  */
 /* The document header is an `h1` of the title, which the breadcrumb above it
    and the Title field below it both already state; the tab row offers the one
-   tab you are on. Neither comes back anywhere. */
-body:has(.app-header__actions .da-bar) .doc-header,
+   tab you are on. Neither comes back anywhere.
+
+   BUT THE HEADING IS NOT GONE, ONLY OUT OF SIGHT. `display: none` took it out
+   of the accessibility tree with it, and a document screen ended up with no
+   `h1` at all — nothing for a screen reader to jump to, and no name for the
+   page it had just opened. Audited: `h1s: 0` on the writing surface and on
+   every media and resource document. So the header is clipped rather than
+   removed, and the title inside it comes back. The tab row stays `display:
+   none`, which matters: clipping it would leave focusable links a keyboard
+   could reach and nobody could see. */
+body:has(.app-header__actions .da-bar) .doc-header {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  /* The gutter's own padding would make this a 32×13 box rather than the 1px
+     it is meant to be. Absolute and clipped either way, but a clip is easier to
+     trust when the box it clips is the size it claims. */
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+body:has(.app-header__actions .da-bar) .doc-header .doc-header__title {
+  display: block;
+}
+
 body:has(.app-header__actions .da-bar) .doc-tabs {
   display: none;
 }
@@ -4404,6 +4446,16 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
    the pagination that closes the card. */
 .collection-list__tables {
   margin: 0;
+}
+
+/* AND THE LINK THAT FILLS A CELL. On Users the address is the row's way in and
+   measured 279×18 — wide enough, and 6px short. It is not inline in a
+   sentence, so the exception WCAG 2.2 makes for links inside running text does
+   not cover it. The rows that already carry a picture are 40px and unaffected. */
+.collection-list__tables td a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 24px;
 }
 
 /* The heading and its description sit inside the card too, on the same inset as
