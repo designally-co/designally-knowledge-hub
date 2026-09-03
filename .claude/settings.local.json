@@ -245,7 +245,9 @@
       "Bash(/private/tmp/claude-501/-Users-admin-MegaMind-Designally-Knowledge-Hub/2ae0bf05-b603-4d24-9dc6-cd751e31c791/scratchpad/deploycheck.sh)",
       "Bash(awk 'NR>5400 && NR<5560 && \\(/list-controls/ || /da-locale/ || /search-bar/\\) {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")",
       "Bash(curl -s https://designally-knowledge-hub.vercel.app/)",
-      "Bash(curl -sI https://designally-knowledge-hub.vercel.app/admin)"
+      "Bash(curl -sI https://designally-knowledge-hub.vercel.app/admin)",
+      "Bash(curl -sL https://designally-knowledge-hub.vercel.app/admin)",
+      "Bash(curl -s -o /tmp/adm.html -w 'status=%{http_code} size=%{size_download} redirects=%{num_redirects} final=%{url_effective}\\\\n' -L https://designally-knowledge-hub.vercel.app/admin)"
     ]
   }
 }

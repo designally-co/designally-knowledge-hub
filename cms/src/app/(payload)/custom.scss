@@ -1851,6 +1851,21 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   background-color: #ffffff;
   animation: da-sheet-open var(--da-dur-feedback) var(--da-ease);
   transform-origin: center;
+  /*
+   * AND PAYLOAD'S OWN MOTION GOES, OR TWO OF THEM RUN AT ONCE.
+   *
+   * `.drawer__content` ships `transform: translate(calc(var(--base) * 4))`
+   * with `transition: all .2s linear`, going to `translate(0)` when the drawer
+   * opens — a panel sliding in from the right edge, which is exactly right for
+   * the slide-over Payload draws and exactly wrong for what this is now. A
+   * centred sheet that arrives sideways reads as a drawer that has been caught
+   * in the wrong place, and it was running UNDER the scale-and-fade above, so
+   * the sheet slid and scaled at the same time on two different curves.
+   *
+   * The keyframe is the whole motion: from 0.97 and transparent, over 180ms.
+   */
+  transform: none;
+  transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -6110,7 +6125,11 @@ body.da-nav-collapsed .collection-list .list-selection {
    */
   #{$sheet} .list-header__after-header-content {
     grid-area: 2 / 1 / auto / -1;
-    margin-block-start: 2px;
+    /* NEGATIVE, BECAUSE THE GAP IS NOT A GAP. The heading is a 36px box so it
+       can share a centre line with the disc, and its text is centred in that —
+       which leaves 8px of the box's own lower half between the words and
+       whatever follows. The margin takes that back rather than adding to it. */
+    margin-block-start: -6px;
     max-inline-size: 30ch;
   }
 
@@ -6157,6 +6176,24 @@ body.da-nav-collapsed .collection-list .list-selection {
     /* A flex item will not shrink below its content without this, and a
        scroller that cannot shrink never scrolls. */
     min-block-size: 0;
+    /*
+     * AND ITS HEIGHT COMES FROM THE FLEX, NOT FROM A PERCENTAGE.
+     *
+     * Payload gives it `height: 100%`, and the sheet above it is `block-size:
+     * auto` with a `max-block-size` — a height that is CLAMPED but never SET.
+     * A percentage against that is the one thing engines disagree about: this
+     * pane resolved it to a definite 658px and scrolled; a browser that
+     * resolves it to `auto` gives the child its full 943px, which then
+     * overflows a parent with `overflow: hidden` and cannot be scrolled at
+     * all. Same stylesheet, opposite outcome — which is why this was fixed
+     * here twice and still broken on a phone.
+     *
+     * `auto` hands the sizing back to the flex line, where `flex: 1 1 auto`
+     * and `min-block-size: 0` already say what to do, in every engine.
+     */
+    block-size: auto;
+    /* Momentum on older iOS, ignored everywhere it is not needed. */
+    -webkit-overflow-scrolling: touch;
   }
 
   /* AND IT IS THE SAME SIZE AS EVERYTHING ELSE ON THE ROW BELOW IT. Payload
