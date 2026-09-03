@@ -236,7 +236,8 @@
       "Bash(awk -F: '{print $1}')",
       "Bash(awk 'NR>4300 && /doc-header/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")",
       "Bash(awk 'NR>4200 && /doc-header|step-nav__home/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")",
-      "Bash(awk 'NR>4200 && /render-fields|document-fields/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")"
+      "Bash(awk 'NR>4200 && /render-fields|document-fields/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")",
+      "Bash(awk 'NR>4200 && /nav__scroll|\\\\.nav \\\\{|\\\\.nav$|da-nav-open|template-default--nav-open/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")"
     ]
   }
 }

@@ -5721,6 +5721,30 @@ body.da-nav-collapsed .collection-list .list-selection {
    */
   .nav__scroll {
     padding-block-start: 16px;
+    /* And it ends above the home indicator rather than under it. */
+    padding-block-end: max(15px, env(safe-area-inset-bottom));
+  }
+
+  /*
+   * AND IT ENDS AT THE BOTTOM OF THE SCREEN, NOT 55px PAST IT.
+   *
+   * The drawer is `position: fixed` with `inset: 55px … 0` — it starts under
+   * the band and ends at the foot of the screen, which is 757px on a 812px
+   * phone. Payload gives it a height as well, and a height beats the pair of
+   * insets: measured 812px starting at y55, so the last 55px of the panel hung
+   * below the screen with no way to scroll to them (`scrollHeight` equalled
+   * `clientHeight` — nothing to scroll, just clipped).
+   *
+   * WHICH IS EXACTLY WHERE THE ACCOUNT BLOCK LIVES. It is pushed to the bottom
+   * of the column by `margin-block-start: auto`, so the one thing the overflow
+   * swallowed whole was the way to your own profile and the way to sign out.
+   * On a phone the admin appeared to have neither.
+   *
+   * `auto` hands the height back to the two insets, which already say where the
+   * drawer begins and ends.
+   */
+  .nav {
+    block-size: auto;
   }
 
   /* ---- the wash ---------------------------------------------------------- */
