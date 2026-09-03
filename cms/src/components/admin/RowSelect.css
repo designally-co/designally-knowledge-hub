@@ -1,0 +1,45 @@
+/* Selection mode on a phone. See RowSelect.tsx for the gesture that turns it
+   on; this is only what the list looks like while it is on. */
+
+@media (max-width: 48rem) {
+  /*
+   * THE COLUMN COMES BACK, AND ONLY WHILE IT IS BEING USED. The one-column rule
+   * in custom.scss hides every cell but the second; these two put the first one
+   * back by name, which is more specific than the `:not(:nth-child(2))` doing
+   * the hiding — and this file loads after it either way.
+   */
+  body.da-selecting .template-default__wrap .collection-list table th#heading-_select,
+  body.da-selecting .template-default__wrap .collection-list table td.cell-_select {
+    display: table-cell;
+  }
+
+  /* The box is the smallest thing on the row and the row is the target, so it
+     needs room around it rather than a hit area of its own. */
+  body.da-selecting .template-default__wrap .collection-list table td.cell-_select {
+    padding-inline: 4px 0;
+  }
+
+  /* A press that is about to become a selection should not also be the browser
+     offering to select the words under the finger. */
+  .template-default__wrap .collection-list tbody {
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+
+  /* Payload's selection bar is fixed to the bottom of the screen, where it
+     lands on the home indicator and, on a list screen, over the last row. It
+     keeps the sheet's inset from the sides and clears the indicator. */
+  /* `body` in front of it because this file is imported by a PROVIDER, which
+     loads before custom.scss — so an equally specific rule there wins on order.
+     Measured: the radius stayed 999px and the bottom inset stayed its own. */
+  body .collection-list .list-selection {
+    inset-inline: 16px;
+    inset-block-end: max(16px, env(safe-area-inset-bottom));
+    justify-content: center;
+    gap: 8px;
+    /* A stadium is the right shape for one line of controls. At this width the
+       count, Select all, Edit and Delete take two, and a 999px radius on a 93px
+       box is a lozenge. The sheet's own radius, like every other panel here. */
+    border-radius: var(--style-radius-sheet);
+  }
+}

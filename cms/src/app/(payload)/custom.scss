@@ -5043,10 +5043,21 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
  * strip lying across the foot of every list with nothing in it and nothing to
  * say: measured at 375, a 375x32 box at y780 containing no text.
  *
- * The bar itself is untouched. This hides the container only while its actions
- * are empty, which is exactly the state in which it means nothing.
+ * ITS ACTIONS ARE NOT THE ONLY THING IN IT. `.list-selection` — the real bar,
+ * the one with the count and Select all and Edit and Delete — is also a child
+ * of this wrapper, and the first version of this rule only asked about the
+ * `…__list-selection-actions` beside it. So the moment anything was selected
+ * the wrapper hid the live bar along with itself: measured, `.list-selection`
+ * present with "2 selected" in it and a 0×0 box, because its parent was
+ * display:none. It went unnoticed because Payload does not always render the
+ * wrapper — on the screens that skip it the bar was fine.
+ *
+ * So: hidden only when it holds neither the bar nor any actions, which is
+ * exactly the state in which it means nothing.
  */
-.collection-list__list-selection:not(:has(.collection-list__list-selection-actions > *)) {
+.collection-list__list-selection:not(:has(.collection-list__list-selection-actions > *)):not(
+    :has(.list-selection)
+  ) {
   display: none;
 }
 

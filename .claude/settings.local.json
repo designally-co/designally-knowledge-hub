@@ -237,7 +237,9 @@
       "Bash(awk 'NR>4300 && /doc-header/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")",
       "Bash(awk 'NR>4200 && /doc-header|step-nav__home/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")",
       "Bash(awk 'NR>4200 && /render-fields|document-fields/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")",
-      "Bash(awk 'NR>4200 && /nav__scroll|\\\\.nav \\\\{|\\\\.nav$|da-nav-open|template-default--nav-open/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")"
+      "Bash(awk 'NR>4200 && /nav__scroll|\\\\.nav \\\\{|\\\\.nav$|da-nav-open|template-default--nav-open/ {print NR\": \"$0}' \"app/\\(payload\\)/custom.scss\")",
+      "Bash(S3_BUCKET=placeholder S3_ENDPOINT=https://placeholder.r2.cloudflarestorage.com S3_ACCESS_KEY_ID=placeholder S3_SECRET_ACCESS_KEY=placeholder npx payload generate:importmap)",
+      "Bash(echo \"EXIT: $?\")"
     ]
   }
 }

@@ -136,6 +136,9 @@ export default buildConfig({
         // Escape, focus in and back out, and the page held still underneath.
         // See NavDrawer.
         '/components/admin/NavDrawer#NavDrawer',
+        // Press and hold a row to choose several of them, on a phone where the
+        // checkbox column is not worth its width. See RowSelect.
+        '/components/admin/RowSelect#RowSelect',
       ],
       // The mark and "Knowledge Hub" at the head of the nav. It replaces
       // Payload's bare 34px disc, which had no accessible name. See NavBrand.
