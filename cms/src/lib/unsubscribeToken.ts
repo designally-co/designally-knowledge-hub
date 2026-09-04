@@ -26,16 +26,30 @@ import crypto from 'crypto'
 
 const secret = () => process.env.PAYLOAD_SECRET || ''
 
-const sign = (email: string) =>
-  crypto.createHmac('sha256', secret()).update(email.toLowerCase()).digest('base64url')
+/*
+ * A PURPOSE IS PART OF WHAT IS SIGNED, so one link cannot be spent as another.
+ * Both tokens are an HMAC of the same address under the same secret, so without
+ * this the unsubscribe link at the foot of every newsletter would ALSO be a
+ * valid confirm link, and vice versa — anyone holding either could confirm an
+ * address that never agreed, or a forwarded newsletter could be used to
+ * subscribe its recipient.
+ *
+ * UNSUBSCRIBE SIGNS WITH AN EMPTY PURPOSE, and that is deliberate rather than
+ * lazy: it reproduces the original signature byte for byte, so every
+ * unsubscribe link already sitting in someone's inbox keeps working. Those
+ * links do not expire on purpose, and quietly invalidating them to tidy up an
+ * implementation detail would be the one change this file must not make.
+ */
+const sign = (email: string, purpose = '') =>
+  crypto
+    .createHmac('sha256', secret())
+    .update(`${purpose}${email.toLowerCase()}`)
+    .digest('base64url')
 
-/** `email:signature`, base64url so it survives a query string untouched. */
-export function unsubscribeToken(email: string): string {
-  return `${Buffer.from(email.toLowerCase()).toString('base64url')}.${sign(email)}`
-}
+const encode = (email: string, purpose = '') =>
+  `${Buffer.from(email.toLowerCase()).toString('base64url')}.${sign(email, purpose)}`
 
-/** The address a token vouches for, or null if it vouches for nothing. */
-export function emailFromToken(token: string): string | null {
+function decode(token: string, purpose = ''): string | null {
   const [encoded, signature] = token.split('.')
   if (!encoded || !signature) return null
 
@@ -46,7 +60,7 @@ export function emailFromToken(token: string): string | null {
     return null
   }
 
-  const expected = sign(email)
+  const expected = sign(email, purpose)
   /* Constant time: a plain `===` leaks how much of a forged signature was
      right, one character at a time. */
   const a = Buffer.from(signature)
@@ -54,4 +68,33 @@ export function emailFromToken(token: string): string | null {
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null
 
   return email
+}
+
+/** `email:signature`, base64url so it survives a query string untouched. */
+export function unsubscribeToken(email: string): string {
+  return encode(email)
+}
+
+/** The address a token vouches for, or null if it vouches for nothing. */
+export function emailFromToken(token: string): string | null {
+  return decode(token)
+}
+
+const CONFIRM = 'confirm:'
+
+/**
+ * The link in the confirmation email, which is the whole of double opt-in.
+ *
+ * Nothing is stored for it, for the same reasons the unsubscribe token stores
+ * nothing: no column, no lookup, no cleanup of tokens nobody ever clicked. The
+ * subscriber row records that someone ASKED; this link is what proves the
+ * person who asked owns the address.
+ */
+export function confirmToken(email: string): string {
+  return encode(email, CONFIRM)
+}
+
+/** The address a confirmation token vouches for, or null. */
+export function emailFromConfirmToken(token: string): string | null {
+  return decode(token, CONFIRM)
 }

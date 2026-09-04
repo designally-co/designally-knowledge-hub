@@ -2,7 +2,7 @@ import { Resend } from 'resend'
 import type { Payload } from 'payload'
 
 import { siteURL } from './siteURL'
-import { unsubscribeToken } from './unsubscribeToken'
+import { confirmToken, unsubscribeToken } from './unsubscribeToken'
 
 /**
  * The email that goes out when something is published.
@@ -195,4 +195,85 @@ export async function announce(payload: Payload, item: Announcement): Promise<Se
 
   console.info(`[newsletter] announced "${item.title}" to ${sent} of ${list.length}.`)
   return { sent, ...(testTo ? { testMode: true } : {}) }
+}
+
+
+/* -------------------------------------------------------------------------- */
+/* Confirming an address                                                       */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The one email that goes to an address nobody has confirmed yet.
+ *
+ * DOUBLE OPT-IN EXISTS BECAUSE A SIGN-UP FORM IS AN OPEN DOOR. Anyone can type
+ * anyone else's address into it, and without a confirmation step that person is
+ * on a list they never joined and starts receiving mail they will report as
+ * spam — which is charged against the sending domain, not against whoever typed
+ * it. A typo behaves the same way, quietly, at a stranger's address.
+ *
+ * It is also the only honest basis for the consent the list claims to have:
+ * a confirmed address is a record that the person holding it said yes.
+ *
+ * NO UNSUBSCRIBE FOOTER, because there is nothing yet to unsubscribe FROM. An
+ * address that never confirms is never mailed again — the request simply
+ * expires by being ignored, which is what "unconfirmed" should mean.
+ */
+export async function sendConfirmation(email: string, locale: 'en' | 'th' = 'en'): Promise<boolean> {
+  const key = process.env.RESEND_API_KEY
+  const from = process.env.NEWSLETTER_FROM
+  const url = `${siteURL}/api/subscribe/confirm?token=${confirmToken(email)}`
+
+  if (!key || !from) {
+    /* Inert without configuration, like `announce` — but the link is printed,
+       because otherwise a local sign-up could never be completed and the whole
+       flow would be untestable without a live mail provider. */
+    console.info(`[subscribe] not configured — confirmation link would be: ${url}`)
+    return false
+  }
+
+  const heading = locale === 'th' ? 'ยืนยันการสมัครรับข่าวสาร' : 'Confirm your subscription'
+  const body =
+    locale === 'th'
+      ? 'มีการใช้อีเมลนี้สมัครรับจดหมายข่าวจาก Designally Knowledge Hub หากใช่ กรุณายืนยัน'
+      : 'This address was used to sign up for the Designally Knowledge Hub newsletter. If that was you, confirm it below.'
+  const action = locale === 'th' ? 'ยืนยันอีเมล' : 'Confirm my email'
+  const ignore =
+    locale === 'th'
+      ? 'หากไม่ใช่คุณ ไม่ต้องทำอะไร เราจะไม่ส่งอีเมลถึงที่อยู่นี้อีก'
+      : 'If it was not you, do nothing. This address will not be mailed again.'
+
+  const html = `<!doctype html>
+<html lang="${locale}"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>${escape(heading)}</title></head>
+<body style="margin:0;padding:0;background:#f9f6f4;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9f6f4;padding:32px 16px;">
+<tr><td align="center">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;">
+    <tr><td style="padding:32px 32px 8px;">
+      <h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;color:#12100d;font-weight:700;">${escape(heading)}</h1>
+      <p style="margin:0 0 24px;font-size:16px;line-height:1.55;color:#4a453d;">${escape(body)}</p>
+      <p style="margin:0 0 28px;">
+        <a href="${escape(url)}" style="display:inline-block;padding:13px 22px;border-radius:999px;background:#12100d;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;">${escape(action)}</a>
+      </p>
+      <p style="margin:0 0 32px;font-size:13px;line-height:1.5;color:#4a453d;">${escape(ignore)}</p>
+    </td></tr>
+  </table>
+</td></tr></table>
+</body></html>`
+
+  const text = [heading, '', body, '', url, '', ignore].join('\n')
+
+  try {
+    const resend = new Resend(key)
+    const { error } = await resend.emails.send({ from, to: [email], subject: heading, html, text })
+    if (error) {
+      console.error('[subscribe] the confirmation was refused', error)
+      return false
+    }
+    return true
+  } catch (error) {
+    console.error('[subscribe] the confirmation threw', error)
+    return false
+  }
 }

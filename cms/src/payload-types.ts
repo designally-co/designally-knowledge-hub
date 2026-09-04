@@ -377,7 +377,7 @@ export interface Subscriber {
    * The page the form was on. Says which writing earns sign-ups.
    */
   source?: string | null;
-  status?: ('subscribed' | 'unsubscribed') | null;
+  status?: ('pending' | 'subscribed' | 'unsubscribed') | null;
   updatedAt: string;
   createdAt: string;
 }

@@ -280,7 +280,16 @@
       "Bash(curl -s -X POST http://localhost:3001/api/users/login -H \"Content-Type: application/json\" -d '{\"email\":\"website.team@designally.co\",\"password\":\"LocalDevOnly123!\"}')",
       "Bash(cp designally-hub.db designally-hub.db.verifybak)",
       "Bash(mv designally-hub.db.verifybak designally-hub.db)",
-      "Bash(node --import tsx -e ' *)"
+      "Bash(node --import tsx -e ' *)",
+      "Bash(curl -s -X POST http://localhost:3001/api/subscribe -H \"Content-Type: application/json\" -d '{\"email\":\"Flow.Test@example.com\",\"locale\":\"th\",\"source\":\"/th\"}')",
+      "Bash(node --env-file=.env.production.local -e ' *)",
+      "Bash(grep -E \"^pg$\")",
+      "Bash(curl -s \"https://designally-knowledge-hub.vercel.app/api/articles?limit=1&depth=0\")",
+      "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\('totalDocs:',d.get\\('totalDocs'\\)\\)\")",
+      "Bash(curl -s \"https://designally-knowledge-hub.vercel.app/api/resources?limit=1&depth=0\")",
+      "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\('resources totalDocs:',d.get\\('totalDocs'\\)\\)\")",
+      "Bash(curl -s \"https://designally-knowledge-hub.vercel.app/api/media?limit=1&depth=0\")",
+      "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\('media totalDocs:',d.get\\('totalDocs'\\)\\)\")"
     ]
   }
 }

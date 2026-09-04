@@ -71,7 +71,7 @@ export function NewsletterForm({ dict, locale }: { dict: Dictionary; locale?: Lo
 
       if (response.ok && result.ok) {
         setState('done')
-        setMessage(result.message ?? 'Thanks — you are on the list.')
+        setMessage(result.message ?? 'Thanks — check your inbox to confirm.')
         form.reset()
         return
       }

@@ -74,6 +74,12 @@ export const Subscribers: CollectionConfig = {
       type: 'select',
       defaultValue: 'subscribed',
       options: [
+        /* ASKED, BUT NOT YET PROVEN. The sign-up form records that someone
+           typed this address; only the link in the confirmation email proves
+           the person holding it agreed. `announce()` selects `subscribed`
+           alone, so a pending row is never mailed a newsletter — it is a
+           request, not a subscriber. */
+        { label: 'Pending confirmation', value: 'pending' },
         { label: 'Subscribed', value: 'subscribed' },
         { label: 'Unsubscribed', value: 'unsubscribed' },
       ],
