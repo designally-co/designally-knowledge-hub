@@ -5,30 +5,18 @@ import '@/styles/index.css'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
 import { LOCALES, getDictionary, isLocale, type Locale } from '@/lib/i18n'
-
-/**
- * Where this site lives, for resolving relative URLs in metadata.
- *
- * A share card's image has to be an absolute URL — a crawler has no page to
- * resolve `/api/media/cover.png` against. `metadataBase` is what lets Next do
- * that resolution, so without it an uploaded cover would be advertised as a
- * path and every platform would fail to fetch it. Vercel exposes the deploy's
- * own hostname at runtime, so this needs no manual configuration; FRONTEND_URL
- * wins when a custom domain is in use.
+/* The origin moved to its own module: the sitemap and robots.txt need the same
+   answer this layout does. See lib/siteURL. */
+import { siteURL } from '@/lib/siteURL'
+/*
+ * MEASUREMENT, BECAUSE THE NORTH-STAR METRIC IS SESSIONS AND NOTHING COUNTED
+ * ONE. Vercel's own, for two reasons beyond it being one line: it sets no
+ * cookies, so this site needs neither a consent banner nor a lawful basis to
+ * record a page view, and it runs on the platform the Hub already deploys to.
+ * It answers "how many people arrived, from where, on which page", which is
+ * the question the metric asks.
  */
-const siteURL =
-  process.env.SITE_URL ||
-  process.env.PAYLOAD_PUBLIC_SERVER_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : 'http://localhost:3000')
-
-/* NOT `FRONTEND_URL`. In this repo that variable names the origin allowed to
-   call the API and trusted for CSRF, and locally it is still the old Vite SPA
-   on :5173 — a different app. Using it here resolved an uploaded cover to
-   `http://localhost:5173/api/media/...`, which is a URL nothing serves. This
-   site's own origin is what is wanted, so: an explicit SITE_URL, else the
-   server URL Payload is already told about, else the deploy's own hostname. */
+import { Analytics } from '@vercel/analytics/next'
 
 export const metadata = {
   metadataBase: new URL(siteURL),
@@ -76,6 +64,7 @@ export default async function FrontendLayout({
         <SiteHeader locale={locale} dict={dict} />
         <main id="main">{children}</main>
         <SiteFooter locale={locale} dict={dict} />
+        <Analytics />
       </body>
     </html>
   )

@@ -3,12 +3,13 @@ import { notFound } from 'next/navigation'
 
 import { FileTypeIcon, Icon, ResourceCard, ResourceFigure, Tag } from '@/components/ds'
 import { NewsletterCta } from '@/components/NewsletterCta'
+import { ResourceJsonLd } from '@/components/JsonLd'
 import {
   getAllResourceSlugs,
   getDownloadableFiles,
   getResourceBySlug,
 } from '@/lib/resources'
-import { getDictionary, isLocale, LOCALES, type Locale } from '@/lib/i18n'
+import { getDictionary, isLocale, localeHref, LOCALES, type Locale } from '@/lib/i18n'
 
 /**
  * Resource detail page. SSG per (locale, slug); ISR revalidates; dynamicParams
@@ -89,6 +90,14 @@ export default async function ResourcePage({ params }: { params: Promise<Params>
   ].filter(Boolean) as { label: string; value: string }[]
 
   return (
+    <>
+      <ResourceJsonLd
+        category={resource.category}
+        description={resource.description}
+        formats={resource.formats}
+        path={localeHref(locale, `/resources/${resource.slug}`)}
+        title={resource.title}
+      />
     <div className="resource-page">
       <div className="shell resource-layout">
         {/* The rail holds the artwork and the files. It is sticky, so the
@@ -208,6 +217,7 @@ export default async function ResourcePage({ params }: { params: Promise<Params>
       )}
 
       <NewsletterCta dict={dict} />
-    </div>
+      </div>
+    </>
   )
 }

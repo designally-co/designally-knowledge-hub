@@ -11,6 +11,7 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Articles } from './collections/Articles'
 import { Resources } from './collections/Resources'
+import { Subscribers } from './collections/Subscribers'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -186,7 +187,7 @@ export default buildConfig({
     // document stayed light and the text disappeared into it.
     theme: 'light',
   },
-  collections: [Articles, Resources, Media, Users],
+  collections: [Articles, Resources, Media, Subscribers, Users],
   editor: lexicalEditor(),
   // Bilingual content: English is the source (authored/generated); Thai is a
   // translation. Localized fields store a value per locale; `fallback` shows the

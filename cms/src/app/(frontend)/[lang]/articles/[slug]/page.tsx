@@ -7,6 +7,7 @@ import { ArticleToc } from '@/components/ArticleToc'
 import { ArticleReferences } from '@/components/ArticleReferences'
 import { ArticleShare } from '@/components/ArticleShare'
 import { NewsletterCta } from '@/components/NewsletterCta'
+import { ArticleJsonLd } from '@/components/JsonLd'
 import {
   getAllArticleSlugs,
   getArticleBySlug,
@@ -97,6 +98,16 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
       className="article"
       style={{ ['--cover-r' as string]: String(coverRatio), ['--masthead-band' as string]: band }}
     >
+      {/* What a crawler reads instead of guessing at the headline and the date.
+          Every field is something the page below already shows. */}
+      <ArticleJsonLd
+        datePublished={article.publishedISO}
+        description={article.dek}
+        image={article.shareImage ?? article.image}
+        path={selfHref}
+        section={categoryForTag(article.tags[0] ?? '')}
+        title={article.title}
+      />
       <div className="article__masthead">
         <header className="article__head">
           {article.tags.length > 0 && (

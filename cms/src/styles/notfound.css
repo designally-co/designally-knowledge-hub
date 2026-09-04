@@ -1,0 +1,107 @@
+/* --- 404 — the page that is not there.
+
+   TWO BANDS, THE SITE'S OWN. The paper the site opens on, carrying the
+   apology and the two ways onward, and then white for the four articles
+   underneath — the same pairing the About page uses to say "a new question
+   starts here". Nothing is invented: `--type-*` for the scale, `--be-*` for
+   the palette, `.shell` for the measure.
+
+   IT IS SIZED LIKE A HERO, NOT LIKE AN ERROR. A visitor who followed a dead
+   link from a search result has no idea whether the site is broken or the URL
+   is; a page that looks like the rest of the site answers that before a word
+   is read. --- */
+
+.notfound__hero {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--be-paper);
+  padding-block: clamp(56px, 9vw, 120px) clamp(40px, 6vw, 72px);
+}
+
+/* The watermark the hero, the article header and the promo banners carry. One
+   piece of decoration, used the same way everywhere. */
+.notfound__hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/hero-bg-pattern.svg") center / cover no-repeat;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.notfound__inner {
+  position: relative;
+  max-inline-size: 44rem;
+}
+
+/* THE NUMBER IS A LABEL, NOT A HEADLINE. Rendering "404" at display size makes
+   the failure the subject of the page; the sentence under it is the subject.
+   So it takes the same uppercase mark the eyebrows wear everywhere else. */
+.notfound__code {
+  margin: 0 0 clamp(12px, 1.6vw, 18px);
+  font: var(--type-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--be-ink-70);
+}
+
+.notfound__title {
+  margin: 0 0 clamp(12px, 1.6vw, 20px);
+  font: var(--type-display-2);
+  color: var(--be-ink);
+  text-wrap: balance;
+}
+
+.notfound__lede {
+  margin: 0 0 clamp(24px, 3.2vw, 36px);
+  max-inline-size: 34rem;
+  font: var(--type-body-lg);
+  color: var(--be-ink-70);
+}
+
+.notfound__ways {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ---- what is still here ------------------------------------------------ */
+
+.notfound__recent {
+  padding-block: clamp(40px, 6vw, 72px);
+}
+
+.notfound__recent-title {
+  margin: 0 0 clamp(20px, 2.6vw, 32px);
+  font: var(--type-title-md);
+  color: var(--be-ink);
+}
+
+/* Four across on a desk, two on a tablet, one under a thumb — the grid the
+   listing pages already use, at the same gap. */
+.notfound__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+}
+
+@media (max-width: 60rem) {
+  .notfound__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 36rem) {
+  .notfound__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* The hash Next puts in place of a server error's message — the only thread
+   between what a visitor saw and a line in the logs. Quiet, because it is for
+   the report rather than the reader. */
+.notfound__digest {
+  margin: clamp(20px, 2.6vw, 28px) 0 0;
+  font: var(--type-body-sm);
+  color: var(--be-ink-70);
+}

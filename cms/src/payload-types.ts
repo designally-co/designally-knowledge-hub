@@ -70,6 +70,7 @@ export interface Config {
     articles: Article;
     resources: Resource;
     media: Media;
+    subscribers: Subscriber;
     users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -81,6 +82,7 @@ export interface Config {
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     resources: ResourcesSelect<false> | ResourcesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -348,6 +350,30 @@ export interface Resource {
   createdAt: string;
 }
 /**
+ * People who signed up for the newsletter. Export before a send.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscribers".
+ */
+export interface Subscriber {
+  id: number;
+  /**
+   * Where the newsletter goes. One row per address.
+   */
+  email: string;
+  /**
+   * The language they were reading when they signed up.
+   */
+  locale?: ('en' | 'th') | null;
+  /**
+   * The page the form was on. Says which writing earns sign-ups.
+   */
+  source?: string | null;
+  status?: ('subscribed' | 'unsubscribed') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Created automatically on first Designally Google sign-in.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -412,6 +438,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'subscribers';
+        value: number | Subscriber;
       } | null)
     | ({
         relationTo: 'users';
@@ -574,6 +604,18 @@ export interface MediaSelect<T extends boolean = true> {
               filename?: T;
             };
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscribers_select".
+ */
+export interface SubscribersSelect<T extends boolean = true> {
+  email?: T;
+  locale?: T;
+  source?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

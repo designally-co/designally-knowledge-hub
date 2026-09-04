@@ -493,6 +493,11 @@ export interface Article {
   references: { label: string; url: string }[]
   /** For the social share card. Falls back to `image`. */
   shareImage?: string
+  /* THE MACHINE-READABLE DATE, beside the human one. `date` is "6 July 2026" —
+     written for a reader and localised, which is exactly what a crawler cannot
+     parse. Structured data needs ISO 8601, so the raw value is carried through
+     rather than reconstructed from prose. */
+  publishedISO?: string
 }
 
 /** A single published article by slug, or null if not found / DB unavailable. */
@@ -522,6 +527,7 @@ export async function getArticleBySlug(
         title: r.title,
         dek: r.summary ?? undefined,
         date: formatDate(r.publishedDate, locale),
+        publishedISO: r.publishedDate ? new Date(r.publishedDate).toISOString() : undefined,
         tags: r.tag ? [r.tag] : [],
         image: coverOf(r),
         shareImage: shareImageOf(r),

@@ -247,7 +247,14 @@
       "Bash(curl -s https://designally-knowledge-hub.vercel.app/)",
       "Bash(curl -sI https://designally-knowledge-hub.vercel.app/admin)",
       "Bash(curl -sL https://designally-knowledge-hub.vercel.app/admin)",
-      "Bash(curl -s -o /tmp/adm.html -w 'status=%{http_code} size=%{size_download} redirects=%{num_redirects} final=%{url_effective}\\\\n' -L https://designally-knowledge-hub.vercel.app/admin)"
+      "Bash(curl -s -o /tmp/adm.html -w 'status=%{http_code} size=%{size_download} redirects=%{num_redirects} final=%{url_effective}\\\\n' -L https://designally-knowledge-hub.vercel.app/admin)",
+      "Bash(grep -o \"[^{}]\\\\{0,120\\\\}drawer__content{[^}]*none[^}]*}\" now.css)",
+      "Bash(npx payload *)",
+      "Bash(curl -sf -o /dev/null http://localhost:3001/robots.txt)",
+      "Bash(curl -s http://localhost:3001/robots.txt)",
+      "Bash(curl -s http://localhost:3001/sitemap.xml)",
+      "Bash(curl -s -o /tmp/nf2.html -w 'status=%{http_code}\\\\n' http://localhost:3001/this-page-does-not-exist)",
+      "Bash(node /Users/admin/.claude/skills/impeccable/scripts/detect.mjs --json cms/src/styles/notfound.css \"cms/src/app/\\(frontend\\)/[lang]/not-found.tsx\" \"cms/src/app/\\(frontend\\)/[lang]/error.tsx\" cms/src/components/NewsletterForm.tsx)"
     ]
   }
 }

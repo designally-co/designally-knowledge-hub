@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Icon, Tag, TopicPill } from '@/components/ds'
+import { SiteJsonLd } from '@/components/JsonLd'
 import { CaseStudyCarousel } from '@/components/CaseStudyCarousel'
 import { InsightsGrid } from '@/components/InsightsGrid'
 import { InsightsVideoPromo } from '@/components/InsightsVideoPromo'
@@ -38,6 +39,9 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
   const topicTags = latestTags.length > 0 ? latestTags : TAG_OPTIONS.slice(0, 12)
 
   return (
+    <>
+      {/* The site itself, stated once, on the page a crawler reaches first. */}
+      <SiteJsonLd />
     <div>
       <div className="home-hero">
         <HeroCarousel items={items} />
@@ -155,7 +159,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       />
 
       <NewsletterCta dict={dict} />
-
-    </div>
+      </div>
+    </>
   )
 }

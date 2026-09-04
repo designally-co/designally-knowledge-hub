@@ -33,6 +33,7 @@
 @import "./contact.css";
 @import "./newsletter.css";
 @import "./cta.css";
+@import "./notfound.css";
 
 :root {
   --background: var(--surface-page);

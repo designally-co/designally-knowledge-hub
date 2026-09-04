@@ -149,3 +149,32 @@
   color: var(--be-ink-70);
   margin: 12px 0 0;
 }
+
+/* ---- the sign-up's own answers ----------------------------------------- */
+
+/* THE HONEYPOT. Taken out of the picture without being taken out of the DOM —
+   a bot reading the markup fills it, a person never sees it. `display: none`
+   is what some bots skip, so this is clipped instead, the same technique the
+   admin uses for its own hidden labels. */
+.cta__honeypot {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The note carries the reply, so it takes a colour when it becomes one. On
+   success the field is gone and this sentence is the whole of the answer,
+   which is why it is the darker ink rather than the quiet grey. */
+.cta__note--done {
+  color: var(--be-ink);
+  font-weight: 600;
+}
+
+.cta__note--error {
+  color: #b3261e;
+}
