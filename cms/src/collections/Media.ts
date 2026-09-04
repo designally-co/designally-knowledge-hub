@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
+import { mediaFromUrlHandler } from '../endpoints/mediaFromUrl'
+
 /**
  * Uploaded assets: cover images, preview images, tool logos, and downloadable
  * template files. Public read so the frontend can render/serve them. Images get
@@ -10,6 +12,15 @@ export const Media: CollectionConfig = {
   access: {
     read: () => true,
   },
+  endpoints: [
+    /* Upload by URL, because a multipart upload cannot exceed Vercel's 4.5MB
+       request body and generated covers now do. See endpoints/mediaFromUrl. */
+    {
+      path: '/from-url',
+      method: 'post',
+      handler: mediaFromUrlHandler,
+    },
+  ],
   admin: {
     useAsTitle: 'alt',
     // Hides the "API" tab beside "Edit". It is a read-only JSON viewer for

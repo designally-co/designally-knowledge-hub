@@ -260,7 +260,18 @@
       "Bash(cd \"/Users/admin/MegaMind/Designally Knowledge Hub/cms/src/migrations\" && sed -n '/^export async function up/,/^}/p' *_newsletter_fields_and_subscribers.ts | sed -n '/sql`/,/`\\)/p' | sed 's/^    //')",
       "Bash(curl -s -o /tmp/unsub.html -w '  /api/unsubscribe  status=%{http_code}\\\\n' https://designally-knowledge-hub.vercel.app/api/unsubscribe?token=bogus)",
       "Bash(curl -s https://designally-knowledge-hub.vercel.app/api/health)",
-      "Bash(python3 -m json.tool)"
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s __TRACKED_VAR__/api/health)",
+      "Bash(curl -s https://designally-content-generator.vercel.app/api/health)",
+      "Bash(cd \"/Users/admin/MegaMind/Content Generator\" && sed -i '' 's/text-caution-ink/text-warn/' \"src/app/\\(app\\)/pipeline/[id]/stages/publish-stage.tsx\" && grep -n \"text-warn\" \"src/app/\\(app\\)/pipeline/[id]/stages/publish-stage.tsx\" | head -2 *)",
+      "Bash(grep -n \"const body = {\\\\|missing,\" -A 12 src/app/api/health/route.ts)",
+      "Bash(git rebase *)",
+      "Bash(GIT_EDITOR=true git rebase --continue)",
+      "Bash(grep -E \"^\\(pg|postgres\\)$\")",
+      "Bash(timeout 60 npx vercel whoami)",
+      "Bash(npx vercel *)",
+      "Bash(cp /private/tmp/claude-501/-Users-admin-MegaMind-Designally-Knowledge-Hub/2ae0bf05-b603-4d24-9dc6-cd751e31c791/scratchpad/q.mjs ./q.tmp.mjs)",
+      "Bash(node ./q.tmp.mjs)"
     ]
   }
 }
