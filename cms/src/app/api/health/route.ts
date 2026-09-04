@@ -51,7 +51,21 @@ export async function GET() {
     S3_ENDPOINT: present('S3_ENDPOINT'),
     S3_ACCESS_KEY_ID: present('S3_ACCESS_KEY_ID'),
     S3_SECRET_ACCESS_KEY: present('S3_SECRET_ACCESS_KEY'),
+    /* The newsletter. Absent means publishing an article tells nobody — which
+       is a quiet failure by design (the send must never break a publish), and
+       therefore one you can only find by asking. Which is the whole point of
+       this route: the first time this was needed, an article published, no
+       email arrived, and nothing outside the runtime logs could say whether
+       the key had reached the app at all. */
+    RESEND_API_KEY: present('RESEND_API_KEY'),
+    NEWSLETTER_FROM: present('NEWSLETTER_FROM'),
   }
+
+  /* Not in `missing`, because it is meant to be absent in normal running: set,
+     every announcement goes to one address instead of the list. Worth stating
+     plainly — a live newsletter silently mailing one person is the kind of
+     thing nobody notices for a month. */
+  const newsletterTestMode = present('NEWSLETTER_TEST_TO')
 
   const missing = Object.entries(env)
     .filter(([, ok]) => !ok)
@@ -72,6 +86,7 @@ export async function GET() {
   }
 
   const body = {
+    newsletterTestMode,
     // `ok` covers what would stop the Hub working at all. A missing Anthropic
     // key or S3 bucket degrades it rather than breaking it, so neither pulls
     // this to false — they are visible in `env` for whoever is looking.

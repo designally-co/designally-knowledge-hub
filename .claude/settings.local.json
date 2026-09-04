@@ -257,7 +257,10 @@
       "Bash(node /Users/admin/.claude/skills/impeccable/scripts/detect.mjs --json cms/src/styles/notfound.css \"cms/src/app/\\(frontend\\)/[lang]/not-found.tsx\" \"cms/src/app/\\(frontend\\)/[lang]/error.tsx\" cms/src/components/NewsletterForm.tsx)",
       "Bash(cp /tmp/diag.mjs ./diag.mjs)",
       "Bash(node ./diag.mjs)",
-      "Bash(cd \"/Users/admin/MegaMind/Designally Knowledge Hub/cms/src/migrations\" && sed -n '/^export async function up/,/^}/p' *_newsletter_fields_and_subscribers.ts | sed -n '/sql`/,/`\\)/p' | sed 's/^    //')"
+      "Bash(cd \"/Users/admin/MegaMind/Designally Knowledge Hub/cms/src/migrations\" && sed -n '/^export async function up/,/^}/p' *_newsletter_fields_and_subscribers.ts | sed -n '/sql`/,/`\\)/p' | sed 's/^    //')",
+      "Bash(curl -s -o /tmp/unsub.html -w '  /api/unsubscribe  status=%{http_code}\\\\n' https://designally-knowledge-hub.vercel.app/api/unsubscribe?token=bogus)",
+      "Bash(curl -s https://designally-knowledge-hub.vercel.app/api/health)",
+      "Bash(python3 -m json.tool)"
     ]
   }
 }
