@@ -48,8 +48,13 @@ export function newsletterOnPublish(
   kind: Announcement['kind'],
   toAnnouncement: (doc: Record<string, unknown>) => Announcement,
 ): CollectionAfterChangeHook {
-  return async ({ doc, previousDoc, req, operation }) => {
+  return async ({ context, doc, previousDoc, req, operation }) => {
     try {
+      /* The stamp write below re-enters this hook. The transition test would
+         catch it anyway — published to published is not a crossing — but
+         relying on that is relying on an accident. */
+      if (context?.skipNewsletter) return doc
+
       const wasPublished = previousDoc?.status === 'published'
       const isPublished = doc?.status === 'published'
 
@@ -63,15 +68,33 @@ export function newsletterOnPublish(
       const result = await announce(req.payload, toAnnouncement(doc))
 
       if (result.sent > 0) {
-        /* `context` stops this update re-entering the hook it is running
-           inside — Payload would otherwise call afterChange again, and the
-           transition test would save us, but only by accident. */
+        /*
+         * `req` IS THE WHOLE POINT OF THIS CALL, and leaving it out cost a
+         * real send.
+         *
+         * This runs inside the publish's own transaction, which holds a lock on
+         * the row it is about to stamp. Without `req`, Payload opens a SECOND
+         * transaction for the update — and that one waits for a lock the first
+         * one will not release until this hook returns. It blocks until the
+         * database's statement timeout, throws, and the catch below swallows
+         * it: the email goes out, the stamp does not, and the article is left
+         * armed to announce itself again.
+         *
+         * Which is exactly what happened on the first real send. It did not
+         * show up in testing because a `payload.update` run from a script has
+         * no outer transaction to deadlock against — the bug only exists on the
+         * path that matters.
+         *
+         * Passing `req` joins the existing transaction instead of fighting it,
+         * so the stamp commits with the publish or not at all.
+         */
         await req.payload.update({
           collection: kind === 'article' ? 'articles' : 'resources',
           id: doc.id,
           data: { newsletterSentAt: new Date().toISOString() },
           overrideAccess: true,
           context: { skipNewsletter: true },
+          req,
         })
       }
 
