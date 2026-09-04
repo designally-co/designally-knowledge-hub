@@ -11,7 +11,7 @@ import { ArticleJsonLd } from '@/components/JsonLd'
 import {
   getAllArticleSlugs,
   getArticleBySlug,
-  getRecentArticles,
+  getRelatedArticles,
 } from '@/lib/resources'
 import { categoryForTag, tagSlug } from '@/lib/tags'
 import { chromeForCategory } from '@/lib/listingChrome'
@@ -77,7 +77,10 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
   if (!article) notFound()
 
   const selfHref = localeHref(locale, `/articles/${slug}`)
-  const related = (await getRecentArticles(5, locale)).filter((r) => r.href !== selfHref).slice(0, 4)
+  /* The editor's picks when there are any, same-tag-first when there are not.
+     This line used to BE the policy — the four most recent articles, identical
+     on every page — which is why the Related picker had no effect. */
+  const related = await getRelatedArticles(slug, locale)
 
   const meta = [article.date, article.readTime ? `${article.readTime} ${dict.article.minRead}` : null]
     .filter(Boolean)

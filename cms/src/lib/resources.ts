@@ -144,6 +144,111 @@ export async function getRecentArticles(
 }
 
 /**
+ * The articles shown at the foot of an article.
+ *
+ * THE EDITOR'S CHOICE WINS, AND IS TAKEN LITERALLY. The `related` picker on the
+ * article writes real relationships and, until now, nothing read them back: the
+ * page listed the four most recently published articles no matter what was
+ * chosen, so every article on the site showed the same four and the picker's
+ * "Up to four, at the foot of the article" was a promise it could not keep.
+ *
+ * Chosen articles are shown IN THE ORDER THEY WERE PICKED, and only those —
+ * picking two means two, not two plus two more the page found for itself.
+ * Choosing is an editorial act, and quietly padding it would make the result
+ * something nobody chose. Unpublished picks and the article itself are dropped,
+ * because a card that leads to a 404 is worse than one fewer card.
+ *
+ * WITH NOTHING PICKED, THE SAME TAG COMES FIRST. An article about colour
+ * contrast should lead to the other accessibility writing before it leads to
+ * whatever happened to be published last week. Newest-first within the tag, then
+ * topped up from the most recent articles when the tag cannot fill the row — so
+ * a lone article in its tag still gets a full set rather than an empty section.
+ */
+export async function getRelatedArticles(
+  slug: string,
+  locale: Locale = 'en',
+  count = 4,
+): Promise<CarouselItem[]> {
+  return safeRead(
+    'getRelatedArticles',
+    async () => {
+      const payload = await getPayload({ config })
+
+      /* depth 0: ids are all that is needed to decide WHICH articles, and the
+         cards are built from a second read at depth 1 so their covers are
+         populated. Asking for the covers of articles that may not be used is
+         the more expensive way round. */
+      const { docs: selfDocs } = await payload.find({
+        collection: 'articles',
+        where: { and: [{ slug: { equals: slug } }, ...publishedOnly] },
+        limit: 1,
+        depth: 0,
+        locale,
+      })
+      const self = selfDocs[0]
+      if (!self) return []
+
+      const cardsFor = async (where: Where, limit: number): Promise<ArticleDoc[]> => {
+        if (limit <= 0) return []
+        const { docs } = await payload.find({
+          collection: 'articles',
+          where,
+          sort: '-publishedDate',
+          limit,
+          depth: 1, // populate coverImage
+          locale,
+        })
+        return docs
+      }
+
+      /* A relationship at depth 0 is a list of ids, but Payload will hand back
+         populated docs if it is ever read deeper — so accept both. */
+      const pickedIds = (self.related ?? [])
+        .map((entry) => (typeof entry === 'object' && entry ? entry.id : entry))
+        .filter((id): id is number => typeof id === 'number' && id !== self.id)
+
+      if (pickedIds.length > 0) {
+        const docs = await cardsFor(
+          { and: [{ id: { in: pickedIds } }, ...publishedOnly] },
+          pickedIds.length,
+        )
+        /* `in` returns database order; the editor's order is the one that was
+           chosen, so restore it. */
+        const byId = new Map(docs.map((d) => [d.id, d]))
+        return pickedIds
+          .map((id) => byId.get(id))
+          .filter((d): d is ArticleDoc => Boolean(d))
+          .slice(0, count)
+          .map((d) => toCard(d, locale))
+      }
+
+      const sameTag = self.tag
+        ? await cardsFor(
+            { and: [{ tag: { equals: self.tag } }, { id: { not_equals: self.id } }, ...publishedOnly] },
+            count,
+          )
+        : []
+
+      const filler =
+        sameTag.length < count
+          ? await cardsFor(
+              {
+                and: [
+                  { id: { not_in: [self.id, ...sameTag.map((d) => d.id)] } },
+                  ...publishedOnly,
+                ],
+              },
+              count - sameTag.length,
+            )
+          : []
+
+      return [...sameTag, ...filler].map((d) => toCard(d, locale))
+    },
+    [],
+  )
+}
+
+/**
  * Unique tags of the most recently published articles, newest first, capped at
  * `count`. Feeds the Topics pill cloud so it reflects the freshest content.
  */

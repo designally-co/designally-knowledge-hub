@@ -274,7 +274,8 @@
       "Bash(node ./q.tmp.mjs)",
       "Bash(npx prettier *)",
       "Bash(grep -rn \"livePreview\\\\|preview:\\\\|/articles/\\\\${\\\\|articles/\\\\` *+\" cms/src/collections/Articles.ts cms/src/collections/Resources.ts)",
-      "Bash(grep -rn \"\\\\`/en/\\\\|'/en/\\\\|\\\\\"/en/\" src/)"
+      "Bash(grep -rn \"\\\\`/en/\\\\|'/en/\\\\|\\\\\"/en/\" src/)",
+      "Bash(node -e \"require\\('dotenv'\\).config\\({path:'.env'}\\);const u=process.env.DATABASE_URI||'';console.log\\('scheme:',u.split\\(':'\\)[0]||'\\(empty\\)','len',u.length\\)\")"
     ]
   }
 }
