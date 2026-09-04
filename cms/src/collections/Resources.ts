@@ -2,7 +2,6 @@ import type { CollectionConfig } from 'payload'
 
 import { translateToThaiHandler } from '../endpoints/translateToThai'
 import { slugField } from '../fields/slug'
-import { newsletterOnPublish, newsletterSentField } from './newsletterOnPublish'
 import {
   RESOURCE_CATEGORY_OPTIONS,
   RESOURCE_FORMATS,
@@ -95,17 +94,6 @@ export const Resources: CollectionConfig = {
   ],
   hooks: {
     beforeChange: stampPublishedDate,
-    /* Same announcement, same guards, different noun. A resource has no cover
-       and no summary — its `description` is its only prose — so the email
-       arrives as a title and a line rather than a picture. */
-    afterChange: [
-      newsletterOnPublish('resource', (doc) => ({
-        kind: 'resource',
-        title: String(doc.title ?? ''),
-        summary: typeof doc.description === 'string' ? doc.description : undefined,
-        path: `/resources/${String(doc.slug ?? '')}`,
-      })),
-    ],
   },
   fields: [
     // ---- Main column -------------------------------------------------------
@@ -219,8 +207,6 @@ export const Resources: CollectionConfig = {
       admin: { position: 'sidebar' },
       fields: [statusField, publishedDateField],
     },
-    /* When the list was told. See collections/newsletterOnPublish. */
-    newsletterSentField,
     {
       name: 'category',
       type: 'select',
