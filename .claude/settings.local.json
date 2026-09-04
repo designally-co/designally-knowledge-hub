@@ -271,7 +271,10 @@
       "Bash(timeout 60 npx vercel whoami)",
       "Bash(npx vercel *)",
       "Bash(cp /private/tmp/claude-501/-Users-admin-MegaMind-Designally-Knowledge-Hub/2ae0bf05-b603-4d24-9dc6-cd751e31c791/scratchpad/q.mjs ./q.tmp.mjs)",
-      "Bash(node ./q.tmp.mjs)"
+      "Bash(node ./q.tmp.mjs)",
+      "Bash(npx prettier *)",
+      "Bash(grep -rn \"livePreview\\\\|preview:\\\\|/articles/\\\\${\\\\|articles/\\\\` *+\" cms/src/collections/Articles.ts cms/src/collections/Resources.ts)",
+      "Bash(grep -rn \"\\\\`/en/\\\\|'/en/\\\\|\\\\\"/en/\" src/)"
     ]
   }
 }

@@ -9,7 +9,9 @@ import { usePathname, useRouter } from 'next/navigation'
    come from — those are masked into Payload's markup because there is no
    component to render there; here the markup is mine, so the components are. */
 import { Check, Ellipsis, ExternalLink, Expand, Link2, Pencil, Trash2, X } from 'lucide-react'
-import { SaveButton, useDocumentInfo, useFormFields, useFormModified } from '@payloadcms/ui'
+import { SaveButton, useDocumentInfo, useFormFields, useFormModified, useLocale } from '@payloadcms/ui'
+
+import { DEFAULT_LOCALE, isLocale, localeHref } from '../../lib/i18n'
 
 import './DocActions.css'
 
@@ -495,6 +497,27 @@ function useCopy(url: null | string) {
 
 const ICON = { size: 20, strokeWidth: 2 } as const
 
+/**
+ * The public address of a document, in the locale the editor is looking at.
+ *
+ * BOTH LINKS USED TO HARDCODE `/en/...`, WHICH IS THE ONE SHAPE THE PUBLIC SITE
+ * NEVER SERVES. English is served unprefixed and only *rewritten* to the
+ * internal `/en` tree by the middleware; a literal `/en/articles/x` is not
+ * already-prefixed as far as that rewrite is concerned, so it becomes
+ * `/en/en/articles/x`, falls through to the catch-all and 404s. "View article"
+ * therefore opened a not-found page for every published article.
+ *
+ * `localeHref` is the same function the front end builds its own links with, so
+ * the admin now answers this question the way the site does — and a Thai
+ * document links to `/th/...` rather than to the English page, which the
+ * hardcoded prefix could not do either.
+ */
+function usePublicPath(collection: 'articles' | 'resources', slug: unknown): string | null {
+  const { code } = useLocale()
+  if (typeof slug !== 'string' || !slug) return null
+  return localeHref(isLocale(code) ? code : DEFAULT_LOCALE, `/${collection}/${slug}`)
+}
+
 /* ---- articles ------------------------------------------------------------ */
 
 export function ArticleActions() {
@@ -507,7 +530,7 @@ export function ArticleActions() {
   const slug = useFormFields(([fields]) => fields?.slug?.value)
   const status = useFormFields(([fields]) => fields?.status?.value)
 
-  const path = typeof slug === 'string' && slug ? `/en/articles/${slug}` : null
+  const path = usePublicPath('articles', slug)
   const url = path && typeof window !== 'undefined' ? `${window.location.origin}${path}` : null
   const { copied, copy } = useCopy(url)
 
@@ -619,7 +642,7 @@ export function ResourceActions() {
   const slug = useFormFields(([fields]) => fields?.slug?.value)
   const status = useFormFields(([fields]) => fields?.status?.value)
 
-  const path = typeof slug === 'string' && slug ? `/en/resources/${slug}` : null
+  const path = usePublicPath('resources', slug)
   const url = path && typeof window !== 'undefined' ? `${window.location.origin}${path}` : null
   const { copied, copy } = useCopy(url)
 
