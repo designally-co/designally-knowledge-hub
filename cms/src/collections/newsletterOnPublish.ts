@@ -38,8 +38,10 @@ export const newsletterSentField: Field = {
   type: 'date',
   admin: {
     position: 'sidebar',
-    readOnly: true,
-    description: 'When subscribers were told. Clear it and save to send again.',
+    /* NOT read-only, because the description asks you to clear it. It used to
+       be both, which made the instruction impossible to follow. */
+    description:
+      'When subscribers were told. To announce it again: set the article back to Draft, clear this, then publish.',
     date: { pickerAppearance: 'dayAndTime', displayFormat: 'd MMM yyyy, HH:mm' },
   },
 }
