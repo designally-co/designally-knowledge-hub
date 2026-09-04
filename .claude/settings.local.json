@@ -290,7 +290,9 @@
       "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\('resources totalDocs:',d.get\\('totalDocs'\\)\\)\")",
       "Bash(curl -s \"https://designally-knowledge-hub.vercel.app/api/media?limit=1&depth=0\")",
       "Bash(python3 -c \"import sys,json;d=json.load\\(sys.stdin\\);print\\('media totalDocs:',d.get\\('totalDocs'\\)\\)\")",
-      "Bash(curl -s https://designally-knowledge-hub.vercel.app/api/subscribe/confirm?token=not-a-real-token -w ' [HTTP %{http_code}]')"
+      "Bash(curl -s https://designally-knowledge-hub.vercel.app/api/subscribe/confirm?token=not-a-real-token -w ' [HTTP %{http_code}]')",
+      "Bash(python3 -c \"import sys,json;print\\('deployed commit:',json.load\\(sys.stdin\\).get\\('commit'\\)\\)\")",
+      "Bash(node -p \"require\\('./package.json'\\).dependencies.resend\")"
     ]
   }
 }

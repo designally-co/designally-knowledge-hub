@@ -181,11 +181,36 @@ export async function announce(payload: Payload, item: Announcement): Promise<Se
     })
 
     try {
-      const { error } = await resend.batch.send(messages)
+      const { data, error } = await resend.batch.send(messages)
       if (error) {
         console.error('[newsletter] a batch was refused', error)
         continue
       }
+
+      /*
+       * THE IDS ARE THE ONLY WAY TO ASK WHAT HAPPENED NEXT.
+       *
+       * Everything this function can observe ends at "Resend accepted it".
+       * Whether a message was then delivered, filed as spam, put in Gmail's
+       * Promotions tab, or bounced is knowable ONLY through Resend, and only if
+       * you kept the id it handed back. Throwing them away — which this did —
+       * turns "one subscriber got it and the other did not" into a question
+       * nobody can answer after the fact, which is exactly where this ended up.
+       *
+       * Logged rather than stored: a delivery id is worth having for the days
+       * after a send, not for the life of the article, and Vercel's logs are
+       * where you are already looking when an email did not arrive.
+       */
+      const ids = (data as { data?: { id?: string }[] } | null)?.data ?? []
+      slice.forEach((person, index) => {
+        const id = ids[index]?.id
+        /* The domain, never the address: a log is not a place for someone
+           else's email, and the domain is what a delivery question is usually
+           about anyway. */
+        const domain = person.email.split('@')[1] ?? '?'
+        console.info(`[newsletter] accepted for @${domain} — resend id ${id ?? '(none returned)'}`)
+      })
+
       sent += slice.length
     } catch (error) {
       /* One failed batch is not a reason to abandon the rest of the list. */
