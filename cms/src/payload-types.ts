@@ -223,6 +223,10 @@ export interface Article {
   status: 'draft' | 'published';
   publishedDate?: string | null;
   /**
+   * When subscribers were told. Clear it and save to send again.
+   */
+  newsletterSentAt?: string | null;
+  /**
    * From the title. Used in the URL.
    */
   slug?: string | null;
@@ -338,6 +342,10 @@ export interface Resource {
    */
   status: 'draft' | 'published';
   publishedDate?: string | null;
+  /**
+   * When subscribers were told. Clear it and save to send again.
+   */
+  newsletterSentAt?: string | null;
   /**
    * Sets the card's artwork and colour.
    */
@@ -518,6 +526,7 @@ export interface ArticlesSelect<T extends boolean = true> {
   tag?: T;
   status?: T;
   publishedDate?: T;
+  newsletterSentAt?: T;
   slug?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -547,6 +556,7 @@ export interface ResourcesSelect<T extends boolean = true> {
   fileSize?: T;
   status?: T;
   publishedDate?: T;
+  newsletterSentAt?: T;
   category?: T;
   slug?: T;
   updatedAt?: T;
