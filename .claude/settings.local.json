@@ -275,7 +275,12 @@
       "Bash(npx prettier *)",
       "Bash(grep -rn \"livePreview\\\\|preview:\\\\|/articles/\\\\${\\\\|articles/\\\\` *+\" cms/src/collections/Articles.ts cms/src/collections/Resources.ts)",
       "Bash(grep -rn \"\\\\`/en/\\\\|'/en/\\\\|\\\\\"/en/\" src/)",
-      "Bash(node -e \"require\\('dotenv'\\).config\\({path:'.env'}\\);const u=process.env.DATABASE_URI||'';console.log\\('scheme:',u.split\\(':'\\)[0]||'\\(empty\\)','len',u.length\\)\")"
+      "Bash(node -e \"require\\('dotenv'\\).config\\({path:'.env'}\\);const u=process.env.DATABASE_URI||'';console.log\\('scheme:',u.split\\(':'\\)[0]||'\\(empty\\)','len',u.length\\)\")",
+      "Bash(python3 -c \"import json;print\\(json.load\\(open\\('package.json'\\)\\)['scripts']\\)\")",
+      "Bash(curl -s -X POST http://localhost:3001/api/users/login -H \"Content-Type: application/json\" -d '{\"email\":\"website.team@designally.co\",\"password\":\"LocalDevOnly123!\"}')",
+      "Bash(cp designally-hub.db designally-hub.db.verifybak)",
+      "Bash(mv designally-hub.db.verifybak designally-hub.db)",
+      "Bash(node --import tsx -e ' *)"
     ]
   }
 }

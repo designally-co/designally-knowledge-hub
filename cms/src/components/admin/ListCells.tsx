@@ -4,6 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 
 import { CATEGORY_CHROME } from '../../lib/listingChrome'
+import { coverImageId, useCoverThumb } from './useCoverThumb'
 import { categoryForTag } from '../../lib/tags'
 import './ListCells.css'
 
@@ -109,12 +110,17 @@ export const TagCell: React.FC<CellProps> = ({ cellData }) => {
  * painted expanded for a frame before hydration re-applied the collapsed class
  * — a visible flash of the whole rail on the way from the list to an article.
  *
- * THE COVER IS BEST-EFFORT, AND SAYS SO. `coverUrl` is a plain string and is
- * what Content Studio sets, so it is present on most of the library and renders
- * directly. `coverImage` is an upload and arrives as a bare id at the list's
- * fetch depth, with no URL attached — resolving it would cost one request per
- * row, per page. Those rows get the fallback tile instead of a spinner and a
- * waterfall.
+ * THE COVER COMES FROM WHICHEVER FIELD HOLDS IT. `coverUrl` is a plain string
+ * and renders directly. `coverImage` is an upload, and the list fetches at
+ * `depth: 0` — hardcoded in Payload's List view — so it arrives as a bare id
+ * with no URL attached; `useCoverThumb` resolves those in ONE batched request
+ * per page of rows rather than the per-row waterfall that once made the
+ * lettered tile the better trade. The tile is still what a row falls back to,
+ * now only when there is genuinely no cover to show.
+ *
+ * This column went blank-but-for-letters when Content Studio moved from setting
+ * `coverUrl` to uploading into the media library and setting `coverImage` —
+ * the better field to set, and the one this cell could not read.
  */
 export const ArticleRowTitle: React.FC<
   CellProps & { link?: boolean; linkURL?: string }
@@ -123,12 +129,15 @@ export const ArticleRowTitle: React.FC<
 
   const cover = rowData?.coverUrl
   const uploaded = rowData?.coverImage
+  /* Already populated when the row came from somewhere that fetches deeper than
+     the list does; an id everywhere else, which the hook resolves. */
+  const embedded =
+    uploaded && typeof uploaded === 'object' && typeof (uploaded as { url?: unknown }).url === 'string'
+      ? (uploaded as { url: string }).url
+      : null
+  const fetched = useCoverThumb(embedded ? null : coverImageId(uploaded))
   const src =
-    typeof cover === 'string' && cover.trim()
-      ? cover.trim()
-      : uploaded && typeof uploaded === 'object' && typeof (uploaded as { url?: unknown }).url === 'string'
-        ? ((uploaded as { url: string }).url)
-        : null
+    (typeof cover === 'string' && cover.trim() ? cover.trim() : null) ?? embedded ?? fetched
 
   const inner = (
     <>
