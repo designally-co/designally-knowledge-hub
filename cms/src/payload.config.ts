@@ -39,10 +39,20 @@ const db = isPostgres
       // Create it first: `create schema if not exists "<name>";`. Leave unset
       // when the Hub has its own database/project (uses the default `public`).
       ...(process.env.DB_SCHEMA ? { schemaName: process.env.DB_SCHEMA } : {}),
-      // Auto-create / sync the schema on boot. Simplest path for this internal
-      // CMS — a fresh DB gets its tables on first run, no migration files. Switch
-      // to Payload migrations later for zero-risk / zero-cold-start schema syncs.
-      push: true,
+      // DEVELOPMENT ONLY, WHICH IS WHAT IT ALWAYS WAS IN PRACTICE.
+      //
+      // This said `push: true` unconditionally, described as "a fresh DB gets
+      // its tables on first run". Production never behaved that way: a column
+      // added in the config simply never appeared in the live database, and the
+      // first field that got SELECTED rather than merely declared — a date on
+      // Articles and Resources — turned every read of both collections into a
+      // 500. The proof it had been asleep for a while: `articles.tag` was still
+      // NOT NULL there, several deploys after the config stopped saying so.
+      //
+      // So the flag now says what is true. Local SQLite keeps syncing itself on
+      // boot; production changes shape only through a migration, which is a
+      // file someone can read before it runs.
+      push: process.env.NODE_ENV !== 'production',
     })
   : sqliteAdapter({ client: { url: databaseURI } })
 

@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { fromMarkdownHandler } from '../endpoints/fromMarkdown'
 import { translateToThaiHandler } from '../endpoints/translateToThai'
 import { slugField } from '../fields/slug'
+import { newsletterOnPublish, newsletterSentField } from './newsletterOnPublish'
 import { TAG_SELECT_OPTIONS } from '../lib/tags'
 import {
   localeGuardField,
@@ -135,6 +136,24 @@ export const Articles: CollectionConfig = {
   ],
   hooks: {
     beforeChange: stampPublishedDate,
+    /* Subscribers hear about it the moment it goes live — once, on the
+       transition only. See collections/newsletterOnPublish. */
+    afterChange: [
+      newsletterOnPublish('article', (doc) => ({
+        kind: 'article',
+        title: String(doc.title ?? ''),
+        summary: typeof doc.summary === 'string' ? doc.summary : undefined,
+        /* The cover, whether it is an uploaded file or a pasted URL — the same
+           two places the site's own `coverOf` looks. */
+        image:
+          doc.coverImage && typeof doc.coverImage === 'object'
+            ? ((doc.coverImage as { url?: string }).url ?? undefined)
+            : typeof doc.coverUrl === 'string'
+              ? doc.coverUrl
+              : undefined,
+        path: `/articles/${String(doc.slug ?? '')}`,
+      })),
+    ],
   },
   fields: [
     // ---- The document ------------------------------------------------------
@@ -411,6 +430,9 @@ export const Articles: CollectionConfig = {
       admin: { position: 'sidebar' },
       fields: [statusField, publishedDateField],
     },
+    /* When the list was told. Read-only, and clearable by an editor who wants
+       it announced again. See collections/newsletterOnPublish. */
+    newsletterSentField,
     ...slugField('title'),
 
     // An action rather than a property: everything above describes what the
