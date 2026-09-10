@@ -120,6 +120,14 @@ const vercelOrigins = [
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:5173',
   process.env.PAYLOAD_PUBLIC_SERVER_URL,
+  // The Hub's own domain. Vercel's variables name the deployment's `.vercel.app`
+  // hostname, not a custom domain assigned to it, so a Hub reached at its real
+  // address was not on its own allow-list: sign-in and reads worked, and the
+  // first authenticated save came back "you are not allowed to perform this
+  // action". Stated rather than derived because a config is built once, with no
+  // request to read a host from — the same reason the localhost entries below
+  // are written out.
+  'https://hub.designally.co',
   'http://localhost:3000',
   // Next falls back here when port 3000 is occupied by the Content Generator.
   // Keep the fallback origin trusted so authenticated admin writes still pass

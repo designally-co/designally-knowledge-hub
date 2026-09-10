@@ -26,20 +26,47 @@ export const STATE_COOKIE = 'da-oauth-state'
 export const STATE_MAX_AGE = 600 // seconds
 
 /**
+ * Hosts this app may build a redirect URI for.
+ *
+ * The Host header is attacker-controllable in principle, so it is checked
+ * rather than trusted: a forged one could otherwise make us hand Google a
+ * redirect_uri pointing somewhere else. Google would reject it for not being
+ * registered, but "the other side catches it" is not a reason to send it.
+ */
+const TRUSTED_HOST = /^(localhost|([a-z0-9-]+\.)*designally\.co|([a-z0-9-]+\.)*vercel\.app)$/i
+
+/**
  * This deployment's own origin, for building the redirect URI.
  *
- * It has to match a URI registered on the OAuth client EXACTLY, and Google
- * allows no wildcards — so this is derived rather than guessed, and the two
- * registered values are:
+ * IT FOLLOWS THE HOST YOU ARE ACTUALLY ON. It used to prefer `SITE_URL` and
+ * then Vercel's production hostname, falling back to the request only if
+ * neither was set — which meant that signing in from a second domain sent
+ * Google the FIRST domain's callback. The round trip then started on one host
+ * and finished on another, the `state` cookie was scoped to the host it
+ * started on, and the callback could not find it. What the reader saw was
+ * "that sign-in link had expired" on a domain they had not asked for. Nothing
+ * had expired and nothing was misconfigured in Google; the two halves of the
+ * handshake were simply on different hosts.
+ *
+ * Preferring the request's own origin makes every domain the app is served on
+ * work by itself, which is what having more than one domain means. Each origin
+ * still needs its callback registered — Google allows no wildcards:
  *   http://localhost:3000/auth/google/callback
  *   https://designally-knowledge-hub.vercel.app/auth/google/callback
+ *   https://hub.designally.co/auth/google/callback
+ *
+ * `SITE_URL` remains as the override for a host we would not otherwise trust —
+ * a proxy that rewrites Host, say — and as the answer when the request origin
+ * is not one of ours.
  */
 export function originFrom(req: Request): string {
+  const requested = new URL(req.url)
+  if (TRUSTED_HOST.test(requested.hostname)) return requested.origin
   if (process.env.SITE_URL) return process.env.SITE_URL.replace(/\/$/, '')
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
     return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   }
-  return new URL(req.url).origin
+  return requested.origin
 }
 
 export const redirectURI = (origin: string) => `${origin}/auth/google/callback`
