@@ -6,15 +6,14 @@ between local dev (SQLite + local media) and production (Postgres + R2).
 
 ## Option: use Supabase for everything
 
-Supabase is Postgres **and** its Storage is S3-compatible, so the Hub can run
-entirely on Supabase (same service the Content Generator uses) — no Neon, no R2.
+Supabase is Postgres, so the Hub's database can run on Supabase (the same
+service the Content Generator uses) instead of Neon. Media is on Cloudflare R2
+either way (§1).
 
 - **Database:** set `DATABASE_URI` to the Supabase **session pooler** connection
   (`…pooler.supabase.com:5432`). The transaction pooler (`:6543`) can't run the
   on-boot schema sync.
-- **Media:** always Cloudflare R2 now (§1). The `S3_*` vars point at Supabase
-  Storage's S3 endpoint only so files uploaded before the move keep loading —
-  read-only. See `.env.example`.
+- **Media:** always Cloudflare R2 (§1), whichever database you choose.
 - **⚠️ Isolate from the Content Generator.** The Hub and the generator must not
   share tables. Either use a **separate Supabase project** for the Hub (cleanest),
   or the **same project with a dedicated schema**: run
@@ -63,7 +62,6 @@ uploaded cover images would vanish. On Vercel the build refuses to run without R
 | `R2_SECRET_ACCESS_KEY` | R2 token secret |
 | `R2_BUCKET_NAME` | the bucket name |
 | `R2_PUBLIC_URL` | `https://img.designally.co` — https, no path, no trailing slash |
-| `S3_BUCKET`, `S3_ENDPOINT`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` | Supabase Storage's S3 credentials — **read-only**, for files uploaded before the move to R2. Keep them while any such file is in use. |
 
 The DB adapter switches on the `DATABASE_URI` scheme (`postgres://` → Postgres).
 Storage is R2 on Vercel and local disk anywhere else — see `src/lib/storage.ts`.
@@ -117,8 +115,7 @@ includes the "Publish to Knowledge Hub" feature.
 
 - [ ] Vercel **Root Directory = `cms`** (not the repo root).
 - [ ] `DATABASE_URI` uses the Neon **pooled** endpoint.
-- [ ] All five `R2_*` vars set (else the build fails), and the `S3_*` vars kept
-      for as long as media from before the move to R2 is in use.
+- [ ] All five `R2_*` vars set (else the build fails).
 - [ ] `PAYLOAD_SECRET` set and stable (changing it invalidates sessions/keys).
 - [ ] First admin user + Content-Generator API-key user created in prod.
 - [ ] `FRONTEND_URL` / `PAYLOAD_PUBLIC_SERVER_URL` = the real prod origin.

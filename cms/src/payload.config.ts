@@ -58,8 +58,7 @@ const db = isPostgres
 
 // ---------------------------------------------------------------------------
 // File storage — Cloudflare R2 under `hub/` on Vercel, required there; local
-// disk everywhere else, development only. Files from before the move are read
-// from Supabase Storage. All of it is in `lib/storage`.
+// disk everywhere else, development only. All of it is in `lib/storage`.
 //
 // It is Payload's own cloud-storage plugin with a small R2 adapter, rather than
 // the S3 adapter it replaces, because that adapter uploads with no way to set

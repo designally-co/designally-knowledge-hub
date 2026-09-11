@@ -1,6 +1,5 @@
 import {
   DeleteObjectCommand,
-  GetObjectCommand,
   ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
@@ -23,10 +22,9 @@ import type { CollectionConfig, FileData, PayloadRequest, Plugin, TypeWithID } f
  * Vercel is development, and R2 is not used there even when its variables are
  * set, so an upload made on a laptop cannot land in the production bucket.
  *
- * FILES FROM BEFORE THE MOVE stay in Supabase Storage and are read from it,
- * never copied and never deleted. A row says which store holds its file by its
- * `prefix`: `hub` is R2, empty is Supabase. The column arrived with the move,
- * so every older row is empty by construction.
+ * A row's `prefix` says its file is in R2 (`hub`). Every row has one: the files
+ * that lived in Supabase Storage were copied across on 11 September 2026, and
+ * Supabase is not read for media at all any more.
  */
 
 export const HUB_PREFIX = 'hub'
@@ -137,12 +135,10 @@ function r2Key(filename: string): string {
 }
 
 /**
- * The URL a row's file is fetched from.
- *
- * An R2 file is its public address, straight from Cloudflare — the Hub is not
- * in the path, which is the point. A file from before the move keeps the
- * address it has always had, which Payload answers by streaming it out of
- * Supabase (see `legacyMediaFile`).
+ * The URL a row's file is fetched from: its public address, straight from
+ * Cloudflare — the Hub is not in the path, which is the point. A row with no
+ * prefix has no file in R2 (none exist since the move); it gets Payload's own
+ * address, which answers 404.
  */
 function fileURL(config: R2Config, filename: string, prefix?: string | null): string {
   if (!prefix) return `/api/media/file/${encodeURIComponent(filename)}`
@@ -183,27 +179,24 @@ const r2Adapter =
           ContentDisposition: contentDisposition(file.mimeType, file.filename),
         }),
       )
-      /* A NEW FILE ON AN OLD ROW. Replacing the file on a row from before the
-         move puts the new one in R2 — but the row's prefix is still empty, and
-         its URL would go on pointing at Supabase, where the new file is not.
-         Returned metadata is written back to the row by the plugin; an empty
-         object writes nothing. */
+      /* A ROW WITHOUT A PREFIX — none exist now, but a row restored from an
+         old backup would be one. Its new file is in R2, and the row has to say
+         so or its URL goes on pointing at nothing. Returned metadata is written
+         back to the row by the plugin; an empty object writes nothing. */
       if (data?.prefix === HUB_PREFIX) return {}
       return { prefix: HUB_PREFIX } as unknown as Partial<FileData & TypeWithID>
     },
 
-    /* R2 files only. A row from before the move can still be deleted, but its
-       file stays in Supabase — nothing is deleted from Supabase — and with no
-       prefix there is no R2 key to go looking for. An empty prefix must never
-       be treated as the bucket root: that is where the Content Generator's
-       files are. */
+    /* R2 files only, and only under `hub/`. An empty prefix must never be
+       treated as the bucket root: that is where the Content Generator's files
+       are. */
     handleDelete: async ({ doc, filename }) => {
       if (doc?.prefix !== HUB_PREFIX) return
       await r2(config).send(new DeleteObjectCommand({ Bucket: config.bucket, Key: r2Key(filename) }))
     },
 
     // Unused: with `disablePayloadAccessControl` the plugin never mounts it, and
-    // the file route is answered by `legacyMediaFile`. Required by the type.
+    // the file route is answered by `mediaFileRedirect`. Required by the type.
     staticHandler: (_req, { params }) =>
       Response.redirect(fileURL(config, params.filename, HUB_PREFIX), 302),
   })
@@ -237,76 +230,24 @@ type UploadHandler = NonNullable<
   Extract<NonNullable<CollectionConfig['upload']>, object>['handlers']
 >[number]
 
-/** Supabase Storage's S3 endpoint, read-only, for files from before the move. */
-let supabaseClient: S3Client | null = null
-function supabase(): { client: S3Client; bucket: string } | null {
-  const { S3_BUCKET, S3_ENDPOINT, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, S3_REGION } = process.env
-  if (!S3_BUCKET || !S3_ENDPOINT || !S3_ACCESS_KEY_ID || !S3_SECRET_ACCESS_KEY) return null
-  supabaseClient ??= new S3Client({
-    endpoint: S3_ENDPOINT,
-    region: S3_REGION || 'auto',
-    credentials: { accessKeyId: S3_ACCESS_KEY_ID, secretAccessKey: S3_SECRET_ACCESS_KEY },
-    forcePathStyle: true,
-  })
-  return { client: supabaseClient, bucket: S3_BUCKET }
-}
-
 /**
- * `/api/media/file/<name>` — the address every row from before the move has.
- *
- * It streams the file out of Supabase exactly as the old S3 adapter did: the
- * same key (the filename, no prefix), the same range and ETag behaviour. A row
- * that is in R2 — someone holding an old-style link to a new file — is
- * redirected to its public address.
+ * `/api/media/file/<name>` — the address every file had before the move to R2,
+ * and still the one in sent newsletters, link previews and anywhere a cover
+ * was copied. It redirects to the file's R2 address; a name no row owns is a
+ * 404. Nothing is streamed through the Hub and Supabase is never consulted.
  *
  * In development it answers nothing, and Payload serves `cms/media/` from disk.
  */
-export const legacyMediaFile: UploadHandler = (req, { params }) => {
+export const mediaFileRedirect: UploadHandler = (req, { params }) => {
   if (mediaStorage.kind !== 'r2') return
-  return serveFromSupabase(req, params.filename, mediaStorage.config)
+  return redirectToR2(req, params.filename, mediaStorage.config)
 }
 
-async function serveFromSupabase(req: PayloadRequest, filename: string, config: R2Config): Promise<Response> {
+async function redirectToR2(req: PayloadRequest, filename: string, config: R2Config): Promise<Response> {
   const collection = req.payload.collections.media.config
-
   const prefix = await getFilePrefix({ collection, filename, req })
-  if (prefix) return Response.redirect(fileURL(config, filename, prefix), 302)
-
-  const store = supabase()
-  if (!store) {
-    return new Response('Files stored before the move to R2 cannot be read: the S3_* variables are not set.', {
-      status: 503,
-    })
-  }
-
-  const key = getFileKey({ collectionPrefix: '', docPrefix: '', filename }).fileKey
-  try {
-    const object = await store.client.send(
-      new GetObjectCommand({
-        Bucket: store.bucket,
-        Key: key,
-        Range: req.headers.get('range') ?? undefined,
-        IfNoneMatch: req.headers.get('if-none-match') ?? undefined,
-      }),
-    )
-    if (!object.Body) return new Response(null, { status: 404 })
-    const headers = new Headers({ 'Accept-Ranges': 'bytes' })
-    if (object.ContentType) headers.set('Content-Type', object.ContentType)
-    if (object.ContentLength != null) headers.set('Content-Length', String(object.ContentLength))
-    if (object.ETag) headers.set('ETag', object.ETag)
-    if (object.ContentRange) headers.set('Content-Range', object.ContentRange)
-    // As Payload does for every SVG it serves: displayable, never executable.
-    if (object.ContentType === 'image/svg+xml') headers.set('Content-Security-Policy', "script-src 'none'")
-    return new Response(object.Body.transformToWebStream(), {
-      headers,
-      status: object.ContentRange ? 206 : 200,
-    })
-  } catch (error) {
-    const status = (error as { $metadata?: { httpStatusCode?: number } })?.$metadata?.httpStatusCode
-    if (status === 304 || status === 404 || status === 416) return new Response(null, { status })
-    req.payload.logger.error({ err: error, key, msg: 'Reading a pre-R2 media file from Supabase failed' })
-    return new Response('Could not read the file from Supabase Storage.', { status: 502 })
-  }
+  if (!prefix) return new Response('Not found', { status: 404 })
+  return Response.redirect(fileURL(config, filename, prefix), 302)
 }
 
 /**

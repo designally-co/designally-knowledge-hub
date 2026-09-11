@@ -60,12 +60,6 @@ export async function GET() {
     // Media storage. Required on Vercel — a deployment without all five fails
     // its build, so on a running production deployment these are always true.
     ...Object.fromEntries(R2_VARS.map((name) => [name, present(name)])),
-    // Read-only now: only files uploaded before the move to R2 are read from
-    // Supabase through these. Absent, those older files stop loading.
-    S3_BUCKET: present('S3_BUCKET'),
-    S3_ENDPOINT: present('S3_ENDPOINT'),
-    S3_ACCESS_KEY_ID: present('S3_ACCESS_KEY_ID'),
-    S3_SECRET_ACCESS_KEY: present('S3_SECRET_ACCESS_KEY'),
     /* The newsletter. Absent means publishing an article tells nobody — which
        is a quiet failure by design (the send must never break a publish), and
        therefore one you can only find by asking. Which is the whole point of
@@ -125,7 +119,6 @@ export async function GET() {
             publicUrl: mediaStorage.config.publicUrl,
             prefix: `${HUB_PREFIX}/`,
             ...(await checkStorage()),
-            legacyReads: env.S3_BUCKET && env.S3_ENDPOINT ? 'supabase' : 'unavailable',
           }
         : { backend: 'local', ok: true, note: 'cms/media/ on disk — development only' },
     env,

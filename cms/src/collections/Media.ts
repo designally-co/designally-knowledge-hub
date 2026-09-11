@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { mediaFromUrlHandler } from '../endpoints/mediaFromUrl'
-import { legacyMediaFile } from '../lib/storage'
+import { mediaFileRedirect } from '../lib/storage'
 
 /**
  * Uploaded assets: cover images, preview images, tool logos, and downloadable
@@ -166,10 +166,10 @@ export const Media: CollectionConfig = {
   ],
   upload: {
     staticDir: 'media',
-    /* `/api/media/file/<name>` — the address of every file from before the move
-       to R2, streamed out of Supabase Storage. New files are served by
-       Cloudflare directly and never come through here. See lib/storage. */
-    handlers: [legacyMediaFile],
+    /* `/api/media/file/<name>` — the address files had before the move to R2,
+       still in sent newsletters and link previews. It redirects to R2; files
+       are served by Cloudflare and never come through here. See lib/storage. */
+    handlers: [mediaFileRedirect],
     mimeTypes: ['image/*', 'application/pdf', 'image/svg+xml'],
     /* Point the admin at the 400px derivative it already generates, rather
        than the original. Unset, Payload falls back to the full-size file for
