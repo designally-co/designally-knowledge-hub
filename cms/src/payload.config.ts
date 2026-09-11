@@ -114,6 +114,9 @@ export default buildConfig({
       // provider because the button it works on is Payload's own, rendered into
       // a portal from a tree with no component of ours in it. See UploadNew.
       providers: [
+        // The studio's three faces, self-hosted through next/font and set on
+        // the root as CSS variables. See AdminFonts.
+        '/components/admin/AdminFonts#AdminFonts',
         '/components/admin/UploadNew#UploadNew',
         // Accessible names for the controls Payload draws as bare glyphs — the
         // pager's arrows, a panel's ⋯, a select's × and ⌄. See A11yNames.
