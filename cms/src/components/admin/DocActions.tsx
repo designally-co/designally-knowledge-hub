@@ -764,7 +764,10 @@ export function MediaActions() {
     })
     return () => watch.disconnect()
   }, [filename, url])
-  const absolute = url && typeof window !== 'undefined' ? `${window.location.origin}${url}` : url
+  // Only a path needs the origin. A file in R2 already has its full address,
+  // and prefixing it would copy "https://hub…https://img…" to the clipboard.
+  const absolute =
+    url && url.startsWith('/') && typeof window !== 'undefined' ? `${window.location.origin}${url}` : url
   const { copied, copy } = useCopy(absolute)
 
   const rows: MenuRow[] = []

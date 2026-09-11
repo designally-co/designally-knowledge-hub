@@ -2,6 +2,8 @@ import { getPayload } from 'payload'
 
 import config from '@payload-config'
 
+import { HUB_PREFIX, mediaStorage, probeR2, R2_VARS } from '@/lib/storage'
+
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
@@ -32,6 +34,16 @@ export const runtime = 'nodejs'
 
 const present = (name: string) => Boolean(process.env[name])
 
+/* The R2 check is an outbound call from an unauthenticated route, so it is
+   cached for a minute rather than made on demand. */
+let storageCache: { at: number; result: Awaited<ReturnType<typeof probeR2>> } | null = null
+async function checkStorage() {
+  if (storageCache && Date.now() - storageCache.at < 60_000) return storageCache.result
+  const result = await probeR2()
+  storageCache = { at: Date.now(), result }
+  return result
+}
+
 export async function GET() {
   const startedAt = Date.now()
 
@@ -45,8 +57,11 @@ export async function GET() {
     // Thai auto-translation on publish. Absent means articles arrive English
     // only — a degraded publish, not a failed one.
     ANTHROPIC_API_KEY: present('ANTHROPIC_API_KEY'),
-    // Media storage. Absent in production means uploads go to the filesystem,
-    // which on Vercel does not survive the request.
+    // Media storage. Required on Vercel — a deployment without all five fails
+    // its build, so on a running production deployment these are always true.
+    ...Object.fromEntries(R2_VARS.map((name) => [name, present(name)])),
+    // Read-only now: only files uploaded before the move to R2 are read from
+    // Supabase through these. Absent, those older files stop loading.
     S3_BUCKET: present('S3_BUCKET'),
     S3_ENDPOINT: present('S3_ENDPOINT'),
     S3_ACCESS_KEY_ID: present('S3_ACCESS_KEY_ID'),
@@ -88,8 +103,9 @@ export async function GET() {
   const body = {
     newsletterTestMode,
     // `ok` covers what would stop the Hub working at all. A missing Anthropic
-    // key or S3 bucket degrades it rather than breaking it, so neither pulls
-    // this to false — they are visible in `env` for whoever is looking.
+    // key, or an R2 bucket refusing uploads, degrades it rather than breaking
+    // it — the site still reads — so neither pulls this to false. Both are
+    // visible below for whoever is looking.
     ok: database.ok && env.DATABASE_URI && env.PAYLOAD_SECRET,
     commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? 'local',
     branch: process.env.VERCEL_GIT_COMMIT_REF ?? null,
@@ -99,7 +115,19 @@ export async function GET() {
     // The two integrations that are easy to get wrong and silent when they are.
     googleSignIn: env.AUTH_GOOGLE_ID && env.AUTH_GOOGLE_SECRET,
     thaiTranslation: env.ANTHROPIC_API_KEY,
-    mediaStorage: env.S3_BUCKET && env.S3_ENDPOINT ? 's3' : 'filesystem',
+    mediaStorage:
+      mediaStorage.kind === 'r2'
+        ? {
+            backend: 'r2',
+            // Both public already: the bucket name is useless without the
+            // token, and the domain is in every file URL the Hub hands out.
+            bucket: mediaStorage.config.bucket,
+            publicUrl: mediaStorage.config.publicUrl,
+            prefix: `${HUB_PREFIX}/`,
+            ...(await checkStorage()),
+            legacyReads: env.S3_BUCKET && env.S3_ENDPOINT ? 'supabase' : 'unavailable',
+          }
+        : { backend: 'local', ok: true, note: 'cms/media/ on disk — development only' },
     env,
     missing,
     tookMs: Date.now() - startedAt,

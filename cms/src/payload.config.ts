@@ -1,6 +1,5 @@
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { s3Storage } from '@payloadcms/storage-s3'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
@@ -12,6 +11,7 @@ import { Media } from './collections/Media'
 import { Articles } from './collections/Articles'
 import { Resources } from './collections/Resources'
 import { Subscribers } from './collections/Subscribers'
+import { mediaStoragePlugin } from './lib/storage'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -57,49 +57,16 @@ const db = isPostgres
   : sqliteAdapter({ client: { url: databaseURI } })
 
 // ---------------------------------------------------------------------------
-// File storage — env-switchable.
-//   • Local dev:   no S3_* vars set → uploads saved to cms/media/ on disk.
-//   • Production:  set S3_* vars    → uploads go to Cloudflare R2 (or any
-//                  S3-compatible bucket). Object storage is effectively
-//                  unlimited, so the media library scales without change.
-// R2 needs a virtual/path-style endpoint and region "auto".
+// File storage — Cloudflare R2 under `hub/` on Vercel, required there; local
+// disk everywhere else, development only. Files from before the move are read
+// from Supabase Storage. All of it is in `lib/storage`.
+//
+// It is Payload's own cloud-storage plugin with a small R2 adapter, rather than
+// the S3 adapter it replaces, because that adapter uploads with no way to set
+// Content-Disposition — so a resource's PDF would open in a tab instead of
+// downloading. It also injects no admin component, so the import map no longer
+// depends on which environment generated it.
 // ---------------------------------------------------------------------------
-const s3Configured = Boolean(
-  process.env.S3_BUCKET &&
-    process.env.S3_ENDPOINT &&
-    process.env.S3_ACCESS_KEY_ID &&
-    process.env.S3_SECRET_ACCESS_KEY,
-)
-
-// NOTE: enabling s3Storage injects the `S3ClientUploadHandler` client component
-// into the admin, which must exist in the committed `admin/importMap.js`. Because
-// S3 is only configured in production (env-gated above), a map generated with S3
-// OFF would omit it and the admin would render blank in prod. So: regenerate the
-// import map with the S3_* vars set (`S3_BUCKET=… … payload generate:importmap`)
-// and COMMIT the result. The build intentionally does NOT regenerate the map
-// (letting Vercel regenerate it risks dropping entries during its build) — the
-// committed file is the single source of truth.
-// The plugin is always in the config and switches itself off via `enabled`,
-// rather than being omitted when S3 is unconfigured. That keeps the generated
-// import map identical in every environment, which is the whole point: a map
-// generated with the plugin absent omits its client component, and the
-// production admin then renders blank with no error to go on.
-const storagePlugins = [
-  s3Storage({
-    enabled: s3Configured,
-    collections: { media: true },
-    bucket: process.env.S3_BUCKET || '',
-    config: {
-      endpoint: process.env.S3_ENDPOINT || '',
-      region: process.env.S3_REGION || 'auto',
-      credentials: {
-        accessKeyId: process.env.S3_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || '',
-      },
-      forcePathStyle: true,
-    },
-  }),
-]
 
 // Origins allowed to call the REST/GraphQL API from the browser AND to be
 // trusted for cookie auth (CSRF). This MUST include the admin's own production
@@ -226,5 +193,5 @@ export default buildConfig({
   sharp,
   cors: allowedOrigins,
   csrf: allowedOrigins,
-  plugins: [...storagePlugins],
+  plugins: [mediaStoragePlugin()],
 })

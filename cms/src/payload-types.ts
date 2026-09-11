@@ -223,7 +223,7 @@ export interface Article {
   status: 'draft' | 'published';
   publishedDate?: string | null;
   /**
-   * When subscribers were told. Clear it and save to send again.
+   * When subscribers were told. To announce it again: set the article back to Draft, clear this, then publish.
    */
   newsletterSentAt?: string | null;
   /**
@@ -249,6 +249,7 @@ export interface Media {
    * Optional.
    */
   credit?: string | null;
+  prefix?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -343,7 +344,7 @@ export interface Resource {
   status: 'draft' | 'published';
   publishedDate?: string | null;
   /**
-   * When subscribers were told. Clear it and save to send again.
+   * When subscribers were told. To announce it again: set the article back to Draft, clear this, then publish.
    */
   newsletterSentAt?: string | null;
   /**
@@ -569,6 +570,7 @@ export interface ResourcesSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   credit?: T;
+  prefix?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
