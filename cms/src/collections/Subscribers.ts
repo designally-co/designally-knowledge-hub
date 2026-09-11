@@ -24,7 +24,9 @@ export const Subscribers: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'locale', 'source', 'createdAt'],
-    group: 'Audience',
+    // No `group`. It was "Audience", which put a second heading in the nav over
+    // a group of one; the rail is a single list, as Content Studio's is, and
+    // its order is the `collections` array in payload.config.
     description: 'People who signed up for the newsletter. Export before a send.',
   },
   access: {

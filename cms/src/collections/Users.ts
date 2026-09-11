@@ -32,8 +32,8 @@ export const Users: CollectionConfig = {
     // /api/articles/:id/translate-to-thai, and the public site still reads
     // through Payload as before. Only the admin's viewer for it is gone.
     hideAPIURL: true,
-    // See the note on Media: ungrouped collections sort above grouped ones, so
-    // "Account" is what keeps Users last rather than first.
+    // Ungrouped, like every collection: the nav is one list, ordered by the
+    // `collections` array in payload.config, which puts Users last.
   },
   // API-key auth so the Content Generator can post articles. Enable the key
   // per-user in the admin, then send:
@@ -110,17 +110,6 @@ export const Users: CollectionConfig = {
         disableListColumn: true,
         position: 'sidebar',
         components: { Field: '/components/admin/DocActions#DocMeta' },
-      },
-    },
-    {
-      // Sign out, on the account screen rather than in the nav. It renders only
-      // on your OWN user document — see SignOut.
-      name: 'signOut',
-      type: 'ui',
-      admin: {
-        position: 'sidebar',
-        disableListColumn: true,
-        components: { Field: '/components/admin/SignOut#SignOut' },
       },
     },
   ],

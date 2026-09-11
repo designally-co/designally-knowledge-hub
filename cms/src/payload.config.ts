@@ -120,20 +120,15 @@ export default buildConfig({
         // Accessible names for the controls Payload draws as bare glyphs — the
         // pager's arrows, a panel's ⋯, a select's × and ⌄. See A11yNames.
         '/components/admin/A11yNames#A11yNames',
-        // What a drawer is expected to do on a phone — tap the page to dismiss,
-        // Escape, focus in and back out, and the page held still underneath.
-        // See NavDrawer.
-        '/components/admin/NavDrawer#NavDrawer',
         // Press and hold a row to choose several of them, on a phone where the
         // checkbox column is not worth its width. See RowSelect.
         '/components/admin/RowSelect#RowSelect',
       ],
-      // The mark and "Knowledge Hub" at the head of the nav. It replaces
-      // Payload's bare 34px disc, which had no accessible name. See NavBrand.
-      beforeNavLinks: ['/components/admin/NavBrand#NavBrand'],
-      // Language and account, at the foot of the nav. Both came down from the
-      // top bar, which is now only the breadcrumb. See NavFooter.
-      afterNavLinks: ['/components/admin/NavFooter#NavFooter'],
+      // The whole navigation: Content Studio's side nav — the rail, its fold,
+      // the phone drawer and its motion, the account menu — with the Hub's
+      // destinations. It replaces Payload's nav rather than restyling it. See
+      // SideNav.
+      Nav: '/components/admin/SideNav#SideNav',
       // The whole sign-in screen — the platform's door, ported. `beforeLogin` is
       // the only slot Payload offers on that page, so the composition arrives
       // inside its card and SignIn.css takes the card apart around it. The

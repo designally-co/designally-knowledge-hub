@@ -1,0 +1,378 @@
+/*
+ * Content Studio's side nav, in the Hub — the rail, the fold and the drawer, to
+ * the studio's numbers. Its classes are Tailwind there; this admin has no
+ * Tailwind (it would reset Payload's own styles), so they are written out here
+ * value for value, against the tokens this admin already shares with it.
+ */
+
+/* ---- the shell's grid follows the rail ---------------------------------- */
+
+/* THE COLUMN IS THE RAIL'S OWN WIDTH. Payload sizes its first track from
+   `--nav-width` and its own open/closed classes; the rail sizes itself — 240,
+   or 80 folded, animated — so the track is `auto` and simply follows. Below
+   1025 the rail is not drawn and the track is 0.
+
+   Heavier than it looks on purpose: Payload's `--nav-open` and `--nav-hydrated`
+   pairs are two classes deep, and custom.scss carries rules for the nav this
+   replaced. This has to win against both without depending on load order. */
+:root .template-default.template-default {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+:root .template-default.template-default > .template-default__wrap {
+  grid-column: 2;
+}
+
+/* ---- the rail ------------------------------------------------------------ */
+
+.da-rail {
+  position: relative;
+  display: none;
+  align-self: stretch;
+  inline-size: 240px;
+  min-block-size: 100dvh;
+  border-inline-end: 1px solid var(--da-hairline-strong);
+  background-color: var(--da-chrome);
+}
+
+@media (min-width: 1025px) {
+  .da-rail {
+    display: block;
+  }
+}
+
+/* THE ONE PIECE OF STRUCTURAL MOTION ON A DESK: the rail arriving at a
+   different size, over the time a surface takes to arrive. Switched on after
+   the first frame (SideNav), so a page that loads folded does not fold. */
+body.da-rail-ready .da-rail {
+  transition: inline-size 300ms var(--da-ease);
+}
+
+.da-rail__inner {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  block-size: 100dvh;
+  overflow: hidden;
+}
+
+/* THE MARK ON THE TABS' OWN EDGE. The list pads by 16 and each row pads its
+   icon by another 12, so every destination icon starts at 28 — and so does the
+   mark. One vertical line runs down the panel. */
+/* NO GAP BEFORE THE COLLAPSE BUTTON. Its 40px disc already holds its 16px glyph
+   twelve pixels in, and the studio's own 12 on top of that cut "Knowledge Hub"
+   — ten pixels longer than "Article Studio" — to "Knowledge…": measured, 113px
+   of name in 103 of room. */
+.da-rail__brand {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0;
+  /* The band's height, so the rule below meets the band's own edge. */
+  block-size: var(--app-header-height, 64px);
+  padding-inline: 28px 12px;
+}
+
+.da-rail__collapse,
+.da-rail__expand,
+.da-drawer__close {
+  place-items: center;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background-color 120ms var(--da-ease),
+    color 120ms var(--da-ease);
+}
+
+.da-rail__collapse {
+  display: grid;
+  inline-size: 40px;
+  block-size: 40px;
+  margin-inline-start: auto;
+  border-radius: 999px;
+  background: none;
+  color: var(--da-ink-2);
+}
+
+.da-rail__expand {
+  display: none;
+  inline-size: 48px;
+  block-size: 48px;
+  border-radius: 12px;
+  background: none;
+}
+
+@media (hover: hover) {
+  .da-rail__collapse:hover {
+    background-color: var(--da-chrome-active);
+    color: var(--da-ink);
+  }
+
+  .da-rail__expand:hover {
+    background-color: var(--da-chrome-hover);
+  }
+}
+
+.da-rail__rule {
+  flex: 0 0 auto;
+  block-size: 1px;
+  margin-inline: 16px;
+  background-color: var(--da-hairline);
+}
+
+/* On the floor of the rail: the links above take the slack. */
+.da-rail__foot {
+  flex: 0 0 auto;
+  padding: 12px 16px 16px;
+  border-block-start: 1px solid var(--da-hairline);
+}
+
+/* ---- the lockup and the mark -------------------------------------------- */
+
+.da-lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-inline-size: 0;
+}
+
+.da-lockup__text {
+  min-inline-size: 0;
+}
+
+.da-lockup__eyebrow,
+.da-lockup__name {
+  margin: 0;
+}
+
+.da-lockup__eyebrow {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--da-ink-3);
+}
+
+.da-lockup__name {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: -0.025em;
+  color: var(--da-ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The studio's FlatMark at 32: the file is 290x256, the D clips to 73.79% and
+   the stop starts there. Both layers mask the same image, so they are
+   registered by construction and cannot drift. Its two colours are the
+   studio's: charcoal for the D, and the orange that is legal as a mark on a
+   light ground for the stop. */
+.da-mark {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  inline-size: 32px;
+  aspect-ratio: 290 / 256;
+}
+
+.da-mark i {
+  position: absolute;
+  inset: 0;
+  mask: url('/designally-mark.png') no-repeat center / contain;
+  -webkit-mask: url('/designally-mark.png') no-repeat center / contain;
+}
+
+.da-mark__d {
+  background-color: #1b1d23;
+  clip-path: inset(0 26.21% 0 0);
+}
+
+.da-mark__dot {
+  background-color: #c73f29;
+  clip-path: inset(0 0 0 73.79%);
+}
+
+/* ---- the destinations ---------------------------------------------------- */
+
+.da-navlinks {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+/* ONE DIFFERENCE, NOT FOUR. The current row changes its surface and nothing
+   else — same ink, same weight, same icon as every row beside it — on the
+   grey two steps down from the rail. Hover is the step between. The label is
+   the heading face at 500, the same voice as the names it points at. */
+.da-navlink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-block-size: 48px;
+  padding: 0 12px;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--da-ink);
+  text-decoration: none;
+  transition: background-color 120ms var(--da-ease);
+}
+
+.da-navlink svg {
+  flex: 0 0 auto;
+  color: var(--da-ink);
+}
+
+@media (hover: hover) {
+  .da-navlink:hover {
+    background-color: var(--da-chrome-hover);
+    color: var(--da-ink);
+    text-decoration: none;
+  }
+}
+
+.da-navlink[aria-current='page'],
+.da-navlink[aria-current='page']:hover {
+  background-color: var(--da-chrome-active);
+}
+
+.da-rail__collapse:focus-visible,
+.da-rail__expand:focus-visible,
+.da-drawer__close:focus-visible,
+.da-navlink:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--da-orange);
+}
+
+/* ---- folded -------------------------------------------------------------- */
+
+/* A desk preference. Below 1025 the rail is not drawn at all, and the drawer
+   ignores the fold. Collapsed rows are square and centred: a full-width pill
+   behind a lone centred icon reads as a mis-sized target, not a state. */
+@media (min-width: 1025px) {
+  body.da-nav-collapsed .da-rail {
+    inline-size: 80px;
+  }
+
+  body.da-nav-collapsed .da-rail__brand {
+    justify-content: center;
+    gap: 0;
+    padding-inline: 0;
+  }
+
+  body.da-nav-collapsed .da-rail__brand .da-lockup,
+  body.da-nav-collapsed .da-rail__collapse {
+    display: none;
+  }
+
+  body.da-nav-collapsed .da-rail__expand {
+    display: grid;
+  }
+
+  body.da-nav-collapsed .da-rail__rule {
+    margin-inline: 12px;
+  }
+
+  body.da-nav-collapsed .da-rail .da-navlinks,
+  body.da-nav-collapsed .da-rail__foot {
+    padding-inline: 8px;
+  }
+
+  body.da-nav-collapsed .da-rail .da-navlink,
+  body.da-nav-collapsed .da-rail .da-account__trigger {
+    justify-content: center;
+    gap: 0;
+    inline-size: 48px;
+    margin-inline: auto;
+    padding: 0;
+  }
+
+  /* Hidden to the eye only: the label is still the link's accessible name. */
+  body.da-nav-collapsed .da-rail .da-navlink__label {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  body.da-nav-collapsed .da-rail .da-account__trigger-email {
+    display: none;
+  }
+}
+
+/* ---- the drawer ---------------------------------------------------------- */
+
+/* THE WHOLE SCREEN, AND NO SCRIM BEHIND IT. Nothing behind it is a preview of
+   the page you came from, so full bleed says it plainly: this is navigation,
+   you are in it, and the way out is the close button. On the page's own
+   ground, not the rail's — at full screen there is no work beside it. */
+.da-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 47;
+}
+
+@media (min-width: 1025px) {
+  .da-drawer {
+    display: none;
+  }
+}
+
+.da-drawer__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  block-size: 100%;
+  background-color: var(--da-warm-white);
+}
+
+.da-drawer__head {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  block-size: 64px;
+  padding-inline: max(28px, env(safe-area-inset-left)) 16px;
+  border-block-end: 1px solid var(--da-hairline);
+}
+
+/* The same disc as every other close in the studio. */
+.da-drawer__close {
+  display: grid;
+  inline-size: 40px;
+  block-size: 40px;
+  border-radius: 999px;
+  background-color: var(--da-chrome);
+  color: var(--da-ink-2);
+}
+
+@media (hover: hover) {
+  .da-drawer__close:hover {
+    background-color: var(--da-chrome-active);
+    color: var(--da-ink);
+  }
+}
+
+.da-drawer__foot {
+  flex: 0 0 auto;
+  padding: 12px 16px max(16px, env(safe-area-inset-bottom));
+  border-block-start: 1px solid var(--da-hairline);
+}

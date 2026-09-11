@@ -44,6 +44,10 @@ const REQUIRED = [
     key: '/components/admin/DashboardRedirect#DashboardRedirect',
     why: 'it replaces the admin landing view; missing, the dashboard is blank',
   },
+  {
+    key: '/components/admin/SideNav#SideNav',
+    why: "it is the admin's whole navigation; missing, Payload falls back to a nav this theme no longer styles",
+  },
 ]
 
 // TagSelector was required here until the tag field became a plain select, and

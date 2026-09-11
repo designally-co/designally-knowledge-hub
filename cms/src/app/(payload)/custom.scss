@@ -121,14 +121,14 @@
      IT IS A FITTED WIDTH, so it follows what is in the nav: a longer address in
      that row than `website.team@designally.co` would be truncated rather than
      widening the column. That is the trade of asking for no slack. */
-  --nav-width: 243px;
+  --nav-width: 240px;
 
   /* 78 = 1.25rem + 41 + 1.25rem: the inset, the widest collapsed control (the
      mark's box) and the same inset again. The number is derived from what the
      rail holds rather than chosen, which is why it is not a round one — at 84
      the content sat 15px from the left and 28 from the right, and read as
      pushed against the near edge. */
-  --da-rail: 78px;
+  --da-rail: 80px;
 
   /* =========================================================================
      Three roles of small type, and nothing else
@@ -295,7 +295,6 @@ h3,
 h4,
 h5,
 .step-nav,
-.nav__label,
 .field-label,
 .btn,
 .doc-header__title {
@@ -651,278 +650,12 @@ a:focus-visible,
   letter-spacing: 0;
 }
 
-/* The sidebar keeps the page's own parchment and is separated by the Edge, not
-   by a shadow or a second tone. The dark Field exists in this system, but it is
-   reserved for a moment of drama and a CMS sidebar is not one. */
-.nav {
-  /* The studio's rail: a step down from the page, bounded by the strong line. */
-  background-color: var(--da-chrome);
-  border-right: 1px solid var(--da-hairline-strong);
-}
-
-.nav__link {
-  font-family: var(--font-display);
-  /* 400, and the step to the active link's 600 is wider for it. This asked for
-     500, which the system does not have — its ladder is 300/400/600/700 and the
-     token block above says so. The reasoning was right and the value was not
-     available. */
-    /* 500 in full ink, the studio's rail label; 12px corners, its row. */
-  font-weight: 500;
-  letter-spacing: 0;
-  color: var(--da-ink);
-  border-radius: 12px;
-  transition:
-    background-color var(--da-dur-feedback) var(--da-ease),
-    color var(--da-dur-feedback) var(--da-ease);
-}
-@media (hover: hover) {
-  .nav__link:hover {
-    background-color: var(--da-chrome-hover);
-    color: var(--da-ink);
-  }
-}
-
-/* -----------------------------------------------------------------------------
-   Current state — "you are here"
-
-   Payload DOES ship one, contrary to what this file said before. Reading the
-   built nav (@payloadcms/next/dist/elements/Nav/index.client.js) settles it:
-   when a link matches the path it renders an extra `.nav__link-indicator` div,
-   and on an exact match it drops the anchor entirely for a plain `div.nav__link`
-   — which is also why a `div` here must be styled as though it were a link.
-   Payload's own stylesheet then marks it with a weight step and a 2px bar:
-
-     .nav__link:has(.nav__link-indicator) { font-weight: 600 }
-     .nav__link-indicator { width: 2px; height: 16px; background: var(--theme-text) }
-
-   So the state was never missing — this theme erased it, by setting every link
-   to 600 and leaving the bar at text colour where it reads as a stray mark. The
-   fix is CSS, not a custom Nav component: no importMap entry, none of the
-   blank-admin risk documented in payload.config.ts.
-
-   `:has()` is how Payload itself selects this, so it is the same support floor,
-   and both branches (anchor and div) carry the indicator. */
-/* THE SAME STATE ON BOTH BRANCHES. This selector is what marks the active item
-   on a DOCUMENT page, where Payload keeps the anchor and adds the indicator to
-   it; on a LIST page it drops the anchor for a `div` and `.nav div.nav__link`
-   below carries the state instead. The two were styled differently — a white
-   surface with a hairline ring here, a grey fill there — so the sidebar changed
-   its appearance when you opened an article. It is one treatment now: a grey
-   fill, no ring, no colour on the label, per the same decision the list branch
-   records below. */
-.nav .nav__link:has(.nav__link-indicator) {
-  font-weight: 500;
-  /* `.nav .nav__link` — one class heavier than a bare `.nav__link:has()` — sets
-     every label to ink-3, so without the `.nav` here the active item on a
-     document page kept the resting colour while the same item on a list page
-     took ink. Measured: rgb(83,87,94) against rgb(27,29,35). */
-    color: var(--da-ink);
-  /* The studio marks the current row with surface alone: the deepest of the
-     rail's three greys, no bar, no weight step. */
-  background-color: var(--da-chrome-active);
-  box-shadow: none;
-}
-
-/* The bar is the accent's job: one small mark of CI orange, which is the only
-   place colour is load-bearing in this sidebar. Sized to the cap height of the
-   label rather than Payload's default 16px so it reads as aligned.
-
-   INSIDE the pill, not outside it. Payload's own -20px assumes the link sits
-   in a container with at least that much padding to hang the bar in; this
-   sidebar has 23px of padding and the pill already reaches 10px into it, so a
-   negative offset put the bar at x = -1 — off the edge of the sidebar
-   entirely, measured, not guessed. Positive values are measured from the
-   pill's own left edge, which is where it belongs anyway: the bar marks the
-   surface, it does not float beside it. */
-.nav__link-indicator {
-  display: none;
-  width: 3px;
-  height: 18px;
-  border-radius: 2px;
-  /* `--da-orange`, not `--da-orange-mark`. The system reversed `--primary` to
-     Designally Orange on 19 August 2026 and `--primary-mark` followed it — the
-     fills, the dots and the marks are all `#ef6148` now, and `#c73f29` is what
-     you reach for when a thing has to be READ rather than recognised. A 3px bar
-     is recognised. Running the older value here put two oranges in one product,
-     which is the exact defect that reversal existed to remove. */
-  background: var(--da-orange);
-  inset-inline-start: 3px;
-}
-
 /* =============================================================================
-   The shell — rail, header, and the controls at their edges
+   The header band
 
-   The nav's colours and current-state were settled above; what was left was
-   DENSITY and DEFINITION. Rows were 28px in a 275px rail, group labels sat hard
-   against the links beneath them, the header was a transparent 65px strip with
-   nothing to separate it from the document scrolling underneath, and the two
-   account controls — the gravatar in the header and a bare 23px log-out glyph
-   at the rail's foot — were the same concern parked in opposite corners with no
-   label between them.
-
-   Spacing here is on the system's scale. Payload's own was 64.6px / 23.1px /
-   46.2px, which is 4.2rem / 1.5rem / 3rem of nothing in particular.
+   The rail beside it is Content Studio's (SideNav, with its own stylesheet);
+   this is the band across the top of the page and the controls at its edges.
    ========================================================================== */
-
-/* The rail's own header — the Designally mark — is `--app-header-height` tall
-   and sits OVER this column, so the first destination has to start below it.
-   Payload's 64.6px was that height written as a number; the variable says why,
-   and follows it if the header ever changes. Dropping it to a flat 1.5rem put
-   the first row 42px underneath the mark. */
-.nav__scroll {
-  padding-block-start: calc(var(--app-header-height) + 0.5rem);
-  padding-block-end: 1rem;
-  /* 1.25rem, and the SAME in both states: this is what centres the column in
-     the collapsed rail, and changing it on collapse is what would move the
-     icons. */
-  padding-inline: 1.25rem;
-}
-
-/* Rows at 44px, like every other control in this admin. In a rail four
-   destinations long the height costs nothing and buys a target you cannot miss
-   — and the extra room is what lets the active pill read as a surface rather
-   than as a highlight drawn round some text. */
-.nav__link {
-  display: flex;
-  align-items: center;
-  min-block-size: 48px;
-  padding-inline: 0.75rem;
-  padding-block: 0;
-}
-
-/* The active pill's inset has to follow the padding above, or the bar and the
-   label drift apart from the surface they belong to. */
-.nav__link:has(.nav__link-indicator) {
-  padding-inline-start: 0.75rem;
-  margin-inline-start: 0;
-}
-
-.nav__link-indicator {
-  inset-inline-start: 5px;
-}
-
-/* ---- group labels -------------------------------------------------------- */
-
-/* NO HEADING OVER A LIST THAT IS THE WHOLE LIST.
- *
- * There were three groups — Content, Library, Account — and two of them held a
- * single item: a label and a fold-away chevron costing a row each to say
- * "Media" and "Users" a second time. Three headings and three chevrons for four
- * destinations is more chrome than content.
- *
- * The groups were never editorial in the first place. Media's own comment gave
- * the game away: "Grouped so the sidebar can be ordered at all" — Payload sorts
- * ungrouped collections above grouped ones, so grouping was the lever for
- * pushing Media and Users below the two things opened daily. With NOTHING
- * grouped there is nothing to sort around, and the order falls out of
- * `collections: [Articles, Resources, Media, Users]` in payload.config, which
- * was already the wanted order. The hack solved a problem it created.
- *
- * That leaves Payload's own "Collections" heading over all four, which is
- * developer vocabulary for "the nav" and labels nothing the four rows do not.
- *
- * CONDITIONAL, so it restores itself: this hides the heading only while there is
- * exactly one group — `:has(.nav-group + .nav-group)` is false until two groups
- * sit next to each other. Add a second group and every label comes back,
- * without anyone remembering this rule exists. */
-.nav__wrap:not(:has(.nav-group + .nav-group)) .nav-group__toggle {
-  display: none;
-}
-
-/* More space above a heading than below it: the label belongs to the links
-   under it, not to the group it follows. Payload gives it neither. */
-.nav-group + .nav-group {
-  margin-block-start: 1.5rem;
-}
-
-.nav-group__toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  inline-size: 100%;
-  min-block-size: 32px;
-  padding-inline: 0.75rem;
-  margin-block-end: 0.125rem;
-}
-
-/* The chevron is a control, so it stays visible and operable — but it is the
-   quietest thing in the rail, because folding a group of two is a rare thing to
-   want and should not compete with the destinations. */
-.nav-group__indicator .stroke {
-  stroke: var(--da-ink-4);
-}
-
-/* ---- the foot of the rail ------------------------------------------------ */
-
-/* Log out was a 23px glyph with no word next to it — the one control in the
-   admin that ends a session, drawn as a mystery. It becomes a row like the
-   links above it, separated by the rail's one divider because leaving is a
-   different kind of thing from going somewhere.
-
-   The label is drawn in CSS rather than added to the DOM: the anchor already
-   carries `aria-label="Log out"`, so this is the visible half of a name that
-   was always there, and a screen reader is not read it twice. */
-/* Stretched, both ways. Payload runs this as a flex COLUMN and it was sizing to
-   its contents — 103px in a 244px rail — so the divider above it stopped a third
-   of the way across and the row beneath it could not be full width no matter
-   what the row itself asked for. */
-.nav__controls {
-  display: flex;
-  flex-direction: column;
-  align-self: stretch;
-  align-items: stretch;
-  gap: 0.625rem;
-  min-block-size: 44px;
-  /* `auto`, not a length. This is the last child of a flex column and Payload
-     pins it to the foot of the rail with `margin-top: auto`; a fixed value
-     overrides that and drops it directly under the last nav group, where it
-     competes with the destinations instead of sitting out of the way. The
-     breathing room it needed is padding, which does not fight the layout. */
-  margin-block-start: auto;
-  padding-block-start: 1rem;
-  padding-inline: 0.75rem;
-  border-block-start: 1px solid var(--da-divider);
-}
-
-.nav__log-out {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  /* `flex: 1` because the parent is a flex row: a width alone is a suggestion a
-     shrinkable flex item ignores, and it did — the row measured 103px against
-     the 244px links above it, so its hover surface stopped halfway across the
-     rail. */
-  flex: 1 1 auto;
-  min-block-size: 44px;
-  margin-inline: -0.75rem;
-  padding-inline: 0.75rem;
-    border-radius: 12px;
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0;
-  color: var(--da-ink-2);
-  transition:
-    background-color var(--da-dur-feedback) var(--da-ease),
-    color var(--da-dur-feedback) var(--da-ease);
-}
-
-.nav__log-out::after {
-  content: 'Log out';
-}
-
-.nav__log-out .icon {
-  inline-size: 20px;
-  block-size: 20px;
-  flex: 0 0 auto;
-}
-
-@media (hover: hover) {
-    .nav__log-out:hover {
-    background-color: var(--da-chrome-hover);
-    color: var(--da-ink);
-  }
-}
 
 /* ---- the header ---------------------------------------------------------- */
 
@@ -967,64 +700,17 @@ a:focus-visible,
   }
 }
 
-/* A current link is not a link — Payload renders it as a div, so it must not
-   invite a click it cannot honour. */
-div.nav__link {
-  cursor: default;
-}
-
-@media (hover: hover) {
-    div.nav__link:hover {
-    background-color: var(--da-chrome-active);
-    text-decoration: none;
-  }
-}
-
 /* =============================================================================
    The mark
 
-   Payload draws its own logo on the login screen and its icon in the sidebar.
-   Both are replaced here with the Designally mark — the D. in its disc, which
-   is the approved lockup. It is deliberately NOT the word "Designally" set in
-   caps: the platform retired that wordmark on 19 August 2026 precisely because
-   it was not an approved lockup, and reintroducing it in a second product is
-   the drift that decision existed to stop.
-
-   Done in CSS rather than through `admin.components.graphics`, on purpose.
-   A custom component has to appear in the committed `admin/importMap.js`, and
-   this repo's payload.config.ts documents what happens when that file is
-   regenerated in an environment where S3 is unconfigured: the production admin
-   renders blank with no error to go on. A background-image costs nothing and
-   cannot take the admin down.
+   Payload's own logo and icon are used nowhere in this admin: the nav carries
+   Content Studio's lockup (SideNav) and the login screen is a composition of
+   its own (SignIn.css). They are hidden wherever Payload still renders them.
    ========================================================================== */
 
-/* Payload draws its mark in three places: the login card, the sidebar header,
-   and the breadcrumb's home link. Only the sidebar's is drawn here now — the
-   breadcrumb's is removed (see the rule further down) and the login screen is
-   a composition of its own, with its own mark on the Cut (SignIn.css). */
 svg.graphic-logo,
-svg.graphic-icon,
-.nav__header-content svg {
+svg.graphic-icon {
   display: none;
-}
-
-.nav__header-content {
-  /* The disc is the mark's own container — 56% of the diameter, which is the
-     geometry the platform measured rather than a second set of numbers. */
-  display: inline-grid;
-  place-items: center;
-  background-color: var(--da-orange);
-  background-image: url('/designally-mark.png');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 56%;
-  border-radius: 9999px;
-  flex: none;
-}
-
-.nav__header-content {
-  width: 34px;
-  height: 34px;
 }
 
 /* THE BREADCRUMB'S HOME LINK IS GONE, 27 August 2026.
@@ -1213,13 +899,27 @@ a {
   }
 }
 
+/* A LINK DRAWN AS A BUTTON IS A BUTTON. "Create New" is an `<a>` inside the
+   list, so the two rules above reached it: its label went ink on the orange —
+   measured rgb(26,26,26) with `--color` set to white — and it gained an
+   underline under the pointer. It takes the button's own colours back. */
+.collection-list a.btn {
+  color: var(--color);
+}
+
+@media (hover: hover) {
+  .collection-list a.btn:hover {
+    color: var(--hover-color, var(--color));
+    text-decoration: none;
+  }
+}
+
 /* =============================================================================
    Motion
    ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
   .btn,
-  .nav__link,
   input,
   textarea,
   .rs__control {
@@ -1267,20 +967,8 @@ html {
 
    Secondary text in this system is `--ink-3`, which puts both at 6.5:1.
    ========================================================================== */
-.nav-group__label,
 .localizer-button__label {
   color: var(--da-ink-3);
-}
-
-/* The sidebar's group headings are the only thing that names a section, so
-   they take the label treatment the rest of the system uses for that job
-   rather than sitting as quiet body text. */
-.nav-group__label {
-  font-family: var(--font-display);
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 /* Payload's brand block on the login screen is hidden now — the door draws its
@@ -4534,24 +4222,133 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
 }
 /* THE PAGE'S ONE ACTION, AS THE STUDIO DRAWS IT. "Create New" was Payload's
    grey chip beside the heading; the studio puts a page's forward action in the
-   accent, eight pixels, on the heading's line — "New routine" on Routines. The
-   title row spreads so the button sits at the row's far end, with the deck
-   under the title where it was. */
-.collection-list .list-header__title-and-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
+   accent — "New routine" on Routines: 44 tall, twenty pixels either side, an
+   eight-pixel corner, the label semibold and white.
+
+   A FLEX BOX, BECAUSE A BLOCK WOULD NOT CENTRE IT. Payload draws the button
+   `display: block` at its own small size, so stretching it to 44 left the
+   25px label box at the top: measured, the words sat 3px under the button's
+   top edge and 16 over its bottom. */
 .list-create-new-doc__create-new-button {
   --bg-color: var(--da-orange);
   --color: #ffffff;
   --hover-bg: var(--da-orange-deep);
   --hover-color: #ffffff;
-  min-block-size: 40px;
-  padding-inline: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 44px;
+  margin: 0;
+  /* Pixels, as the studio's are. This admin's rem is 15px, so its 1.25rem and
+     0.875rem come out a pixel or two short of the button being copied. */
+  padding-inline: 20px;
   border-radius: var(--style-radius-s);
+  font-size: 14px;
   font-weight: 600;
+}
+
+/*
+ * THE HEADING'S LINE, AS THE STUDIO'S PAGE TEMPLATE LAYS IT OUT.
+ *
+ * Content Studio's `PageHeading` is one row: the title with its sentence under
+ * it on the left, and the page's controls on the right — on the title's own
+ * line, not in a band beneath it, and level with the BOTTOM of the pair, so the
+ * controls finish where the sentence does rather than floating beside the
+ * title while the sentence runs on under them.
+ *
+ * Payload welds "Create New" to the title inside the header, so it drew in the
+ * middle of the row — heading, button, 300px of nothing, then search and
+ * language — and 17px higher than the controls it belongs with. The header's
+ * wrappers dissolve (`display: contents`) so the title, its sentence and the
+ * button become cells of the card's own grid, and the button joins the search
+ * and the language at the far end, in that order: find, choose a language,
+ * then make something new.
+ *
+ * A GRID, NOT FLEX. The title and its sentence stack in the first column and
+ * the controls span both rows; flex can put things side by side or wrap them,
+ * but it cannot stack two items in one column beside a third.
+ *
+ * THE LIST SCREENS ONLY. The media picker is a `.collection-list` too, inside a
+ * sheet with a close disc in its corner, and it lays its own header out below.
+ * It is portalled out of the shell, so the shell is what tells them apart.
+ *
+ * DESK WIDTHS ONLY. Under 48rem the phone layout further down owns this header.
+ */
+@media (min-width: 48.0625rem) {
+  .template-default__wrap .collection-list__wrap {
+    display: grid;
+    /* The heading keeps a floor; the search gives way first. A search field is
+       as useful at 12rem as at 20, and a title squeezed to a word per line is
+       not a title. */
+    grid-template-columns: minmax(12rem, 1fr) minmax(10rem, 20rem) auto auto;
+    column-gap: 0.5rem;
+    align-items: end;
+  }
+
+  /* Media, Users and Subscribers have no Thai, so no language switch — and an
+     empty column still takes its gap. */
+  .template-default__wrap .collection-list__wrap:not(:has(> .da-locale)) {
+    grid-template-columns: minmax(12rem, 1fr) minmax(10rem, 20rem) auto;
+  }
+
+  /* Anything else Payload puts in the card — an empty state, a grouped table —
+     takes the full width under the heading, as the table does. */
+  .template-default__wrap .collection-list__wrap > * {
+    grid-column: 1 / -1;
+  }
+
+  .template-default__wrap .collection-list :is(.list-header, .list-header__content, .list-header__title-and-actions) {
+    display: contents;
+  }
+
+  .template-default__wrap .collection-list .list-header__title {
+    grid-area: 1 / 1;
+  }
+
+  .template-default__wrap .collection-list .list-header__after-header-content {
+    grid-area: 2 / 1;
+  }
+
+  /* The sentence carried 17px of padding above it, which with the title's own
+     leading put the two halves of one statement 20px apart. The studio's deck
+     sits close under its title. */
+  .template-default__wrap .collection-list .collection-list__sub-header {
+    padding-block-start: 8px;
+  }
+
+  /* Selection and view tabs. The selection bar inside is fixed to the foot of
+     the window, so this holds nothing that takes room; it only needs a cell
+     that is not one of the controls'. */
+  .template-default__wrap .collection-list .list-header__actions {
+    grid-area: 3 / 1;
+  }
+
+  /* The studio's gap between the heading and its controls is twice the gap
+     between the controls themselves — 16 against 8. */
+  .template-default__wrap .collection-list .list-controls {
+    grid-area: 1 / 2 / span 2;
+    margin: 0 0 0 0.5rem;
+  }
+
+  .template-default__wrap .collection-list .da-locale {
+    grid-area: 1 / 3 / span 2;
+    margin: 0;
+  }
+
+  .template-default__wrap .collection-list .list-header__title-actions {
+    grid-row: 1 / span 2;
+    grid-column: -2 / -1;
+    margin: 0;
+  }
+
+  .template-default__wrap .collection-list .collection-list__tables {
+    grid-row: 4;
+    margin-block-start: 1.5rem;
+  }
+
+  .template-default__wrap .collection-list .page-controls {
+    grid-row: 5;
+  }
 }
 
 .collection-list .custom-view-description {
@@ -4588,21 +4385,10 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
    something needs to read as raised, it is white; where it needs to recede, it
    is the page.
 
-   THE HEADER IS THE BREADCRUMB. Language and account moved into the foot of the
-   nav (NavFooter), which leaves the top bar saying one thing: where you are.
+   THE HEADER IS THE BREADCRUMB. Language and account moved out of it — the
+   account into the rail's menu (SideNav) — which leaves the top bar saying one
+   thing: where you are.
    ========================================================================== */
-
-/* WHITE, LIKE THE CONTENT IT SITS BESIDE. The column was on the parchment and
-   read as page rather than as furniture; it is a surface now, and the page's
-   grey is what separates the two — still no rule between them. */
-.nav {
-  /* THE STUDIO'S RAIL, RESTATED HERE because this block is the last word on
-     the shell: a step down from the page, with the strong line on its edge —
-     the one place the studio does draw a line between shell and stage. */
-  border: 0;
-  border-inline-end: 1px solid var(--da-hairline-strong);
-  background-color: var(--da-chrome);
-}
 
 /* WHITE, LIKE THE NAV BESIDE IT. The band was transparent, sitting on the
    page's own parchment — which read as furniture only because it happened to be
@@ -4651,41 +4437,12 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   display: none;
 }
 
-/* ---- the nav is furniture, not a drawer ---------------------------------- */
+/* ---- the shell's tracks ------------------------------------------------- */
 
-/* IT WAS A PANEL THAT SLID OVER THE PAGE. Payload's nav is a drawer whose grid
-   track collapses to zero when closed — measured at `0px 1431px`, with the nav
-   still rendered at full width underneath the content it was supposed to sit
-   beside. On a desktop CMS with four destinations there is nothing to gain from
-   hiding them: the column is always there and the hamburger that opened it is
-   gone with it. */
-.template-default {
-  grid-template-columns: var(--nav-width, 275px) 1fr;
-}
+/* The shell's two tracks — the rail and the page — are set in SideNav.css,
+   where the rail's own width drives the first. */
 
-/*
- * AND ON A PHONE IT IS A DRAWER AGAIN, because the reasoning above is about a
- * desktop CMS: "there is nothing to gain from hiding four destinations" holds
- * when the column costs 243 of 1440. It costs 243 of 375 here, and the grid was
- * still handing it that track — so the nav sat full-width underneath the article
- * it was supposed to sit beside, invisible, while the hamburger that opens it
- * toggled a class that changed nothing on screen.
- *
- * IT STARTS BELOW THE BAND, which is the whole trick: the toggler stays exposed
- * while the drawer and its scrim cover everything else, so the way out is the
- * control your thumb is already on. A scrim over the band would cover the one
- * button that closes it.
- */
 @media (max-width: 48rem) {
-  /* THE PAGE SPANS EVERY TRACK, and it has to be said this way. Payload's own
-     narrow-screen rule collapses the first column to zero — `0px 375px`,
-     measured — and taking the nav out of the flow to float it made the PAGE the
-     first in-flow item, which put a whole article inside a column 0 pixels wide.
-     The screen went blank below the band and nothing errored. */
-  .template-default__wrap {
-    grid-column: 1 / -1;
-  }
-
   /*
    * THE BAND IS NOT UNDER GLASS.
    *
@@ -4703,29 +4460,6 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
     pointer-events: none;
   }
 
-  .nav {
-    position: fixed;
-    inset-block: 55px 0;
-    inset-inline-start: 0;
-    z-index: 60;
-    inline-size: min(var(--nav-width), 80vw);
-    transform: translateX(-100%);
-    transition: transform var(--da-dur-move, 0.24s) var(--da-ease);
-  }
-
-  .template-default--nav-open .nav {
-    transform: none;
-  }
-
-  /* The wash behind the drawer is a real element now — see `.da-navscrim` at the
-     end of this file. A `::before` cannot be tapped, and tapping the page to
-     dismiss a drawer is the gesture everyone tries first. */
-}
-
-@media (max-width: 48rem) and (prefers-reduced-motion: reduce) {
-  .nav {
-    transition: none;
-  }
 }
 
 /*
@@ -4762,104 +4496,12 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   display: none;
 }
 
-/* AND IT HAS TO BE VISIBLE, which is a separate fact from having a column.
-   Payload fades a closed nav to `opacity: 0` rather than removing it, so
-   opening the grid track alone produced a correctly laid out, fully
-   transparent sidebar: four links measured at their right positions, an
-   account block at the foot, and nothing on screen. Scoped to the width where
-   the column is permanent, so the drawer keeps its own fade below that. */
-@media (min-width: 1025px) {
-  .nav {
-    opacity: 1;
-  }
-}
-
-/* Below the point where a fixed column starts eating the content's width, the
-   drawer comes back — and so does the control that opens it. */
+/* Below the width the rail is drawn at, the band's hamburger opens the drawer
+   instead. */
 @media (max-width: 1024px) {
-  .template-default {
-    grid-template-columns: 0 1fr;
-  }
-
   .template-default__nav-toggler-wrapper {
     display: block;
   }
-}
-
-/* ---- the nav column ------------------------------------------------------ */
-
-/* A column, so the account block can be pushed to the bottom with `auto`
-   margin rather than positioned there. */
-.nav__scroll {
-  display: flex;
-  flex-direction: column;
-  min-block-size: 100%;
-}
-
-/* Links give up the full-width hairline rows Payload draws them as and become
-   what they are: a short list of four places. The active one takes the white
-   surface, matching the language control below it — on a grey column, white is
-   what "you are here" looks like. */
-.nav .nav__link {
-  margin-block-end: 2px;
-  padding: 0.5625rem 0.75rem;
-  border: 0;
-  border-radius: var(--style-radius-m);
-  font-family: var(--font-display);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--da-ink-3);
-  transition:
-    background-color var(--da-dur-feedback) var(--da-ease),
-    color var(--da-dur-feedback) var(--da-ease);
-}
-
-@media (hover: hover) {
-  .nav .nav__link:hover {
-    background-color: var(--da-warm-white);
-    color: var(--da-ink);
-  }
-}
-
-/* THE ACTIVE ITEM IS A `div`, NOT AN ANCHOR. Payload renders the collection you
-   are already in as a non-link — which is correct, there is nowhere to go — but
-   it means `.active` and `[aria-current]` match nothing at all, and the first
-   version of this rule styled a state that never existed. `div.nav__link` is
-   the state.
-
-   A GREY FILL AND NOTHING ELSE. It took the accent tint for a while; on a white
-   column that made the item you are in the loudest thing in the shell, and the
-   accent is spent on one action per screen rather than on saying where you
-   already are. Fill only — no ring, no colour on the label. */
-.nav div.nav__link {
-  background-color: var(--da-warm-white);
-  color: var(--da-ink);
-  cursor: default;
-  /* AND THE RING IS A SHADOW, WHICH IS WHY IT SURVIVED. Payload draws the
-     active item's edge as `inset 0 0 0 1px` in the hairline colour, so zeroing
-     `border` and `outline` — both of which measured clean — left it exactly
-     where it was. The fill is the state; nothing is drawn around it. */
-  box-shadow: none;
-}
-
-/* Payload marks the same item a second time with a 3px bar inside the row. The
-   white surface already says which one you are on, and a coloured rule down the
-   side of a list item is the one shape this shell has otherwise given up. */
-.nav .nav__link-indicator {
-  display: none;
-}
-
-/* Payload's own logout sits at the very bottom of the column, 400px below the
-   account block that now carries Sign out — two ways to do the same thing, one
-   of them stranded past the fold. */
-.nav .nav__controls {
-  display: none;
-}
-
-/* Payload's own controls at the foot of the nav — they sat under a rule and
-   above nothing. The account block replaces what they were for. */
-.nav .nav__controls {
-  border: 0;
 }
 
 /* ---- the columns are the table, not a preference ------------------------- */
@@ -5010,79 +4652,12 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   border-radius: 0;
 }
 
-/* ---- a glyph for each destination ---------------------------------------- */
-
-/*
- * LUCIDE, MASKED RATHER THAN DRAWN. `mask-image` with `background-color:
- * currentColor` means each glyph takes the colour of the row it sits in — grey
- * at rest, ink on hover, and the accent on the item you are in — from one
- * declaration instead of four recoloured copies of the same file.
- *
- * MATCHED BY POSITION, because the active item has no `href` to match on:
- * Payload renders the collection you are already in as a `div`, so an
- * attribute selector would style three of the four and skip whichever one you
- * were looking at. The order is the collections array in payload.config.ts —
- * Articles, Resources, Media, Users — so `nth-child` is reading the same list
- * the nav is built from.
- */
-.nav .nav__link {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-}
-
-.nav .nav__link::before {
-  content: '';
-  flex: 0 0 auto;
-  inline-size: 18px;
-  block-size: 18px;
-  background-color: currentColor;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
-}
-
-/* Articles — `file-text` */
-.nav .nav-group__content > :nth-child(1)::before {
-  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>');
-  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>');
-}
-
-/* Resources — `download`, because what a resource is IS the download */
-.nav .nav-group__content > :nth-child(2)::before {
-  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>');
-  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>');
-}
-
-/* Media — `image` */
-.nav .nav-group__content > :nth-child(3)::before {
-  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>');
-  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>');
-}
-
-/* Users — `users` */
-.nav .nav-group__content > :nth-child(4)::before {
-  mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>');
-  -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>');
-}
-
-/* Payload's own nav header was a bare 34px disc with no accessible name. The
-   brand lockup replaces it and carries the product's name as real text. */
-.nav .nav__header {
-  display: none;
-}
-
 /* ---- nothing underlines on hover ----------------------------------------- */
 
 /* Payload underlines its links on hover, including the nav rows and the
    "Create New" pill beside the list's heading — a pill is a button and a button
    does not gain a line under its label. The hover state everywhere in this
    admin is the surface under the control, never a rule through its text. */
-.nav .nav__link:hover,
-.da-brand:hover,
 .btn:hover,
 .pill:hover,
 .list-header .btn:hover,
@@ -5339,179 +4914,14 @@ html {
   -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>');
 }
 
-/* ---- the collapsed rail -------------------------------------------------- */
-
-/*
- * An 84px rail: the mark, four glyphs and the avatar. Everything that is a WORD
- * goes, and nothing that is a TARGET does.
- *
- * IT WAS 68, WHICH IS THE WIDTH OF THE GLYPHS AND NOTHING ELSE. The mark keeps
- * its expanded inset — 20px, so that collapsing does not move the one element
- * on screen that should be nailed down — and at 68 that left 20px on the far
- * side of a 28px mark: a rail sized to its icons with the logo wedged into it.
- * 84 gives the column the same air on both sides of what it holds.
- *
- * THE MARK DOES NOT MOVE. Earlier versions of this shrank the rail's padding and
- * the mark with it, so collapsing slid the logo 15px left and took 2px off it —
- * the one element on screen that should be nailed down was the one that
- * travelled. The inset and the mark's size are untouched now; only the name
- * beside it disappears.
- *
- * THAT IS AFFORDABLE BECAUSE THE ARROW LEFT THE ROW. It straddles the rail's
- * edge instead (below), so nothing inside the column has to make room for it.
- */
-body.da-nav-collapsed .template-default {
-  grid-template-columns: var(--da-rail) 1fr;
-}
-
-/* THE PANEL HAS TO SHRINK TOO, not just the track it sits in. Payload gives
-   `.nav` an explicit 275px; narrowing only the grid column left the panel at
-   full width, so each link stayed 245px and centred its glyph at about x130 —
-   a rail with four icons parked outside it.
-
-   ONLY THE PANEL. Sizing the scroller to a fixed width as well made it wider
-   than the panel's own padded content box: it overflowed, was clipped at the
-   rail's edge, and its inset then started the icons at x26 — everything hard
-   against the right with 26px of dead space on the left. The scroller fills its
-   parent, and the inset is spent once, by Payload. */
-.nav {
-  inline-size: var(--nav-width);
-  /* THE EDGE BETWEEN THE NAV AND THE PAGE. It had none: the two met as white
-     against parchment, which is a boundary only while the page beside it is
-     grey — a white sheet running to the top of the content column met the nav
-     with nothing between them. The divider tone, so it reads as a seam rather
-     than as a rule. */
-  border-inline-end: 1px solid var(--da-divider);
-}
-
-body.da-nav-collapsed .nav {
-  inline-size: var(--da-rail);
-}
-
-body.da-nav-collapsed .nav__scroll {
-  inline-size: 100%;
-}
-
-/* Labels go; the glyph that was beside them becomes the whole control. */
-body.da-nav-collapsed .nav .nav__link-label,
-body.da-nav-collapsed .da-brand__name,
-body.da-nav-collapsed .da-navfoot__who {
-  display: none;
-}
-
-/*
- * NOTHING MOVES SIDEWAYS WHEN THE NAV COLLAPSES. It used to centre the glyphs
- * in the rail and drop their padding, so expanding the nav slid all four icons
- * 7px left while the mark above them — which keeps its inset — stayed put. The
- * one thing collapsing should do is take the words away.
- *
- * Keeping the links' own inset does that AND fixes the alignment the centring
- * broke: glyph centres measured at 42 collapsed against a mark at 36, where
- * left-aligned they read 35 in both states.
- */
-/* The mark's box does the same, for the same reason: it is a link with a hover
-   ground, and a 26px mark in a 54px box is a mark with 7px on one side and 21
-   on the other. */
-body.da-nav-collapsed .da-brand {
-  flex: 0 0 auto;
-  inline-size: fit-content;
-}
-
-body.da-nav-collapsed .nav .nav__link {
-  justify-content: flex-start;
-  /* THE BOX SHRINKS TO THE GLYPH, so the glyph is centred in it without moving.
-     Left full width it kept the rail's 54px of content — 11px of padding on one
-     side of an 18px mark and 25 on the other, which put the icon off-centre in
-     its own hover pill. `fit-content` makes the pill the glyph plus its two
-     equal insets; the left edge, and so the icon, stays exactly where the
-     expanded nav has it. */
-  inline-size: fit-content;
-}
-
-body.da-nav-collapsed .da-navfoot__who-link {
-  flex: 0 0 auto;
-  justify-content: flex-start;
-  inline-size: fit-content;
-}
-
-/* Sign-out drops below the avatar; side by side they would overflow the rail.
-   Aligned to the start of the column, not centred in it, for the same reason as
-   the links above. */
-body.da-nav-collapsed .da-navfoot__account {
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 0.375rem;
-}
+/* ---- the folded rail ----------------------------------------------------- */
 
 /* The floating selection bar is centred on the content column, so it has to
-   know the column moved. */
-body.da-nav-collapsed .collection-list .list-selection {
-  inset-inline-start: var(--da-rail);
-}
-
-/* ---- the collapse control, on the edge ----------------------------------- */
-
-/*
- * IT SITS ON THE RAIL'S EDGE, HALF OUTSIDE IT. In the row it had to be squeezed
- * in beside the mark, which meant either widening the rail to fit both or
- * stacking them — and stacking moved the arrow to a new place on every toggle.
- * On the edge it is out of the column's way entirely: the mark keeps its
- * position and its size, and the arrow reads as the handle on the boundary it
- * actually moves.
- *
- * `position: fixed`, NOT `absolute`. Absolute kept it inside `.nav__scroll`,
- * which is Payload's scroll container at `overflow: auto` — so the outer half
- * was simply cut off at the rail's edge, measured spanning 55-81 against a clip
- * at 68. Opening that container up would have traded a clipped button for a nav
- * that cannot scroll when it has more links than height. Fixed leaves the
- * clipping chain altogether.
- *
- * It follows the edge by tracking the rail's width rather than by being
- * positioned against the panel: the same two numbers the grid uses.
- */
+   know the column moved when the rail folds (SideNav). The fold is a desk
+   preference, drawn from 1025px up. */
 @media (min-width: 1025px) {
-  /* THE COLUMN HAS TO OUTRANK THE CONTENT, and the button's own z-index cannot
-     do it. `.nav` is `position: sticky`, which creates a stacking context
-     whatever its z-index — so `z-index: 30` on the button only ordered it
-     against its siblings INSIDE the nav, and the nav itself, at `auto`, painted
-     in DOM order behind `.collection-list`. The outer half of the button was
-     under the list: `elementFromPoint` on it returned the list, not the button.
-     Raising the context raises everything in it. */
-  .nav {
-    z-index: 20;
-  }
-
-  .da-brand__toggle {
-    position: fixed;
-    /* 25: ABOVE THE NAV, BELOW A MODAL. It was 30 — the same layer as the modal
-       container — and it is portalled to `<body>`, so it comes later in the DOM
-       and won a tie it should not have been in: with the cropper open the whole
-       admin dimmed except this one 26px disc, sitting bright over the wash. The
-       nav is 20 and this still clears it. */
-    z-index: 25;
-    /* Aligned to the MARK's centre, not to the top of the column: the mark's
-       box centres at y87 and this is 26 tall, so 74 puts the two on one line.
-       Measured rather than guessed — 4.75rem sat it 3px high. */
-    inset-block-start: 74px;
-    inset-inline-start: var(--nav-width, 275px);
-    inline-size: 26px;
-    block-size: 26px;
-    transform: translateX(-50%);
-    border: 1px solid var(--da-divider);
-    background-color: #ffffff;
-    color: var(--da-ink-3);
-  }
-
-  body.da-nav-collapsed .da-brand__toggle {
+  body.da-nav-collapsed .collection-list .list-selection {
     inset-inline-start: var(--da-rail);
-  }
-
-  @media (hover: hover) {
-    .da-brand__toggle:hover {
-      background-color: var(--da-warm-white);
-      color: var(--da-ink);
-    }
   }
 }
 
@@ -5814,51 +5224,10 @@ body.da-nav-collapsed .collection-list .list-selection {
 }
 
 /* =============================================================================
-   The nav, as a drawer on a phone
-
-   The shell already slides it in from under the band. What it did not have was
-   any of the behaviour a drawer is expected to carry — you could not tap the
-   page to dismiss it, Escape did nothing, focus stayed behind it on the page it
-   was covering, and the page scrolled underneath. Those live in NavDrawer,
-   which renders the wash below and drives Payload's own toggler; this is what
-   they look like.
-
-   AND IT OPENED AS A RAIL. `body.da-nav-collapsed` is a desktop preference and
-   it is remembered, so anyone who had collapsed the nav on a laptop got a 78px
-   column of icons with the words taken out of it — a rail with nothing to sit
-   beside. The overrides for that were written in the shell section above and
-   lost to the collapsed rules further down the file; at the end, they win.
+   The foot of a list, on a phone
    ========================================================================== */
 
 @media (max-width: 48rem) {
-  body.da-nav-collapsed .template-default {
-    grid-template-columns: revert;
-  }
-
-  body.da-nav-collapsed .nav {
-    inline-size: min(var(--nav-width), 80vw);
-  }
-
-  body.da-nav-collapsed .nav .nav__link-label,
-  body.da-nav-collapsed .da-brand__name,
-  body.da-nav-collapsed .da-navfoot__who {
-    display: revert;
-  }
-
-  /* The rail's own geometry goes with it: a 78px column centres its glyphs, and
-     in a 243px drawer that leaves every icon floating in the middle of nothing
-     with its label beside it. */
-  body.da-nav-collapsed .nav__scroll {
-    inline-size: 100%;
-  }
-
-  /*
-   * THE DRAWER STARTS AT ITS OWN TOP. `.nav__scroll` keeps 62.9px of padding
-   * above the mark — the room a permanent column needs to clear the header band
-   * it sits beside. A drawer already starts BELOW that band, so the two stacked:
-   * measured, the mark 63px down inside a panel whose own top edge is at 55, and
-   * the four links pushed a third of the way down the screen after it.
-   */
   /*
    * THE FOOT OF THE LIST, ON ONE COLUMN'S WIDTH. Payload lays the paginator,
    * the count and the per-page control out as one row that wraps: at 375 the
@@ -5883,58 +5252,6 @@ body.da-nav-collapsed .collection-list .list-selection {
     margin-inline: 0;
   }
 
-  .nav__scroll {
-    padding-block-start: 16px;
-    /* And it ends above the home indicator rather than under it. */
-    padding-block-end: max(15px, env(safe-area-inset-bottom));
-  }
-
-  /*
-   * AND IT ENDS AT THE BOTTOM OF THE SCREEN, NOT 55px PAST IT.
-   *
-   * The drawer is `position: fixed` with `inset: 55px … 0` — it starts under
-   * the band and ends at the foot of the screen, which is 757px on a 812px
-   * phone. Payload gives it a height as well, and a height beats the pair of
-   * insets: measured 812px starting at y55, so the last 55px of the panel hung
-   * below the screen with no way to scroll to them (`scrollHeight` equalled
-   * `clientHeight` — nothing to scroll, just clipped).
-   *
-   * WHICH IS EXACTLY WHERE THE ACCOUNT BLOCK LIVES. It is pushed to the bottom
-   * of the column by `margin-block-start: auto`, so the one thing the overflow
-   * swallowed whole was the way to your own profile and the way to sign out.
-   * On a phone the admin appeared to have neither.
-   *
-   * `auto` hands the height back to the two insets, which already say where the
-   * drawer begins and ends.
-   */
-  .nav {
-    block-size: auto;
-  }
-
-  /* ---- the wash ---------------------------------------------------------- */
-
-  .da-navscrim {
-    position: fixed;
-    /* Below the band, so the control that closes the drawer is never under the
-       thing it opened. */
-    inset: 55px 0 0;
-    z-index: 55;
-    inline-size: 100%;
-    padding: 0;
-    border: 0;
-    background-color: color-mix(in srgb, var(--da-ink) 45%, transparent);
-    cursor: pointer;
-    /* It is a button with no label drawn: the ink IS the affordance, and the
-       accessible name is on the element (see NavDrawer). */
-    appearance: none;
-  }
-
-  /* The page does not move while a drawer is over it — scrolling the thing you
-     cannot see is how you lose your place in a list of forty articles. */
-  body.da-nav-open {
-    overflow: hidden;
-  }
-
   /* ---- the hamburger ----------------------------------------------------- */
 
   /* 27px is a mouse's target. This one is pressed with a thumb, at the top-left
@@ -5957,10 +5274,6 @@ body.da-nav-collapsed .collection-list .list-selection {
      notch at all. Bare `env()` is 0 where there is nothing to clear. */
   .app-header {
     padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
-  }
-
-  .nav {
-    padding-inline-start: env(safe-area-inset-left);
   }
 }
 

@@ -1,0 +1,196 @@
+/*
+ * The account trigger and the menu it opens — Content Studio's, to its
+ * numbers. The folded rail's version of the trigger is drawn in SideNav.css.
+ */
+
+.da-account__trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  inline-size: 100%;
+  min-block-size: 48px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  font: inherit;
+  color: var(--da-ink);
+  cursor: pointer;
+  text-align: start;
+  transition: background-color 120ms var(--da-ease);
+}
+
+@media (hover: hover) {
+  .da-account__trigger:hover {
+    background-color: var(--da-chrome-hover);
+  }
+}
+
+.da-account__trigger[data-state='open'] {
+  background-color: var(--da-chrome-active);
+}
+
+.da-account__trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--da-orange);
+}
+
+.da-account__initial {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 50%;
+  background-color: var(--da-orange);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.da-account__trigger-email {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- the menu ------------------------------------------------------------ */
+
+/* NO BORDER. The shadow already separates it from the page, and a hairline as
+   well makes a floating layer look like a boxed one.
+
+   25: above the rail and the drawer, which share the shell's one stacking
+   context below it, and under a modal — the confirmation it opens has to
+   cover it. */
+.da-account__menu {
+  position: fixed;
+  z-index: 25;
+  inline-size: min(272px, calc(100vw - 24px));
+  padding: 8px;
+  border-radius: 16px;
+  background-color: #ffffff;
+  box-shadow:
+    0 4px 8px rgb(36 31 28 / 0.08),
+    0 12px 32px rgb(36 31 28 / 0.12);
+  outline: none;
+  transform-origin: bottom left;
+  animation: da-account-in 300ms var(--da-ease) both;
+}
+
+.da-account__menu[data-state='closed'] {
+  pointer-events: none;
+  animation: da-account-out 260ms var(--da-ease) both;
+}
+
+@keyframes da-account-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes da-account-out {
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Not `none`: the menu unmounts when its exit animation ENDS, and an animation
+   that never runs never ends. One millisecond is no motion and still an event. */
+@media (prefers-reduced-motion: reduce) {
+  .da-account__menu,
+  .da-account__menu[data-state='closed'] {
+    animation-duration: 1ms;
+  }
+}
+
+.da-account__label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+}
+
+.da-account__who {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+.da-account__email {
+  overflow: hidden;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--da-ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.da-account__role {
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--da-ink-3);
+}
+
+.da-account__rule {
+  block-size: 1px;
+  margin: 6px 12px;
+  background-color: var(--da-hairline);
+}
+
+/* Each item states its own colour rather than inheriting one — the destructive
+   one's red must not lose to a shared ink. */
+.da-account__item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  inline-size: 100%;
+  min-block-size: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--da-ink);
+  text-align: start;
+  text-decoration: none;
+  cursor: default;
+  outline: none;
+  user-select: none;
+  transition: background-color 120ms var(--da-ease);
+}
+
+.da-account__item svg {
+  flex: 0 0 auto;
+}
+
+.da-account__item:is(:hover, :focus-visible, :focus) {
+  background-color: var(--da-warm-white);
+  color: var(--da-ink);
+  text-decoration: none;
+}
+
+.da-account__item--danger,
+.da-account__item--danger:is(:hover, :focus-visible, :focus) {
+  color: var(--da-critical-ink);
+}
+
+.da-account__item--danger:is(:hover, :focus-visible, :focus) {
+  background-color: var(--da-critical-tint);
+}
