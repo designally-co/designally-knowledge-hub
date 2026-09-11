@@ -58,3 +58,7 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 .env*
+
+# The one-off Supabase → R2 media migration: manifest (the rollback record),
+# scope and verify report. Kept on this machine, never committed.
+/.r2-migration/
