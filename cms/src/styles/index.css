@@ -4,10 +4,9 @@
    define the vocabulary, base sets document defaults + the breakpoint contract,
    then components and site chrome (header/drawer/footer).
 
-   NOTE: the fonts (Newsreader + Hanken Grotesk) and the warm-paper palette are
-   PLACEHOLDERS to be replaced once the real Designally brand assets arrive.
-   The webfonts are loaded via <link> in (frontend)/layout.tsx, not via CSS
-   @import, so Next can preconnect them. */
+   The tokens are Content Studio's — the same faces, the same ramp, the same
+   radii and shadows — so the three Designally products read as one. The
+   webfonts are loaded with next/font in (frontend)/layout.tsx. */
 @import "tailwindcss";
 
 @import "./tokens/colors.css";
@@ -40,19 +39,19 @@
   --foreground: var(--text-primary);
   --card: var(--surface-card);
   --card-foreground: var(--text-primary);
-  --primary: var(--be-ink);
-  --primary-foreground: var(--be-paper);
-  --secondary: var(--be-line);
-  --secondary-foreground: var(--be-ink);
-  --muted: var(--be-line);
+  --primary: var(--orange-500);
+  --primary-foreground: #ffffff;
+  --secondary: var(--surface-deep);
+  --secondary-foreground: var(--ink);
+  --muted: var(--surface-deep);
   --muted-foreground: var(--text-secondary);
-  --accent: var(--be-line);
-  --accent-foreground: var(--be-ink);
-  --destructive: var(--be-brick);
-  --destructive-foreground: var(--be-white);
-  --border: var(--border-hairline);
+  /* `--accent` is the orange itself (tokens/colors.css); the framework's
+     "accent" is a hover fill, which is the wash here. */
+  --accent-foreground: var(--accent-ink);
+  --destructive: var(--red-500);
+  --destructive-foreground: #ffffff;
   --input: var(--border-hairline);
-  --ring: var(--be-ink);
+  --ring: var(--blue-500);
 }
 
 @theme inline {

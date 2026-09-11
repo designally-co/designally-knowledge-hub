@@ -1,6 +1,7 @@
 import React from 'react'
 import { notFound } from 'next/navigation'
 
+import { IBM_Plex_Sans_Thai, Poppins, Spline_Sans_Mono, Zalando_Sans } from 'next/font/google'
 import '@/styles/index.css'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
@@ -17,6 +18,33 @@ import { siteURL } from '@/lib/siteURL'
  * the question the metric asks.
  */
 import { Analytics } from '@vercel/analytics/next'
+
+/*
+ * THE STUDIO'S THREE FACES, LOADED THE STUDIO'S WAY. Zalando Sans for display,
+ * headings and every label; Poppins for Latin body; IBM Plex Sans Thai for
+ * Thai in both roles, because Zalando has no Thai glyphs — the fallback is per
+ * codepoint, so a bilingual line resolves correctly inside one run of text.
+ * Spline Sans Mono for the odd aligned figure.
+ *
+ * next/font rather than a <link> to Google: the files are self-hosted at build
+ * time, so there is no third-party request on the critical path and no flash
+ * of fallback while a stylesheet round-trips. Each face sets a variable that
+ * tokens/typography.css reads; the string fallbacks there cover any document
+ * this layout does not wrap.
+ *
+ * Zalando is loaded as its variable face, not four cuts: a label that wants to
+ * sit between two weights can. Poppins lists 300/400/600/700 — 500 is
+ * deliberately absent from the system, so it is not loaded and a stray
+ * `font-weight: 500` resolves to a neighbour rather than being synthesised.
+ */
+const zalando = Zalando_Sans({ variable: '--font-zalando', subsets: ['latin'] })
+const poppins = Poppins({ variable: '--font-poppins', subsets: ['latin'], weight: ['300', '400', '600', '700'] })
+const plexThai = IBM_Plex_Sans_Thai({
+  variable: '--font-plex-thai',
+  subsets: ['thai', 'latin'],
+  weight: ['400', '500', '600', '700'],
+})
+const splineMono = Spline_Sans_Mono({ variable: '--font-spline-mono', subsets: ['latin'] })
 
 export const metadata = {
   metadataBase: new URL(siteURL),
@@ -48,15 +76,10 @@ export default async function FrontendLayout({
   const dict = getDictionary(locale)
 
   return (
-    <html lang={locale}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Hanken+Grotesk:wght@400..800&family=Noto+Serif+Thai:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html
+      lang={locale}
+      className={`${zalando.variable} ${poppins.variable} ${plexThai.variable} ${splineMono.variable}`}
+    >
       <body>
         <a className="skip-link" href="#main">
           {dict.skipToContent}

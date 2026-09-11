@@ -13,7 +13,7 @@
   padding: clamp(24px, 4vw, 48px);
   overflow: hidden;
   border-radius: 16px;
-  background: var(--promo-bg, #b9c7f3);
+  background: var(--promo-bg, var(--accent-soft));
   color: var(--be-ink);
   font: var(--type-section);
   letter-spacing: -0.02em;

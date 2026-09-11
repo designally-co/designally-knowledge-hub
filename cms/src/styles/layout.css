@@ -63,9 +63,10 @@
   clip-path: inset(0 26.21% 0 0);
 }
 
-/* The stop is the one part of this identity that has always been the accent. */
+/* The stop is the one part of this identity that has always been the accent —
+   the fill itself, the same value the studio's mark uses. */
 .wordmark__dot {
-  background-color: var(--be-rust);
+  background-color: var(--accent);
   clip-path: inset(0 0 0 73.79%);
 }
 
@@ -174,7 +175,7 @@
    lines at most. No matching token exists at this size — the scale jumps from
    --type-title-md (22px sans) to --type-section (up to 52px). */
 .nav-panel__title {
-  font: 400 clamp(26px, 2vw, 34px) / 1.05 var(--font-serif);
+  font: 500 clamp(26px, 2vw, 34px) / 1.15 var(--font-serif);
   color: var(--be-ink);
   text-wrap: balance;
 }
@@ -488,7 +489,7 @@
 .drawer__link {
   display: block;
   padding: 14px 0;
-  font: 700 22px/1.2 var(--font-sans);
+  font: 500 22px/1.25 var(--font-heading);
   letter-spacing: var(--tracking-tight);
   color: var(--be-ink);
   text-decoration: none;
@@ -532,7 +533,7 @@
      is the part the wash has already turned to flat ochre. */
   overflow: hidden;
   color: var(--text-on-dark);
-  background-color: #a76a00;
+  background-color: var(--be-band-ochre);
 }
 
 /* The mural, always at its own proportions. It used to be a `cover` background
@@ -553,8 +554,8 @@
   aspect-ratio: 1200 / 807;
   background-image: linear-gradient(
       to bottom,
-      rgba(108, 69, 0, 0.6) 0%,
-      rgba(167, 106, 0, 1) 60%
+      rgba(27, 29, 35, 0.62) 0%,
+      rgba(27, 29, 35, 1) 60%
     ),
     url('/footer-bg.jpg');
   background-size: cover;
@@ -571,7 +572,7 @@
 
 /* Serif tagline over the mural. */
 .site-footer__tagline {
-  font: 400 clamp(30px, 4.4vw, 52px) / 1.1 var(--font-serif);
+  font: 500 clamp(30px, 4.4vw, 52px) / 1.15 var(--font-serif);
   color: var(--text-on-dark);
   text-align: center;
   text-wrap: balance;
@@ -580,7 +581,7 @@
 }
 
 .site-footer__rule {
-  border-top: 1px solid rgba(244, 237, 227, 0.35);
+  border-top: 1px solid rgba(248, 248, 247, 0.28);
   margin-bottom: clamp(36px, 6vw, 56px);
 }
 
@@ -641,7 +642,7 @@
 }
 
 .site-footer__blurb {
-  font: 700 clamp(18px, 3.6vw, 21px) / 1.35 var(--font-sans);
+  font: 500 clamp(18px, 3.6vw, 21px) / 1.35 var(--font-heading);
   max-width: 24ch;
   margin: 0;
 }
@@ -683,7 +684,7 @@
 }
 
 .site-footer__col-link {
-  font: 700 clamp(17px, 3.4vw, 20px) / 1.2 var(--font-sans);
+  font: 500 clamp(17px, 3.4vw, 20px) / 1.25 var(--font-heading);
   color: var(--text-on-dark);
   text-decoration: none;
   display: inline-block;
@@ -753,7 +754,7 @@
   border: 0;
   background: none;
   color: var(--text-on-dark);
-  font: 700 clamp(20px, 5.4vw, 26px) / 1.2 var(--font-sans);
+  font: 500 clamp(20px, 5.4vw, 26px) / 1.25 var(--font-heading);
   letter-spacing: var(--tracking-tight);
   text-align: left;
   cursor: pointer;
@@ -763,7 +764,7 @@
    one, and a box drawn around each would be more furniture than the two rows
    are worth. */
 .footer-group + .footer-group .footer-group__toggle {
-  border-top: 1px solid rgba(244, 237, 227, 0.35);
+  border-top: 1px solid rgba(248, 248, 247, 0.28);
 }
 
 .footer-group__caret {

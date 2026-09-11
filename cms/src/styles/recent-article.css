@@ -7,7 +7,7 @@
   isolation: isolate;
   overflow: hidden;
   padding-block: clamp(56px, 9vw, 112px);
-  background: #ece1cd;
+  background: var(--be-band-hero);
 }
 
 .recent-article::after {

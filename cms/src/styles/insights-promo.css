@@ -85,7 +85,7 @@
   transition: background 0.15s var(--ease-out-quart, ease), transform 0.15s var(--ease-out-quart, ease);
 }
 .ivp__btn:hover {
-  background: #ededed;
+  background: var(--surface-deep);
   transform: translateY(-1px);
 }
 .ivp__btn:focus-visible {

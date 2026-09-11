@@ -34,7 +34,7 @@
   position: relative;
   isolation: isolate;
   padding-top: clamp(40px, 7vw, 76px);
-  background: var(--masthead-band, #ece1cd);
+  background: var(--masthead-band, var(--be-band-hero));
 }
 
 .article__masthead::after {
@@ -97,7 +97,7 @@
    Roobert/ABC Diatype — licensed — so this uses the Hub's sans; swap --font-sans
    for the real face if it's added.) */
 .article__title {
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-weight: 500;
   font-size: 40px;
   line-height: 46px;
@@ -121,7 +121,7 @@
    their 24px (space-y-6) gap under the title. */
 .article__dek {
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-weight: 400;
   font-size: 24px;
   line-height: 30px;
   color: var(--be-ink);
@@ -472,7 +472,7 @@
 
 /* Full-bleed grey band, followed by the full-bleed CTA band below it. */
 .article__related {
-  background: #e7e7e7;
+  background: var(--be-band-mist);
   margin-top: clamp(48px, 9vw, 72px);
   padding-block: clamp(40px, 7vw, 72px);
 }

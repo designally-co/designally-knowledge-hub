@@ -2,7 +2,7 @@
 
 .resources {
   padding-block: clamp(64px, 10vw, 120px);
-  background: #f5f3f8;
+  background: var(--be-band-lavender);
 }
 
 .resources__inner {
@@ -37,7 +37,7 @@
 }
 
 .resources__banner {
-  --promo-bg: #b9c7f3;
+  --promo-bg: var(--accent-soft);
   min-height: 0;
   aspect-ratio: 1 / 1;
   flex-direction: column;

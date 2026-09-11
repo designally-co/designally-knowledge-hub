@@ -48,7 +48,7 @@
   max-width: none;
   margin: 0;
   color: var(--be-ink);
-  font: 400 clamp(30px, 5.75vw, 92px) / 1.06 var(--font-serif);
+  font: 500 clamp(30px, 5.75vw, 92px) / 1.15 var(--font-serif);
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
@@ -228,7 +228,7 @@
   max-width: 46ch;
   margin: clamp(16px, 2.2vw, 24px) 0 0;
   color: color-mix(in srgb, var(--be-ink) 88%, transparent);
-  font: 700 clamp(20px, 2vw, 28px) / 1.32 var(--font-sans);
+  font: 400 clamp(18px, 1.6vw, 22px) / 1.5 var(--font-sans);
   letter-spacing: -0.01em;
   /* Fixed narrow measure (not `balance`) so every subtitle fills to the same
      width and wraps to ~3 lines, rather than short copy sitting wide on 2. */

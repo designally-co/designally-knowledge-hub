@@ -13,7 +13,7 @@
   position: relative;
   overflow: hidden;
   padding-block: clamp(44px, 7vw, 96px);
-  background-color: #e4e4e4;
+  background-color: var(--be-band-mist);
 }
 
 .news-hero::before {

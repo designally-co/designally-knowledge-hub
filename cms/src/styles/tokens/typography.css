@@ -1,35 +1,55 @@
-/* Branding Explained — Typography tokens
-   Two families: an editorial serif (Newsreader) for display statements and
-   section titles, and a neutral grotesque (Hanken Grotesk) for UI, article
-   titles, body and meta. See tokens/fonts.css for the @font-face / import. */
+/* Designally Knowledge Hub — Typography tokens
+
+   THE STUDIO'S THREE FACES. Zalando Sans for display, headings and every
+   label; Poppins for Latin body; IBM Plex Sans Thai for Thai in both roles,
+   because Zalando has no Thai glyphs. The fallback is per glyph, so a
+   bilingual line resolves correctly inside one run of text. The faces are
+   loaded with next/font in the frontend layout, which sets the three
+   `--font-*` variables on <html>; the string fallbacks cover the admin and
+   any document the layout does not wrap.
+
+   `--font-serif` KEEPS ITS NAME and is no longer a serif: it is the display
+   face. Forty rules reference it, and renaming a token to say what it now
+   points at is a change to forty files for no reader's benefit. */
 :root {
-  /* Thai faces (Noto Serif/Sans Thai) sit in the stack after the Latin faces, so
-     the browser renders Latin glyphs with Newsreader/Hanken and Thai glyphs with
-     the Noto Thai faces automatically (per-glyph fallback). Loaded in the
-     frontend layout alongside the Latin webfonts. */
-  --font-serif: "Newsreader", "Noto Serif Thai", Georgia, "Times New Roman", serif;
-  --font-sans: "Hanken Grotesk", "Noto Sans Thai", "Helvetica Neue", Arial, sans-serif;
+  --font-heading: var(--font-zalando, "Zalando Sans"), var(--font-plex-thai, "IBM Plex Sans Thai"), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-heading);
+  --font-sans: var(--font-poppins, "Poppins"), var(--font-plex-thai, "IBM Plex Sans Thai"), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-spline-mono, "Spline Sans Mono"), ui-monospace, "SF Mono", monospace;
 
-  /* Display serif — big editorial statements */
-  --type-display-1: 400 clamp(44px, 6vw, 92px)/1.02 var(--font-serif);
-  --type-display-2: 400 clamp(34px, 4.4vw, 64px)/1.06 var(--font-serif);
-  --type-section: 400 clamp(30px, 3.6vw, 52px)/1.05 var(--font-serif);
+  /* Display — big editorial statements, in the heading face at 500. Weight
+     is the smallest of the hierarchy's levers and the studio spends it last:
+     size and colour carry the difference between rungs, and 500 is the one
+     weight at which Zalando reads as a headline rather than a poster.
 
-  /* Sans headings — article + card titles */
-  --type-title-lg: 700 clamp(26px, 3vw, 40px)/1.14 var(--font-sans);
-  --type-title-md: 700 22px/1.2 var(--font-sans);
-  --type-title-sm: 700 18px/1.28 var(--font-sans);
+     LINE-HEIGHT HAS A THAI FLOOR. Thai stacks four levels — base, upper
+     vowel, tone mark, lower vowel — and Latin-tuned leading clips it. The
+     ink of a one-line Thai stack measures about 1.20 of the size, so a line
+     that can hold Thai takes at least 1.2 for display and 1.25 for a title. */
+  --type-display-1: 500 clamp(40px, 5.2vw, 76px)/1.12 var(--font-heading);
+  --type-display-2: 500 clamp(32px, 4vw, 56px)/1.15 var(--font-heading);
+  --type-section: 500 clamp(28px, 3.2vw, 44px)/1.2 var(--font-heading);
 
-  /* Body */
-  --type-body-lg: 400 19px/1.5 var(--font-sans);
-  --type-body: 400 16px/1.55 var(--font-sans);
-  --type-body-sm: 400 14px/1.5 var(--font-sans);
+  /* Headings — article and card titles, the same face one rung down */
+  --type-title-lg: 500 clamp(24px, 2.6vw, 34px)/1.25 var(--font-heading);
+  --type-title-md: 500 22px/1.25 var(--font-heading);
+  --type-title-sm: 500 18px/1.3 var(--font-heading);
+
+  /* Body — Poppins, at the studio's reading leading */
+  --type-body-lg: 400 18px/1.6 var(--font-sans);
+  --type-body: 400 16px/1.6 var(--font-sans);
+  --type-body-sm: 400 14px/1.6 var(--font-sans);
 
   /* Meta + labels */
-  --type-meta: 400 14px/1.4 var(--font-sans);
-  --type-nav: 700 16px/1 var(--font-sans);
-  --type-label: 700 12px/1 var(--font-sans);      /* uppercase tag / eyebrow */
+  --type-meta: 400 13px/1.5 var(--font-sans);
+  --type-nav: 500 15px/1 var(--font-heading);
+  --type-label: 600 12px/1 var(--font-sans); /* chips and eyebrows — no longer capitals */
 
-  --tracking-label: 0.06em;   /* uppercase eyebrows + tags */
-  --tracking-tight: -0.01em;  /* large sans titles */
+  /* Tracking. Headings take the studio's heading tracking, capped at the
+     value a line holding Thai can bear: tighter than -0.02em collapses a
+     tone mark into the glyph above it. Labels are no longer uppercase, so
+     they take none. */
+  --tracking-label: 0;
+  --tracking-tight: -0.02em;
+  --tracking-caps: 0.08em;
 }

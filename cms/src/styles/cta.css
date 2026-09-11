@@ -3,7 +3,7 @@
    email form on the right. Reusable across pages. */
 
 .cta {
-  --cta-bg: #edf2f1; /* pale mint */
+  --cta-bg: var(--be-band-mint);
   background: var(--cta-bg) url('/newsletter-waves.svg') no-repeat center / cover;
   padding-block: clamp(44px, 7vw, 84px);
 }
@@ -73,7 +73,7 @@
 }
 
 .cta__title {
-  font: 400 clamp(32px, 4.2vw, 58px)/1.05 var(--font-serif);
+  font: 500 clamp(32px, 4.2vw, 58px) / 1.15 var(--font-serif);
   color: var(--be-ink);
   letter-spacing: -0.005em;
   margin: 0;
@@ -176,5 +176,5 @@
 }
 
 .cta__note--error {
-  color: #b3261e;
+  color: var(--danger-ink);
 }

@@ -15,20 +15,25 @@ export interface ListingChrome {
 
 // Chrome follows the public LABEL: Design = "Case Studies", Insights, Design with
 // AI = "Workflows". Tints are the SVG graphics' background colours.
+/* THE STUDIO'S FOUR WASHES, not four saturated tints. A band is a field the
+   page's type sits on, and the studio never puts type on a fill — its pillar
+   cards wear exactly these washes, one per pillar, so a category band here
+   and a pillar card there are the same colour for the same subject. The
+   values are the tokens themselves, resolved by the stylesheet. */
 export const CATEGORY_CHROME: Record<Category, ListingChrome> = {
-  Design: { tint: '#F1AB88', icon: '/section-icons/case.svg' },
-  Insights: { tint: '#B0BCE5', icon: '/section-icons/insights.svg' },
-  'Design with AI': { tint: '#80D2A8', icon: '/section-icons/workflows.svg' },
+  Design: { tint: 'var(--orange-100)', icon: '/section-icons/case.svg' },
+  Insights: { tint: 'var(--blue-100)', icon: '/section-icons/insights.svg' },
+  'Design with AI': { tint: 'var(--green-100)', icon: '/section-icons/workflows.svg' },
 }
 
 export const RESOURCES_CHROME: ListingChrome = {
-  tint: '#D2AEE3',
+  tint: 'var(--amber-100)',
   icon: '/section-icons/resources.svg',
 }
 
 /** Chrome for a tag page — inherits its parent category's tint, drops the icon. */
 export function chromeForCategory(category: Category | undefined): ListingChrome {
-  return (category && CATEGORY_CHROME[category]) || { tint: '#B0BCE5', icon: null }
+  return (category && CATEGORY_CHROME[category]) || { tint: 'var(--blue-100)', icon: null }
 }
 
 /**

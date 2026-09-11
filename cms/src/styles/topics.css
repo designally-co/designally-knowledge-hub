@@ -4,12 +4,12 @@
    flat through the whole Workflows section and only fades to yellow across the
    Topics section, so the white ends exactly at the Workflows/Topics boundary. */
 .warm-band {
-  background: #ffffff;
+  background: var(--surface);
 }
 
 .topics {
   padding-block: clamp(48px, 7vw, 88px) clamp(72px, 11vw, 132px);
-  background: linear-gradient(180deg, #ffffff 0%, #f6e6ac 100%);
+  background: linear-gradient(180deg, var(--surface) 0%, var(--be-band-butter) 100%);
 }
 
 .topics__inner {

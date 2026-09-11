@@ -68,8 +68,8 @@ export function render(item: Announcement, unsubscribeUrl: string): string {
 <html lang="en"><head><meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>${escape(item.title)}</title></head>
-<body style="margin:0;padding:0;background:#f9f6f4;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9f6f4;padding:32px 16px;">
+<body style="margin:0;padding:0;background:#f8f8f7;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f7;padding:32px 16px;">
 <tr><td align="center">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;overflow:hidden;font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;">
     ${
@@ -78,17 +78,17 @@ export function render(item: Announcement, unsubscribeUrl: string): string {
         : ''
     }
     <tr><td style="padding:32px 32px 8px;">
-      <p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#4a453d;">${label}</p>
-      <h1 style="margin:0 0 12px;font-size:26px;line-height:1.2;color:#12100d;font-weight:700;">${escape(item.title)}</h1>
-      ${item.summary ? `<p style="margin:0 0 24px;font-size:16px;line-height:1.55;color:#4a453d;">${escape(item.summary)}</p>` : ''}
+      <p style="margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#4a4a4a;">${label}</p>
+      <h1 style="margin:0 0 12px;font-size:26px;line-height:1.2;color:#1a1a1a;font-weight:700;">${escape(item.title)}</h1>
+      ${item.summary ? `<p style="margin:0 0 24px;font-size:16px;line-height:1.55;color:#4a4a4a;">${escape(item.summary)}</p>` : ''}
       <p style="margin:0 0 32px;">
-        <a href="${escape(url)}" style="display:inline-block;padding:13px 22px;border-radius:999px;background:#12100d;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;">Read it on the Hub</a>
+        <a href="${escape(url)}" style="display:inline-block;padding:13px 22px;border-radius:999px;background:#ef6148;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;">Read it on the Hub</a>
       </p>
     </td></tr>
     <tr><td style="padding:0 32px 28px;">
-      <p style="margin:0;font-size:13px;line-height:1.5;color:#4a453d;border-top:1px solid #e6e2dd;padding-top:20px;">
+      <p style="margin:0;font-size:13px;line-height:1.5;color:#4a4a4a;border-top:1px solid #e0e0e0;padding-top:20px;">
         You are getting this because you subscribed to the Designally Knowledge Hub.
-        <a href="${escape(unsubscribeUrl)}" style="color:#4a453d;">Unsubscribe</a>.
+        <a href="${escape(unsubscribeUrl)}" style="color:#4a4a4a;">Unsubscribe</a>.
       </p>
     </td></tr>
   </table>
@@ -271,17 +271,17 @@ export async function sendConfirmation(email: string, locale: 'en' | 'th' = 'en'
 <html lang="${locale}"><head><meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>${escape(heading)}</title></head>
-<body style="margin:0;padding:0;background:#f9f6f4;">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9f6f4;padding:32px 16px;">
+<body style="margin:0;padding:0;background:#f8f8f7;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f8f7;padding:32px 16px;">
 <tr><td align="center">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;font-family:ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;">
     <tr><td style="padding:32px 32px 8px;">
-      <h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;color:#12100d;font-weight:700;">${escape(heading)}</h1>
-      <p style="margin:0 0 24px;font-size:16px;line-height:1.55;color:#4a453d;">${escape(body)}</p>
+      <h1 style="margin:0 0 12px;font-size:24px;line-height:1.25;color:#1a1a1a;font-weight:700;">${escape(heading)}</h1>
+      <p style="margin:0 0 24px;font-size:16px;line-height:1.55;color:#4a4a4a;">${escape(body)}</p>
       <p style="margin:0 0 28px;">
-        <a href="${escape(url)}" style="display:inline-block;padding:13px 22px;border-radius:999px;background:#12100d;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;">${escape(action)}</a>
+        <a href="${escape(url)}" style="display:inline-block;padding:13px 22px;border-radius:999px;background:#ef6148;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;">${escape(action)}</a>
       </p>
-      <p style="margin:0 0 32px;font-size:13px;line-height:1.5;color:#4a453d;">${escape(ignore)}</p>
+      <p style="margin:0 0 32px;font-size:13px;line-height:1.5;color:#4a4a4a;">${escape(ignore)}</p>
     </td></tr>
   </table>
 </td></tr></table>

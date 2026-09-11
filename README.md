@@ -32,12 +32,16 @@ PRD.md          product requirements
 PRODUCT.md      product overview
 ```
 
+## Design language
+
+The public site wears the same system as Content Studio and the admin: Zalando
+Sans for display and labels, Poppins for Latin body, IBM Plex Sans Thai for
+Thai, the CI orange on cool neutrals. The tokens live in
+`cms/src/styles/tokens/` and are copied from
+`content-studio/src/app/globals.css` — change them there first, then here.
+
 ## Placeholder assets
 
-Two things are stand-ins until the real brand assets arrive:
-
-- **Fonts** — Newsreader (serif) + Hanken Grotesk (sans) via Google Fonts.
-- **Imagery** — the seeded sample content hotlinks Unsplash photographs as
-  covers, and the headlines are invented. Swap all of it before anything ships
-  publicly.
+The seeded sample content hotlinks Unsplash photographs as covers, and the
+headlines are invented. Swap all of it before anything ships publicly.
 

@@ -73,7 +73,7 @@
 
 /* Placement + colour only — shared look lives in promo-banner.css. */
 .case-studies__banner {
-  --promo-bg: #b9c7f3;
+  --promo-bg: var(--accent-soft);
   width: calc(100% - var(--case-page-edge));
   max-width: calc(var(--page-max) - 2 * var(--page-gutter));
   margin-top: clamp(56px, 8vw, 96px);

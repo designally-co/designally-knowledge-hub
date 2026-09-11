@@ -223,22 +223,22 @@ export default function DesignSystemGallery() {
         <p className="ds-section__label">Type — scale</p>
         <div className="ds-type">
           <div className="ds-type__row">
-            <span style={{ font: 'var(--type-display-2)' }}>Display serif</span>
-            <span className="ds-type__meta">--type-display-2 · Newsreader</span>
+            <span style={{ font: 'var(--type-display-2)' }}>Display</span>
+            <span className="ds-type__meta">--type-display-2 · Zalando Sans</span>
           </div>
           <div className="ds-type__row">
             <span style={{ font: 'var(--type-section)' }}>Section heading</span>
-            <span className="ds-type__meta">--type-section · Newsreader</span>
+            <span className="ds-type__meta">--type-section · Zalando Sans</span>
           </div>
           <div className="ds-type__row">
             <span style={{ font: 'var(--type-title-lg)' }}>Title large (sans)</span>
-            <span className="ds-type__meta">--type-title-lg · Hanken Grotesk</span>
+            <span className="ds-type__meta">--type-title-lg · Zalando Sans</span>
           </div>
           <div className="ds-type__row">
             <span style={{ font: 'var(--type-body-lg)' }}>
               Body large — the reading size for long-form editorial prose.
             </span>
-            <span className="ds-type__meta">--type-body-lg · Hanken Grotesk</span>
+            <span className="ds-type__meta">--type-body-lg · Poppins</span>
           </div>
         </div>
       </section>

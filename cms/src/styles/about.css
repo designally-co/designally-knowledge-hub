@@ -205,7 +205,7 @@
 
 .about-find {
   padding-block: clamp(64px, 10vw, 132px);
-  background-color: #3f342b;
+  background-color: var(--be-band-black);
   color: var(--be-white);
   text-align: center;
 }

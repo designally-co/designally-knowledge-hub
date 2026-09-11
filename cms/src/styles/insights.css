@@ -38,7 +38,7 @@
    shape; the font, button and graphic come shared from promo-banner.css.
    Text + button sit top-left; the graphic sits bottom-left. */
 .insights__banner {
-  --promo-bg: #b9c7f3;
+  --promo-bg: var(--accent-soft);
   min-height: 280px;
   flex-direction: column;
   align-items: flex-start;

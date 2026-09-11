@@ -4,97 +4,92 @@
    hover-capability guards and coarse-pointer sizing. Visual values are
    unchanged from the incumbent design; only the conditions are new. */
 
-/* --- Button ------------------------------------------------------------ */
+/* --- Button ------------------------------------------------------------
+   The studio's button, in the site's pill. Fill for the one action that
+   commits, a hairline for the rest; hover darkens a fill and tints an
+   outline, and nothing rises — elevation is structural here, so a control
+   answers the pointer with colour, not with a shadow. */
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-sans);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
-  letter-spacing: -0.005em;
+  letter-spacing: 0;
   border-radius: var(--radius-pill);
   cursor: pointer;
   text-decoration: none;
   /* Buttons hold short labels; keeping them on one line is intentional.
      Long labels get a wrap escape at the narrowest sizes instead. */
   white-space: nowrap;
-  transition: transform 0.12s var(--ease-out-quart), opacity 0.15s ease,
-    background 0.15s ease, color 0.15s ease,
-    box-shadow 0.18s var(--ease-out-quart);
+  transition: transform var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
 }
 
-.btn--sm { padding: 8px 16px; font-size: 14px; gap: 6px; }
-.btn--md { padding: 12px 24px; font-size: 16px; gap: 8px; }
-.btn--lg { padding: 16px 30px; font-size: 17px; gap: 9px; }
+.btn--sm { height: 36px; padding: 0 16px; font-size: 13px; gap: 6px; }
+.btn--md { height: 44px; padding: 0 20px; font-size: 14px; gap: 8px; }
+.btn--lg { height: 48px; padding: 0 24px; font-size: 15px; gap: 8px; }
 
 .btn--primary {
-  background: var(--be-ink);
-  color: var(--be-paper);
-  border: 1px solid var(--be-ink);
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid transparent;
 }
 
 .btn--secondary {
-  background: var(--be-white);
-  color: var(--be-ink);
+  background: var(--surface);
+  color: var(--ink);
   border: 1px solid var(--border-outline);
 }
 
 .btn--ghost {
   background: transparent;
-  color: var(--be-ink);
+  color: var(--ink);
   border: 1px solid transparent;
 }
 
 .btn--inverse {
-  background: var(--be-white);
-  color: var(--be-ink);
-  border: 1px solid var(--be-white);
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--surface);
 }
 
 .btn:disabled,
 .btn[aria-disabled="true"] {
-  opacity: 0.4;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
-/* Press feedback for every input method — the old handlers were
-   mouse-events only, so keyboard and touch got nothing. */
-.btn:not(:disabled):active { transform: scale(0.97); }
+/* Press feedback for every input method — :active fires for keyboard and
+   touch too. */
+.btn:not(:disabled):not([aria-disabled='true']):active { transform: scale(0.98); }
 
-@media (hover: hover) {
-  .btn--primary:hover { background: var(--be-ink-70); border-color: var(--be-ink-70); }
-  .btn--secondary:hover { background: var(--be-paper); }
-  .btn--ghost:hover { background: rgba(18, 16, 13, 0.06); }
-  /* On dark bands this one had no hover of its own — it borrowed the blanket
-     link fade, so it dimmed instead of responding. */
-  .btn--inverse:hover { background: var(--be-paper); border-color: var(--be-paper); }
-
-  /* A control that only changes colour reads flat next to cards that move.
-     One pixel of rise and a shadow is the whole gesture. */
-  .btn:not(:disabled):not([aria-disabled='true']):hover {
-    opacity: 1;
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-pill);
-  }
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
 }
 
-/* Restated after the hover block, matching its specificity, so a press still
-   wins over the hover lift. */
-.btn:not(:disabled):not([aria-disabled='true']):active {
-  transform: scale(0.97);
-  box-shadow: none;
+@media (hover: hover) {
+  .btn--primary:hover { background: var(--accent-hover); }
+  .btn--primary:active { background: var(--accent-press); }
+  .btn--secondary:hover { background: var(--surface-sunken); }
+  .btn--ghost:hover { background: var(--surface-deep); }
+  .btn--inverse:hover { background: var(--surface-sunken); border-color: var(--surface-sunken); }
+  .btn:not(:disabled):not([aria-disabled='true']):hover { opacity: 1; }
 }
 
 /* Touch: guarantee the 44px target without inflating the pointer layout. */
 @media (pointer: coarse) {
-  .btn--sm { min-height: var(--touch-target); padding-block: 10px; }
-  .btn--md,
-  .btn--lg { min-height: var(--touch-target); }
+  .btn--sm { min-height: var(--touch-target); }
 }
 
-/* --- IconButton -------------------------------------------------------- */
+/* --- IconButton --------------------------------------------------------
+   The studio's disc: 40 across, white on a hairline for a control that
+   commits nothing, the accent for the one that does. */
 
 .icon-btn {
   display: inline-flex;
@@ -104,40 +99,49 @@
   border-radius: var(--radius-pill);
   cursor: pointer;
   background: transparent;
-  transition: transform 0.12s var(--ease-out-quart), background 0.15s ease,
-    color 0.15s ease;
+  transition: transform var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
 }
 
 .icon-btn--sm { width: 32px; height: 32px; }
-.icon-btn--md { width: 44px; height: 44px; }
+.icon-btn--md { width: 40px; height: 40px; }
 .icon-btn--lg { width: 56px; height: 56px; }
 
-.icon-btn--outline { color: var(--be-ink); border: 1.5px solid var(--border-outline); }
+.icon-btn--outline {
+  background: var(--surface);
+  color: var(--ink-secondary);
+  border: 1px solid var(--border-outline);
+}
 .icon-btn--solid {
-  background: var(--be-ink);
-  color: var(--be-paper);
-  border: 1.5px solid var(--be-ink);
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid transparent;
 }
 .icon-btn--inverse {
   color: var(--text-on-dark);
-  border: 1.5px solid var(--border-outline);
+  border: 1px solid rgba(248, 248, 247, 0.3);
 }
 .icon-btn--ghost {
-  background: var(--be-white);
-  color: var(--be-ink);
-  border: 1.5px solid transparent;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid transparent;
 }
 .icon-btn--bare { background: none; border: none; color: inherit; }
 
-.icon-btn:active { transform: scale(0.94); }
+.icon-btn:active { transform: scale(0.96); }
+.icon-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
 
 @media (hover: hover) {
-  .icon-btn--outline:hover { background: var(--be-ink); color: var(--be-paper); border-color: var(--be-ink); }
-  .icon-btn--inverse:hover { background: rgba(244, 237, 227, 0.14); }
-  .icon-btn--bare:hover { background: rgba(18, 16, 13, 0.06); }
-  /* Both were relying on the blanket link fade when rendered as anchors. */
-  .icon-btn--solid:hover { background: var(--be-ink-70); border-color: var(--be-ink-70); }
-  .icon-btn--ghost:hover { background: var(--be-paper); border-color: var(--border-outline); }
+  .icon-btn--outline:hover { background: var(--surface-deep); color: var(--ink); }
+  .icon-btn--inverse:hover { background: rgba(248, 248, 247, 0.14); }
+  .icon-btn--bare:hover { background: var(--surface-deep); }
+  .icon-btn--solid:hover { background: var(--accent-hover); }
+  .icon-btn--ghost:hover { background: var(--surface-deep); }
 
   .icon-btn:not(:disabled):hover { opacity: 1; }
 }
@@ -159,47 +163,55 @@
   }
 }
 
-/* --- Tag --------------------------------------------------------------- */
+/* --- Tag ---------------------------------------------------------------
+   The studio's chip: a filled pill in the sunken grey, semibold, mixed case.
+   It was an uppercase hairline outline; capitals and a line were two ways
+   of saying "label" at once, and the studio says it with the fill alone. */
 
 .tag {
   display: inline-flex;
   align-items: center;
-  padding: 5px 11px;
+  padding: 4px 10px;
   font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 11.5px;
-  line-height: 1;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.35;
   letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+  text-transform: none;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--border-outline);
-  background: transparent;
+  border: 1px solid transparent;
+  background: var(--surface-deep);
+  color: var(--ink-secondary);
   white-space: nowrap;
 }
 
-/* Outline colour comes from --border-outline (label colour @ 50%) on the base. */
-.tag--ink { color: var(--be-ink); }
-.tag--warm { color: var(--be-rust); }
-.tag--on-dark { color: var(--text-on-dark); }
+.tag--ink { color: var(--ink-secondary); }
+/* The warm tone is the accent wash: the one place a chip carries the brand. */
+.tag--warm { background: var(--accent-soft); color: var(--accent-ink); }
+.tag--on-dark { background: rgba(248, 248, 247, 0.14); color: var(--text-on-dark); }
 
-/* --- TopicPill --------------------------------------------------------- */
+/* --- TopicPill ---------------------------------------------------------
+   A white pill on a hairline, in the heading face; chosen, it takes the
+   accent wash the way a selected chip does in the studio's settings. */
 
 .topic-pill {
   display: inline-flex;
   align-items: center;
-  font-family: var(--font-sans);
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-weight: 500;
   line-height: 1;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   border-radius: var(--radius-pill);
-  border: 1px solid transparent;
-  background: var(--be-white);
-  color: var(--be-ink);
-  box-shadow: var(--shadow-sticker);
+  border: 1px solid var(--border-outline);
+  background: var(--surface);
+  color: var(--ink);
   cursor: pointer;
   white-space: nowrap;
   text-decoration: none;
-  transition: transform 0.15s var(--ease-out-quart), background 0.15s ease;
+  transition: transform var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
 }
 
 /* Sizes step down on small screens so a topic cloud stays a cloud and not
@@ -214,9 +226,14 @@
 }
 
 .topic-pill--active {
-  background: var(--be-ink);
-  color: var(--be-paper);
-  border-color: var(--be-ink);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  border-color: var(--orange-300);
+}
+
+.topic-pill:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
 }
 
 @media (pointer: coarse) {
@@ -231,7 +248,8 @@
   .topic-pill { transform: rotate(var(--pill-rotate, 0deg)); }
 
   @media (hover: hover) {
-    .topic-pill:hover { transform: rotate(var(--pill-rotate, 0deg)) translateY(-2px); }
+    .topic-pill:hover { background: var(--surface-sunken); transform: rotate(var(--pill-rotate, 0deg)) translateY(-2px); }
+    .topic-pill--active:hover { background: var(--accent-soft); }
   }
 }
 
@@ -388,7 +406,7 @@
   aspect-ratio: 1 / 1;
   border-radius: 26px;
   overflow: hidden;
-  background: linear-gradient(150deg, #efe8f9 0%, #e5dcf4 52%, #dcd1ef 100%);
+  background: linear-gradient(150deg, var(--surface) 0%, var(--be-band-lavender) 100%);
   border: 2px solid rgba(255, 255, 255, 0.5);
 }
 
@@ -408,7 +426,7 @@
 }
 
 .resource-card__doc-title {
-  font: 700 clamp(22px, 8cqw, 30px) / 1.16 var(--font-sans);
+  font: 600 clamp(22px, 8cqw, 30px) / 1.2 var(--font-heading);
   color: #fff;
   letter-spacing: -0.01em;
   display: block;
@@ -456,7 +474,7 @@
   display: block;
   max-width: 90%;
   color: #fff;
-  font: 700 clamp(22px, 8cqw, 30px) / 1.16 var(--font-sans);
+  font: 600 clamp(22px, 8cqw, 30px) / 1.2 var(--font-heading);
   letter-spacing: -0.01em;
 }
 

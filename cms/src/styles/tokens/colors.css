@@ -1,66 +1,135 @@
-/* Branding Explained — Color tokens
-   An editorial, warm-paper palette with saturated spot colors used for
-   category-coded thumbnails, folder cards and full-bleed section bands. */
+/* Designally Knowledge Hub — Colour tokens
+
+   THE SAME PALETTE AS CONTENT STUDIO, under the names this stylesheet already
+   uses. The public site was built on a warm-paper placeholder ("Branding
+   Explained") while the brand was undecided; the brand is decided, and it is
+   the one the studio and the admin already wear: the CI orange, cool neutrals
+   hued toward the steel Field, one loud accent used sparingly. Every `--be-*`
+   name below now resolves to a studio value, so the six thousand lines that
+   reference them re-dress without being touched — and the studio's own names
+   are declared beside them for new work, so the two vocabularies point at one
+   set of values instead of drifting apart again.
+
+   Values are copied from content-studio/src/app/globals.css. Change them there
+   first; this file follows. */
 :root {
-  /* ---- Base neutrals (warm paper) ---- */
-  --be-ink: #12100d;          /* near-black, text + logo + primary button */
-  --be-ink-70: #4a453d;
-  --be-ink-50: #7c766b;       /* meta / secondary text (warm grey) */
-  --be-ink-35: #a9a297;
-  --be-paper: #f9f6f4;        /* main page background (soft off-white) */
-  --be-paper-deep: #ddc5a8;   /* hero band tan */
-  --be-white: #ffffff;        /* card / image surfaces */
-  --be-line: #e2d7c9;         /* hairline dividers on paper */
-  --be-line-ink: #d8cdbd;
+  /* ---- Brand ramp — Designally Orange, the CI value ---- */
+  --orange-700: #c73f29; /* legal as text or a line on light: 4.54:1 */
+  --orange-600: #d9482d; /* hover — darkens, never lightens */
+  --orange-500: #ef6148; /* the fill, and the only orange that is wallpaper */
+  --orange-400: #ff8f7a;
+  --orange-300: #ffb3a3;
+  --orange-200: #ffd4ca;
+  --orange-100: #fff0ec; /* the wash: selected, a band, a card tint */
+  --orange-50: #fff7f5;
 
-  /* ---- Section band tints (full-bleed) ---- */
-  --be-band-hero: #dabfa9;    /* hero band — was hard-coded in HomePage */
-  --be-band-mint: #e3efe4;
-  --be-band-butter: #f7e7be;
-  --be-band-lavender: #f1eefa;
-  --be-band-mist: #f5f7fa;    /* Insights band — cool near-white */
-  --be-band-blush: #fbf5f3;   /* Case Studies band — warm near-white */
-  --be-band-black: #0a0908;
-  --be-band-ochre: #c6890e;   /* footer mustard */
+  /* ---- Neutral ramp — the CI's, hued 265° toward the steel Field ---- */
+  --ink-900: #1b1d23; /* display type, dark bands */
+  --ink-700: #53575e;
+  --ink-500: #5f636b;
+  --ink-400: #a9adb4;
+  --ink-300: #cecfd3;
+  --ink-200: #e6e8eb;
+  --ink-100: #eef0f2;
+  --ink-50: #fafaf9;
 
-  /* ---- Spot / accent colors (category-coded) ---- */
-  --be-gold: #d9a521;
-  --be-cobalt: #2c5fb3;
-  --be-brick: #b23127;
-  --be-green: #2e9e54;
-  --be-rust: #c0491f;
-  --be-purple: #7b3fb0;
-  --be-indigo: #322fbe;
-  --be-orange: #e8531d;       /* promo / summit banner */
+  /* ---- Semantic ramps — three tones plus steel for information ---- */
+  --green-500: #107f54;
+  --green-100: #e5f7ec;
+  --amber-500: #a06000;
+  --amber-100: #fff1da;
+  --red-500: #d32830;
+  --red-100: #ffedeb;
+  --blue-500: #112d4a; /* steel: the focus colour, never orange */
+  --blue-100: #e7ecf2;
 
-  /* ---- Frosted resource-card glass ---- */
-  --be-glass-pink: rgba(214,160,224,0.45);
-  --be-glass-lilac: rgba(178,166,230,0.5);
+  /* ---- The studio's surface and ink tokens, by their own names ---- */
+  --bg: #f8f8f7;             /* the ground */
+  --surface: #ffffff;        /* plates: cards, sheets, panels */
+  --surface-sunken: #f8f8f7; /* the ground a plate sits on */
+  --surface-deep: #f0f0ef;   /* a filled field, a chip, a recess */
+  --border: #f0f0f0;         /* the hairline around a plate on white */
+  --border-strong: #e0e0e0;  /* the hairline on the ground */
+  --ink: #1a1a1a;
+  --ink-secondary: #4a4a4a;
+  --ink-faint: #737373;      /* 4.6:1 on the ground — the floor for metadata */
+  --placeholder: #a6a6a6;
+  --accent: var(--orange-500);
+  --accent-hover: var(--orange-600);
+  --accent-press: var(--orange-700);
+  --accent-soft: var(--orange-100);
+  --accent-tint: var(--orange-50);
+  --accent-ink: var(--orange-700);
+  --ok: var(--green-500);
+  --ok-soft: var(--green-100);
+  --warn: var(--amber-500);
+  --warn-soft: var(--amber-100);
+  --danger: var(--red-500);
+  --danger-soft: var(--red-100);
+  --danger-ink: #b0202a;
+  --info: var(--blue-500);
+  --info-soft: var(--blue-100);
+
+  /* ---- The site's own names, resolved to the values above ---- */
+  --be-ink: var(--ink);
+  --be-ink-70: var(--ink-secondary);
+  --be-ink-50: var(--ink-faint);
+  --be-ink-35: var(--placeholder);
+  --be-paper: var(--bg);
+  --be-paper-deep: var(--orange-100); /* the hero band: the wash, not tan */
+  --be-white: var(--surface);
+  --be-line: var(--border-strong);    /* hairlines sit on the ground here */
+  --be-line-ink: var(--ink-300);
+
+  /* ---- Section bands. Four washes, the studio's own four (its pillar cards
+     wear exactly these), and charcoal where the site goes dark. The ochre
+     footer goes to charcoal too: one dark, not two. ---- */
+  --be-band-hero: var(--orange-100);
+  --be-band-mint: var(--green-100);
+  --be-band-butter: var(--amber-100);
+  --be-band-lavender: var(--blue-100);
+  --be-band-mist: var(--surface-deep);
+  --be-band-blush: var(--orange-50);
+  --be-band-black: var(--ink-900);
+  --be-band-ochre: var(--ink-900);
+
+  /* ---- Spot colours, category-coded, kept inside the system's ramps ---- */
+  --be-gold: var(--amber-500);
+  --be-cobalt: var(--blue-500);
+  --be-brick: var(--red-500);
+  --be-green: var(--green-500);
+  --be-rust: var(--orange-700);
+  --be-purple: var(--blue-500);
+  --be-indigo: var(--ink-900);
+  --be-orange: var(--orange-500);
+
+  /* ---- Frosted resource-card glass, now two washes of the ramp ---- */
+  --be-glass-pink: rgba(255, 212, 202, 0.55);
+  --be-glass-lilac: rgba(231, 236, 242, 0.7);
 
   /* ---- Semantic aliases ---- */
-  --text-primary: var(--be-ink);
-  --text-secondary: var(--be-ink-50);
-  --text-muted: var(--be-ink-35);
-  --text-on-dark: #f4ede3;
-  --text-on-dark-dim: rgba(244,237,227,0.6);
+  --text-primary: var(--ink);
+  --text-secondary: var(--ink-faint);
+  --text-muted: var(--placeholder);
+  --text-on-dark: #f8f8f7;
+  --text-on-dark-dim: rgba(248, 248, 247, 0.62);
 
-  --surface-page: var(--be-paper);
-  --surface-card: var(--be-white);
-  --surface-inverse: var(--be-band-black);
-  --surface-raised: var(--be-white);
+  --surface-page: var(--bg);
+  --surface-card: var(--surface);
+  --surface-inverse: var(--ink-900);
+  --surface-raised: var(--surface);
 
-  --border-hairline: var(--be-line);
-  --border-pill: var(--be-ink);
-  --border-tag: rgba(18,16,13,0.35);
-  --border-tag-warm: rgba(192,73,31,0.45);
-  /* Outline = the element's own label colour at 50% opacity. currentColor
-     resolves per element, so every tag / button / pill gets a matching,
-     lighter outline (ink label -> grey, rust label -> faded rust, etc.). */
-  --border-outline: color-mix(in srgb, currentColor 50%, transparent);
+  --border-hairline: var(--border-strong);
+  --border-pill: var(--border-strong);
+  --border-tag: var(--border-strong);
+  --border-tag-warm: var(--orange-300);
+  /* A fixed hairline, not the label at half strength: the studio outlines
+     every quiet control with the same line it draws around a card, so the
+     edge only closes the shape and never argues with the label. */
+  --border-outline: var(--border-strong);
 
-  --accent: var(--be-ink);
-  --accent-contrast: var(--be-paper);
+  --accent-contrast: #ffffff;
 
   /* Default cover colour, shown when a resource has no image cover at all. */
-  --cover-fallback: #cfc3b0;
+  --cover-fallback: var(--ink-200);
 }
