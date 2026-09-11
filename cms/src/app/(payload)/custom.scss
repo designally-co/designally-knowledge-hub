@@ -35,14 +35,21 @@
    (payload)/layout.tsx, which is generated and marked DO NOT MODIFY. If the
    admin ever wants the same treatment, the fix is a font provider registered
    through `admin.components.providers`, not an edit to that file. */
-@import url('https://fonts.googleapis.com/css2?family=Zalando+Sans:wght@400;600;700&family=Poppins:wght@300;400;600;700&family=IBM+Plex+Sans+Thai:wght@400;600;700&display=swap');
+/* The faces arrive through AdminFonts (admin.components.providers), which sets
+   --font-zalando, --font-poppins, --font-plex-thai and --font-spline-mono on
+   the root; the family names below are the fallback for the frame before it. */
 
 :root {
   /* ---- the five CI colours, exactly as the system issues them ---------- */
   --da-orange: #ef6148;
   --da-charcoal: #1b1d23;
   --da-steel: #112d4a;
-  --da-warm-white: #f3f3f3;
+    /* THE GROUND IS CONTENT STUDIO'S. The admin took the platform document's
+     #f3f3f3; the studio, which the same people work in all day, settled on
+     #f8f8f7 — the same grey its sheets use — and this admin now sits on it.
+     Every value below that names a surface, a line or an ink is the studio's
+     (content-studio/src/app/globals.css), so the two tools read as one. */
+  --da-warm-white: #f8f8f7;
   --da-stone: #aaaaaa;
 
   /* ---- the icon disc, from the platform ---------------------------------
@@ -54,10 +61,10 @@
      tint — a blue-grey disc beside a warm orange button reads as borrowed from
      another system. The glyph is solved against `--da-fill-press`, the extreme
      it sits on rather than the resting state (4.53:1). */
-  --da-fill: #beb5b2;
-  --da-fill-deep: #b1a7a3;
-  --da-fill-press: #a49994;
-  --da-glyph: #514c49;
+    --da-fill: #e2e2e2;
+  --da-fill-deep: #d6d6d6;
+  --da-fill-press: #cacaca;
+  --da-glyph: #4a4a4a;
 
   /* Action. White on Designally Orange measures 3.24:1 — under the 4.5 a
      17px label owes. The system crosses that floor knowingly and records it
@@ -70,20 +77,38 @@
      something ever has to be read rather than recognised. */
   --da-orange-deep: #d9482d;
   --da-orange-mark: #c73f29; /* legal as text/line on light: 4.54:1 */
-  --da-orange-tint: #fff0ec;
+    --da-orange-tint: #fff0ec;
+  --da-orange-tint-deep: #ffd4ca;
 
   /* Focus is steel, never orange. An orange ring reads as the Cut. */
-  --da-focus: var(--da-steel);
+    /* THE STUDIO'S RING: two pixels of the orange itself. The platform
+     document argues for steel; the studio, which this admin is matched to,
+     draws focus in the accent, and so does this. */
+  --da-focus: var(--da-orange);
 
   /* Ink ramp, hued toward the steel field. */
-  --da-ink: var(--da-charcoal);
-  --da-ink-2: #262a30;
-  --da-ink-3: #53575e;
-  --da-ink-4: #797d85;
+    --da-ink: #1a1a1a;   /* headings, labels, body */
+  --da-ink-2: #4a4a4a; /* supporting copy */
+  --da-ink-3: #737373; /* sublines and metadata: 4.6:1 on the ground */
+  --da-ink-4: #a6a6a6; /* placeholders only — under AA, knowingly */
 
   /* The Edge. */
-  --da-hairline: #cecfd3; /* card and input borders */
-  --da-divider: #e6e8eb; /* internal dividers */
+    /* The Edge, the studio's two weights: the hairline around a plate, and the
+     stronger line where the shell divides — the rail's edge, the header's. */
+  --da-hairline: #f0f0f0;
+  --da-hairline-strong: #e0e0e0;
+  --da-divider: #f0f0f0;
+  /* The rail's own greys, a step down from the page so the working surface
+     is the lighter of the two; hover and the active row are the next two. */
+  --da-chrome: #f0f0f0;
+  --da-chrome-hover: #e9e9e9;
+  --da-chrome-active: #e2e2e2;
+  /* A filled field, and any recess: a chip, a quiet button's hover. */
+  --da-deep: #f0f0ef;
+  /* The studio's two shadows. Elevation is structural almost everywhere;
+     these are for the one thing that floats — a menu, a sheet, a tooltip. */
+  --da-shadow-card: 0 1px 2px rgba(36, 31, 28, 0.05), 0 4px 12px rgba(36, 31, 28, 0.06);
+  --da-shadow-pop: 0 4px 8px rgba(36, 31, 28, 0.08), 0 12px 32px rgba(36, 31, 28, 0.12);
 
   /* The nav, collapsed. Held as a token because five rules need the same
      number — the grid track, the panel, the floating selection bar and the
@@ -151,26 +176,26 @@
      the divider at 150 (Payload derives `--theme-border-color` from it), the
      hairline at 200, and charcoal at 900.
      ====================================================================== */
-  --color-base-0: #ffffff; /* --canvas: cards, inputs, sheets */
-  --color-base-50: #fafaf9; /* --pearl */
-  --color-base-100: #f3f3f3; /* --warm-white: the page */
-  --color-base-150: #e6e8eb; /* --divider  → --theme-border-color */
-  --color-base-200: #cecfd3; /* --hairline */
-  --color-base-250: #bcc0c6;
-  --color-base-300: #a9adb4; /* --stone, hued */
-  --color-base-350: #979ba3;
-  --color-base-400: #8b8f97;
-  --color-base-450: #83878f;
-  --color-base-500: #797d85; /* --ink-4: placeholders */
-  --color-base-550: #6b6f77;
-  --color-base-600: #5f636b;
-  --color-base-650: #53575e; /* --ink-3: the hover line, secondary text */
-  --color-base-700: #494d54;
-  --color-base-750: #3d4148;
-  --color-base-800: #33373d;
-  --color-base-850: #262a30; /* --ink-2 */
-  --color-base-900: #1b1d23; /* --charcoal: all display type */
-  --color-base-950: #0b0d12; /* the dark Field */
+    --color-base-0: #ffffff; /* plates: cards, sheets */
+  --color-base-50: #fafaf9;
+  --color-base-100: #f8f8f7; /* the ground */
+  --color-base-150: #f0f0f0; /* the hairline → --theme-border-color */
+  --color-base-200: #e0e0e0; /* the strong line */
+  --color-base-250: #d0d0d0;
+  --color-base-300: #bdbdbd; /* the dock's focus edge */
+  --color-base-350: #b0b0b0;
+  --color-base-400: #a6a6a6; /* placeholders */
+  --color-base-450: #8f8f8f;
+  --color-base-500: #737373; /* --ink-3: metadata */
+  --color-base-550: #666666;
+  --color-base-600: #5a5a5a;
+  --color-base-650: #4a4a4a; /* --ink-2: supporting copy */
+  --color-base-700: #3d3d3d;
+  --color-base-750: #333333;
+  --color-base-800: #2b2b2b;
+  --color-base-850: #222222;
+  --color-base-900: #1a1a1a; /* --ink */
+  --color-base-950: #111111;
   --color-base-1000: #000000;
 
   /* Semantic ramps. Payload's "success" is a blue it also uses for the focus
@@ -188,17 +213,18 @@
      no Thai glyphs whatever its readme says. The fallback is per codepoint, so
      a bilingual string resolves inside one run of text — never wrap Thai in
      its own element to "help" it. */
-  --font-body: 'Poppins', 'IBM Plex Sans Thai', system-ui, sans-serif;
-  --font-display: 'Zalando Sans', 'IBM Plex Sans Thai', system-ui, sans-serif;
-  --font-serif: 'Zalando Sans', 'IBM Plex Sans Thai', system-ui, sans-serif;
-  --font-mono: 'SF Mono', Menlo, Consolas, Monaco, monospace;
+  --font-body: var(--font-poppins, 'Poppins'), var(--font-plex-thai, 'IBM Plex Sans Thai'), system-ui, sans-serif;
+  --font-display: var(--font-zalando, 'Zalando Sans'), var(--font-plex-thai, 'IBM Plex Sans Thai'), system-ui, sans-serif;
+  --font-serif: var(--font-display);
+  --font-mono: var(--font-spline-mono, 'Spline Sans Mono'), ui-monospace, 'SF Mono', Menlo, monospace;
 
   /* Radii. The pill is the action signal, so it belongs to buttons and chips
      and to nothing you type into: a pill field reads as a button that happens
      to hold text. Inputs take the card radii instead. */
-  --style-radius-s: 6px;
-  --style-radius-m: 9px;
-  --style-radius-l: 14px;
+    /* THE STUDIO'S LADDER: 8 for a control, 12 for a field, 16 for a plate. */
+  --style-radius-s: 8px;
+  --style-radius-m: 12px;
+  --style-radius-l: 16px;
   /* The top of the system's ladder, which this file was missing: `card` and
      `sheet` (globals.css `--r-card` / `--r-sheet`). Without them the document
      sheets were drawn at `lg` — the radius of a large CONTROL — so the biggest
@@ -213,7 +239,7 @@
 
      16 on the sheet, 18 on a card, and the three control steps down with them.
      The proportions are the same; every corner is quieter. */
-  --style-radius-card: 18px;
+    --style-radius-card: 16px;
   --style-radius-sheet: 16px;
 
   /* THE MEASURE. 68 characters of the body face at its own size — the width the
@@ -283,7 +309,9 @@ h3,
 h4,
 h5 {
   color: var(--da-ink);
-  font-weight: 600;
+  /* 500, now that the variable face is loaded: the studio's heading weight.
+     Hierarchy comes from size and colour; weight is the lever spent last. */
+  font-weight: 500;
   /* The Thai leading rule. A line that can hold Thai and stands alone takes a
      minimum of 1.25 — the ink of a four-level stack measures ~1.20× the font
      size, and a heading has no next line to clear. Article and resource titles
@@ -331,10 +359,12 @@ p,
 
 /* The pill is the action signal. */
 .btn {
-  border-radius: 9999px;
-  font-family: var(--font-display);
+  /* The studio's button: eight pixels, not the pill — the pill is the sign-in
+     door's and the dock's — in the body face at semibold, tracking left alone. */
+  border-radius: var(--style-radius-s);
+  font-family: var(--font-body);
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   transition:
     background-color var(--da-dur-feedback) var(--da-ease),
     border-color var(--da-dur-feedback) var(--da-ease),
@@ -346,7 +376,7 @@ p,
    matters most on touch, where there is no hover and the only other feedback
    for a tap is the screen changing. */
 .btn:active {
-  transform: scale(0.95);
+  transform: scale(0.98);
 }
 
 /* Primary — the one accented action in a region. Payload drives its buttons
@@ -392,19 +422,21 @@ p,
 .da-iconbtn {
   display: inline-grid;
   place-items: center;
+  /* The studio's quiet disc: white on a hairline, so it can be seen on the
+     ground it sits over; the fill arrives under the pointer. */
+  background-color: #ffffff;
+  border: 1px solid var(--da-hairline-strong);
   /* 44px, the target size the rest of this admin holds to — the Thai button and
      Save both sit at it, and 40 was this one control quietly under the floor. */
-  inline-size: 44px;
-  block-size: 44px;
+    inline-size: 40px;
+  block-size: 40px;
   flex: 0 0 auto;
   margin: 0;
   padding: 0;
-  border: 0;
   /* Round, because the pill is this system's action signal and a pill with
      equal sides is a circle. */
-  border-radius: 999px;
-  background-color: transparent;
-  color: var(--da-ink-3);
+    border-radius: 999px;
+  color: var(--da-ink-2);
   cursor: pointer;
   transition:
     background-color var(--da-dur-feedback) var(--da-ease),
@@ -414,8 +446,8 @@ p,
 /* Ghost at rest: in a rail of quiet controls a filled disc each would read as
    four primary actions. The ground appears under the pointer instead. */
 @media (hover: hover) {
-  .da-iconbtn:hover {
-    background-color: var(--da-warm-white);
+    .da-iconbtn:hover {
+    background-color: var(--da-chrome);
     color: var(--da-ink);
   }
 }
@@ -445,6 +477,7 @@ p,
    because it is the action its region exists for. */
 .da-iconbtn--accent {
   background-color: var(--da-orange);
+  border-color: transparent;
   color: #ffffff;
 }
 
@@ -471,22 +504,18 @@ p,
   --bg-color: transparent;
   --hover-bg: transparent;
   --hover-color: var(--da-ink);
-  border: 1px solid var(--da-hairline);
-}
-
-@media (hover: hover) {
-  .btn--style-secondary:hover {
-    border-color: var(--da-ink-3);
-  }
+    border: 1px solid var(--da-hairline-strong);
+  --hover-bg: var(--da-warm-white);
 }
 
 /* Payload's "pill" style is its chip — filter tags, array controls. Same
    shape, quieter ground. */
 .btn--style-pill {
-  --bg-color: var(--da-warm-white);
+  --bg-color: var(--da-deep);
   --color: var(--da-ink-2);
-  --hover-bg: var(--da-divider);
+  --hover-bg: var(--da-chrome-active);
   --hover-color: var(--da-ink);
+  border-radius: 9999px;
 }
 
 /* =============================================================================
@@ -503,9 +532,12 @@ textarea,
 .textarea-outer,
 .input-wrapper > input,
 .code-editor {
+    /* FILLED, NOT OUTLINED — the studio's rule. The fill is what says "type
+     here"; an outline on a white sheet says it twice and turns a form into a
+     stack of boxes. The edge is transparent so the box keeps its size. */
   border-radius: var(--style-radius-m);
-  border-color: var(--da-hairline);
-  background-color: #ffffff;
+  border-color: transparent;
+  background-color: var(--da-deep);
   font-family: var(--font-body);
   /* Payload sinks its inputs with `0 2px 2px -1px rgba(0,0,0,.1)`. In this
      system an input is bounded by the Edge and by nothing else — the hairline
@@ -519,9 +551,9 @@ textarea,
   input[type='email']:hover,
   input[type='password']:hover,
   input[type='number']:hover,
-  textarea:hover,
+    textarea:hover,
   .rs__control:hover {
-    border-color: var(--da-ink-3);
+    border-color: transparent;
   }
 }
 
@@ -534,9 +566,9 @@ button:focus-visible,
 a:focus-visible,
 [tabindex]:focus-visible,
 .rs__control--is-focused {
-  outline: 2px solid var(--da-focus);
+    outline: 2px solid var(--da-focus);
   outline-offset: 2px;
-  border-color: var(--da-focus);
+  border-color: transparent;
 }
 
 /* INK-3, NOT INK-4. `#797d85` clears 4.5:1 on white and nothing else: the search
@@ -544,7 +576,7 @@ a:focus-visible,
    placeholder is the only text in an empty field, so it is doing the field's
    labelling until something is typed. Ink-3 is 6.6:1 on that ground. */
 ::placeholder {
-  color: var(--da-ink-3);
+  color: var(--da-ink-4);
 }
 
 /* =============================================================================
@@ -591,9 +623,12 @@ a:focus-visible,
 .link-editor,
 .popup__content,
 .drawer__content {
+  /* The one thing that floats takes the studio's pop shadow INSTEAD of a
+     line — a menu is lifted, a plate is outlined, never both. */
   background-color: #ffffff;
-  border: 1px solid var(--da-hairline);
-  border-radius: var(--style-radius-m);
+  border: 0;
+  border-radius: var(--style-radius-l);
+  box-shadow: var(--da-shadow-pop);
 }
 
 /* Rows carry their own padding; the container carries the border and radius. */
@@ -610,8 +645,8 @@ a:focus-visible,
 }
 
 .table th {
-  font-family: var(--font-display);
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-weight: 500;
   color: var(--da-ink-3);
   letter-spacing: 0;
 }
@@ -620,8 +655,9 @@ a:focus-visible,
    by a shadow or a second tone. The dark Field exists in this system, but it is
    reserved for a moment of drama and a CMS sidebar is not one. */
 .nav {
-  background-color: var(--da-warm-white);
-  border-right: 1px solid var(--da-hairline);
+  /* The studio's rail: a step down from the page, bounded by the strong line. */
+  background-color: var(--da-chrome);
+  border-right: 1px solid var(--da-hairline-strong);
 }
 
 .nav__link {
@@ -630,18 +666,18 @@ a:focus-visible,
      500, which the system does not have — its ladder is 300/400/600/700 and the
      token block above says so. The reasoning was right and the value was not
      available. */
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  color: var(--da-ink-2);
-  border-radius: var(--style-radius-s);
+    /* 500 in full ink, the studio's rail label; 12px corners, its row. */
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--da-ink);
+  border-radius: 12px;
   transition:
     background-color var(--da-dur-feedback) var(--da-ease),
     color var(--da-dur-feedback) var(--da-ease);
 }
-
 @media (hover: hover) {
   .nav__link:hover {
-    background-color: var(--da-divider);
+    background-color: var(--da-chrome-hover);
     color: var(--da-ink);
   }
 }
@@ -675,13 +711,15 @@ a:focus-visible,
    fill, no ring, no colour on the label, per the same decision the list branch
    records below. */
 .nav .nav__link:has(.nav__link-indicator) {
-  font-weight: 600;
+  font-weight: 500;
   /* `.nav .nav__link` — one class heavier than a bare `.nav__link:has()` — sets
      every label to ink-3, so without the `.nav` here the active item on a
      document page kept the resting colour while the same item on a list page
      took ink. Measured: rgb(83,87,94) against rgb(27,29,35). */
-  color: var(--da-ink);
-  background-color: var(--da-warm-white);
+    color: var(--da-ink);
+  /* The studio marks the current row with surface alone: the deepest of the
+     rail's three greys, no bar, no weight step. */
+  background-color: var(--da-chrome-active);
   box-shadow: none;
 }
 
@@ -697,6 +735,7 @@ a:focus-visible,
    pill's own left edge, which is where it belongs anyway: the bar marks the
    surface, it does not float beside it. */
 .nav__link-indicator {
+  display: none;
   width: 3px;
   height: 18px;
   border-radius: 2px;
@@ -746,7 +785,7 @@ a:focus-visible,
 .nav__link {
   display: flex;
   align-items: center;
-  min-block-size: 44px;
+  min-block-size: 48px;
   padding-inline: 0.75rem;
   padding-block: 0;
 }
@@ -857,12 +896,12 @@ a:focus-visible,
   min-block-size: 44px;
   margin-inline: -0.75rem;
   padding-inline: 0.75rem;
-  border-radius: var(--style-radius-s);
+    border-radius: 12px;
   font-family: var(--font-display);
   font-size: 15px;
-  font-weight: 400;
-  letter-spacing: -0.01em;
-  color: var(--da-ink-3);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--da-ink-2);
   transition:
     background-color var(--da-dur-feedback) var(--da-ease),
     color var(--da-dur-feedback) var(--da-ease);
@@ -879,8 +918,8 @@ a:focus-visible,
 }
 
 @media (hover: hover) {
-  .nav__log-out:hover {
-    background-color: var(--da-divider);
+    .nav__log-out:hover {
+    background-color: var(--da-chrome-hover);
     color: var(--da-ink);
   }
 }
@@ -899,7 +938,7 @@ a:focus-visible,
 
 .app-header__bg {
   background-color: var(--da-warm-white);
-  border-block-end: 1px solid var(--da-hairline);
+  border-block-end: 1px solid var(--da-hairline-strong);
 }
 
 /* The account is the only way to the account screen and it was a 25px gravatar
@@ -935,8 +974,8 @@ div.nav__link {
 }
 
 @media (hover: hover) {
-  div.nav__link:hover {
-    background-color: #ffffff;
+    div.nav__link:hover {
+    background-color: var(--da-chrome-active);
     text-decoration: none;
   }
 }
@@ -4493,6 +4532,27 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   margin: 0;
   line-height: 1.15;
 }
+/* THE PAGE'S ONE ACTION, AS THE STUDIO DRAWS IT. "Create New" was Payload's
+   grey chip beside the heading; the studio puts a page's forward action in the
+   accent, eight pixels, on the heading's line — "New routine" on Routines. The
+   title row spreads so the button sits at the row's far end, with the deck
+   under the title where it was. */
+.collection-list .list-header__title-and-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.list-create-new-doc__create-new-button {
+  --bg-color: var(--da-orange);
+  --color: #ffffff;
+  --hover-bg: var(--da-orange-deep);
+  --hover-color: #ffffff;
+  min-block-size: 40px;
+  padding-inline: 1rem;
+  border-radius: var(--style-radius-s);
+  font-weight: 600;
+}
 
 .collection-list .custom-view-description {
   font-size: 0.8125rem;
@@ -4536,8 +4596,12 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
    read as page rather than as furniture; it is a surface now, and the page's
    grey is what separates the two — still no rule between them. */
 .nav {
+  /* THE STUDIO'S RAIL, RESTATED HERE because this block is the last word on
+     the shell: a step down from the page, with the strong line on its edge —
+     the one place the studio does draw a line between shell and stage. */
   border: 0;
-  background-color: #ffffff;
+  border-inline-end: 1px solid var(--da-hairline-strong);
+  background-color: var(--da-chrome);
 }
 
 /* WHITE, LIKE THE NAV BESIDE IT. The band was transparent, sitting on the
@@ -4550,8 +4614,11 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
    under the bar; colouring the two of them stacks one white on another and any
    future translucency would be mixed twice. */
 .app-header {
+  /* The band sits on the page's own ground, as the studio's bar does, and
+     closes with the strong line so the stage scrolls under an edge. */
   border: 0;
-  background-color: #ffffff;
+  border-block-end: 1px solid var(--da-hairline-strong);
+  background-color: var(--da-warm-white);
   box-shadow: none;
 }
 
@@ -4885,10 +4952,11 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
 .list-controls .search-filter__input {
   block-size: 44px;
   min-block-size: 44px;
-  padding-inline: 2.625rem 1rem;
+    padding-inline: 2.625rem 1rem;
   border: 0;
-  border-radius: 999px;
-  background-color: var(--da-warm-white);
+  /* The studio's field: filled, twelve pixels, on the white plate. */
+  border-radius: var(--style-radius-m);
+  background-color: var(--da-deep);
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23797d85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>');
   background-repeat: no-repeat;
   background-position: left 0.9375rem center;
@@ -5183,11 +5251,11 @@ html {
   display: inline-flex;
   align-items: center;
   gap: 0.4375rem;
-  min-block-size: 36px;
+    min-block-size: 36px;
   margin: 0;
   padding: 0 0.875rem;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--style-radius-s);
   background-color: transparent;
   font-family: var(--font-display);
   font-size: 0.8125rem;
@@ -6258,7 +6326,7 @@ body.da-nav-collapsed .collection-list .list-selection {
     padding-inline: 1rem;
     /* The sheet's is a `.pill` at a 3px radius — a square grey chip where the
        list screen's is a full pill. One control, one shape. */
-    border-radius: 9999px;
+    border-radius: var(--style-radius-s);
   }
 
   /*

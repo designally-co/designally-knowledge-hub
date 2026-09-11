@@ -55,7 +55,7 @@
   min-block-size: 36px;
   padding: 0 1.0625rem;
   border: 0;
-  border-radius: 999px;
+  border-radius: 8px;
   /* 0.875rem, not 0.8125: the admin's root is 15px, so the smaller step lands
      at 12.19px — under the floor for a control's label, measured. */
   font-size: 0.875rem;
@@ -84,7 +84,7 @@
   block-size: 36px;
   padding: 0 1.0625rem;
   border: 1px solid var(--da-hairline);
-  border-radius: 999px;
+  border-radius: 8px;
   background-color: #ffffff;
   font-family: var(--font-display);
   font-size: 0.875rem;
@@ -376,7 +376,7 @@
   min-block-size: 36px;
   padding: 0 0.875rem;
   border: 0;
-  border-radius: 999px;
+  border-radius: 8px;
   background-color: var(--da-critical);
   font-family: var(--font-display);
   font-size: 0.8125rem;

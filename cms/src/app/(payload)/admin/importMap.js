@@ -49,6 +49,7 @@ import { SignOut as SignOut_ecde4383348bf1e963734111aebbf434 } from '../../../co
 import { NavFooter as NavFooter_3b9e48c0766d631a740babd8ba41f9aa } from '../../../components/admin/NavFooter'
 import { SignIn as SignIn_4ca1d6643189fb160fd7f4543c3fb84a } from '../../../components/admin/SignIn'
 import { NavBrand as NavBrand_d7dd6c791c113ce8ff240c7282294e70 } from '../../../components/admin/NavBrand'
+import { AdminFonts as AdminFonts_1a7dbd9a670a2dd0dc56d863acf43b09 } from '../../../components/admin/AdminFonts'
 import { UploadNew as UploadNew_9ea8c7b6df2174f003e9de60d1f1b21d } from '../../../components/admin/UploadNew'
 import { A11yNames as A11yNames_8a3d7fd2a0d2427d29a01a1084d70db8 } from '../../../components/admin/A11yNames'
 import { NavDrawer as NavDrawer_85d6b3aca6594fd90419defe78500d2b } from '../../../components/admin/NavDrawer'
@@ -109,6 +110,7 @@ export const importMap = {
   "/components/admin/NavFooter#NavFooter": NavFooter_3b9e48c0766d631a740babd8ba41f9aa,
   "/components/admin/SignIn#SignIn": SignIn_4ca1d6643189fb160fd7f4543c3fb84a,
   "/components/admin/NavBrand#NavBrand": NavBrand_d7dd6c791c113ce8ff240c7282294e70,
+  "/components/admin/AdminFonts#AdminFonts": AdminFonts_1a7dbd9a670a2dd0dc56d863acf43b09,
   "/components/admin/UploadNew#UploadNew": UploadNew_9ea8c7b6df2174f003e9de60d1f1b21d,
   "/components/admin/A11yNames#A11yNames": A11yNames_8a3d7fd2a0d2427d29a01a1084d70db8,
   "/components/admin/NavDrawer#NavDrawer": NavDrawer_85d6b3aca6594fd90419defe78500d2b,
