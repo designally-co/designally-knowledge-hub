@@ -6300,6 +6300,101 @@ $list: '.template-default__wrap > .collection-list';
   order: 1;
 }
 
+/*
+ * THE PER-PAGE CHOICE LIVES IN THE COUNT'S PILL. "1–10 of 22" and "Per page:
+ * 10" are two readings of the same thing — how much of the list is on this
+ * page — so they are one object: the count takes the left of the pill, the
+ * choice the right, with a hairline between them. Payload renders them as
+ * siblings, so the pill is drawn across the two: the count gives up its right
+ * edge, the choice takes it, and the 8px gap between them closes.
+ *
+ * AND IT STOPS SHOUTING. Payload sets the label at 700 in the 15px chrome
+ * size — the heaviest type under the table, on the least important control.
+ * It takes the count's own 13px, 400, faint ink.
+ *
+ * Above the phone width only; on a phone the choice is hidden (below) and the
+ * count keeps its whole pill.
+ */
+@media (min-width: 48.0625rem) {
+  #{$list} .page-controls .page-controls__page-info {
+    padding-inline-end: 12px;
+    border-inline-end: 0;
+    border-start-end-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  #{$list} .page-controls .per-page {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    box-sizing: border-box;
+    block-size: 36px;
+    margin-inline-start: -8px;
+    border: 1px solid var(--da-hairline);
+    border-inline-start: 0;
+    border-start-end-radius: 999px;
+    border-end-end-radius: 999px;
+    background-color: #ffffff;
+  }
+
+  /* The hairline between the two readings, inset so it reads as a divider
+     inside one pill rather than two pills butted together. */
+  #{$list} .page-controls .per-page::before {
+    content: '';
+    position: absolute;
+    inset-block: 9px;
+    inset-inline-start: 0;
+    inline-size: 1px;
+    background-color: var(--da-hairline);
+  }
+
+  #{$list} .page-controls .per-page :is(.popup, .popup__trigger-wrap, .popup-button) {
+    display: flex;
+    align-items: center;
+    block-size: 100%;
+  }
+
+  #{$list} .page-controls .per-page .popup-button {
+    padding: 0 10px 0 12px;
+    border: 0;
+    border-start-end-radius: 999px;
+    border-end-end-radius: 999px;
+    background: none;
+    cursor: pointer;
+  }
+
+  #{$list} .page-controls .per-page__base-button {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--da-ink-3);
+  }
+
+  #{$list} .page-controls .per-page__icon {
+    inline-size: 16px;
+    block-size: 16px;
+  }
+
+  #{$list} .page-controls .per-page__icon .stroke {
+    stroke: currentColor;
+  }
+
+  @media (hover: hover) {
+    #{$list} .page-controls .per-page .popup-button:hover .per-page__base-button {
+      color: var(--da-ink);
+    }
+  }
+
+  #{$list} .page-controls .per-page .popup-button:focus-visible {
+    outline: 2px solid var(--da-focus);
+    outline-offset: 2px;
+  }
+}
+
 #{$list} .page-controls .paginator {
   order: 2;
   display: flex;
