@@ -166,3 +166,82 @@
     transition: none;
   }
 }
+
+/* --- Tile form (PromoBannerCell) ------------------------------------------
+   A banner sitting in a row of cards as one of them: headed with the section's
+   name in the shared banner heading (serif capitals at --promo-label-size), no
+   arrow, art at the foot. A quarter of a row is narrow, so its padding is
+   tighter than the banners' usual 48px. A long name can cap its heading to the
+   tile with --promo-label-fit (in cqi of the tile) so it steps down only where
+   the tile cannot hold the shared size. Sections set colour and aspect-ratio. */
+.promo-banner--tile {
+  container-type: inline-size;
+  min-height: 0;
+  padding: clamp(16px, 1.4vw, 24px);
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.promo-banner--tile .promo-banner__content {
+  max-width: 100%;
+}
+
+.promo-banner--tile .promo-banner__label {
+  font-size: min(var(--promo-label-size), var(--promo-label-fit, 9999px));
+  text-transform: uppercase;
+}
+
+.promo-banner--tile .promo-banner__art {
+  right: auto;
+  left: clamp(16px, 1.4vw, 24px);
+  bottom: 0;
+  max-width: 55%;
+  height: 42%;
+}
+
+/* The banner and its "see all" line share one grid cell, the line under it. */
+.promo-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* Ruled above and below only, label and arrow pushed to either end. The label
+   is set like the article titles (.article-card__title--sm). */
+.promo-see-all {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: var(--touch-target);
+  padding-block: 14px;
+  border-top: 1px solid var(--be-ink);
+  border-bottom: 1px solid var(--be-ink);
+  color: var(--be-ink);
+  font: var(--type-title-sm);
+  letter-spacing: var(--tracking-tight);
+  text-decoration: none;
+}
+
+/* The arrow points up and to the right, along a compass bearing of 46deg
+   (0 = up, clockwise). The icon is drawn pointing east (90deg). */
+.promo-see-all__icon {
+  --arrow-bearing: 46deg;
+  flex: none;
+  transform: rotate(calc(var(--arrow-bearing) - 90deg));
+  transition: transform var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.promo-see-all:focus-visible .promo-see-all__icon {
+  transform: rotate(calc(var(--arrow-bearing) - 90deg)) translateX(4px);
+}
+
+@media (hover: hover) {
+  .promo-see-all:hover { opacity: 1; }
+
+  .promo-see-all:hover .promo-see-all__icon {
+    transform: rotate(calc(var(--arrow-bearing) - 90deg)) translateX(4px);
+  }
+}

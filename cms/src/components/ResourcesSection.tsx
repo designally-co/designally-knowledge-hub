@@ -1,12 +1,13 @@
 import React from 'react'
 
 import { ResourceCard } from '@/components/ds'
-import { PromoBanner } from '@/components/PromoBanner'
+import { PromoBannerCell } from '@/components/PromoBannerCell'
 import type { ResourceItem } from '@/lib/resources'
 
 /**
  * "Resources" — the downloadable files as a row of folder cards. Seven
- * resources plus the browse banner fill an eight-item grid. Renders nothing
+ * resources plus the browse banner (headed with the section's name, a "see
+ * all" line under it) fill an eight-item grid. Renders nothing
  * when there are no published files.
  *
  * Colour and glyph come from each resource's category preset, not from its
@@ -47,10 +48,12 @@ export function ResourcesSection({ items, title, seeAllLabel, seeAllHref }: Reso
             />
           ))}
 
-          <PromoBanner
-            className="resources__banner"
-            label={seeAllLabel}
+          <PromoBannerCell
+            className="resources__banner-cell"
+            bannerClassName="resources__banner"
+            label={title}
             href={seeAllHref}
+            seeAllLabel={seeAllLabel}
           />
         </div>
       </div>

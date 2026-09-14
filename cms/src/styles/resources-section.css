@@ -36,29 +36,15 @@
   gap: var(--grid-gap);
 }
 
+/* Colour and shape only; the tile and its "see all" line are PromoBannerCell's
+   (promo-banner.css). Square, like the folder figures beside it. "RESOURCES"
+   runs about 5.9em, wider than a quarter-width tile holds at the shared heading
+   size, so its heading is capped to the tile (16cqi leaves a little room) and
+   steps down only where it has to. */
 .resources__banner {
   --promo-bg: #b9c7f3;
-  min-height: 0;
+  --promo-label-fit: 16cqi;
   aspect-ratio: 1 / 1;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
-
-.resources__banner .promo-banner__content {
-  max-width: 100%;
-}
-
-.resources__banner .promo-banner__label {
-  max-width: 12ch;
-}
-
-.resources__banner .promo-banner__art {
-  right: auto;
-  bottom: 0;
-  left: clamp(24px, 4vw, 40px);
-  max-width: 55%;
-  height: 42%;
 }
 
 @media (max-width: 63.999em) {
@@ -99,21 +85,18 @@
     font-size: clamp(13px, 8cqw, 30px);
   }
 
-  /* The banner cannot be a tile at this size — a 27px label plus a 44px arrow
-     needs about 190px of height inside a 165px square. It spans the row and
-     goes back to the wide shape it has in every other section instead. */
-  .resources__banner {
+  /* A 165px square is too small for the heading and the art together, so the
+     banner and its "see all" line span the row and the banner takes the wide
+     shape it has in the other sections, art beside the heading. */
+  .resources__banner-cell {
     grid-column: 1 / -1;
-    aspect-ratio: auto;
-    min-height: clamp(112px, 14vw, 176px);
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
   }
 
-  /* The tile form let the label use the full width because the art sat below
-     it. Back in the wide form the art is beside it again, so give the width
-     back. */
+  .resources__banner {
+    aspect-ratio: auto;
+    min-height: clamp(112px, 14vw, 176px);
+  }
+
   .resources__banner .promo-banner__content {
     max-width: 68%;
   }

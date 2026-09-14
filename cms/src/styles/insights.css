@@ -34,87 +34,12 @@
   border-radius: 0;
 }
 
-/* Colour + tall-card layout — keeps the original grid-cell position and portrait
-   shape; the font, button and graphic come shared from promo-banner.css.
-   Text + button sit top-left; the graphic sits bottom-left. */
+/* Colour and shape only; the tile and its "see all" line are PromoBannerCell's
+   (promo-banner.css). Portrait, the same 3:4 frame as the article covers
+   beside it. */
 .insights__banner {
   --promo-bg: #b9c7f3;
-  /* Portrait, the same 3:4 frame as the article covers beside it. */
-  min-height: 0;
   aspect-ratio: 3 / 4;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
-
-.insights__banner .promo-banner__content {
-  max-width: 100%;
-}
-
-/* The same heading as the other banners: serif capitals at the shared size
-   (promo-banner.css). This banner is a quarter of the row, so its padding is
-   tighter than the banners' usual 48px; at that size "INSIGHTS" needs the room. */
-.insights__banner {
-  padding: clamp(16px, 1.4vw, 24px);
-}
-
-.insights__banner .promo-banner__label {
-  font-size: var(--promo-label-size);
-  text-transform: uppercase;
-}
-
-/* The banner and its "see all" line share one grid cell, the line under it. */
-.insights__banner-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  min-width: 0;
-}
-
-/* Ruled above and below only, label and arrow pushed to either end. The label
-   is set like the article titles in the row (.article-card__title--sm). */
-.insights__see-all {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: var(--touch-target);
-  padding-block: 14px;
-  border-top: 1px solid var(--be-ink);
-  border-bottom: 1px solid var(--be-ink);
-  color: var(--be-ink);
-  font: var(--type-title-sm);
-  letter-spacing: var(--tracking-tight);
-  text-decoration: none;
-}
-
-/* The arrow points up and to the right, along a compass bearing of 46deg
-   (0 = up, clockwise). The icon is drawn pointing east (90deg). */
-.insights__see-all-icon {
-  --arrow-bearing: 46deg;
-  flex: none;
-  transform: rotate(calc(var(--arrow-bearing) - 90deg));
-  transition: transform var(--hover-state-dur) var(--ease-out-quart);
-}
-
-.insights__see-all:focus-visible .insights__see-all-icon {
-  transform: rotate(calc(var(--arrow-bearing) - 90deg)) translateX(4px);
-}
-
-@media (hover: hover) {
-  .insights__see-all:hover { opacity: 1; }
-
-  .insights__see-all:hover .insights__see-all-icon {
-    transform: rotate(calc(var(--arrow-bearing) - 90deg)) translateX(4px);
-  }
-}
-
-.insights__banner .promo-banner__art {
-  right: auto;
-  left: clamp(16px, 1.4vw, 24px);
-  bottom: 0;
-  max-width: 55%;
-  height: 42%;
 }
 
 @media (min-width: 36em) {

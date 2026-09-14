@@ -1,7 +1,7 @@
 import React from 'react'
 
-import { ArticleCard, Icon } from '@/components/ds'
-import { PromoBanner } from '@/components/PromoBanner'
+import { ArticleCard } from '@/components/ds'
+import { PromoBannerCell } from '@/components/PromoBannerCell'
 import type { CarouselItem } from '@/lib/resources'
 
 type InsightsGridProps = {
@@ -44,18 +44,12 @@ export function InsightsGrid({
             />
           ))}
 
-          <div className="insights__banner-cell">
-            <PromoBanner
-              className="insights__banner"
-              label={bannerLabel}
-              href={bannerHref}
-              arrow={false}
-            />
-            <a className="insights__see-all" href={bannerHref}>
-              <span>{seeAllLabel}</span>
-              <Icon className="insights__see-all-icon" name="arrow-right" size={24} strokeWidth={1.8} />
-            </a>
-          </div>
+          <PromoBannerCell
+            bannerClassName="insights__banner"
+            label={bannerLabel}
+            href={bannerHref}
+            seeAllLabel={seeAllLabel}
+          />
         </div>
       </div>
     </section>
