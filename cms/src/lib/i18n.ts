@@ -229,6 +229,23 @@ export type Dictionary = {
     empty: string
     articles: string
     resources: string
+    /** The overlay's close control and the field's submit button. */
+    close: string
+    submit: string
+    recent: string
+    /** Label for a recent search's remove button: "Remove “{q}”". */
+    removeRecent: string
+    popular: string
+    trending: string
+    searching: string
+    /** The results tab covering every match. */
+    all: string
+    /** "{count} results found", and the singular. */
+    results: string
+    result: string
+    viewAll: string
+    /** The search page's intro: "Results for “{q}”". */
+    resultsFor: string
   }
 }
 
@@ -466,6 +483,18 @@ const en: Dictionary = {
     empty: 'Nothing found for “{q}”.',
     articles: 'Articles',
     resources: 'Resources',
+    close: 'Close',
+    submit: 'Search',
+    recent: 'Recent Searches',
+    removeRecent: 'Remove “{q}”',
+    popular: 'Popular Keywords',
+    trending: 'Trending Now',
+    searching: 'Searching…',
+    all: 'All',
+    results: '{count} results found',
+    result: '1 result found',
+    viewAll: 'View all results',
+    resultsFor: 'Results for “{q}”',
   },
 }
 
@@ -701,6 +730,18 @@ const th: Dictionary = {
     empty: 'ไม่พบผลลัพธ์สำหรับ “{q}”',
     articles: 'บทความ',
     resources: 'รีซอร์ส',
+    close: 'ปิด',
+    submit: 'ค้นหา',
+    recent: 'การค้นหาล่าสุด',
+    removeRecent: 'ลบ “{q}”',
+    popular: 'คีย์เวิร์ดยอดนิยม',
+    trending: 'มาแรงตอนนี้',
+    searching: 'กำลังค้นหา…',
+    all: 'ทั้งหมด',
+    results: 'พบ {count} รายการ',
+    result: 'พบ 1 รายการ',
+    viewAll: 'ดูผลลัพธ์ทั้งหมด',
+    resultsFor: 'ผลการค้นหาสำหรับ “{q}”',
   },
 }
 

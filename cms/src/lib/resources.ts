@@ -5,8 +5,8 @@ import config from '@/payload.config'
 import type { Article as ArticleDoc, Media, Resource } from '@/payload-types'
 import { localeHref, type Locale } from './i18n'
 import { readingMinutes } from './readingTime'
-import { presetForCategory, type ResourceGlyph } from './resourceCategories'
-import { TAXONOMY, type Category } from './tags'
+import { presetForCategory, RESOURCE_CATEGORIES, type ResourceGlyph } from './resourceCategories'
+import { TAG_OPTIONS, TAXONOMY, type Category } from './tags'
 
 /**
  * Data-access layer for the public site. Reads content straight from Payload's
@@ -19,6 +19,8 @@ export interface CarouselItem {
   id: string
   title: string
   date: string
+  /** ISO publish date, for ordering across collections. Empty when unset. */
+  publishedAt: string
   tags: string[]
   image?: string
   ratio: string
@@ -89,11 +91,27 @@ function toCard(r: ArticleDoc, locale: Locale): CarouselItem {
     id: String(r.id),
     title: r.title,
     date: formatDate(r.publishedDate, locale),
+    publishedAt: r.publishedDate ?? '',
     tags: r.tag ? [r.tag] : [],
     image: coverOf(r),
     ratio: ratioOf(r),
     href: localeHref(locale, `/articles/${r.slug}`),
   }
+}
+
+/**
+ * A title search that also reaches a tag (or resource category) whose name
+ * contains the query, so "branding" finds everything filed under Branding
+ * Systems and a tag picked from search's Popular Keywords finds its articles.
+ * The names are matched here, in code, and handed to Payload as an `in` on the
+ * select field; a `like` on a select column is not something every adapter
+ * supports.
+ */
+function titleOrNameMatch(q: string, names: readonly string[], field: 'tag' | 'category'): Where {
+  const needle = q.toLowerCase()
+  const matched = names.filter((name) => name.toLowerCase().includes(needle))
+  const title: Where = { title: { like: q } }
+  return matched.length > 0 ? { or: [title, { [field]: { in: matched } }] } : title
 }
 
 // Base filter: published only. Articles live in their own collection now, so
@@ -292,6 +310,39 @@ export async function getLatestTags(count = 12, locale: Locale = 'en'): Promise<
   )
 }
 
+/**
+ * The tags filed on the most published articles, most-used first; a tie goes to
+ * the tag used most recently. Search's "Popular keywords".
+ */
+export async function getPopularTags(count = 6, locale: Locale = 'en'): Promise<string[]> {
+  return safeRead(
+    'getPopularTags',
+    async () => {
+      const payload = await getPayload({ config })
+      const { docs } = await payload.find({
+        collection: 'articles',
+        where: { and: [...publishedOnly] },
+        sort: '-publishedDate',
+        limit: 1000,
+        depth: 0,
+        locale,
+      })
+      // A Map keeps first-seen order, which is newest first; the sort is stable,
+      // so equal counts stay in that order.
+      const tally = new Map<string, number>()
+      for (const r of docs) {
+        const tag = r.tag as string | null | undefined
+        if (tag) tally.set(tag, (tally.get(tag) ?? 0) + 1)
+      }
+      return [...tally.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, count)
+        .map(([tag]) => tag)
+    },
+    [],
+  )
+}
+
 /** Published articles carrying a given tag, newest first. */
 export async function getArticlesByTag(
   tag: string,
@@ -358,7 +409,7 @@ export interface ArticleListingOptions {
   category?: Category
   /** A single exact tag — narrows within (or across) categories. */
   tag?: string
-  /** Case-insensitive title search. */
+  /** Case-insensitive search of the title and the tag's name. */
   q?: string
   page?: number
   perPage?: number
@@ -367,8 +418,9 @@ export interface ArticleListingOptions {
 
 /**
  * A filtered, paginated slice of published articles, newest first — the engine
- * behind the category and tag listing pages. `tag` (exact) takes precedence over
- * `category` (any of its tags); `q` searches the title. Returns the page's items
+ * behind the category and tag listing pages and search. `tag` (exact) takes
+ * precedence over `category` (any of its tags); `q` searches the title and the
+ * tag's name. Returns the page's items
  * plus totals for the pager.
  */
 export async function getArticleListing({
@@ -387,7 +439,7 @@ export async function getArticleListing({
       const where: Where[] = [...publishedOnly]
       if (tag) where.push({ tag: { equals: tag } })
       else if (category) where.push({ tag: { in: [...TAXONOMY[category]] } })
-      if (q?.trim()) where.push({ title: { like: q.trim() } })
+      if (q?.trim()) where.push(titleOrNameMatch(q.trim(), TAG_OPTIONS, 'tag'))
 
       const res = await payload.find({
         collection: 'articles',
@@ -422,6 +474,8 @@ export interface ResourceItem {
   slug: string
   title: string
   date: string
+  /** ISO publish date, for ordering across collections. Empty when unset. */
+  publishedAt: string
   category: string
   color: string
   glyph: ResourceGlyph
@@ -449,6 +503,7 @@ function toResourceItem(r: Resource, locale: Locale): ResourceItem {
     slug: r.slug ?? '',
     title: r.title,
     date: formatDate(r.publishedDate, locale),
+    publishedAt: r.publishedDate ?? '',
     category: r.category ?? '',
     color: preset.color,
     glyph: preset.glyph,
@@ -483,7 +538,7 @@ export async function getDownloadableFiles(
 export interface ResourceListingOptions {
   /** Exact resource category (Fonts, Templates, …). */
   category?: string
-  /** Case-insensitive title search. */
+  /** Case-insensitive search of the title and the category's name. */
   q?: string
   page?: number
   perPage?: number
@@ -493,7 +548,8 @@ export interface ResourceListingOptions {
 /**
  * A filtered, paginated slice of published resources, newest first — the engine
  * behind the /resources listing page. `category` filters by the resource's own
- * taxonomy; `q` searches the title. Returns the page's items plus totals.
+ * taxonomy; `q` searches the title and the category's name. Returns the page's
+ * items plus totals.
  */
 export async function getResourceListing({
   category,
@@ -509,7 +565,7 @@ export async function getResourceListing({
       const payload = await getPayload({ config })
       const where: Where[] = [...publishedOnly]
       if (category) where.push({ category: { equals: category } })
-      if (q?.trim()) where.push({ title: { like: q.trim() } })
+      if (q?.trim()) where.push(titleOrNameMatch(q.trim(), RESOURCE_CATEGORIES, 'category'))
 
       const res = await payload.find({
         collection: 'resources',

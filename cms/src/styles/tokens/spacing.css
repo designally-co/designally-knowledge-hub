@@ -63,6 +63,7 @@
   --z-sticky: 100;
   --z-drawer-scrim: 200;
   --z-drawer: 210;
+  --z-search: 250;
   --z-skip-link: 300;
 
   /* Easing — exponential ease-out only. No bounce, no elastic.

@@ -1,39 +1,79 @@
 'use server'
 
-import { getArticleListing, getResourceListing, type CarouselItem, type ResourceItem } from './resources'
+import {
+  getArticleListing,
+  getPopularTags,
+  getRecentArticles,
+  getResourceListing,
+} from './resources'
+import { CATEGORIES } from './tags'
+import {
+  articleHits,
+  MIN_QUERY,
+  newestFirst,
+  resourceHits,
+  type HubSearchResults,
+  type SearchGroup,
+  type SearchIdle,
+} from './searchShared'
 import type { Locale } from './i18n'
 
-export interface HubSearchResults {
-  articles: CarouselItem[]
-  resources: ResourceItem[]
-  total: number
-}
+/**
+ * Search's server actions: the overlay's live results and what it shows before
+ * anything is typed.
+ *
+ * Server actions rather than route handlers: Payload owns `/api/[...slug]`, so
+ * a sibling `/api/search` would be arguing with its catch-all for the same
+ * path, and every value that crosses back is a plain object.
+ */
+
+/** Cards per tab in the overlay: two rows of its four-up grid. The rest is /search's. */
+const OVERLAY_HITS = 8
 
 /**
- * Search both collections for the header's expanding field.
- *
- * A server action rather than a route handler: Payload owns `/api/[...slug]`,
- * so a sibling `/api/search` would be arguing with its catch-all for the same
- * path. This needs no URL of its own — the results live in the header, not on
- * a page — and both item types are plain objects, so they cross the boundary
- * as-is.
- *
- * Deliberately few results. This is a way into something, not a results page;
- * a list long enough to scroll would want a page, which is what the header
- * panel exists to avoid.
+ * Every tab's total and its first cards in one call, so switching tabs in the
+ * overlay costs nothing. All merges articles and resources newest first.
  */
 export async function searchHub(query: string, locale: Locale): Promise<HubSearchResults> {
   const q = query.trim()
-  if (q.length < 2) return { articles: [], resources: [], total: 0 }
+  if (q.length < MIN_QUERY) return { query: q, total: 0, groups: [] }
 
-  const [articles, resources] = await Promise.all([
-    getArticleListing({ q, perPage: 5, locale }),
-    getResourceListing({ q, perPage: 3, locale }),
+  const [all, byCategory, resources] = await Promise.all([
+    getArticleListing({ q, perPage: OVERLAY_HITS, locale }),
+    Promise.all(
+      CATEGORIES.map((category) => getArticleListing({ category, q, perPage: OVERLAY_HITS, locale })),
+    ),
+    getResourceListing({ q, perPage: OVERLAY_HITS, locale }),
   ])
 
-  return {
-    articles: articles.items,
-    resources: resources.items,
-    total: articles.total + resources.total,
-  }
+  const total = all.total + resources.total
+  const groups: SearchGroup[] = [
+    {
+      key: 'all',
+      total,
+      hits: [...articleHits(all.items), ...resourceHits(resources.items)]
+        .sort(newestFirst)
+        .slice(0, OVERLAY_HITS),
+    },
+    ...CATEGORIES.map((category, i) => ({
+      key: category,
+      total: byCategory[i].total,
+      hits: articleHits(byCategory[i].items),
+    })),
+    { key: 'resources', total: resources.total, hits: resourceHits(resources.items) },
+  ]
+  return { query: q, total, groups }
+}
+
+/**
+ * The overlay before a query: the newest articles as "Trending now" — the Hub
+ * counts no views, so recency is the honest measure it has — and the most-used
+ * tags as "Popular keywords".
+ */
+export async function getSearchIdle(locale: Locale): Promise<SearchIdle> {
+  const [trending, keywords] = await Promise.all([
+    getRecentArticles(4, locale),
+    getPopularTags(6, locale),
+  ])
+  return { trending, keywords }
 }

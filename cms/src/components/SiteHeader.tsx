@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 import { Button, Icon } from './ds'
 import { LocaleSwitcher } from './LocaleSwitcher'
-import { HeaderSearch, DrawerSearch } from './HeaderSearch'
+import { HeaderSearch } from './HeaderSearch'
 import { CATEGORIES, TAXONOMY, categorySlug, tagSlug, type Category } from '@/lib/tags'
 import { RESOURCE_CATEGORIES, resourceCategorySlug } from '@/lib/resourceCategories'
 import {
@@ -240,10 +240,10 @@ function Drawer({ onClose, returnFocusTo, locale, dict }: DrawerProps) {
           </button>
         </div>
 
-        {/* Search and the language switcher live here below the nav breakpoint
-            rather than in the bar: the phone header has room for the wordmark,
-            Subscribe and the menu, and this is the menu. */}
-        <DrawerSearch locale={locale} dict={dict} onNavigate={onClose}>
+        {/* The language switcher lives here below the nav breakpoint rather
+            than in the bar. Search stays in the bar at every width and opens
+            its own overlay. */}
+        <>
           <nav aria-label={dict.nav.menu}>
             <ul className="drawer__list">
               {CATEGORIES.map((item) => (
@@ -301,7 +301,7 @@ function Drawer({ onClose, returnFocusTo, locale, dict }: DrawerProps) {
           {/* Opens downward, into room the drawer makes for it — upward it would
               open straight across the Subscribe button above. */}
           <LocaleSwitcher locale={locale} className="drawer__locale" />
-        </DrawerSearch>
+        </>
       </div>
     </>
   )

@@ -2,260 +2,375 @@
 
 import React from 'react'
 import Link from 'next/link'
+import { createPortal } from 'react-dom'
+import { useRouter } from 'next/navigation'
 
-import { Icon } from './ds'
-import { searchHub, type HubSearchResults } from '@/lib/searchHub'
-import type { Dictionary, Locale } from '@/lib/i18n'
+import { ArticleCard, Icon } from './ds'
+import { SearchHitGrid } from './search/SearchHitGrid'
+import { getSearchIdle, searchHub } from '@/lib/searchHub'
+import {
+  countLabel,
+  groupLabel,
+  MIN_QUERY,
+  searchHref,
+  type HubSearchResults,
+  type SearchGroupKey,
+  type SearchIdle,
+} from '@/lib/searchShared'
+import { tagLabel, type Dictionary, type Locale } from '@/lib/i18n'
 
 /**
- * Search that opens in place: the glyph becomes a field, and what it finds
- * appears in a panel under the header — the same gesture the category links
- * already make, so search behaves like the rest of the masthead rather than
- * throwing the reader onto a page of its own.
+ * Search: the glyph in the header opens a frosted overlay over the whole page,
+ * at every width — on phones too, where it sits in the bar beside the menu.
  *
- * Below the nav breakpoint the glyph is not in the bar at all; search moves
- * into the drawer with the rest of the navigation, so the phone header stays
- * wordmark + Subscribe + menu.
- *
- * Results are a way in, not a results page. Five articles and three resources,
- * no pagination: a list long enough to scroll would want the page this exists
- * to avoid.
+ * Before a query it offers a way in: this browser's recent searches, the tags
+ * most articles are filed under, and the newest articles. Typing turns it into
+ * results, tabbed All / each category / Resources with their counts, the first
+ * cards of each, and a way through to the /search page for the rest. Enter goes
+ * there too.
  */
 const DEBOUNCE_MS = 220
-const MIN_QUERY = 2
+const RECENT_KEY = 'designally:recent-searches'
+const RECENT_MAX = 6
 
-/** Query state shared by both surfaces. Debounced so a typed word costs one
- *  query rather than one per keystroke. */
-function useHubSearch(locale: Locale, active: boolean) {
-  const [query, setQuery] = React.useState('')
-  const [results, setResults] = React.useState<HubSearchResults | null>(null)
-  const [pending, startTransition] = React.useTransition()
+/** Idle content per locale for the life of the page: it does not change while you read. */
+const idleCache: Partial<Record<Locale, SearchIdle>> = {}
 
-  React.useEffect(() => {
-    if (!active) return
-    const q = query.trim()
-    if (q.length < MIN_QUERY) {
-      setResults(null)
-      return
-    }
-    const timer = setTimeout(() => {
-      startTransition(async () => setResults(await searchHub(q, locale)))
-    }, DEBOUNCE_MS)
-    return () => clearTimeout(timer)
-  }, [query, active, locale])
-
-  const reset = React.useCallback(() => {
-    setQuery('')
-    setResults(null)
-  }, [])
-
-  const q = query.trim()
-  return { query, setQuery, results, pending, reset, q, searching: q.length >= MIN_QUERY }
-}
-
-/** The hits themselves, identical in the header panel and the drawer. */
-function SearchResults({
-  results,
-  pending,
-  q,
-  dict,
-  onNavigate,
-}: {
-  results: HubSearchResults | null
-  pending: boolean
-  q: string
-  dict: Dictionary
-  onNavigate: () => void
-}) {
-  if (!results && pending) return <p className="search-panel__note">{dict.search.label}…</p>
-  if (results && results.total === 0) {
-    return <p className="search-panel__note">{dict.search.empty.replace('{q}', q)}</p>
+function readRecent(): string[] {
+  try {
+    const value: unknown = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]')
+    return Array.isArray(value)
+      ? value.filter((term): term is string => typeof term === 'string').slice(0, RECENT_MAX)
+      : []
+  } catch {
+    return []
   }
-  if (!results) return null
-
-  return (
-    <>
-      {results.articles.length > 0 && (
-        <section className="search-panel__group">
-          <p className="search-panel__label">{dict.search.articles}</p>
-          <ul className="search-panel__list">
-            {results.articles.map((item) => (
-              <li key={item.href}>
-                <Link className="search-panel__hit" href={item.href} onClick={onNavigate}>
-                  <span className="search-panel__hit-title">{item.title}</span>
-                  {item.date && <span className="search-panel__hit-meta">{item.date}</span>}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-
-      {results.resources.length > 0 && (
-        <section className="search-panel__group">
-          <p className="search-panel__label">{dict.search.resources}</p>
-          <ul className="search-panel__list">
-            {results.resources.map((item) => (
-              <li key={item.id}>
-                <Link className="search-panel__hit" href={item.href} onClick={onNavigate}>
-                  <span className="search-panel__hit-title">{item.title}</span>
-                  {item.category && <span className="search-panel__hit-meta">{item.category}</span>}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
-    </>
-  )
 }
 
-/* -------------------------------------------------------------------------- */
-/* Header — the glyph that becomes a field                                     */
-/* -------------------------------------------------------------------------- */
+function writeRecent(list: string[]) {
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list))
+  } catch {
+    /* Storage blocked (private mode, site data off): recents simply don't persist. */
+  }
+}
 
 export function HeaderSearch({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const [open, setOpen] = React.useState(false)
-  const search = useHubSearch(locale, open)
-  const { reset } = search
-
-  const wrapRef = React.useRef<HTMLDivElement>(null)
-  const inputRef = React.useRef<HTMLInputElement>(null)
+  const triggerRef = React.useRef<HTMLButtonElement>(null)
 
   const close = React.useCallback(() => {
     setOpen(false)
-    reset()
-  }, [reset])
-
-  // Focus lands in the field the moment it exists, so opening and typing are
-  // one motion rather than two.
-  React.useEffect(() => {
-    if (open) inputRef.current?.focus()
-  }, [open])
-
-  React.useEffect(() => {
-    if (!open) return
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close()
-    }
-    const onPointerDown = (e: PointerEvent) => {
-      if (!wrapRef.current?.contains(e.target as Node)) close()
-    }
-    document.addEventListener('keydown', onKeyDown)
-    document.addEventListener('pointerdown', onPointerDown)
-    return () => {
-      document.removeEventListener('keydown', onKeyDown)
-      document.removeEventListener('pointerdown', onPointerDown)
-    }
-  }, [open, close])
+    triggerRef.current?.focus()
+  }, [])
 
   return (
-    <div className="header-search" ref={wrapRef}>
-      {open ? (
-        <div className="header-search__field">
-          <Icon name="search" size={17} className="header-search__glyph" />
-          {/* type="text", not "search": WebKit gives type="search" its own clear
-              button, which would sit next to this field's close button as a
-              second, near-identical ✕ with a different meaning. */}
-          <input
-            ref={inputRef}
-            type="text"
-            className="header-search__input"
-            value={search.query}
-            onChange={(e) => search.setQuery(e.target.value)}
-            placeholder={dict.search.placeholder}
-            aria-label={dict.search.label}
-            autoComplete="off"
-          />
-          <button
-            type="button"
-            className="header-search__close"
-            onClick={close}
-            aria-label={dict.nav.closeMenu}
-          >
-            <Icon name="x" size={17} />
-          </button>
-        </div>
-      ) : (
-        <button
-          type="button"
-          className="site-nav__link site-header__search"
-          onClick={() => setOpen(true)}
-          aria-label={dict.search.label}
-          aria-expanded={false}
-        >
-          <Icon name="search" size={19} />
-        </button>
-      )}
-
-      {open && search.searching && (
-        <div className="search-panel" role="region" aria-label={dict.search.label}>
-          <div className="shell search-panel__inner">
-            <SearchResults {...search} dict={dict} onNavigate={close} />
-          </div>
-        </div>
-      )}
+    <div className="header-search">
+      <button
+        ref={triggerRef}
+        type="button"
+        className="site-nav__link site-header__search"
+        onClick={() => setOpen(true)}
+        aria-label={dict.search.label}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+      >
+        <Icon name="search" size={19} />
+      </button>
+      {open && createPortal(<SearchOverlay locale={locale} dict={dict} onClose={close} />, document.body)}
     </div>
   )
 }
 
-/* -------------------------------------------------------------------------- */
-/* Drawer — the phone's search, standing open above the menu                   */
-/* -------------------------------------------------------------------------- */
-
-/**
- * On a phone the field is already open — there is no glyph to press, because
- * the drawer is a place you went to on purpose. While a query is live the hits
- * take the body: you asked for these, so you shouldn't have to scroll past the
- * menu to reach them. Clearing the field puts the menu back.
- *
- * `children` is that menu.
- */
-export function DrawerSearch({
+function SearchOverlay({
   locale,
   dict,
-  onNavigate,
-  children,
+  onClose,
 }: {
   locale: Locale
   dict: Dictionary
-  onNavigate: () => void
-  children: React.ReactNode
+  onClose: () => void
 }) {
-  const search = useHubSearch(locale, true)
+  const router = useRouter()
+  const [query, setQuery] = React.useState('')
+  const [results, setResults] = React.useState<HubSearchResults | null>(null)
+  const [pending, startTransition] = React.useTransition()
+  const [active, setActive] = React.useState<SearchGroupKey>('all')
+  const [idle, setIdle] = React.useState<SearchIdle | null>(idleCache[locale] ?? null)
+  const [recent, setRecent] = React.useState<string[]>([])
+
+  const dialogRef = React.useRef<HTMLDivElement>(null)
+  const inputRef = React.useRef<HTMLInputElement>(null)
+  const latestQuery = React.useRef('')
+
+  const q = query.trim()
+  const searching = q.length >= MIN_QUERY
+  latestQuery.current = q
+
+  // Recents belong to this browser, so they are read after mount.
+  React.useEffect(() => {
+    setRecent(readRecent())
+  }, [])
+
+  React.useEffect(() => {
+    if (idleCache[locale]) return
+    let live = true
+    getSearchIdle(locale)
+      .then((data) => {
+        idleCache[locale] = data
+        if (live) setIdle(data)
+      })
+      .catch(() => {
+        if (live) setIdle({ trending: [], keywords: [] })
+      })
+    return () => {
+      live = false
+    }
+  }, [locale])
+
+  // Debounced, and a reply is only kept if it still answers what is in the field.
+  React.useEffect(() => {
+    if (!searching) {
+      setResults(null)
+      return
+    }
+    const timer = setTimeout(() => {
+      startTransition(async () => {
+        const next = await searchHub(q, locale)
+        if (next.query === latestQuery.current) setResults(next)
+      })
+    }, DEBOUNCE_MS)
+    return () => clearTimeout(timer)
+  }, [q, searching, locale])
+
+  // A new query starts on All.
+  React.useEffect(() => {
+    setActive('all')
+  }, [q])
+
+  // Open: focus the field, hold the page still, keep Tab inside, close on Escape.
+  React.useEffect(() => {
+    inputRef.current?.focus()
+    const root = document.documentElement
+    const previousOverflow = root.style.overflow
+    root.style.overflow = 'hidden'
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onClose()
+        return
+      }
+      if (e.key !== 'Tab' || !dialogRef.current) return
+      const focusable = [
+        ...dialogRef.current.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input'),
+      ]
+      if (focusable.length === 0) return
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      root.style.overflow = previousOverflow
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [onClose])
+
+  const remember = React.useCallback((term: string) => {
+    const t = term.trim()
+    if (t.length < MIN_QUERY) return
+    setRecent((list) => {
+      const next = [t, ...list.filter((x) => x.toLowerCase() !== t.toLowerCase())].slice(0, RECENT_MAX)
+      writeRecent(next)
+      return next
+    })
+  }, [])
+
+  const forget = (term: string) => {
+    setRecent((list) => {
+      const next = list.filter((x) => x !== term)
+      writeRecent(next)
+      return next
+    })
+  }
+
+  const useTerm = (term: string) => {
+    setQuery(term)
+    inputRef.current?.focus()
+  }
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!searching) {
+      inputRef.current?.focus()
+      return
+    }
+    remember(q)
+    onClose()
+    router.push(searchHref(locale, q, active))
+  }
+
+  // Following any link out of the overlay (a result, a trending article, View
+  // all) closes it, and a query that led somewhere is worth remembering.
+  const onLinkClick = (e: React.MouseEvent) => {
+    if (!(e.target as Element).closest('a[href]')) return
+    if (searching) remember(q)
+    onClose()
+  }
+
+  const tabs = results ? results.groups.filter((g) => g.key === 'all' || g.total > 0) : []
+  const group = results?.groups.find((g) => g.key === active) ?? results?.groups[0]
 
   return (
-    <>
-      <div className="drawer-search">
-        <Icon name="search" size={17} className="header-search__glyph" />
-        <input
-          type="text"
-          className="header-search__input"
-          value={search.query}
-          onChange={(e) => search.setQuery(e.target.value)}
-          placeholder={dict.search.placeholder}
-          aria-label={dict.search.label}
-          autoComplete="off"
-        />
-        {search.query && (
-          <button
-            type="button"
-            className="header-search__close"
-            onClick={search.reset}
-            aria-label={dict.nav.closeMenu}
-          >
-            <Icon name="x" size={17} />
+    <div
+      className="search-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label={dict.search.label}
+      ref={dialogRef}
+    >
+      <button type="button" className="search-overlay__close" onClick={onClose}>
+        <span className="search-overlay__close-disc" aria-hidden="true">
+          <Icon name="x" size={22} strokeWidth={1.6} />
+        </span>
+        <span className="search-overlay__close-label">{dict.search.close}</span>
+      </button>
+
+      <div className="search-overlay__inner" onClick={onLinkClick}>
+        <h2 className="search-overlay__title">{dict.search.title}</h2>
+
+        <form className="search-field" role="search" onSubmit={submit}>
+          {/* type="text", not "search": WebKit adds its own clear button to a
+              search input, a second ✕ beside the overlay's Close. */}
+          <input
+            ref={inputRef}
+            type="text"
+            className="search-field__input"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={dict.search.placeholder}
+            aria-label={dict.search.label}
+            autoComplete="off"
+            enterKeyHint="search"
+          />
+          <button type="submit" className="search-field__submit" aria-label={dict.search.submit}>
+            <Icon name="search" size={16} strokeWidth={2.4} />
           </button>
+        </form>
+
+        {searching ? (
+          !results || !group ? (
+            <p className="search-note" aria-live="polite">
+              {dict.search.searching}
+            </p>
+          ) : results.total === 0 ? (
+            <p className="search-note" aria-live="polite">
+              {dict.search.empty.replace('{q}', results.query)}
+            </p>
+          ) : (
+            <>
+              <div className="search-tabs">
+                {tabs.map((g) => (
+                  <button
+                    key={g.key}
+                    type="button"
+                    className={`search-tab${g.key === group.key ? ' search-tab--active' : ''}`}
+                    aria-pressed={g.key === group.key}
+                    onClick={() => setActive(g.key)}
+                  >
+                    {groupLabel(g.key, locale, dict)} ({g.total})
+                  </button>
+                ))}
+              </div>
+
+              <div className="search-summary">
+                <p className="search-summary__count" aria-live="polite">
+                  {countLabel(group.total, dict)}
+                </p>
+                <Link className="search-summary__all" href={searchHref(locale, results.query, group.key)}>
+                  {dict.search.viewAll}
+                  <Icon name="arrow-right" size={18} />
+                </Link>
+              </div>
+
+              <SearchHitGrid hits={group.hits} className={pending ? 'is-pending' : undefined} />
+            </>
+          )
+        ) : (
+          <div className="search-idle">
+            <div className="search-idle__lists">
+              {recent.length > 0 && (
+                <section className="search-block">
+                  <h3 className="search-block__title">{dict.search.recent}</h3>
+                  <ul className="search-chips">
+                    {recent.map((term) => (
+                      <li key={term} className="search-chip search-chip--recent">
+                        <button type="button" className="search-chip__term" onClick={() => useTerm(term)}>
+                          {term}
+                        </button>
+                        <button
+                          type="button"
+                          className="search-chip__remove"
+                          onClick={() => forget(term)}
+                          aria-label={dict.search.removeRecent.replace('{q}', term)}
+                        >
+                          <Icon name="x" size={14} strokeWidth={2.2} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {idle && idle.keywords.length > 0 && (
+                <section className="search-block">
+                  <h3 className="search-block__title">{dict.search.popular}</h3>
+                  <ul className="search-chips">
+                    {idle.keywords.map((tag) => (
+                      <li key={tag}>
+                        <button
+                          type="button"
+                          className="search-chip search-chip--keyword"
+                          onClick={() => useTerm(tagLabel(tag, locale))}
+                        >
+                          {tagLabel(tag, locale)}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+            </div>
+
+            {idle && idle.trending.length > 0 && (
+              <section className="search-block search-idle__trending">
+                <h3 className="search-block__title">{dict.search.trending}</h3>
+                <div className="search-trending">
+                  {idle.trending.map((item) => (
+                    <ArticleCard
+                      key={item.href}
+                      title={item.title}
+                      date={item.date}
+                      tags={item.tags}
+                      image={item.image}
+                      ratio={item.ratio}
+                      href={item.href}
+                      titleSize="md"
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+          </div>
         )}
       </div>
-
-      {search.searching ? (
-        <div className="drawer-search__results">
-          <SearchResults {...search} dict={dict} onNavigate={onNavigate} />
-        </div>
-      ) : (
-        children
-      )}
-    </>
+    </div>
   )
 }

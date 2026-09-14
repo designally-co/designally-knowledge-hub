@@ -897,181 +897,19 @@
 }
 
 /* --- Header search ------------------------------------------------------
-   The glyph opens into a field in place and its findings drop into a panel
-   under the header — the same gesture the category links make, so search is
-   part of the masthead rather than a page you get sent to. */
+   The glyph in the bar opens the search overlay (search.css) at every width;
+   on phones it sits beside Subscribe and the menu. */
 .header-search {
   display: flex;
   align-items: center;
 }
 
-/* Only the field is a bordered object; the closed state is the bare nav glyph,
-   which is why nothing here restyles .site-header__search. */
-.header-search__field {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  width: clamp(190px, 34vw, 320px);
-  padding: 7px 8px 7px 13px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--be-ink);
-  background: var(--be-white);
-  animation: header-search-in 0.24s var(--ease-out-quart) both;
-}
-
-@keyframes header-search-in {
-  from { opacity: 0; transform: scaleX(0.88); transform-origin: right center; }
-  to { opacity: 1; transform: scaleX(1); }
-}
-
-.header-search__glyph { color: var(--text-secondary); flex: none; }
-
-.header-search__input {
-  flex: 1 1 auto;
-  min-width: 0;
-  border: 0;
-  background: transparent;
-  font: var(--type-meta);
-  color: var(--be-ink);
-}
-
-.header-search__input::placeholder { color: var(--text-secondary); }
-.header-search__input:focus { outline: none; }
-
-.header-search__close {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: color var(--hover-state-dur) var(--ease-out-quart);
-}
-
-@media (hover: hover) {
-  .header-search__close:hover { color: var(--be-ink); }
-}
-
-/* Full-bleed under the header, matching .nav-panel. */
-.search-panel {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 100%;
-  background: var(--surface-raised);
-  border-top: 1px solid var(--border-hairline);
-  border-bottom: 1px solid var(--border-hairline);
-  box-shadow: var(--shadow-card);
-  animation: nav-panel-in 0.24s var(--ease-out-quart) both;
-  max-height: min(70vh, 560px);
-  overflow-y: auto;
-}
-
-.search-panel__inner {
-  display: grid;
-  gap: clamp(20px, 3vw, 36px);
-  padding-block: clamp(20px, 2.6vw, 32px);
-}
-
-@media (min-width: 48em) {
-  .search-panel__inner { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
-}
-
-.search-panel__label {
-  font: var(--type-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin: 0 0 10px;
-}
-
-.search-panel__list { list-style: none; margin: 0; padding: 0; }
-
-.search-panel__hit {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 9px 10px;
-  margin-inline: -10px;
-  border-radius: 10px;
-  text-decoration: none;
-  transition: background var(--hover-state-dur) var(--ease-out-quart);
-}
-
-.search-panel__hit-title {
-  font: var(--type-body-sm);
-  font-weight: 600;
-  color: var(--be-ink);
-  text-wrap: pretty;
-}
-
-.search-panel__hit-meta { font: var(--type-meta); color: var(--text-secondary); }
-
-@media (hover: hover) {
-  .search-panel__hit:hover { opacity: 1; background: color-mix(in srgb, var(--be-ink) 5%, transparent); }
-}
-
-.search-panel__hit:focus-visible {
-  outline: 2px solid var(--be-ink);
-  outline-offset: 2px;
-}
-
-.search-panel__note {
-  grid-column: 1 / -1;
-  font: var(--type-body-sm);
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .header-search__field,
-  .search-panel { animation: none; }
-}
-
-/* Below the nav breakpoint search and the language switcher leave the bar and
-   join the drawer, with the rest of the navigation. An open 190px field could
-   not share 375px with the wordmark, the locale toggle and the menu button —
-   the toggle was the piece pushed off the edge — and the drawer is where a
-   phone already looks for everything else the bar cannot hold. */
+/* Below the nav breakpoint the language switcher leaves the bar and joins the
+   drawer with the rest of the navigation: the phone header has room for the
+   wordmark, search, Subscribe and the menu, and the drawer is where a phone
+   already looks for everything else the bar cannot hold. */
 @media (max-width: 63.999em) {
-  .header-search,
   .site-header__locale {
     display: none;
   }
-}
-
-/* --- Drawer search ------------------------------------------------------
-   Already open: there is no glyph to press, because the drawer is somewhere
-   you went on purpose. Not autofocused, though — raising the keyboard over
-   the menu you just asked for would be its own kind of rude. */
-.drawer-search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 10px 10px 10px 14px;
-  margin-bottom: 28px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-outline);
-  background: var(--be-white);
-}
-
-.drawer-search:focus-within {
-  border-color: var(--be-ink);
-}
-
-.drawer-search .header-search__input {
-  min-height: 24px;
-}
-
-/* The hits stand where the menu was: you asked for them, so they should not sit
-   below a screen of navigation. Clearing the field brings the menu back. */
-.drawer-search__results {
-  display: grid;
-  gap: 28px;
 }
