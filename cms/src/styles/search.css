@@ -10,12 +10,15 @@
   /* The active tab's text: the pager's tan deepened until 15px text clears
      4.5:1 on the frosted white. Its underline keeps the tan itself. */
   --search-tab-active: color-mix(in srgb, var(--be-tan) 70%, var(--be-ink));
+  /* The overlay's ground: a light grey rather than the page's paper, so it
+     reads as a layer over the page, not more of it. */
+  --search-bg: #f2f2f2;
   position: fixed;
   inset: 0;
   z-index: var(--z-search);
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: color-mix(in srgb, var(--be-white) 88%, transparent);
+  background: color-mix(in srgb, var(--search-bg) 88%, transparent);
   -webkit-backdrop-filter: blur(24px);
   backdrop-filter: blur(24px);
   animation: search-overlay-in 0.24s var(--ease-out-quart) both;
@@ -24,7 +27,7 @@
 /* Without the blur the page would show through sharp; nearly opaque instead. */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .search-overlay {
-    background: color-mix(in srgb, var(--be-white) 97%, transparent);
+    background: color-mix(in srgb, var(--search-bg) 97%, transparent);
   }
 }
 
