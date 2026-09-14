@@ -5732,3 +5732,726 @@ html {
     margin-inline: 0;
   }
 }
+
+/* =============================================================================
+   The page header, as Article Studio draws it
+
+   Studio has two headers and neither is a band with a trail in it. On a desk a
+   page opens with its heading — title, sentence, controls on the title's line —
+   and nothing above it. On a phone the page's name sits in a see-through bar on
+   the menu button's line, centred, with the page's one action as a disc at the
+   far end (`PageBar` and `TopBlur` in Studio's components/page-bar.tsx).
+
+   THE BREADCRUMB STAYS WHERE IT IS WORK. On a list it is one word, the name of
+   the screen, printed again in the heading right under it — so on a list the
+   band goes (desk) or becomes Studio's bar (phone). On a document it is the way
+   back to the list, and the band also carries ⋯ and Save, so it stays, drawn as
+   Studio's bar: see-through, no hairline.
+
+   Written last and unlayered so it wins over the band's earlier rules at their
+   own specificity. A list SCREEN is told apart from the media picker — also a
+   `.collection-list`, inside a sheet — by being a direct child of the shell.
+   ========================================================================== */
+
+/* ---- the bar: a progressive blur, not a lid ------------------------------ */
+
+/*
+ * Studio's TopBlur: three layers of the page's own ground, each blurring harder
+ * and stopping sooner, running 20px past the bar so content goes out of focus
+ * as it slides under rather than being chopped at a line.
+ *
+ * ON THE BAND AND ITS CONTENT, NOT ON `.app-header__bg`. Payload keeps that
+ * layer at `opacity: 0`, which would take anything drawn on it along, and an
+ * element with opacity under 1 is a backdrop root besides — a blur inside it
+ * would only see the layer, not the page. The band's two pseudo-elements and
+ * the content wrapper's one are three siblings over the same page.
+ */
+.app-header {
+  border-block-end: 0;
+  background-color: transparent;
+}
+
+.app-header::before,
+.app-header::after,
+.app-header__content::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  block-size: calc(100% + 20px);
+  background-color: rgb(248 248 247 / 0.35);
+  pointer-events: none;
+}
+
+.app-header::before {
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 62%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0, #000 62%, transparent 100%);
+}
+
+.app-header::after {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 38%, transparent 74%);
+  mask-image: linear-gradient(to bottom, #000 0, #000 38%, transparent 74%);
+}
+
+/* THE CONTROLS ABOVE THE GLASS. Positioned siblings at `z-index: auto` paint in
+   tree order, and the band's `::after` comes after its content — so the 8px
+   layer and its wash were drawn straight over the hamburger, the trail and
+   Save, and the whole bar read as greyed out. One level up, the content paints
+   over both of the band's own layers. */
+.app-header__content {
+  z-index: 1;
+}
+
+/* Behind the band's controls: -1 inside the content's own stacking context puts
+   this under the hamburger, the trail and Save. The wrapper is the band's
+   height, so the layer's box is the band's. */
+.app-header__content::before {
+  z-index: -1;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 16%, transparent 46%);
+  mask-image: linear-gradient(to bottom, #000 0, #000 16%, transparent 46%);
+}
+
+/* ---- a list on a desk: no band ------------------------------------------- */
+
+/* The rail is drawn from 1025, and with it there is no hamburger to keep. What
+   is left in the band on a list is the trail's one word, which the heading
+   below already says at 28px. The list's own heading line — title, sentence,
+   search, language, Create — is the page's header, as it is in Studio. */
+@media (min-width: 1025px) {
+  .template-default__wrap:has(> .collection-list) > .app-header {
+    display: none;
+  }
+}
+
+/* ---- below the rail: Studio's PageBar ------------------------------------ */
+
+@media (max-width: 1024px) {
+  /* 48 TALL, STUDIO'S BAR. Set on the shell rather than the band, because
+     Payload sizes the band and the tap layer over it from the same variable. The
+     44px hamburger still fits; so does the document bar's Save. */
+  .template-default__wrap {
+    --app-header-height: 48px;
+  }
+
+  /* On a list the trail is the heading, so it leaves the bar to the heading
+     itself. Hidden to the eye only — the band keeps its layout, and nothing a
+     keyboard can reach is left invisible, since the one crumb here is text. */
+  .template-default__wrap:has(> .collection-list) .app-header__step-nav-wrapper {
+    visibility: hidden;
+  }
+
+  /*
+   * THE PAGE'S NAME, ON THE MENU BUTTON'S LINE, IN THE MIDDLE OF THE SCREEN.
+   *
+   * Fixed, as Studio's is: the heading lives inside the card several levels
+   * down, and fixed puts it on the bar's line from anywhere in the tree. The
+   * inline inset is the same on both sides — the hamburger's 16 + 44 and the
+   * disc's 16 + 40, rounded to one number — so the name is centred on the
+   * screen whether or not a list has an action, rather than on what is left
+   * between the two.
+   */
+  .template-default__wrap > .collection-list .list-header__title {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 64px;
+    z-index: 31;
+    block-size: var(--app-header-height);
+    margin: 0;
+    overflow: hidden;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: var(--app-header-height);
+    letter-spacing: -0.01em;
+    color: var(--da-ink);
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  /* The heading block is a desk idea in Studio: below the rail the page opens
+     with its content. The sentence goes, and the header gives back the space it
+     held. */
+  .template-default__wrap > .collection-list .list-header__after-header-content {
+    display: none;
+  }
+
+  .template-default__wrap > .collection-list .list-header {
+    min-block-size: 0;
+    margin-block-end: 0;
+  }
+
+  /*
+   * THE PAGE'S ONE ACTION, AS A DISC AT THE FAR END OF THE BAR.
+   *
+   * Studio's PAGE_ACTION_BUTTON: 40 across, the accent, the card shadow, and a
+   * plus. Centred on the bar's line (4px from a 48px bar's top) and inset by
+   * the band's own 16, so it mirrors the hamburger at the other end.
+   *
+   * The label stays in the button, clipped rather than removed, so "Create New"
+   * — or "Upload" on Media — is still the control's accessible name.
+   */
+  .template-default__wrap > .collection-list .list-create-new-doc__create-new-button {
+    position: fixed;
+    inset-block-start: calc((var(--app-header-height) - 40px) / 2);
+    inset-inline-end: 16px;
+    z-index: 31;
+    display: grid;
+    place-items: center;
+    inline-size: 40px;
+    block-size: 40px;
+    min-block-size: 40px;
+    padding: 0;
+    border-radius: 999px;
+    box-shadow:
+      0 1px 2px rgb(36 31 28 / 0.05),
+      0 4px 12px rgb(36 31 28 / 0.06);
+  }
+
+  .template-default__wrap > .collection-list .list-create-new-doc__create-new-button .btn__content {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .template-default__wrap > .collection-list .list-create-new-doc__create-new-button::before {
+    content: '';
+    inline-size: 20px;
+    block-size: 20px;
+    background-color: currentColor;
+    -webkit-mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>') no-repeat center / contain;
+    mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>') no-repeat center / contain;
+  }
+}
+
+/* =============================================================================
+   The list screens, as Article Studio's Library
+
+   Studio's Library is not a sheet with a list in it. The page is the ground; the
+   heading sits on it with its controls on the title's line; the table is the one
+   white object, a card of its own; and the count and the two page discs sit on
+   the ground under it. On a phone every row is its own card. (Studio:
+   app/(app)/library/page.tsx, article-table.tsx, library-row.tsx,
+   components/pagination.tsx.)
+
+   The five list screens were one white sheet holding the heading, the controls,
+   the table and the pager together — one enclosure for four different things.
+   The sheet goes; the table takes the white.
+
+   PIXELS, NOT REMS. Studio's sizes are Tailwind rems on a 16px root and this
+   admin's root is 15px, so each value below is the pixel Studio renders.
+
+   THE LIST SCREENS ONLY. `$list` is a list that is a direct child of the shell;
+   the media picker is a `.collection-list` too, inside a sheet, and keeps its
+   own layout.
+   ========================================================================== */
+
+$list: '.template-default__wrap > .collection-list';
+
+/* ---- the page: ground, measure, gutters ---------------------------------- */
+
+/* Studio's `max-w-7xl`, with its gutters inside it: 12 on a phone, 32 from
+   640, 48 from the rail, 64 from 1280. The header opens 56px down on a desk
+   and the page ends 96px under the pager. */
+#{$list} {
+  box-sizing: border-box;
+  max-inline-size: 1280px;
+  padding: 16px 12px 96px;
+}
+
+@media (min-width: 640px) {
+  #{$list} {
+    padding: 40px 32px 96px;
+  }
+}
+
+@media (min-width: 1025px) {
+  #{$list} {
+    padding: 56px 48px 96px;
+  }
+}
+
+@media (min-width: 1280px) {
+  #{$list} {
+    padding-inline: 64px;
+  }
+}
+
+/* The sheet, dismantled. It stays the layout parent — the heading line's grid
+   is set on it — but it is no longer a surface. `overflow: visible`, or the
+   filter panel that opens under the controls is clipped at the old edge. */
+#{$list} .collection-list__wrap {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  overflow: visible;
+}
+
+/* ---- the heading line ---------------------------------------------------- */
+
+@media (min-width: 48.0625rem) {
+  /* Every control is sized to its contents, so no column is asked to stretch
+     but the heading's. 8 between controls; the heading's 16 is the list
+     controls' own leading margin plus this gap. */
+  .template-default__wrap .collection-list__wrap,
+  .template-default__wrap .collection-list__wrap:not(:has(> .da-locale)) {
+    grid-template-columns: minmax(12rem, 1fr) auto auto auto;
+    column-gap: 8px;
+  }
+
+  .template-default__wrap .collection-list__wrap:not(:has(> .da-locale)) {
+    grid-template-columns: minmax(12rem, 1fr) auto auto;
+  }
+
+  /* Studio's `PageHeading`: 32 in the display face at 500, and the table 40px
+     below the line. */
+  #{$list} .collection-list__tables {
+    margin-block-start: 40px;
+  }
+}
+
+/* DESK ONLY. Below the rail the title is the bar's 16px name (the page header
+   section above), and this, written later at the same specificity, set it at
+   32 inside a 48px bar. */
+@media (min-width: 1025px) {
+  #{$list} .list-header__title {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--da-ink);
+  }
+}
+
+/* The search row's 20px floor from the old sheet made its flex line taller than
+   the field, and the language pair centred in that line sat 9px below the
+   search on a phone. The table's own top margin is the gap now. */
+@media (max-width: 48rem) {
+  #{$list} .list-controls {
+    margin-block-end: 0;
+  }
+}
+
+/* The deck: 12 under the title, 14px, the faint ink. */
+#{$list} .collection-list__sub-header {
+  padding-block-start: 12px;
+}
+
+#{$list} .custom-view-description {
+  font-size: 14px;
+  line-height: 1.625;
+  color: var(--da-ink-3);
+}
+
+/* ---- the controls -------------------------------------------------------- */
+
+/* Studio's search: 224 by 36, OUTLINED rather than filled — on the ground a
+   grey fill is the ground's own family and the field would disappear into it,
+   so the strong line does the work. The magnifier sits 12 in. */
+#{$list} .list-controls .search-filter {
+  inline-size: 224px;
+}
+
+/* Payload's search bar is 46 tall and centres what it holds, so a 36px field
+   sat 5px above the language pair and Create on the same line — measured,
+   bottoms at 121 against 126. The bar takes the field's height. */
+#{$list} .list-controls .search-bar {
+  block-size: auto;
+  min-block-size: 0;
+}
+
+#{$list} .list-controls .search-filter__input {
+  box-sizing: border-box;
+  block-size: 36px;
+  min-block-size: 36px;
+  padding: 0 12px 0 36px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: transparent;
+  background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>');
+  background-position: left 12px center;
+  background-size: 16px 16px;
+  font-size: 13px;
+  line-height: 34px;
+}
+
+#{$list} .list-controls .search-filter__input::placeholder {
+  color: #a6a6a6;
+}
+
+/* THE LANGUAGE PAIR, IN THE CONTROLS' OWN SHAPE. Studio has no language on its
+   Library, but its filters beside the search are 36-tall outlined boxes with an
+   eight-pixel corner, so the pair becomes one of those holding two segments —
+   the chosen one filled with the chrome grey. */
+#{$list} .da-locale {
+  box-sizing: border-box;
+  block-size: 36px;
+  margin: 0;
+  padding: 2px;
+  gap: 2px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: none;
+}
+
+#{$list} .da-locale__opt {
+  inline-size: 36px;
+  min-inline-size: 36px;
+  block-size: 30px;
+  min-block-size: 30px;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 13px;
+}
+
+#{$list} .da-locale__opt--on {
+  background-color: var(--da-chrome);
+}
+
+/* Create, at the controls' height so the line is one row: 36 tall, 16 either
+   side, 13px. Still the accent — it is still the page's one forward action. */
+@media (min-width: 1025px) {
+  #{$list} .list-create-new-doc__create-new-button {
+    min-block-size: 36px;
+    block-size: 36px;
+    padding-inline: 16px;
+    font-size: 13px;
+  }
+}
+
+/* ---- the table: the one white object ------------------------------------- */
+
+/* Studio's table card: white, the hairline, a 16px corner, clipped so the
+   header's and the last row's corners are real. */
+#{$list} .table {
+  border: 1px solid var(--da-hairline);
+  border-radius: 16px;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+/* The head row: 40 tall, 13px at 500 in the body face, the faint ink. A column
+   head names a column; it is not set in the display face like a heading. */
+#{$list} .table thead th {
+  block-size: 40px;
+  padding: 0 16px;
+  border-block-end: 1px solid var(--da-hairline);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--da-ink-3);
+  vertical-align: middle;
+}
+
+#{$list} .table thead th .field-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--da-ink-3);
+}
+
+/* The rows: 8 above and below, 16 either side — 12 on the title, which carries
+   the 44px picture and sets the row at 69. 13px in the second ink. */
+#{$list} .table tbody td {
+  padding: 8px 16px;
+  border-block-end: 1px solid var(--da-hairline);
+  font-size: 13px;
+  line-height: 1.43;
+  color: var(--da-ink-2);
+}
+
+#{$list} .table tbody td:nth-child(2) {
+  padding-block: 12px;
+  inline-size: 100%;
+}
+
+/* The select column hugs its box: Studio's first cell has no right gutter. */
+#{$list} .table :is(th, td):first-child {
+  inline-size: 1px;
+  padding-inline-end: 0;
+}
+
+@media (hover: hover) {
+  #{$list} .table tbody tr:hover td {
+    background-color: var(--da-warm-white);
+  }
+}
+
+/* Studio's checkbox: 16 square, a four-pixel corner, the hairline. Checked
+   keeps this admin's orange fill, set earlier. */
+#{$list} .table .checkbox-input__input {
+  inline-size: 16px;
+  block-size: 16px;
+  min-inline-size: 16px;
+  border-radius: 4px;
+  border-color: #e0e0e0;
+}
+
+#{$list} .table .checkbox-input__input input {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+#{$list} .table .checkbox-input__icon {
+  inline-size: 14px;
+  block-size: 14px;
+}
+
+/* The picture: 44 square on a desk, an eight-pixel corner, the deep grey behind
+   anything that does not fill it. */
+#{$list} .table :is(.da-row__thumb, .da-row__id .da-media-thumb) {
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 8px;
+  background-color: #f0f0ef;
+}
+
+/* The name: one line and an ellipsis, 500 in the main ink, as Studio's title
+   cell. The row's height no longer depends on its longest headline. */
+#{$list} .table .da-row__name {
+  -webkit-line-clamp: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--da-ink);
+}
+
+#{$list} .table .da-tag__cat {
+  font-size: 12px;
+}
+
+/* STATUS IS A WORD, NOT A BADGE. Studio: Published is a green dot and the word
+   in the second ink; Draft is the word alone in the faint ink, since a draft is
+   the state that needs no marking to be told apart. */
+#{$list} .table .da-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.43;
+  letter-spacing: 0;
+}
+
+#{$list} .table .da-chip--settled {
+  color: var(--da-ink-2);
+}
+
+#{$list} .table .da-chip--act {
+  color: var(--da-ink-3);
+}
+
+#{$list} .table .da-chip__dot {
+  display: none;
+}
+
+#{$list} .table .da-chip--settled .da-chip__dot {
+  display: block;
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: 999px;
+  background-color: #107f54;
+}
+
+/* ---- the pager: a count and two discs, on the ground --------------------- */
+
+/* Studio's Pagination: the range in a white pill on the left, previous and next
+   as 40px discs on the right, 16 under the table. The page numbers go — the
+   pill says how far in you are, the discs move you. */
+#{$list} .page-controls {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 8px;
+  margin-block-start: 16px;
+}
+
+#{$list} .page-controls .page-controls__page-info {
+  order: 0;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-block-size: 36px;
+  margin: 0;
+  padding: 0 14px;
+  border: 1px solid var(--da-hairline);
+  border-radius: 999px;
+  background-color: #ffffff;
+  font-size: 13px;
+  color: var(--da-ink-3);
+}
+
+#{$list} .page-controls .per-page {
+  order: 1;
+}
+
+#{$list} .page-controls .paginator {
+  order: 2;
+  display: flex;
+  gap: 8px;
+  inline-size: auto;
+  margin-inline-start: auto;
+}
+
+#{$list} .page-controls .paginator__page,
+#{$list} .page-controls .paginator__separator {
+  display: none;
+}
+
+#{$list} .page-controls .clickable-arrow {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  inline-size: 40px;
+  block-size: 40px;
+  padding: 0;
+  border: 1px solid var(--da-hairline);
+  border-radius: 999px;
+  background-color: #ffffff;
+  color: var(--da-ink-2);
+  transition:
+    background-color 120ms var(--da-ease),
+    color 120ms var(--da-ease);
+}
+
+@media (hover: hover) {
+  #{$list} .page-controls .clickable-arrow:not(.clickable-arrow--is-disabled):hover {
+    background-color: var(--da-warm-white);
+    color: var(--da-ink);
+  }
+}
+
+#{$list} .page-controls .clickable-arrow--is-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ---- a phone: every row its own card ------------------------------------- */
+
+/*
+ * A PHONE GETS A LIST, NOT A NARROWER TABLE — Studio's own reasoning. With the
+ * columns gone there is nothing for rows to line up into, and a hairline
+ * between two titles draws a boundary that no longer separates anything. So
+ * each row is a card: white, the hairline, a 16px corner, 12 inside, 8 between.
+ *
+ * The table's elements stop being table boxes; the head row goes (it names
+ * columns that are not there). The select box comes back beside the picture,
+ * as Studio's does — the earlier one-column rule hid it with the other cells.
+ */
+@media (max-width: 48rem) {
+  #{$list} .table {
+    border: 0;
+    border-radius: 0;
+    background: none;
+    overflow: visible;
+  }
+
+  #{$list} .table :is(table, tbody) {
+    display: block;
+    inline-size: 100%;
+  }
+
+  #{$list} .table thead {
+    display: none;
+  }
+
+  #{$list} .table tbody tr {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-sizing: border-box;
+    margin-block-end: 8px;
+    padding: 12px;
+    border: 1px solid var(--da-hairline);
+    border-radius: 16px;
+    background-color: #ffffff;
+  }
+
+  #{$list} .table tbody td {
+    display: block;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  /* ONLY THE PICTURE-AND-NAME AND THE BOX. Making every cell a block above
+     undid the one-column rule earlier in this file at its own specificity, and
+     the tag, status and date came back beside the name: measured, a 681px card
+     in a 375px window. Restated here, after it. */
+  #{$list} .table tbody td:not(:nth-child(2)):not(.cell-_select) {
+    display: none;
+  }
+
+  #{$list} .table tbody tr td.cell-_select {
+    display: block;
+    flex: 0 0 auto;
+    inline-size: auto;
+  }
+
+  /* The search takes what the row has left beside the language pair; Studio's
+     224 is a desk width. */
+  #{$list} .list-controls .search-filter {
+    inline-size: 100%;
+  }
+
+  #{$list} .table tbody td:nth-child(2) {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    padding: 0;
+  }
+
+  @media (hover: hover) {
+    #{$list} .table tbody tr:hover td {
+      background: none;
+    }
+  }
+
+  /* 48 on a phone, and the name gets two lines — one line is what made the
+     table useless at this width. 14px, as Studio's card title. */
+  #{$list} .table :is(.da-row__thumb, .da-row__id .da-media-thumb) {
+    inline-size: 48px;
+    block-size: 48px;
+  }
+
+  #{$list} .table .da-row__name {
+    -webkit-line-clamp: 2;
+    font-size: 14px;
+    line-height: 1.375;
+  }
+
+  /* The controls row takes the ground's gutter; the cards start 16 under it. */
+  #{$list} .collection-list__tables {
+    margin-block-start: 16px;
+  }
+
+  /* One line under the cards: the count and the two discs. The per-page choice
+     is a desk refinement and would push the discs onto a second line. */
+  #{$list} .page-controls {
+    justify-content: flex-start;
+  }
+
+  #{$list} .page-controls .paginator {
+    inline-size: auto;
+    justify-content: flex-end;
+  }
+
+  #{$list} .page-controls .per-page {
+    display: none;
+  }
+}
