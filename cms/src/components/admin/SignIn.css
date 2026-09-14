@@ -1,82 +1,71 @@
 /* =============================================================================
-   Sign-in — the team app's door, ported
+   Sign-in — Article Studio's door, ported
 
-   The same screen as designally-platform's `/sign-in` and Content Studio's
-   `/login`: the Cut with the Point on it, the lockup, one line, one pill —
-   and, above 1080, the Cut standing up as the window's left rail with the
-   column beside it. Three products behind one Workspace login, one door.
+   The same screen as Content Studio's `/login`: one white plate on the ground,
+   the flat mark, an eyebrow, a heading in the display face, a deck, the primary
+   button and one line about who can come in. Every value below is the studio's
+   own, read off its tokens — the `--da-*` variables here carry the same hexes.
+
+   PIXELS, NOT REMS. Studio's Tailwind sizes are rems on a 16px root; Payload
+   sets the admin's root to 15px, so the same rems drew the plate 390px wide
+   instead of 416 and every gap 6% short. Written in the pixels Studio actually
+   renders, the two doors are the same size.
 
    IT HAS TO TAKE PAYLOAD'S PAGE APART TO GET THERE. This arrives through
    `beforeLogin`, which renders inside the login card, between Payload's brand
    block and its password form. Both of those are hidden, the card stops being
-   a card, and the page's own `<section class="login">` becomes the container
-   the composition needs. Unlayered, like the rest of this theme, so it wins
-   over Payload's layered rules without fighting on specificity.
+   a card, and the page's own `<section class="login">` becomes the ground.
+   Unlayered, like the rest of this theme, so it wins over Payload's layered
+   rules without fighting on specificity.
    ========================================================================== */
-
-/* THE VARIABLES LIVE ON THE PAGE, NOT ON THE COMPOSITION. They were declared on
-   `.da-signin` first, which is a DESCENDANT of the two elements that need them —
-   custom properties inherit downward only, so `.login`'s padding and the
-   column's width resolved to nothing while the rail, being inside, worked. The
-   rail landed correctly and the column came out 560px instead of 880.
-
-   The rail's geometry is the questionnaire's, carried over value for value
-   rather than re-invented: `--sl-disc` is the survey's disc, `--sl-eye` the
-   height its Point crosses the rail at, and `--sl-rail-x` the same expression
-   that centres the GROUP — rail and column together — rather than centring the
-   column and hanging the rail off its edge. */
-.login {
-  --sl-disc: clamp(54px, 6.5vw, 84px);
-  --sl-rail-air: 40px;
-  --sl-rail-lead: calc(var(--sl-disc) / 2 + var(--sl-rail-air));
-  --sl-col: min(880px, 100vw - 340px);
-  --sl-rail-x: calc(50vw - var(--sl-col) / 2 - var(--sl-rail-lead) / 2);
-  --sl-eye: clamp(96px, 18vh, 170px);
-  --sl-cut-width: 2px;
-  --sl-ease: cubic-bezier(0.16, 1, 0.3, 1);
-}
 
 /* ---- the page, which was a card on a page ------------------------------- */
 
-/* The door stands on the same ground as the room: white, not the parchment the
-   admin's own pages take. A card on a grey field would be two surfaces arguing
-   on a screen with one thing to say.
+/* A CANVAS SURFACE, like Studio's Create: the page is the ground and one white
+   object sits on it. The theme already grounds `.template-minimal` in the warm
+   white; it is restated so the door does not depend on a rule elsewhere.
 
    `.login.template-minimal`, not `.login`: the theme grounds every page with
    `html, body, .template-default, .template-minimal`, which is the same
-   specificity and later in the cascade, so a single class lost and the door
-   came out grey. */
+   specificity and later in the cascade, so a single class loses.
+
+   ABOVE CENTRE, NOT ON IT. A tall, narrow object centred by arithmetic reads
+   low, because the eye puts the optical centre above the geometric one. The
+   extra bottom padding — a tenth of the screen on a phone, an eighth on a
+   desktop — lifts the plate to roughly 45% of the window. */
 .login.template-minimal {
+  box-sizing: border-box;
   min-block-size: 100dvh;
-  display: grid;
-  place-content: center;
-  justify-items: center;
-  /* Above centre, not on it. A composition centred by arithmetic reads low,
-     because the eye puts the optical centre above the geometric one; 12dvh of
-     bottom padding lifts the block to roughly 44% of the window. */
-  padding: 1.5rem 1.5rem 12dvh;
-  background-color: #ffffff;
+  /* A centred COLUMN, not a centred grid. With `place-content: center` the
+     grid's track is sized by its content, so the wrap's `100%` had nothing
+     definite to be a percentage of and the plate stayed at its full width on a
+     375px phone. A flex column's cross size is the page's, and 100% means it. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 12px calc(16px + 10dvh);
+  background-color: var(--da-warm-white);
 }
 
-/* Payload's card, dismantled: no ground, no Edge, no radius, no measure of its
-   own. What is left is a column. */
+/* Payload's card, dismantled: no ground, no hairline, no radius, no measure of
+   its own. What is left is a column the plate sets the width of. */
 .login.template-minimal .template-minimal__wrap {
-  inline-size: min(700px, 100%);
-  max-inline-size: none;
+  box-sizing: border-box;
+  inline-size: 100%;
+  max-inline-size: 416px;
   padding: 0;
   border: 0;
   border-radius: 0;
   background: none;
   box-shadow: none;
-  text-align: center;
+  text-align: start;
 }
 
 /* Payload's logo block, its password form, its submit and its
    forgotten-password link. The form's endpoint is untouched — `POST
    /api/users/login` still works, and it is the recovery path if the OAuth
-   client is ever misconfigured in production. What goes is the form in front of
-   it, because a second way in that is only sometimes correct is the one nobody
-   checks. */
+   client is ever misconfigured in production. */
 .login__brand,
 .login__form,
 .login .form-submit,
@@ -85,237 +74,175 @@
   display: none;
 }
 
-/* ---- the Cut ------------------------------------------------------------- */
+/* ---- the plate ----------------------------------------------------------- */
 
-/* Laid down and running past the column: `100vw` centred on the page's axis
-   rather than `100%` of the card, because a line that stops at the text is a
-   divider, and the Cut is not a divider. */
-.sl-cut {
-  position: relative;
-  display: grid;
-  place-items: center;
-  margin-block-end: 2rem;
+.da-signin {
+  box-sizing: border-box;
+  inline-size: 100%;
+  padding: 24px;
+  border: 1px solid var(--da-hairline);
+  border-radius: 16px;
+  background-color: #ffffff;
+  color: var(--da-ink);
+  font-family: var(--font-body);
 }
 
-.sl-cut::before {
-  content: '';
+/* ---- the flat mark ------------------------------------------------------- */
+
+/* Studio's `FlatMark` at 36px. `designally-mark.png` is a white D. on
+   transparency, so it cannot simply be recoloured — but it splits: the drawing
+   holds two runs of ink with a gap between them at 73.79% of the width. Two
+   layers masked by the same file and clipped either side of that gap give each
+   its own colour. */
+.da-signin__mark {
+  position: relative;
+  display: block;
+  inline-size: 36px;
+  aspect-ratio: 290 / 256;
+}
+
+.da-signin__mark i {
   position: absolute;
-  inset-block-start: 50%;
-  inset-inline-start: 50%;
-  inline-size: 100vw;
-  block-size: var(--sl-cut-width);
-  background-color: var(--da-orange);
-  transform: translate(-50%, -50%);
+  inset: 0;
+  -webkit-mask: url('/designally-mark.png') no-repeat center / contain;
+  mask: url('/designally-mark.png') no-repeat center / contain;
 }
 
-/* The Point. 56% of the diameter is the disc's own geometry, measured on the
-   platform rather than chosen again here. */
-.da-signin .brandmark {
-  position: relative;
-  display: inline-grid;
-  place-items: center;
-  inline-size: 60px;
-  block-size: 60px;
-  border-radius: 999px;
-  background-color: var(--da-orange);
+.da-signin__mark-d {
+  background-color: #1b1d23;
+  clip-path: inset(0 26.21% 0 0);
 }
 
-.da-signin .brandmark img {
-  inline-size: 56%;
-  block-size: auto;
+.da-signin__mark-dot {
+  background-color: var(--da-orange-mark);
+  clip-path: inset(0 0 0 73.79%);
 }
 
 /* ---- the type ------------------------------------------------------------ */
 
-/* The name, on one line wherever the column is wide enough to hold one. On a
-   phone it wraps, and `balance` decides where — a wrap is a sentence breaking,
-   which is a different thing from a lockup in tiers. */
-.sl-lockup {
-  margin: 0 0 0.75rem;
+/* `margin` on every line, because Payload's base styles give `h1` and `p`
+   margins of their own and this has to be the studio's rhythm, not theirs. */
+.da-signin__eyebrow {
+  margin: 28px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--da-ink-3);
+}
+
+.da-signin__title {
+  margin: 6px 0 0;
   font-family: var(--font-display);
-  font-size: clamp(1.85rem, 4.6vw, 3.1rem);
-  font-weight: 700;
-  line-height: 1.04;
-  letter-spacing: -0.034em;
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   color: var(--da-ink);
-  text-wrap: balance;
 }
 
-/* What the product is for. A sentence, set as one — sentence case in the body
-   face, not a tracked label, which would make three tiers of lockup out of what
-   is a name and a description. */
-.sl-line {
-  margin: 0 0 2rem;
-  font-family: var(--font-body);
-  font-size: clamp(15px, 1.15vw, 16px);
-  line-height: 1.55;
-  letter-spacing: -0.008em;
+.da-signin__deck {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.625;
   color: var(--da-ink-2);
-  text-wrap: balance;
 }
 
-/* Why the last attempt failed. It sits above the control it is about, in the
-   accent's readable ink — this is a thing that went wrong, not a thing that is
+/* Why the last attempt failed. Between the deck and the control it is about, in
+   the accent's readable ink — a thing that went wrong, not a thing that is
    dangerous. */
-.sl-error {
-  margin: 0 0 1.25rem;
-  padding: 0.625rem 0.875rem;
-  border-radius: var(--style-radius-s);
+.da-signin__error {
+  margin: 24px 0 0;
+  padding: 10px 14px;
+  border-radius: 12px;
   background-color: var(--da-orange-tint);
-  font-size: 0.8125rem;
+  font-size: 13px;
   line-height: 1.5;
   color: var(--da-orange-mark);
-  text-align: start;
 }
 
 /* ---- the way in ---------------------------------------------------------- */
 
-/* The one action on the page takes the one colour this product reserves for
-   actions.
-
-   White on `#ef6148` is 3.24:1, the divergence the system records and the brand
-   rule decides. The hover darkens to `--da-orange-deep` and 4.27:1, so the
-   control somebody is pointing at is the legible one.
-
-   The shadow is tinted from the fill — a grey shadow under an orange pill reads
-   as dirt beneath it, and this is the colour's own shade. */
-.sl-cta {
-  display: inline-flex;
+/* Studio's primary Button, full width: 44 tall, eight-pixel corner, the accent,
+   deeper on hover, deeper again and pressed on press. */
+.da-signin__cta {
+  box-sizing: border-box;
+  display: flex;
   align-items: center;
   justify-content: center;
-  min-block-size: 52px;
-  padding: 0 34px;
-  border: 0;
-  border-radius: 999px;
+  gap: 8px;
+  inline-size: 100%;
+  block-size: 44px;
+  margin-block-start: 32px;
+  padding: 0 20px;
+  border: 1px solid transparent;
+  border-radius: 8px;
   background-color: var(--da-orange);
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: -0.004em;
+  line-height: 1;
+  white-space: nowrap;
   color: #ffffff;
   text-decoration: none;
   cursor: pointer;
-  box-shadow:
-    0 2px 4px rgb(199 63 41 / 0.16),
-    0 18px 38px -14px rgb(199 63 41 / 0.5);
+  user-select: none;
   transition:
-    transform 0.55s var(--sl-ease),
-    box-shadow 0.55s var(--sl-ease),
-    background-color 0.55s var(--sl-ease);
+    background-color 120ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 120ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-@media (hover: hover) {
-  .sl-cta:hover {
-    background-color: var(--da-orange-deep);
-    color: #ffffff;
-    box-shadow:
-      0 2px 4px rgb(199 63 41 / 0.18),
-      0 26px 48px -16px rgb(199 63 41 / 0.58);
-  }
+.da-signin__cta:hover {
+  background-color: var(--da-orange-deep);
+  color: #ffffff;
 }
 
-.sl-cta:active {
-  transform: scale(0.985);
+.da-signin__cta:active {
+  background-color: var(--da-orange-mark);
+  transform: scale(0.98);
 }
 
-.sl-cta:focus-visible {
-  outline: 2px solid var(--da-focus);
-  outline-offset: 3px;
+.da-signin__cta:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(239 97 72 / 0.5);
 }
 
-/* ---- the Cut stands up on a wide screen --------------------------------- */
+.da-signin__glyph {
+  inline-size: 16px;
+  block-size: 16px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
 
-/*
- * Above 1080 the rule becomes a full-height rail down the left edge and the
- * content sits in a column beside it — the platform's signature composition,
- * and the one place a sign-in screen can carry it at no cost, because there is
- * a single control and nothing to lay out around.
- *
- * `position: fixed`, as on the survey: the rail belongs to the window rather
- * than to the column, and it is the one thing on the page that does not move.
- *
- * The page pads by the rail's LEAD and lets the column centre itself in what is
- * left, so the group a person sees — rail and column together — is what sits in
- * the middle of the screen.
- */
-@media (min-width: 1080px) {
+/* Who can come in, stated under the door rather than discovered at it: a
+   personal Google account gets as far as the consent screen and is turned
+   away, and that is a worse place to learn the rule. */
+.da-signin__note {
+  margin: 20px 0 0;
+  font-size: 12px;
+  line-height: 1.625;
+  color: var(--da-ink-3);
+}
+
+/* ---- wider than a phone -------------------------------------------------- */
+
+@media (min-width: 640px) {
   .login.template-minimal {
-    padding-inline: var(--sl-rail-lead) 0;
+    padding: 40px 24px calc(40px + 12dvh);
   }
 
-  .login.template-minimal .template-minimal__wrap {
-    inline-size: var(--sl-col);
-    text-align: start;
+  .da-signin {
+    padding: 32px;
   }
 
-  .sl-cut {
-    position: fixed;
-    inset: 0 auto 0 var(--sl-rail-x);
-    z-index: 4;
-    display: block;
-    inline-size: var(--sl-cut-width);
-    margin: 0;
-    background-color: var(--da-orange);
-    pointer-events: none;
+  .da-signin__deck {
+    font-size: 16px;
   }
-
-  .sl-cut::before {
-    content: none;
-  }
-
-  /* The Point crosses the rail at eye height, centred on the line — the same
-     placement and the same `--sl-eye` the questionnaire uses. */
-  .da-signin .brandmark {
-    position: absolute;
-    inset-block-start: var(--sl-eye);
-    inset-inline-start: 50%;
-    transform: translate(-50%, -50%);
-  }
-}
-
-/* ---- entrance ------------------------------------------------------------ */
-
-/* One movement, staggered, and it starts from visible rather than from nothing:
-   a page that flashes empty before it resolves is worse than a page that simply
-   appears. */
-@keyframes sl-rise {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-    filter: blur(6px);
-  }
-
-  to {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-}
-
-.sl-cut,
-.sl-lockup,
-.sl-line,
-.sl-go {
-  animation: sl-rise 0.95s var(--sl-ease) both;
-}
-
-.sl-line {
-  animation-delay: 0.09s;
-}
-
-.sl-go {
-  animation-delay: 0.18s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sl-cut,
-  .sl-lockup,
-  .sl-line,
-  .sl-go {
-    animation: none;
-  }
-
-  .sl-cta {
+  .da-signin__cta {
     transition: none;
   }
 }
