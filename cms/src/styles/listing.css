@@ -236,6 +236,20 @@
   text-wrap: pretty;
 }
 
+/* Inline: the intro sits beside the title, sharing its baseline, and wraps
+   under it only when the line runs out. */
+.listing-hero--inline .listing-hero__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 0.6em;
+}
+
+.listing-hero--inline .listing-hero__desc {
+  max-width: none;
+  margin: 0;
+}
+
 /* --- Page body -------------------------------------------------------- */
 .listing-body {
   width: 100%;
@@ -565,6 +579,13 @@
   }
 
   .listing-pager__item--desktop { display: block; }
+}
+
+/* Compact (search): the 44px discs at every width. The numerals stay 20px
+   bold, which is what keeps the current page's paper-on-tan at 3:1. */
+.listing-pager.listing-pager--compact {
+  --pager-size: 44px;
+  --pager-gap: 6px;
 }
 
 /* --- Small screens ---------------------------------------------------- */

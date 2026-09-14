@@ -19,6 +19,8 @@ export interface ListingPagerProps {
   totalPages: number
   hrefForPage: (page: number) => string
   labels: { first: string; previous: string; next: string; last: string; page: string }
+  /** `compact` keeps the 44px discs at every width (search); the default grows to 64px on desktop. */
+  size?: 'default' | 'compact'
 }
 
 /** `size` consecutive page numbers, centred on `page` as far as the ends allow. */
@@ -56,7 +58,7 @@ function PagerControl({
   )
 }
 
-export function ListingPager({ page, totalPages, hrefForPage, labels }: ListingPagerProps) {
+export function ListingPager({ page, totalPages, hrefForPage, labels, size = 'default' }: ListingPagerProps) {
   if (totalPages <= 1) return null
   const numbers = pageWindow(page, totalPages, 7)
   const onTablet = new Set(pageWindow(page, totalPages, 5))
@@ -65,7 +67,7 @@ export function ListingPager({ page, totalPages, hrefForPage, labels }: ListingP
   const atEnd = page >= totalPages
 
   return (
-    <nav className="listing-pager" aria-label={labels.page}>
+    <nav className={`listing-pager${size === 'compact' ? ' listing-pager--compact' : ''}`} aria-label={labels.page}>
       <PagerControl kind="edge" icon="skip-back" label={labels.first} target={1} enabled={!atStart} hrefForPage={hrefForPage} />
       <PagerControl kind="step" icon="chevron-left" label={labels.previous} target={page - 1} enabled={!atStart} hrefForPage={hrefForPage} />
 

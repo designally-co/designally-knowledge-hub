@@ -373,6 +373,14 @@
   margin: clamp(20px, 2.6vw, 32px) 0 clamp(24px, 3vw, 36px);
 }
 
+/* Under the compact pager, at its scale rather than the category pages' 28px.
+   Two classes: listing.css loads after this file and sets .listing-count's
+   font at one. */
+.listing-count.search-page__showing {
+  margin-top: clamp(16px, 2vw, 24px);
+  font: 600 clamp(15px, 1.2vw, 17px) / 1.4 var(--font-sans);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .search-overlay { animation: none; }
 }

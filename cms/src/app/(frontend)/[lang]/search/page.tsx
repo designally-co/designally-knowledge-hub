@@ -58,12 +58,21 @@ export default async function SearchPage({
     : [null, null]
   const tabs = overview ? overview.groups.filter((g) => g.key === 'all' || g.total > 0) : []
 
+  const showing = listing
+    ? dict.listing.showing
+        .replace('{from}', String((listing.page - 1) * listing.perPage + 1))
+        .replace('{to}', String((listing.page - 1) * listing.perPage + listing.items.length))
+        .replace('{total}', String(listing.total))
+        .replace('{unit}', dict.search.items)
+    : ''
+
   return (
     <div className="listing-page search-page">
       <ListingHero
         title={dict.search.title}
         description={searching ? dict.search.resultsFor.replace('{q}', q) : dict.search.prompt}
         tint={SEARCH_TINT}
+        inline
       />
 
       <div className="listing-body">
@@ -117,7 +126,9 @@ export default async function SearchPage({
                   last: dict.listing.last,
                   page: dict.listing.page,
                 }}
+                size="compact"
               />
+              <p className="listing-count search-page__showing">{showing}</p>
             </>
           )
         )}
