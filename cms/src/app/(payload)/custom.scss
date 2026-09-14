@@ -6264,24 +6264,371 @@ $list: '.template-default__wrap > .collection-list';
   }
 }
 
-/* Studio's checkbox: 16 square, a four-pixel corner, the hairline. Checked
-   keeps this admin's orange fill, set earlier. */
+/*
+ * STUDIO'S CHECKBOX: 16 square, a four-pixel corner, the hairline; checked, the
+ * accent with a white tick 14 across in the middle of it.
+ *
+ * WHY IT BROKE. Shrinking Payload's box to 16 left its tick where Payload puts
+ * it — an absolutely placed icon pinned to the box's corner, drawn at 1.4rem
+ * (21px) — so the tick hung off the bottom right of a box smaller than itself,
+ * and Payload's faint hover tick and its green focus glow came with it. The tick
+ * is centred in the box and sized to it; the hover ghost and the glow go.
+ */
 #{$list} .table .checkbox-input__input {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
   inline-size: 16px;
   block-size: 16px;
   min-inline-size: 16px;
+  margin: 0;
+  border: 1px solid var(--da-hairline);
   border-radius: 4px;
-  border-color: #e0e0e0;
-}
-
-#{$list} .table .checkbox-input__input input {
-  inline-size: 16px;
-  block-size: 16px;
+  background-color: transparent;
+  box-shadow: none;
 }
 
 #{$list} .table .checkbox-input__icon {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+#{$list} .table .checkbox-input__icon svg,
+#{$list} .table .checkbox-input .checkbox-input__icon .icon--line {
   inline-size: 14px;
   block-size: 14px;
+}
+
+/* Unchecked is empty, hovered or not: Studio does not preview the tick. */
+#{$list} .table .checkbox-input:not(.checkbox-input--checked):hover .checkbox-input__icon:not(.partial) svg {
+  opacity: 0;
+}
+
+#{$list} .table .checkbox-input:not(.checkbox-input--read-only):hover .checkbox-input__input {
+  border-color: #e0e0e0;
+}
+
+/* Checked and "some of them": the accent, as Studio's `data-checked`. */
+#{$list} .table .checkbox-input--checked .checkbox-input__input,
+#{$list} .table .checkbox-input__input:has(> .checkbox-input__icon.partial) {
+  border-color: var(--da-orange);
+  background-color: var(--da-orange);
+}
+
+/* Payload's focus is a green 3px glow set with `!important`; only an
+   `!important` removes it. The ring is the admin's 2px accent outline, drawn
+   by the rule earlier in this file. */
+#{$list} .table .checkbox-input:not(.checkbox-input--read-only):focus-within .checkbox-input__input {
+  border-color: var(--da-hairline);
+  box-shadow: none !important;
+}
+
+#{$list} .table .checkbox-input--checked:focus-within .checkbox-input__input {
+  border-color: var(--da-orange);
+}
+
+/* ---- the selection bar, as Studio's ------------------------------------- */
+
+/*
+ * Studio's bar is a white plate, 12px corner, 10 by 16 inside, holding the
+ * count (13px, 500, main ink), a quiet text action (13px, faint ink) and one
+ * destructive button at the far end — 32 tall, 14 either side, the critical
+ * red, white 600 type. Payload's bar holds more (Select all, Edit, Publish,
+ * Unpublish, Delete); every action but Delete takes the quiet text shape, and
+ * Delete takes the button. The em dashes Payload writes between the groups
+ * go: the gap is the separator.
+ */
+#{$list} .list-selection {
+  gap: 12px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 12px;
+  background-color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.43;
+  color: var(--da-ink-2);
+}
+
+#{$list} .list-selection > :first-child {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--da-ink);
+}
+
+#{$list} .list-selection > span:not(:first-child) {
+  display: none;
+}
+
+#{$list} .list-selection__actions {
+  gap: 12px;
+}
+
+#{$list} .list-selection__button {
+  min-block-size: 0;
+  padding: 0;
+  border-radius: 6px;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--da-ink-3);
+}
+
+@media (hover: hover) {
+  #{$list} .list-selection__button:hover {
+    background: none;
+    color: var(--da-ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
+#{$list} .edit-many .list-selection__button::before,
+#{$list} .list-selection .delete-documents__toggle::before {
+  content: none;
+}
+
+/* NO EDIT IN THE BAR. Editing several documents at once opens Payload's bulk
+   field editor — one form writing the same value into every selected article —
+   which is not how anything here is edited, and Studio's bar has no such
+   action either. Select all, and Delete. */
+#{$list} .list-selection :is(.edit-many, .edit-many__toggle) {
+  display: none;
+}
+
+/* Delete: Studio's destructive small button, at the far end of the bar. */
+#{$list} .list-selection__actions:last-of-type {
+  flex: 1 1 auto;
+}
+
+#{$list} .list-selection .delete-documents__toggle {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  block-size: 32px;
+  margin-inline-start: auto;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background-color: #d32830;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+@media (hover: hover) {
+  #{$list} .list-selection .delete-documents__toggle:hover {
+    background-color: #b0202a;
+    color: #ffffff;
+    text-decoration: none;
+  }
+}
+
+/* ---- the confirmation, as Studio's ConfirmDialog ------------------------- */
+
+/*
+ * Payload asks "are you sure" in a full-screen blurred wash with a 720px
+ * column of text in the middle of it. Studio's dialog (ported to this admin
+ * as ConfirmDialog) is a 448px warm-white plate, 16px corner, a soft shadow,
+ * on a light scrim: the title in the display face at 18, the sentence in faint
+ * ink at 14, and the buttons at the bottom right, 44 tall.
+ */
+.confirmation-modal::before {
+  background: rgb(26 26 26 / 0.25);
+  opacity: 1;
+}
+
+.confirmation-modal::after {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.confirmation-modal__wrapper {
+  box-sizing: border-box;
+  inline-size: min(448px, calc(100vw - 32px));
+  max-inline-size: none;
+  gap: 24px;
+  padding: 24px;
+  border-radius: 16px;
+  background-color: var(--da-warm-white);
+  box-shadow:
+    0 4px 8px rgb(36 31 28 / 0.08),
+    0 12px 32px rgb(36 31 28 / 0.12);
+}
+
+.confirmation-modal__content {
+  gap: 8px;
+}
+
+.confirmation-modal__content > :first-child {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 28px;
+  letter-spacing: -0.025em;
+  color: var(--da-ink);
+}
+
+.confirmation-modal__content > p {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.625;
+  color: var(--da-ink-3);
+}
+
+.confirmation-modal__controls {
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.confirmation-modal__controls .btn {
+  block-size: 44px;
+  min-block-size: 44px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Cancel is Studio's outline button: the hairline, no fill. Payload's
+   secondary was a warm-white fill on a warm-white plate — a button with no
+   edge. */
+.confirmation-modal__controls .btn--style-secondary {
+  --bg-color: transparent;
+  --hover-bg: var(--da-chrome);
+  --color: var(--da-ink);
+  --hover-color: var(--da-ink);
+  border: 1px solid var(--da-hairline);
+  background-color: transparent;
+  color: var(--da-ink);
+}
+
+@media (hover: hover) {
+  .confirmation-modal__controls .btn--style-secondary:hover {
+    background-color: var(--da-chrome);
+  }
+}
+
+/* A DELETION CONFIRMS IN RED, as Studio's does — the accent is for making
+   things, not for removing them. Matched on the modal's slug, which Payload
+   names `confirm-delete-…` for every delete it asks about, so other
+   confirmations keep the primary button. */
+.payload__modal-item[class*='--slug-confirm-delete'] .confirmation-modal__controls .btn--style-primary {
+  --bg-color: #d32830;
+  --hover-bg: #b0202a;
+  --color: #ffffff;
+  --hover-color: #ffffff;
+  background-color: #d32830;
+  color: #ffffff;
+}
+
+@media (hover: hover) {
+  .payload__modal-item[class*='--slug-confirm-delete'] .confirmation-modal__controls .btn--style-primary:hover {
+    background-color: #b0202a;
+  }
+}
+
+/* ---- the selection bar's place: above the table, as Studio's ------------- */
+
+/*
+ * IN THE PAGE, NOT FLOATING. The bar was pinned to the foot of the window as a
+ * shadowed pill; Studio's appears between the heading and the table, full
+ * width, and pushes the table down while something is selected. Payload renders
+ * it inside `.list-header__actions`, which on a desk is a cell of the heading's
+ * grid (the wrappers around it dissolve), so that cell takes the full width on
+ * its own row: 40 under the heading line, and the table closes up to 12 under
+ * the bar.
+ */
+#{$list} .list-selection {
+  box-sizing: border-box;
+  position: static;
+  inset: auto;
+  z-index: auto;
+  inline-size: 100%;
+  max-inline-size: none;
+  margin: 0;
+  box-shadow: none;
+}
+
+@media (min-width: 48.0625rem) {
+  #{$list} .list-header__actions:has(.list-selection) {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    margin-block-start: 40px;
+  }
+
+  /* 8, which comes out at Studio's 12: the heading's grid adds 4 of its own
+     between the bar's row and the table's (measured 16 with 12 asked for). */
+  #{$list} .collection-list__wrap:has(.list-selection) .collection-list__tables {
+    margin-block-start: 8px;
+  }
+}
+
+/*
+ * ON A PHONE PAYLOAD PUTS THE BAR SOMEWHERE ELSE. Below its small breakpoint it
+ * does not render the bar in the heading at all: it renders it inside the
+ * pager (`.page-controls`), in a wrapper of its own that Payload pins to the
+ * bottom of the screen — measured, the bar at y744 in an 812px window, 16 off
+ * the bottom, with the heading rules above matching nothing.
+ *
+ * The pager's box dissolves (`display: contents`), so its pieces become items
+ * of the list's own flex column and can be ordered against it: the bar's
+ * wrapper rejoins the flow after the search row and before the cards, full
+ * width, as Studio's bar sits; the count and the page discs close the list
+ * under the cards, on one line, as before.
+ */
+/* ONE STEP MORE SPECIFIC THAN THE PAGER'S OWN RULES, which come later in this
+   file at `#{$list} .page-controls` and set it back to a flex row — measured,
+   `display: flex` with the bar squeezed to 182px beside the count. The
+   `.collection-list__wrap >` is what outranks them without reordering the
+   file. */
+@media (max-width: 48rem) {
+  #{$list} .collection-list__wrap > .page-controls {
+    display: contents;
+  }
+
+  #{$list} .collection-list__list-selection {
+    position: static;
+    inset: auto;
+    order: 3;
+    flex-basis: 100%;
+    margin: 16px 0 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  #{$list} .collection-list__tables {
+    order: 4;
+  }
+
+  /* 8 above, which with the last card's own 8 below it is 16 from the card.
+     Payload gives the discs a 10px bottom margin as well, and the row centres
+     each item by its margin box — so that margin alone set the discs 7px above
+     the pill (measured) and made the gap under the cards 32. It goes. */
+  #{$list} .collection-list__wrap > .page-controls > .page-controls__page-info,
+  #{$list} .collection-list__wrap > .page-controls > .paginator {
+    order: 5;
+    margin-block: 8px 0;
+  }
+
+  /* Payload writes the discs BEFORE the count. As items of the list's own row
+     they would keep that order — discs, then the pill, both pushed right by the
+     discs' auto margin. The discs go last, so the count opens the line and the
+     discs close it, as on a desk. */
+  #{$list} .collection-list__wrap > .page-controls > .paginator {
+    order: 6;
+  }
+
+  #{$list} .collection-list__wrap:has(.list-selection) .collection-list__tables {
+    margin-block-start: 12px;
+  }
 }
 
 /* The picture: 44 square on a desk, an eight-pixel corner, the deep grey behind
@@ -6560,18 +6907,15 @@ $list: '.template-default__wrap > .collection-list';
     background: none;
   }
 
-  /* ONLY THE PICTURE-AND-NAME AND THE BOX. Making every cell a block above
-     undid the one-column rule earlier in this file at its own specificity, and
-     the tag, status and date came back beside the name: measured, a 681px card
-     in a 375px window. Restated here, after it. */
-  #{$list} .table tbody td:not(:nth-child(2)):not(.cell-_select) {
-    display: none;
-  }
+  /* ONLY THE PICTURE AND THE NAME. Making every cell a block above undid the
+     one-column rule earlier in this file at its own specificity, and the tag,
+     status and date came back beside the name: measured, a 681px card in a
+     375px window. Restated here, after it.
 
-  #{$list} .table tbody tr td.cell-_select {
-    display: block;
-    flex: 0 0 auto;
-    inline-size: auto;
+     No checkbox either. A phone does not select rows; it swipes one left to
+     delete it (RowSelect). */
+  #{$list} .table tbody td:not(:nth-child(2)) {
+    display: none;
   }
 
   /* The search takes what the row has left beside the language pair; Studio's

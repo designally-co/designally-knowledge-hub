@@ -1,48 +1,91 @@
-/* Selection mode on a phone. See RowSelect.tsx for the gesture that turns it
-   on; this is only what the list looks like while it is on. */
+/* Swipe-to-delete on a phone. See RowSelect.tsx for the gesture; this is how the
+   row moves and what sits behind it. */
 
 @media (max-width: 48rem) {
+  /* The Delete is placed inside this box, so it has to be the one it measures
+     from. */
+  .template-default__wrap .collection-list .collection-list__tables {
+    position: relative;
+  }
+
   /*
-   * THE COLUMN COMES BACK, AND ONLY WHILE IT IS BEING USED. The one-column rule
-   * in custom.scss hides every cell but the second; these two put the first one
-   * back by name, which is more specific than the `:not(:nth-child(2))` doing
-   * the hiding — and this file loads after it either way.
+   * THE ROW SLIDES; THE PAGE STILL SCROLLS. `pan-y` leaves vertical movement to
+   * the browser and hands horizontal movement to the gesture, so dragging a row
+   * sideways never also drags the page.
+   *
+   * Above the Delete (`z-index: 1` over its 0), and white, so the Delete is only
+   * seen where the row has moved off it. The ease is the admin's own; while a
+   * finger is on the row there is none, or the row would lag behind it.
    */
-  body.da-selecting .template-default__wrap .collection-list table th#heading-_select,
-  body.da-selecting .template-default__wrap .collection-list table td.cell-_select {
-    display: table-cell;
+  .template-default__wrap .collection-list tbody tr {
+    z-index: 1;
+    touch-action: pan-y;
+    transition: transform 240ms var(--da-ease);
   }
 
-  /* BOTH CELLS, OR THEY DO NOT LINE UP. The header's keeps Payload's 15px while
-     the row's took 4, and the select-all sat 11px to the right of the column it
-     selects — measured, x48 against x37. One value, stated once, for the two
-     cells that hold the same control. */
-  body.da-selecting .template-default__wrap .collection-list table th#heading-_select,
-  body.da-selecting .template-default__wrap .collection-list table td.cell-_select {
-    padding-inline: 8px 0;
+  .template-default__wrap .collection-list tbody tr[data-da-swiping] {
+    transition: none;
   }
 
-  /* A press that is about to become a selection should not also be the browser
-     offering to select the words under the finger. */
+  /* A drag should not also be the browser offering to select the words under
+     the finger. */
   .template-default__wrap .collection-list tbody {
     -webkit-touch-callout: none;
     user-select: none;
   }
 
-  /* Payload's selection bar is fixed to the bottom of the screen, where it
-     lands on the home indicator and, on a list screen, over the last row. It
-     keeps the sheet's inset from the sides and clears the indicator. */
-  /* `body` in front of it because this file is imported by a PROVIDER, which
-     loads before custom.scss — so an equally specific rule there wins on order.
-     Measured: the radius stayed 999px and the bottom inset stayed its own. */
-  body .collection-list .list-selection {
-    inset-inline: 16px;
-    inset-block-end: max(16px, env(safe-area-inset-bottom));
+  /* NO SELECTION ON A PHONE. The bar is desk work; a phone deletes one row at a
+     time, behind the row. Payload may still render the bar's wrapper here if a
+     selection was made at a wider width, so it is hidden outright. */
+  .template-default__wrap .collection-list .collection-list__list-selection {
+    display: none;
+  }
+
+  /*
+   * THE DELETE: the critical red, the card's own 16px corner, the glyph over
+   * the word. 104 wide and anchored to the right, of which the open row reveals
+   * 88 — the other 16 sit under the card's rounded corner, so no sliver of grey
+   * shows between the two as the row slides back.
+   */
+  .da-swipe__action {
+    position: absolute;
+    inset-inline-end: 0;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    gap: 8px;
-    /* A stadium is the right shape for one line of controls. At this width the
-       count, Select all, Edit and Delete take two, and a 999px radius on a 93px
-       box is a lozenge. The sheet's own radius, like every other panel here. */
-    border-radius: var(--style-radius-sheet);
+    gap: 4px;
+    box-sizing: border-box;
+    inline-size: 104px;
+    margin: 0;
+    padding: 0 0 0 16px;
+    border: 0;
+    border-radius: 16px;
+    background-color: #d32830;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    color: #ffffff;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .da-swipe__action:active {
+    background-color: #b0202a;
+  }
+
+  .da-swipe__action:focus-visible {
+    outline: 2px solid var(--da-focus);
+    outline-offset: 2px;
+  }
+}
+
+/* The Delete belongs to the phone; if the window widens with one showing, it is
+   not drawn. The gesture closes it on the same change. */
+@media (min-width: 48.0625rem) {
+  .da-swipe__action {
+    display: none;
   }
 }

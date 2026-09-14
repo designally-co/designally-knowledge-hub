@@ -1,178 +1,362 @@
 'use client'
 
 import React from 'react'
+import { createPortal } from 'react-dom'
+import { useRouter } from 'next/navigation'
+import { Trash2 } from 'lucide-react'
 
+import { ConfirmDialog } from './ConfirmDialog'
 import './RowSelect.css'
 
 /**
- * Selecting several rows on a phone.
+ * Deleting one row on a phone: swipe it left.
  *
- * THE COLUMN IS GONE ON PURPOSE. A list on a phone is one column — the picture
- * and the name — because the four columns come to 726px and the screen is 375.
- * The checkbox went with the rest: it cost 53px of a 284px table to sit there
- * in case you wanted to choose eight things and delete them, which is desk
- * work. But "not worth a permanent column" is not the same as "impossible", and
- * with the column gone there was no way to select anything at all.
+ * THIS WAS SELECTION, AND ON A PHONE IT IS NOT ANY MORE. Press-and-hold used to
+ * turn the list into a mode — checkboxes, a bar of bulk actions, taps that chose
+ * instead of opened — so that eight articles could be deleted at once. That is
+ * desk work, and on a phone the one thing actually done to a row is getting rid
+ * of it. So the phone does what phone lists do everywhere else (Mail, Messages):
+ * drag a row to the left and a Delete sits behind it; tap it, answer the same
+ * question the document's own Delete asks, and that one row goes. The desk keeps
+ * its checkboxes and the selection bar.
  *
- * SO SELECTION IS A MODE, NOT A COLUMN. Press and hold a row: the checkboxes
- * appear, that row is chosen, and Payload's own selection bar comes up from the
- * bottom with Select all, Edit and Delete already in it. While the mode is on, a
- * tap chooses a row instead of opening it. Deselect the last one and the mode
- * ends by itself — the list has nothing to act on, so there is nothing to stay
- * in. This is what a phone list does everywhere else: Photos, Mail, Files.
+ * THE FILE KEEPS ITS NAME so the admin's import map — generated, and guarded at
+ * build time — does not have to change for a behaviour change.
  *
  * IT IS A PROVIDER because the rows are Payload's, rendered from a tree with no
- * component of ours in it, and because the gesture has to be caught before the
- * row's own link turns the press into a navigation — which means the document,
- * in the capture phase.
+ * component of ours in it, and because the drag has to be caught before the
+ * row's own link turns the gesture into a navigation — which means the
+ * document, in the capture phase.
+ *
+ * NOT ON USERS. That list holds the one account the whole team signs in as,
+ * which is also the account Content Studio's API key belongs to; one mistaken
+ * swipe would lock everyone out and stop publishing. It stays deletable from its
+ * own screen, deliberately.
  */
 
 const PHONE = '(max-width: 48rem)'
-const MODE = 'da-selecting'
-
-/** Long enough not to fire on a scroll flick, short enough to feel deliberate. */
-const HOLD = 450
-/** A press that travels this far was a scroll. */
-const SLOP = 10
 
 /* The page's own list. NOT the picker's: a sheet's table is how you choose the
-   one file you came for, and a press-and-hold there would start a second kind
-   of selection on top of it. */
+   one file you came for. */
 const LIST = '.template-default__wrap .collection-list'
 const ROW = `${LIST} tbody tr`
+const TABLES = `${LIST} .collection-list__tables`
+
+/** How far an open row sits to the left: the width of the Delete behind it. */
+const OPEN = 88
+/** Past half of that on release, the row stays open; short of it, it closes. */
+const SNAP = OPEN / 2
+/** A drag that travels this far has declared which way it is going. */
+const SLOP = 10
+
+const NOT_SWIPEABLE = new Set(['users'])
+
+const NOUNS: Record<string, string> = {
+  articles: 'article',
+  media: 'file',
+  resources: 'resource',
+  subscribers: 'subscriber',
+}
+
+type Target = {
+  collection: string
+  height: number
+  id: string
+  row: HTMLTableRowElement
+  title: string
+  top: number
+}
+
+/** The collection and id a row links to — `/admin/collections/articles/16`. */
+const targetOf = (row: HTMLTableRowElement): Omit<Target, 'height' | 'row' | 'top'> | null => {
+  const href = row.querySelector<HTMLAnchorElement>('a[href*="/admin/collections/"]')?.getAttribute('href')
+  const match = href?.match(/\/admin\/collections\/([^/?#]+)\/([^/?#]+)/)
+  if (!match || NOT_SWIPEABLE.has(match[1])) return null
+  const title =
+    row.querySelector('.da-row__name')?.textContent?.trim() ||
+    row.querySelector('.cell-email')?.textContent?.trim() ||
+    row.querySelector('a[href*="/admin/collections/"]')?.textContent?.trim() ||
+    ''
+  return { collection: match[1], id: decodeURIComponent(match[2]), title: title.slice(0, 120) }
+}
 
 export function RowSelect({ children }: { children?: React.ReactNode }) {
+  const router = useRouter()
+  const [revealed, setRevealed] = React.useState<Target | null>(null)
+  const [host, setHost] = React.useState<Element | null>(null)
+  const [asking, setAsking] = React.useState<Target | null>(null)
+  const [deleting, setDeleting] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
+
+  /* The open row lives in a ref as well as in state: the listeners below are
+     registered once and must read the current one, not the one from the render
+     that registered them. */
+  const openRow = React.useRef<HTMLTableRowElement | null>(null)
+
+  const slide = React.useCallback((row: HTMLTableRowElement | null, x: number, animate: boolean) => {
+    if (!row) return
+    row.toggleAttribute('data-da-swiping', !animate)
+    row.style.transform = x ? `translateX(${x}px)` : ''
+  }, [])
+
+  const close = React.useCallback(() => {
+    slide(openRow.current, 0, true)
+    openRow.current = null
+    setRevealed(null)
+  }, [slide])
+
   React.useEffect(() => {
     const phone = () => window.matchMedia(PHONE).matches
-    const rows = () => [...document.querySelectorAll<HTMLTableRowElement>(ROW)]
-    const boxOf = (row: Element | null) =>
-      row?.querySelector<HTMLInputElement>('.cell-_select input[type="checkbox"]') ?? null
-    const anyChecked = () => rows().some((row) => boxOf(row)?.checked)
 
-    const on = () => document.body.classList.contains(MODE)
-    const enter = () => document.body.classList.add(MODE)
-    const leave = () => document.body.classList.remove(MODE)
-
-    let timer: number | null = null
-    let from: { x: number; y: number } | null = null
-    /* A completed hold ends in a click, which would otherwise open the row it
-       just selected. */
-    let swallow = false
-
-    const disarm = () => {
-      if (timer) window.clearTimeout(timer)
-      timer = null
-      from = null
+    /* Where the Delete goes: behind the row, in the tables' own box, so it
+       scrolls with the list rather than with the window. */
+    const place = (row: HTMLTableRowElement): Target | null => {
+      const what = targetOf(row)
+      const tables = row.closest(TABLES)
+      if (!what || !tables) return null
+      const r = row.getBoundingClientRect()
+      const t = tables.getBoundingClientRect()
+      setHost(tables)
+      return { ...what, height: r.height, row, top: r.top - t.top }
     }
 
-    /* Read AFTER React has had the toggle: `input.click()` flips the DOM
-       immediately, but what matters is the state Payload keeps once its own
-       handler has run. */
-    const settle = () =>
-      window.setTimeout(() => {
-        if (on() && !anyChecked()) leave()
-      }, 0)
+    let drag: {
+      axis: 'x' | 'y' | null
+      base: number
+      row: HTMLTableRowElement
+      x: number
+      y: number
+    } | null = null
+    /* A drag ends in a click, which would otherwise open the row just dragged.
+       THE ROW, NOT THE NEXT CLICK ANYWHERE: a browser does not always follow a
+       drag with a click, and a flag that waited for "the next click" caught the
+       Cancel in the confirmation instead — measured, the dialog stayed open with
+       the page still held. Only a click on the row that was dragged is eaten. */
+    let swallow: HTMLTableRowElement | null = null
 
     const onDown = (event: PointerEvent) => {
+      /* A new touch is a new gesture: whatever the last drag left to swallow is
+         no longer owed. */
+      swallow = null
       if (!phone()) return
-      const row = (event.target as Element | null)?.closest?.(ROW)
-      if (!row) return
+      const target = event.target as Element | null
+      if (target?.closest('.da-swipe__action')) return
+      const row = target?.closest?.<HTMLTableRowElement>(ROW)
 
-      from = { x: event.clientX, y: event.clientY }
-      timer = window.setTimeout(() => {
-        timer = null
-        swallow = true
-        enter()
-        const box = boxOf(row)
-        if (box && !box.checked) box.click()
-      }, HOLD)
+      /* A touch anywhere else puts an open row away. */
+      if (openRow.current && row !== openRow.current) close()
+      if (!row || !targetOf(row)) return
+
+      drag = {
+        axis: null,
+        base: row === openRow.current ? -OPEN : 0,
+        row,
+        x: event.clientX,
+        y: event.clientY,
+      }
     }
 
     const onMove = (event: PointerEvent) => {
-      if (!from) return
-      if (Math.abs(event.clientX - from.x) > SLOP || Math.abs(event.clientY - from.y) > SLOP) disarm()
+      if (!drag) return
+      const dx = event.clientX - drag.x
+      const dy = event.clientY - drag.y
+
+      if (!drag.axis) {
+        if (Math.abs(dx) < SLOP && Math.abs(dy) < SLOP) return
+        drag.axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
+        if (drag.axis === 'y') {
+          drag = null
+          return
+        }
+        const placed = place(drag.row)
+        if (!placed) {
+          drag = null
+          return
+        }
+        openRow.current = drag.row
+        setRevealed(placed)
+      }
+
+      /* Left only, and a little past the Delete with resistance, so the edge is
+         felt rather than hit. */
+      const raw = drag.base + dx
+      const x = raw > 0 ? 0 : raw < -OPEN ? -OPEN + (raw + OPEN) / 3 : raw
+      slide(drag.row, x, false)
+    }
+
+    const onUp = () => {
+      if (!drag) return
+      const { axis, row } = drag
+      drag = null
+      if (axis !== 'x') return
+      swallow = row
+      /* Where the row actually is, read back from its own transform, rather
+         than recomputed from the pointer — the resistance past the Delete means
+         the two are not the same number. */
+      const current = new DOMMatrixReadOnly(getComputedStyle(row).transform).m41
+      if (current <= -SNAP) {
+        slide(row, -OPEN, true)
+        openRow.current = row
+      } else {
+        close()
+      }
+    }
+
+    const onCancel = () => {
+      if (!drag) return
+      const { row } = drag
+      drag = null
+      if (row === openRow.current) slide(row, -OPEN, true)
+      else slide(row, 0, true)
     }
 
     const onClick = (event: MouseEvent) => {
+      const target = event.target as Element | null
+      const owed = swallow
+      swallow = null
       if (!phone()) return
+      if (target?.closest('.da-swipe__action')) return
 
-      if (swallow) {
-        swallow = false
+      if (owed && target?.closest(ROW) === owed) {
         event.preventDefault()
         event.stopPropagation()
         return
       }
 
-      if (!on()) return
-
-      const target = event.target as Element | null
-      const row = target?.closest?.(ROW)
-      if (!row) return
-      /* A tap on the checkbox is already a tap on the checkbox. */
-      if (target?.closest('.cell-_select')) {
-        settle()
-        return
+      /* A tap on the open row closes it rather than opening the document behind
+         a Delete that is still showing. */
+      if (openRow.current && target?.closest(ROW) === openRow.current) {
+        event.preventDefault()
+        event.stopPropagation()
+        close()
       }
-
-      event.preventDefault()
-      event.stopPropagation()
-      boxOf(row)?.click()
-      settle()
     }
 
-    /* iOS offers to select the words under a long press. Not on a row that is
-       about to become a selection of its own. */
-    const onContext = (event: MouseEvent) => {
-      if (!phone() || !(timer || on())) return
-      if (!(event.target as Element | null)?.closest?.(ROW)) return
-      event.preventDefault()
-    }
-
-    /* AND A NAME ON EVERY BOX. Payload renders them with `aria-label=""`, which
-       is not a name — it is the absence of one, spelled out. A screen reader
-       met a column of unlabelled checkboxes with no way to tell which row each
-       belonged to. The row's own title is the answer and it is right there. */
+    /* A NAME ON EVERY BOX, on the desk where the boxes are. Payload renders them
+       with `aria-label=""`, which is not a name; the row's own title is. */
     const name = () => {
-      for (const row of rows()) {
-        const box = boxOf(row)
+      for (const row of document.querySelectorAll<HTMLTableRowElement>(ROW)) {
+        const box = row.querySelector<HTMLInputElement>('.cell-_select input[type="checkbox"]')
         if (!box || box.getAttribute('aria-label')) continue
-        /* `.da-row__name`, not the whole cell: the cell also holds the "Needs
-           description" flag, and reading the two together announced "Select
-           office-placeholder-1.pngNeeds description". */
         const what = row.querySelector('.da-row__name')?.textContent?.trim().slice(0, 60)
         box.setAttribute('aria-label', what ? `Select ${what}` : 'Select this row')
       }
     }
 
-    /* A route change, a delete, a new page of results: the rows are replaced
-       and nothing is selected any more, so the mode has nothing left to be
-       about. */
+    /* A route change, a delete, a new page of results: the rows are replaced,
+       and a Delete left behind a row that no longer exists would delete
+       whatever the id pointed at. */
     const watch = new MutationObserver(() => {
       name()
-      if (on() && !anyChecked()) leave()
+      if (openRow.current && !openRow.current.isConnected) {
+        openRow.current = null
+        setRevealed(null)
+      }
     })
+
+    /* Leaving the phone width puts the row away: the Delete belongs to the
+       phone. */
+    const media = window.matchMedia(PHONE)
+    const onMedia = () => close()
+
+    /* A RESIZE MOVES THE DELETE, IT DOES NOT CLOSE THE ROW. The confirmation
+       itself holds the page still (`overflow: hidden` on the body), which takes
+       the scrollbar away and fires a resize — so closing here meant pressing
+       Cancel also snapped the row shut, measured. A rotation changes the row's
+       height and position, so the Delete is placed again instead. */
+    const onResize = () => {
+      if (!openRow.current) return
+      if (!phone()) return close()
+      const placed = place(openRow.current)
+      if (placed) setRevealed(placed)
+    }
 
     document.addEventListener('pointerdown', onDown, true)
     document.addEventListener('pointermove', onMove, true)
-    document.addEventListener('pointerup', disarm, true)
-    document.addEventListener('pointercancel', disarm, true)
+    document.addEventListener('pointerup', onUp, true)
+    document.addEventListener('pointercancel', onCancel, true)
     document.addEventListener('click', onClick, true)
-    document.addEventListener('contextmenu', onContext)
+    window.addEventListener('resize', onResize)
+    media.addEventListener('change', onMedia)
     watch.observe(document.body, { childList: true, subtree: true })
     name()
 
     return () => {
-      disarm()
       watch.disconnect()
       document.removeEventListener('pointerdown', onDown, true)
       document.removeEventListener('pointermove', onMove, true)
-      document.removeEventListener('pointerup', disarm, true)
-      document.removeEventListener('pointercancel', disarm, true)
+      document.removeEventListener('pointerup', onUp, true)
+      document.removeEventListener('pointercancel', onCancel, true)
       document.removeEventListener('click', onClick, true)
-      document.removeEventListener('contextmenu', onContext)
-      leave()
+      window.removeEventListener('resize', onResize)
+      media.removeEventListener('change', onMedia)
     }
-  }, [])
+  }, [close, slide])
 
-  return <>{children}</>
+  const noun = asking ? NOUNS[asking.collection] || 'item' : 'item'
+
+  const destroy = async () => {
+    if (!asking || deleting) return
+    setDeleting(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/${asking.collection}/${encodeURIComponent(asking.id)}`, {
+        credentials: 'include',
+        method: 'DELETE',
+      })
+      if (!res.ok) throw new Error(String(res.status))
+      setAsking(null)
+      close()
+      /* `refresh()` so the list re-fetches rather than showing the deleted row
+         out of the router cache. */
+      router.refresh()
+    } catch {
+      setError(`That did not delete. The ${NOUNS[asking.collection] || 'item'} is unchanged.`)
+    } finally {
+      setDeleting(false)
+    }
+  }
+
+  return (
+    <>
+      {children}
+
+      {revealed && host
+        ? createPortal(
+            <button
+              aria-label={`Delete ${revealed.title || 'this item'}`}
+              className="da-swipe__action"
+              onClick={() => {
+                setError(null)
+                setAsking(revealed)
+              }}
+              style={{ blockSize: revealed.height, insetBlockStart: revealed.top }}
+              type="button"
+            >
+              <Trash2 aria-hidden="true" size={18} strokeWidth={2} />
+              <span>Delete</span>
+            </button>,
+            host,
+          )
+        : null}
+
+      <ConfirmDialog
+        confirmLabel={deleting ? 'Deleting…' : 'Delete'}
+        description={
+          error ??
+          (asking?.title
+            ? `“${asking.title}” will be deleted permanently.`
+            : `This ${noun} will be deleted permanently.`)
+        }
+        onCancel={() => {
+          if (deleting) return
+          setAsking(null)
+          setError(null)
+        }}
+        onConfirm={destroy}
+        open={Boolean(asking)}
+        title={`Delete this ${noun}?`}
+      />
+    </>
+  )
 }
