@@ -6174,7 +6174,82 @@ $list: '.template-default__wrap > .collection-list';
 
 #{$list} .table tbody td:nth-child(2) {
   padding-block: 12px;
+}
+
+/*
+ * WHICH COLUMN TAKES THE SLACK DEPENDS ON WHAT THE LIST IS.
+ *
+ * On Articles, Resources and Media the second column is the row's picture and
+ * name — the thing you scan for — so it takes whatever width the others do not
+ * need. That rule was written for every list, and on Subscribers it gave an
+ * address of twenty-odd characters 580px while the source path beside it
+ * wrapped onto four lines: "/articles/why-" "refillable-" "packaging-" …
+ *
+ * So the name column claims the width only where the row HAS a name
+ * (`.da-row__id`). On Subscribers the source path is what runs long, and it
+ * takes the slack instead — on one line, cut with an ellipsis, with the zero
+ * max-width that lets a table cell truncate rather than widen the table (the
+ * same trick Studio's title cell uses). The address keeps to its own width,
+ * on one line.
+ */
+#{$list} .table tbody td:nth-child(2):has(.da-row__id) {
   inline-size: 100%;
+}
+
+/* One line on a desk only: on a phone the address is the card's whole text and
+   a long one has to be allowed to break rather than run past the card. */
+@media (min-width: 48.0625rem) {
+  #{$list} .table tbody td.cell-email {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 48rem) {
+  #{$list} .table tbody td.cell-email {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* EVEN, AS USERS READS. Address, language and where they signed up — none of
+   them the row's name, so none takes the slack: a third each. The source keeps
+   its one-line ellipsis inside its third rather than widening it.
+
+   THE LAST COLUMN CLOSES THE ROW AT THE CARD'S EDGE, on every list, as Updated
+   At always did on Media: as wide as its heading or its content and no wider,
+   so it ends where the table ends instead of starting partway across and
+   trailing off into empty white. The columns before it share what is left. */
+@media (min-width: 48.0625rem) {
+  /* The address leads: it is who the row is, so it takes the most room. The
+     source is a path and needs the next most; the language is one word. */
+  #{$list} .table:has(td.cell-source) tbody td.cell-email {
+    inline-size: 45%;
+  }
+
+  #{$list} .table:has(td.cell-source) tbody td.cell-source {
+    inline-size: 35%;
+  }
+
+  #{$list} .table:has(td.cell-source) tbody td.cell-locale {
+    inline-size: 20%;
+  }
+
+  #{$list} .table tbody td:last-child {
+    inline-size: 1px;
+    white-space: nowrap;
+  }
+}
+
+#{$list} .table tbody td.cell-source {
+  max-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#{$list} .table tbody td.cell-source > span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* The select column hugs its box: Studio's first cell has no right gutter. */
