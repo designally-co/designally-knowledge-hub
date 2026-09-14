@@ -16,6 +16,8 @@ import {
   Mail,
   MessageSquare,
   MapPin,
+  SkipBack,
+  SkipForward,
   type LucideIcon,
 } from 'lucide-react'
 
@@ -39,6 +41,8 @@ const MAP: Record<string, LucideIcon> = {
   mail: Mail,
   'message-square': MessageSquare,
   'map-pin': MapPin,
+  'skip-back': SkipBack,
+  'skip-forward': SkipForward,
 }
 
 export interface IconProps {

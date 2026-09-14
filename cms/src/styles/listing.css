@@ -384,8 +384,9 @@
 /* --- Count line ------------------------------------------------------- */
 /* Sits below the pager as a quiet footer count. */
 .listing-count {
-  margin: clamp(14px, 2vw, 20px) 0 0;
-  font: var(--type-meta);
+  margin: clamp(24px, 4vw, 56px) 0 0;
+  font: 600 clamp(18px, 1.9vw, 28px) / 1.3 var(--font-sans);
+  letter-spacing: var(--tracking-tight);
   color: var(--text-secondary);
   text-align: center;
 }
@@ -467,59 +468,103 @@
 }
 
 /* --- Pager ------------------------------------------------------------ */
+/* First / previous / page numbers / next / last on one centred row. Numbers
+   are outlined discs with the current page filled; the arrows are bare glyphs,
+   the step chevrons quieter than the first/last jumps. ListingPager marks each
+   number with the narrowest screen it shows on: three on phones (no first/last
+   there, so the row fits a 320px screen), five from 36em, seven from 64em. */
 .listing-pager {
+  --pager-size: 44px;
+  --pager-gap: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--pager-gap);
   margin-top: clamp(40px, 6vw, 72px);
 }
 
 .listing-pager__list {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--pager-gap);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .listing-pager__num,
-.listing-pager__arrow {
+.listing-pager__control {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  height: 40px;
-  padding: 0 8px;
-  border-radius: var(--radius-pill);
-  font: var(--type-nav);
-  font-size: 15px;
-  color: var(--be-ink);
+  width: var(--pager-size);
+  height: var(--pager-size);
+  border-radius: 50%;
   text-decoration: none;
-  transition: background var(--hover-state-dur) var(--ease-out-quart);
+  transition:
+    background var(--hover-state-dur) var(--ease-out-quart),
+    border-color var(--hover-state-dur) var(--ease-out-quart),
+    color var(--hover-state-dur) var(--ease-out-quart);
+}
+
+/* 20px bold at every size: large text, so the paper numeral on --be-tan meets
+   its 3:1. */
+.listing-pager__num {
+  border: 1px solid color-mix(in srgb, var(--be-ink) 24%, transparent);
+  color: var(--be-ink);
+  font: 700 20px / 1 var(--font-sans);
+  font-variant-numeric: tabular-nums;
 }
 
 .listing-pager__num--active {
-  background: var(--be-ink);
+  background: var(--be-tan);
+  border-color: var(--be-tan);
   color: var(--be-paper);
 }
 
-@media (hover: hover) {
-  .listing-pager__num:not(.listing-pager__num--active):hover,
-  .listing-pager__arrow:not(.listing-pager__arrow--disabled):hover {
-    background: color-mix(in srgb, var(--be-ink) 9%, transparent);
-  }
-}
+.listing-pager__control--step { color: var(--text-secondary); }
+.listing-pager__control--edge { color: var(--be-ink); }
 
-.listing-pager__arrow--disabled {
-  opacity: 0.3;
+/* The skip glyphs are a triangle and a bar, in a different order in each; the
+   design fills the triangle. Filling both is safe: the bar has no area. */
+.listing-pager__control--edge .be-icon path { fill: currentColor; }
+
+.listing-pager__control--disabled {
+  color: var(--text-muted);
   pointer-events: none;
 }
 
-.listing-pager__gap {
-  padding: 0 2px;
-  color: var(--text-secondary);
+@media (hover: hover) {
+  .listing-pager__num:not(.listing-pager__num--active):hover {
+    border-color: var(--be-ink);
+  }
+
+  .listing-pager__control:not(.listing-pager__control--disabled):hover {
+    background: color-mix(in srgb, var(--be-ink) 8%, transparent);
+    color: var(--be-ink);
+  }
+}
+
+/* Phones: three numbers, no first/last. */
+.listing-pager__item--tablet,
+.listing-pager__item--desktop,
+.listing-pager__control--edge {
+  display: none;
+}
+
+@media (min-width: 36em) {
+  .listing-pager { --pager-gap: 6px; }
+  .listing-pager__item--tablet { display: block; }
+  .listing-pager__control--edge { display: inline-flex; }
+}
+
+@media (min-width: 64em) {
+  .listing-pager {
+    --pager-size: 64px;
+    --pager-gap: 11px;
+  }
+
+  .listing-pager__item--desktop { display: block; }
 }
 
 /* --- Small screens ---------------------------------------------------- */

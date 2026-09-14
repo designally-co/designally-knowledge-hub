@@ -204,6 +204,9 @@ export type Dictionary = {
     noResults: string
     previous: string
     next: string
+    /** Pager controls that jump to the first and last page. */
+    first: string
+    last: string
     /** aria label prefix for a page number, e.g. "Page 3". */
     page: string
     /**
@@ -441,6 +444,8 @@ const en: Dictionary = {
     noResults: 'No results for “{q}”.',
     previous: 'Previous',
     next: 'Next',
+    first: 'First page',
+    last: 'Last page',
     page: 'Page',
     categoryIntro: {
       Design:
@@ -674,6 +679,8 @@ const th: Dictionary = {
     noResults: 'ไม่พบผลลัพธ์สำหรับ “{q}”',
     previous: 'ก่อนหน้า',
     next: 'ถัดไป',
+    first: 'หน้าแรกสุด',
+    last: 'หน้าสุดท้าย',
     page: 'หน้า',
     categoryIntro: {
       Design:

@@ -121,7 +121,13 @@ export default async function ResourcesPage({
               page={listing.page}
               totalPages={listing.totalPages}
               hrefForPage={hrefForPage}
-              labels={{ previous: dict.listing.previous, next: dict.listing.next, page: dict.listing.page }}
+              labels={{
+                first: dict.listing.first,
+                previous: dict.listing.previous,
+                next: dict.listing.next,
+                last: dict.listing.last,
+                page: dict.listing.page,
+              }}
             />
             <p className="listing-count">{count}</p>
           </>

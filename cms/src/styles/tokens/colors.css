@@ -12,6 +12,9 @@
   --be-white: #ffffff;        /* card / image surfaces */
   --be-line: #e2d7c9;         /* hairline dividers on paper */
   --be-line-ink: #d8cdbd;
+  /* Listing pager's current page. A shade deeper than the design's tan so the
+     paper numeral on it clears 3:1 (large text: 20px bold). */
+  --be-tan: #a98e70;
 
   /* ---- Section band tints (full-bleed) ---- */
   --be-band-hero: #dabfa9;    /* hero band — was hard-coded in HomePage */
