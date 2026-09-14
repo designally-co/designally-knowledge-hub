@@ -108,6 +108,20 @@ a { color: var(--text-primary); }
   padding-inline: var(--page-gutter);
 }
 
+/* Width source for --page-gutter's `cqi`. Inline-size only: the page's height
+   still follows its content, and fixed-position children are unaffected. */
+body {
+  container: page / inline-size;
+}
+
+/* The content area's own grid: the 10 middle columns of the page grid, so its
+   columns line up with the page's exactly. */
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--content-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+}
+
 /* The reading measure for long-form prose. 68ch keeps body copy inside the
    65-75ch band at every step; the old fixed 820px ran to ~100ch. */
 .shell--reading {

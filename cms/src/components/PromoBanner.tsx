@@ -9,11 +9,17 @@ import { Icon } from '@/components/ds'
  * right-hand graphic; sections vary only the colour (a `--promo-bg` custom
  * property set on the wrapper `className`) and the graphic.
  *
+ * Pass `ctaLabel` to swap the arrow for a line of plain text. It is not a
+ * button of its own: the whole banner is the link. `arrow={false}` drops the
+ * arrow and leaves the label alone.
+ *
  * `man-reading.png` is the placeholder art shared by all banners until the
  * per-section illustrations arrive — pass a different `graphic` to override.
  */
 type PromoBannerProps = {
   label: string
+  ctaLabel?: string
+  arrow?: boolean
   href: string
   className?: string
   graphic?: string
@@ -22,6 +28,8 @@ type PromoBannerProps = {
 
 export function PromoBanner({
   label,
+  ctaLabel,
+  arrow = true,
   href,
   className = '',
   graphic = '/man-reading.png',
@@ -35,9 +43,15 @@ export function PromoBanner({
     >
       <span className="promo-banner__content">
         <span className="promo-banner__label">{label}</span>
-        <span className="promo-banner__icon" aria-hidden="true">
-          <Icon name="arrow-right" size={24} strokeWidth={1.8} />
-        </span>
+        {ctaLabel ? (
+          <span className="promo-banner__cta">{ctaLabel}</span>
+        ) : (
+          arrow && (
+            <span className="promo-banner__icon" aria-hidden="true">
+              <Icon name="arrow-right" size={24} strokeWidth={1.8} />
+            </span>
+          )
+        )}
       </span>
       <img
         className="promo-banner__art"

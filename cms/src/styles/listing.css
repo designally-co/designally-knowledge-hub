@@ -21,16 +21,8 @@
   width: 100%;
   gap: clamp(28px, 6vw, 56px);
   padding-block: clamp(48px, 8vw, 96px);
-  padding-inline: clamp(16px, 2vw, 32px);
-}
-
-/* On phones this band's own 16px inset left the H1 and the pills sitting 4px
-   to the left of every section below it, which reads as a wobble down the
-   page. Match the page gutter; the wider desktop inset is left as designed. */
-@media (max-width: 47.999em) {
-  .home-topics {
-    padding-inline: var(--page-gutter);
-  }
+  /* On the same 10 content columns as every section below it. */
+  padding-inline: var(--page-gutter);
 }
 
 .home-topics__intro,
@@ -87,20 +79,29 @@
   }
 }
 
+/* Desktop: the headline takes content columns 1-5 and the pills 6-10, the
+   grid gap between them. The headline is sized off its own five columns (cqi of
+   the intro) rather than the viewport, so it keeps to that box on a screen
+   wider than the grid's cap. */
 @media (min-width: 64em) {
   .home-topics {
-    flex-direction: row;
-    align-items: flex-end;
-    gap: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--content-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    align-items: end;
   }
 
-  .home-topics__intro,
+  .home-topics__intro {
+    grid-column: 1 / span 5;
+    container-type: inline-size;
+  }
+
   .home-topics__list {
-    flex: 0 0 50%;
+    grid-column: 6 / span 5;
   }
 
   .home-topics__heading {
-    font-size: 2.94vw;
+    font-size: 7cqi;
   }
 }
 

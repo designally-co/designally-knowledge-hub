@@ -12,6 +12,7 @@ type CaseStudyCarouselProps = {
   previousLabel: string
   nextLabel: string
   bannerLabel: string
+  bannerCta?: string
   bannerHref: string
   className?: string
 }
@@ -22,6 +23,7 @@ export function CaseStudyCarousel({
   previousLabel,
   nextLabel,
   bannerLabel,
+  bannerCta,
   bannerHref,
   className = '',
 }: CaseStudyCarouselProps) {
@@ -108,7 +110,14 @@ export function CaseStudyCarousel({
         ))}
       </div>
 
-      <PromoBanner className="case-studies__banner" label={bannerLabel} href={bannerHref} />
+      <div className="case-studies__banner-row content-grid">
+        <PromoBanner
+          className="case-studies__banner"
+          label={bannerLabel}
+          ctaLabel={bannerCta}
+          href={bannerHref}
+        />
+      </div>
     </section>
   )
 }

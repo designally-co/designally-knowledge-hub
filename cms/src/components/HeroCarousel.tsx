@@ -13,29 +13,30 @@ import type { CarouselItem } from '@/lib/resources'
    Now data-driven: `items` come from the CMS (most recent published articles)
    via the Local API — see lib/resources.ts. */
 
-const RATIO_MIN = 0.75 // 3:4
-const RATIO_MAX = 1.9 // a shade wider than 16:9
-const PEEK = 56
-const EMPH_SCALE = 1.5 // how much taller the emphasised card is
-const TAG_ROW_MIN = 218
-const UNIT_FLOOR = Math.ceil(TAG_ROW_MIN / EMPH_SCALE)
-
-const ratioOf = (item: CarouselItem): number => {
-  const raw = item?.ratio
-  const [a, b] = String(raw ?? '3 / 4')
-    .split('/')
-    .map((n) => parseFloat(n))
-  return b > 0 && a > 0 ? a / b : RATIO_MIN
-}
-
-const clampRatio = (r: number, ratioMax: number) => Math.min(Math.max(r, RATIO_MIN), ratioMax)
+const EMPH_SCALE = 1.5 // how much larger the emphasised card is
+const GAP = 14
+// The rail runs edge to edge: one card before the emphasis card starts at the
+// screen's left edge and the last card ends at its right. At most MAX_VISIBLE
+// cards share the width; narrower screens drop cards rather than shrink them
+// below MIN_UNIT.
+const MAX_VISIBLE = 6
+const MIN_UNIT = 140
+// Every cover takes the same square frame (images crop to it), so the row sums
+// to the screen width exactly whichever card holds the emphasis.
+const CARD_RATIO = 1
 
 type Metrics = {
-  railH1: number
-  railH2: number
-  contentLeft: number
-  ratioMax: number
-  clones: number
+  unit: number // width of a passing card
+  visible: number
+}
+
+/** The most cards (up to MAX_VISIBLE) that fit across `w`, and their width. */
+function fitRow(w: number): Metrics {
+  for (let n = MAX_VISIBLE; n > 1; n--) {
+    const unit = (w - (n - 1) * GAP) / (n - 1 + EMPH_SCALE)
+    if (unit >= MIN_UNIT) return { unit, visible: n }
+  }
+  return { unit: w / EMPH_SCALE, visible: 1 }
 }
 
 /* A single carousel card. The emphasised card is a real 1.5x taller box and
@@ -89,7 +90,6 @@ function TickerCard({
 }
 
 export function HeroCarousel({ items }: { items: CarouselItem[] }) {
-  const GAP = 14
   const DWELL = 5200 // ms each card holds the emphasis slot
   const len = items.length
 
@@ -98,79 +98,56 @@ export function HeroCarousel({ items }: { items: CarouselItem[] }) {
   const drag = React.useRef({ active: false, startX: 0, delta: 0, moved: false, captured: false })
 
   const containerRef = React.useRef<HTMLDivElement>(null)
-  const [metrics, setMetrics] = React.useState<Metrics>({
-    railH1: 213,
-    railH2: 320,
-    contentLeft: 20,
-    ratioMax: RATIO_MAX,
-    clones: 4,
-  })
+  const [metrics, setMetrics] = React.useState<Metrics>(() => fitRow(1440))
 
   React.useEffect(() => {
     const el = containerRef.current
     if (!el) return undefined
-    const measure = () => {
-      const w = el.clientWidth
-      const pageMax =
-        parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--page-max')) ||
-        1440
-      const gutter = Math.min(88, Math.max(20, window.innerWidth * 0.05)) // clamp(20px, 5vw, 88px)
-      const margin = Math.max((w - pageMax) / 2, 0)
-      const contentLeft = margin + gutter
-      const unit = Math.round(Math.min(160, Math.max(UNIT_FLOOR, w * 0.3)))
-      const railH1 = Math.round((unit * 4) / 3)
-      const railH2 = Math.round(railH1 * EMPH_SCALE)
-
-      const maxCardW = Math.max(railH2 * RATIO_MIN, w - contentLeft - PEEK)
-      const ratioMax = Math.max(RATIO_MIN, Math.min(RATIO_MAX, maxCardW / railH2))
-
-      const narrowest = railH1 * Math.min(...items.map((it) => clampRatio(ratioOf(it), ratioMax)))
-      const lead = Math.ceil(contentLeft / (narrowest + GAP)) + 1
-      const trail =
-        Math.ceil(Math.max(0, w - contentLeft - narrowest * EMPH_SCALE) / (narrowest + GAP)) + 1
-      setMetrics({ railH1, railH2, contentLeft, ratioMax, clones: Math.max(1, lead, trail) })
-    }
+    const measure = () => setMetrics(fitRow(el.clientWidth))
     measure()
     const ro = new ResizeObserver(measure)
     ro.observe(el)
     return () => ro.disconnect()
-  }, [items])
+  }, [])
 
-  const car = useCarousel({ count: len, clones: metrics.clones, autoAdvanceMs: DWELL })
+  const { unit, visible } = metrics
+  const railH1 = unit / CARD_RATIO
+  const railH2 = railH1 * EMPH_SCALE
+  const step = unit + GAP
+  // A full row of clones either side, so the seam is never on screen.
+  const clones = visible + 1
+  // The card that just left the emphasis stays on screen to its left. With two
+  // cards or fewer (phones) that would pin the emphasis card to the right edge,
+  // so there it leads instead.
+  const lead = visible >= 3 ? 1 : 0
 
-  const geom = React.useMemo(() => {
-    const { clones, railH1, ratioMax } = metrics
-    const at = (n: number) => items[((n % len) + len) % len]
-    const strip: { item: CarouselItem; key: string }[] = []
-    for (let i = 0; i < clones; i++) strip.push({ item: at(len - clones + i), key: `lead-${i}` })
-    items.forEach((item, i) => strip.push({ item, key: `real-${i}` }))
-    for (let i = 0; i < clones; i++) strip.push({ item: at(i), key: `trail-${i}` })
+  const car = useCarousel({ count: len, clones, autoAdvanceMs: DWELL })
 
-    const ratios = strip.map((e) => clampRatio(ratioOf(e.item), ratioMax))
-    const offsets = [0]
-    for (let i = 0; i < strip.length; i++) {
-      offsets.push(offsets[i] + railH1 * ratios[i] + GAP)
-    }
-    return { strip, ratios, offsets }
-  }, [items, len, metrics])
-
-  const offsetAt = (i: number) =>
-    geom.offsets[Math.max(0, Math.min(geom.offsets.length - 1, i))]
-
-  const nearestTo = (target: number) => {
-    let best = 0
-    let bestD = Infinity
-    for (let i = 0; i < geom.strip.length; i++) {
-      const d = Math.abs(geom.offsets[i] - target)
-      if (d < bestD) {
-        bestD = d
-        best = i
-      }
-    }
-    return best
+  // The server renders a 1440px guess; the first measurement (and any resize)
+  // moves the track to new geometry. Snap there in the same render instead of
+  // sliding across the page on load.
+  const [placedUnit, setPlacedUnit] = React.useState(unit)
+  if (placedUnit !== unit) {
+    setPlacedUnit(unit)
+    car.snap()
   }
 
-  const translateX = metrics.contentLeft - offsetAt(car.pos) + dragDelta
+  const strip = React.useMemo(() => {
+    const at = (n: number) => items[((n % len) + len) % len]
+    const out: { item: CarouselItem; key: string }[] = []
+    for (let i = 0; i < clones; i++) out.push({ item: at(len - clones + i), key: `lead-${i}` })
+    items.forEach((item, i) => out.push({ item, key: `real-${i}` }))
+    for (let i = 0; i < clones; i++) out.push({ item: at(i), key: `trail-${i}` })
+    return out
+  }, [items, len, clones])
+
+  // Every slot is the same width, so a card's offset is its index times a step.
+  // The emphasis card grows into the room the row leaves for it.
+  const offsetAt = (i: number) => i * step
+  const nearestTo = (target: number) =>
+    Math.max(0, Math.min(strip.length - 1, Math.round(target / step)))
+
+  const translateX = -offsetAt(car.pos - lead) + dragDelta
   const activePos = dragging ? nearestTo(offsetAt(car.pos) - dragDelta) : car.pos
 
   // ---- Swipe / drag interaction ----
@@ -233,10 +210,9 @@ export function HeroCarousel({ items }: { items: CarouselItem[] }) {
         className="carousel"
         style={
           {
-            '--rail-h1': `${metrics.railH1}px`,
-            '--rail-h2': `${metrics.railH2}px`,
+            '--rail-h1': `${railH1}px`,
+            '--rail-h2': `${railH2}px`,
             '--carousel-gap': `${GAP}px`,
-            '--content-left': `${metrics.contentLeft}px`,
           } as React.CSSProperties
         }
         onPointerDown={onPointerDown}
@@ -264,18 +240,18 @@ export function HeroCarousel({ items }: { items: CarouselItem[] }) {
           onTransitionEnd={car.onTransitionEnd}
           style={{ transform: `translate3d(${translateX}px,0,0)` }}
         >
-          {geom.strip.map((entry, j) => (
+          {strip.map((entry, j) => (
             <TickerCard
               key={entry.key}
               item={entry.item}
-              ratio={geom.ratios[j]}
+              ratio={CARD_RATIO}
               emph={j === activePos}
               index={car.real + 1}
               total={len}
             />
           ))}
         </div>
-        <div className="carousel__mist carousel__mist--left" />
+        {lead > 0 && <div className="carousel__mist carousel__mist--left" />}
         <div className="carousel__mist carousel__mist--right" />
       </div>
     </section>

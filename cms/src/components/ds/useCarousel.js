@@ -120,6 +120,10 @@ export function useCarousel({ count, clones, autoAdvanceMs = 0 }) {
     }
   };
 
+  // For a caller whose geometry changed under the track (a resize): the move
+  // to the new position should land, not slide. Re-armed like any silent jump.
+  const snap = React.useCallback(() => setAnimated(false), []);
+
   const next = React.useCallback(() => setPos((p) => p + 1), []);
   const prev = React.useCallback(() => setPos((p) => p - 1), []);
   const advance = React.useCallback((steps) => setPos((p) => p + steps), []);
@@ -133,6 +137,7 @@ export function useCarousel({ count, clones, autoAdvanceMs = 0 }) {
     next,
     prev,
     advance,
+    snap,
     userPaused,
     togglePaused: () => setUserPaused((p) => !p),
     setHeld,

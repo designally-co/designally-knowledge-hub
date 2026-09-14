@@ -35,8 +35,22 @@
   --hover-state-dur: 240ms;
 
   /* Layout */
-  --page-max: 1600px;
-  --page-gutter: clamp(20px, 5vw, 88px); /* @kind spacing */
+  /* The layout grid: 12 columns across the page, 24px between them, growing
+     with the screen up to --grid-max and centred beyond it. Content holds the
+     middle 10, so the side margin is one column plus one gap, plus whatever the
+     cap leaves either side. `cqi` is the page's own width (body is the `page`
+     container, see base.css), which unlike `vw` leaves out the scrollbar and
+     resolves to the same length on any element, however deeply nested. */
+  --grid-columns: 12;
+  --content-columns: 10;
+  --grid-gap: 24px; /* @kind spacing */
+  --grid-max: 1920px; /* content tops out at ~1596px */
+  --grid-width: min(100cqi, var(--grid-max));
+  --page-gutter: calc(
+    (100cqi - var(--grid-width)) / 2 + (var(--grid-width) - 11 * var(--grid-gap)) / 12 + var(--grid-gap)
+  ); /* @kind spacing */
+  /* The cap lives in the gutter above, so containers need no max-width. */
+  --page-max: none;
   --section-gap: clamp(56px, 8vw, 128px);
 
   /* Minimum comfortable touch target (WCAG 2.5.8). Applied under

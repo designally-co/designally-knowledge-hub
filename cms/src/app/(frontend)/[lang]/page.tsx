@@ -21,12 +21,15 @@ import { getDictionary, isLocale, localeHref, type Locale } from '@/lib/i18n'
  */
 export const revalidate = 60
 
+/** The hero carousel shows at most this many articles (it loops through them). */
+const HERO_MAX_ITEMS = 6
+
 export default async function HomePage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
   const locale: Locale = isLocale(lang) ? lang : 'en'
   const dict = getDictionary(locale)
 
-  const items = await getRecentArticles(10, locale)
+  const items = await getRecentArticles(HERO_MAX_ITEMS, locale)
   const recentArticle = items[0]
   const caseStudies = await getArticlesByCategory('Design', 12, locale)
   const insights = await getArticlesByCategory('Insights', 12, locale)
@@ -120,13 +123,15 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         previousLabel={dict.home.previousArticles}
         nextLabel={dict.home.nextArticles}
         bannerLabel={dict.home.exploreDesign}
-        bannerHref={localeHref(locale, '/category/design')}
+        bannerCta={dict.home.exploreDesignCta}
+        bannerHref={localeHref(locale, '/newsletter')}
       />
 
       <InsightsGrid
         items={insights}
         title={dict.home.insights}
-        bannerLabel={dict.home.seeAllInsights}
+        bannerLabel={dict.home.insights}
+        seeAllLabel={dict.home.seeAllInsights}
         bannerHref={localeHref(locale, '/category/insights')}
       />
 

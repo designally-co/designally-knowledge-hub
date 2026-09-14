@@ -25,7 +25,7 @@
 .workflows__layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(32px, 4vw, 56px);
+  gap: clamp(32px, 4vw, 56px) var(--grid-gap);
 }
 
 /* Shared card body (tags → title → date) for feature and rows. */

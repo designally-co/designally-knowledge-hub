@@ -1,8 +1,5 @@
 .case-studies {
-  --case-page-edge: max(
-    var(--page-gutter),
-    calc((100vw - var(--page-max)) / 2 + var(--page-gutter))
-  );
+  --case-page-edge: var(--page-gutter);
   width: 100%;
   padding-block: clamp(64px, 10vw, 120px);
   padding-left: var(--case-page-edge);
@@ -45,7 +42,7 @@
 }
 
 .case-studies__track {
-  --case-gap: clamp(14px, 1.4vw, 24px);
+  --case-gap: var(--grid-gap);
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: calc((100% - 0.2 * var(--page-gutter)) / 1.18);
@@ -71,12 +68,66 @@
   border-radius: 0;
 }
 
-/* Placement + colour only — shared look lives in promo-banner.css. */
+/* The section only pads its left edge (the track bleeds right), so the row
+   restores the right one to sit on the same 10 content columns as every other
+   section. */
+.case-studies__banner-row {
+  margin-top: clamp(56px, 8vw, 96px);
+  margin-right: var(--case-page-edge);
+}
+
+/* Placement + colour only — shared look lives in promo-banner.css. The banner
+   holds the middle eight columns (page columns 3-10) from 48em up; phones give
+   it the full width. */
 .case-studies__banner {
   --promo-bg: #b9c7f3;
-  width: calc(100% - var(--case-page-edge));
-  max-width: calc(var(--page-max) - 2 * var(--page-gutter));
-  margin-top: clamp(56px, 8vw, 96px);
+  grid-column: 1 / -1;
+}
+
+/* The headline holds to two lines at the shared banner size (promo-banner.css),
+   which is scaled so the longer balanced half, "WHEN IDEAS CONNECT.", fits the
+   text column; `balance` splits it evenly. The banner stays a size container
+   for its CTA line. */
+.case-studies__banner {
+  container-type: inline-size;
+}
+
+.case-studies__banner .promo-banner__content {
+  max-width: 100%;
+}
+
+.case-studies__banner .promo-banner__label {
+  max-width: 100%;
+  font-size: var(--promo-label-size);
+  text-wrap: balance;
+}
+
+.case-studies__banner .promo-banner__cta {
+  font-size: clamp(18px, 3cqi, 24px);
+}
+
+/* Phones: the headline takes the full width, so the art drops to the corner
+   beside the button instead of sitting under the words. */
+.case-studies__banner .promo-banner__art {
+  max-width: 40%;
+  height: 52%;
+}
+
+@media (min-width: 48em) {
+  .case-studies__banner {
+    grid-column: 2 / span 8;
+  }
+
+  .case-studies__banner .promo-banner__content {
+    max-width: 66%;
+  }
+
+
+
+  .case-studies__banner .promo-banner__art {
+    max-width: 44%;
+    height: 96%;
+  }
 }
 
 @media (min-width: 36em) {

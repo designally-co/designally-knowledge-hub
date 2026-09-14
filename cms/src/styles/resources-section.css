@@ -33,7 +33,7 @@
 .resources__grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(20px, 2.2vw, 34px);
+  gap: var(--grid-gap);
 }
 
 .resources__banner {
