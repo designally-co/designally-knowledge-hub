@@ -49,4 +49,7 @@
      resolves per element, so a button or pill gets an outline that matches
      its label. Derived from a token, not a colour of its own. */
   --border-outline: color-mix(in srgb, currentColor 50%, transparent);
+  /* Two steps lighter than the label: the -32 of whatever colour it is set in
+     (black → neutral-black-32, white → neutral-white-32). Tags, filter chips. */
+  --border-label-32: color-mix(in srgb, currentColor 32%, transparent);
 }
