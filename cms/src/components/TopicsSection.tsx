@@ -23,9 +23,8 @@ import { tagSlug } from '@/lib/tags'
  * and a cloud of white sticker pills (one per tag).
  *
  * The first time the section scrolls into view the pills rain in and pile up
- * under gravity, edge to edge across the viewport — the stage is deliberately
- * a sibling of the centred column rather than a child of it, so there is no
- * invisible wall part-way across the screen for pills to stack against.
+ * under gravity, across the width of the 12 content columns: the stage is
+ * exactly that wide, so its edges are the heap's walls.
  *
  * The pile is simulated, not laid out. Pills are rigid bodies with orientation
  * (see `@/lib/pillPhysics`), so one that lands across the end of another rotates
@@ -413,8 +412,8 @@ export function TopicsSection({
         </div>
       </div>
 
-      {/* Outside the centred column on purpose: the heap needs the full width of
-          the screen, with its walls at the screen edges and nowhere inside. */}
+      {/* A sibling of the centred column, sized to the content columns in
+          topics.css; its edges are the heap's walls. */}
       <div ref={binRef} className="topics__cloud">
         {pills.map((t, i) => (
           <span

@@ -51,25 +51,17 @@
   object-fit: contain;
 }
 
-/* Full width of the section, not of the centred column — the heap's walls have
-   to sit at the screen edges. A max-width here would put an invisible wall
-   part-way across the screen for pills to stack against. This element is a
-   sibling of .topics__inner for exactly that reason, so no vw units or negative
-   margins are needed and it can never cause sideways overflow. */
+/* The width of the 12 content columns. The element itself is that wide — held
+   in by margins, not padding — because the simulation puts the heap's walls at
+   its edges: with padding, pills would pile into the gutters. */
 .topics__cloud {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
   gap: clamp(var(--space-3), 1.4vw, var(--space-4));
-  width: 100%;
   margin-top: clamp(var(--space-10), 8vw, var(--space-24));
-}
-
-/* The static fallback still wants breathing room at the edges; the simulated
-   stage must not have any, or its floor and walls stop matching the screen. */
-.topics__cloud:not(.topics__cloud--stage) {
-  padding-inline: var(--page-gutter);
+  margin-inline: var(--page-gutter);
 }
 
 /* Each pill sits in a wrapper the physics sim drives. Default = resting sticker
@@ -103,7 +95,6 @@
    their soft shadows must stay whole, so there is no overflow here. */
 .topics__cloud--stage {
   position: relative;
-  width: 100%;
   min-height: clamp(300px, 30vw, 360px);
 }
 
