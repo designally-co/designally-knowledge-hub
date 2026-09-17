@@ -17,13 +17,17 @@
   gap: clamp(var(--space-10), 6vw, var(--space-20));
 }
 
-/* The note is the wider half: it holds four fields and a button, and the column
-   beside it holds four short paragraphs. */
+/* On the 12-column grid: the heading and its notes on 1-4, the note — the
+   wider part, four fields and a button — on 6-12, column 5 open between. */
 @media (min-width: 980px) {
   .contact-write__inner {
-    grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gap);
     align-items: start;
   }
+
+  .contact-write__inner > .contact-write__lead { grid-column: 1 / span 4; }
+  .contact-write__inner > .contact-note { grid-column: 6 / span 7; }
 }
 
 .contact-write__title {
@@ -289,11 +293,16 @@
   gap: clamp(var(--space-8), 5vw, var(--space-16));
 }
 
+/* On the grid, like the note above: the heading on 1-4, the rows on 6-12. */
 @media (min-width: 900px) {
   .contact-where__inner {
-    grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gap);
     align-items: start;
   }
+
+  .contact-where__inner > .contact-where__lead { grid-column: 1 / span 4; }
+  .contact-where__inner > .contact-rows { grid-column: 6 / span 7; }
 }
 
 .contact-where__title {
@@ -322,11 +331,23 @@
   border-block-end: 1px solid var(--color-neutral-gray-200);
 }
 
+/* Each row on the grid as well, the label on the value's centre line however
+   many lines the value runs. Full width on a tablet: label 1-5, value 6-12. Inside the seven-column list from 900px: label on 6-8, value on 9-12. */
 @media (min-width: 640px) {
   .contact-row {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
-    align-items: start;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    align-items: center;
   }
+
+  .contact-row > .contact-row__label { grid-column: 1 / span 5; }
+  .contact-row > .contact-row__value { grid-column: 6 / span 7; }
+}
+
+@media (min-width: 900px) {
+  .contact-row { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+  .contact-row > .contact-row__label { grid-column: 1 / span 3; }
+  .contact-row > .contact-row__value { grid-column: 4 / span 4; }
 }
 
 .contact-row__label {
@@ -355,16 +376,22 @@
   color: var(--color-neutral-black-60);
 }
 
+/* THE DETAILS ARE THE POINT. Three levels: the serif heading names the
+   section, the details come next in black at body-large, and the labels stay
+   small grey capitals — captions for what sits beside them. At 14px the
+   number and address were the quietest thing in the band; at 20px semibold
+   they shouted over the heading. */
 .contact-row__value {
   display: grid;
-  gap: 2px;
+  gap: 0;
   margin: 0;
-  font: var(--type-body);
-  letter-spacing: var(--tracking-body);
+  font: var(--type-body-large);
+  letter-spacing: var(--tracking-body-large);
   color: var(--color-neutral-black);
 }
 
 .contact-row__value a {
+  justify-self: start;
   color: inherit;
   text-decoration: none;
   border-block-end: 1px solid transparent;
