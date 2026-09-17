@@ -381,12 +381,6 @@
   gap: clamp(14px, 1.4vw, 24px);
 }
 
-/* Square corners on every listing card's media — the grid reads as one crisp
-   block (matching the homepage Insights grid). */
-.listing-grid .article-card__media {
-  border-radius: 0;
-}
-
 @media (min-width: 36em) {
   .listing-grid:not(.listing-grid--uniform) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -409,14 +403,20 @@
    artwork and a title need. Above 36em there is space for the track to decide
    for itself again. */
 .listing-grid--uniform {
+  --uniform-gap: clamp(14px, 2.4vw, 36px);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(14px, 2.4vw, 36px);
+  gap: var(--uniform-gap);
 }
 
+/* Tiles are at least 232px, and never more than four to a row: the minimum
+   grows to a quarter of the row once four would fit. */
 @media (min-width: 36em) {
   .listing-grid--uniform {
-    grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(max(232px, (100% - 3 * var(--uniform-gap)) / 4), 1fr)
+    );
   }
 }
 

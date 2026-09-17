@@ -101,6 +101,9 @@
 
 .news-why {
   padding-block: clamp(56px, 9vw, 120px);
+  /* More room under the fan: the lean and drop of the outer cards eat into the
+     bottom edge, so the same padding as the top read as a tight fit. */
+  padding-block-end: clamp(88px, 13vw, 184px);
   background-color: var(--color-neutral-white);
 }
 
@@ -163,8 +166,15 @@
   z-index: var(--z);
   flex: 1 1 0;
   min-width: 0;
+  /* Taller, with the problem at the top and the answer at the foot: the
+     space between them is the turn from one to the other. */
+  display: flex;
+  flex-direction: column;
+  min-height: clamp(340px, 30vw, 420px);
   padding: var(--pad);
   background-color: color-mix(in srgb, var(--card-tint) 52%, var(--color-neutral-white));
+  /* The edge is the card's own colour, a shade darker than its fill. */
+  border: 1.5px solid color-mix(in srgb, var(--card-tint) 82%, var(--color-neutral-black));
   color: var(--color-neutral-black);
   /* The middle card rides highest and the outer two fall away from it, which is
      how a spread hand sits. */
@@ -206,7 +216,7 @@
 }
 
 .news-card__problem {
-  margin: 0 0 clamp(16px, 2vw, 24px);
+  margin: 0 0 clamp(48px, 6vw, 88px);
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black-60);
@@ -215,9 +225,9 @@
 /* The turn: the problem is set as text and the answer is set as a heading,
    which is the whole shape of the card. */
 .news-card__title {
-  margin: 0 0 10px;
-  font: var(--type-heading-4);
-  letter-spacing: var(--tracking-heading-4);
+  margin: auto 0 12px;
+  font: var(--type-heading-3);
+  letter-spacing: var(--tracking-heading-3);
   color: var(--color-neutral-black);
   text-wrap: balance;
 }
@@ -239,6 +249,7 @@
 
   .news-card {
     transform: none;
+    min-height: 0;
   }
 
   .news-card:not(:last-child) {

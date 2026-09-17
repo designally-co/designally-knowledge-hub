@@ -30,10 +30,6 @@
   min-width: 0;
 }
 
-.insights__card .article-card__media {
-  border-radius: 0;
-}
-
 /* Colour and shape only; the tile and its "see all" line are PromoBannerCell's
    (promo-banner.css). Portrait, the same 3:4 frame as the article covers
    beside it. */

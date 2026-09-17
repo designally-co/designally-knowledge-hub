@@ -39,6 +39,12 @@
   --color-category-purple-light: #e7d8ef;
   --color-category-purple-mid: #a55ac7;
 
+  /* ---- Footer ----
+     The footer's ochre wash, taken from its Figma frame: the darker stop
+     fades in over the mural, the lighter one is the flat band below it. */
+  --color-footer-ochre-dark-60: rgba(108, 69, 0, 0.6);  /* #6C4500 at 60% */
+  --color-footer-ochre: #a76a00;
+
   /* Outline = the element's own label colour at 50% opacity. currentColor
      resolves per element, so a button or pill gets an outline that matches
      its label. Derived from a token, not a colour of its own. */

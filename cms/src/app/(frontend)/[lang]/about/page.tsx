@@ -163,7 +163,7 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
                 <Link
                   className="about-card"
                   href={surface.href}
-                  style={{ ['--card-tint' as string]: surface.chrome.tint }}
+                  style={{ ['--card-tint' as string]: surface.chrome.strong }}
                 >
                   <span className="about-card__mark" aria-hidden="true">
                     {surface.chrome.icon ? (

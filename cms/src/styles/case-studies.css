@@ -64,10 +64,6 @@
   scroll-snap-align: start;
 }
 
-.case-studies__card .article-card__media {
-  border-radius: 0;
-}
-
 /* The section only pads its left edge (the track bleeds right), so the row
    restores the right one to sit on the same 10 content columns as every other
    section. */

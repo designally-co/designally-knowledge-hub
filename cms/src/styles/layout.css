@@ -7,7 +7,6 @@
   top: 0;
   z-index: var(--z-sticky);
   background: var(--color-neutral-white);
-  border-bottom: 1px solid var(--color-neutral-gray-200);
   padding-top: env(safe-area-inset-top);
 }
 
@@ -531,7 +530,7 @@
 /* --- Footer ------------------------------------------------------------ */
 
 /* Photo background under an ochre wash that deepens toward the bottom, so the
-   mural shows through behind the tagline and the columns sit on near-solid ochre. */
+   mural shows through behind the tagline and the columns sit on solid ochre. */
 .site-footer {
   position: relative;
   /* On a wide, short footer the band is taller than the footer and hung past
@@ -539,7 +538,7 @@
      is the part the wash has already turned to flat ochre. */
   overflow: hidden;
   color: var(--color-neutral-white);
-  background-color: var(--color-neutral-dark);
+  background-color: var(--color-footer-ochre);
 }
 
 /* The mural, always at its own proportions. It used to be a `cover` background
@@ -560,8 +559,8 @@
   aspect-ratio: 1200 / 807;
   background-image: linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--color-neutral-dark) 60%, transparent) 0%,
-      var(--color-neutral-dark) 60%
+      var(--color-footer-ochre-dark-60) 0%,
+      var(--color-footer-ochre) 60%
     ),
     url('/footer-bg.jpg');
   background-size: cover;
@@ -630,7 +629,7 @@
   -webkit-mask: url('/designally-mark.png') no-repeat center / contain;
 }
 
-/* White, not the paper off-white: on the dark band the warm page colour read as a
+/* White, not the paper off-white: on the ochre band the warm page colour read as a
    tinted D rather than a reversed one, and this is the only place in the
    identity where the letter is knocked out of a colour. */
 .site-footer__mark-d {

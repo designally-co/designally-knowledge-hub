@@ -13,7 +13,6 @@
   --sp-10: 128px;
 
   /* Radii */
-  --radius-thumb: 6px;    /* article/inspiration thumbnails */
   --radius-card: 16px;    /* resource + promo cards */
   --radius-hero: 20px;    /* hero image */
   --radius-input: 10px;

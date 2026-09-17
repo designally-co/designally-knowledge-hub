@@ -9,6 +9,9 @@ import type { Category } from './tags'
 export interface ListingChrome {
   /** CSS colour for the hero band (matches the section graphic's background). */
   tint: string
+  /** The section's saturated colour, for small surfaces that should stand out
+   *  (the About page's cards). */
+  strong: string
   /** Public path to the section icon, or null when the surface has none. */
   icon: string | null
 }
@@ -16,19 +19,36 @@ export interface ListingChrome {
 // Chrome follows the public LABEL: Design = "Case Studies", Insights, Design with
 // AI = "Workflows". Tints are the SVG graphics' background colours.
 export const CATEGORY_CHROME: Record<Category, ListingChrome> = {
-  Design: { tint: 'var(--color-brand-light)', icon: '/section-icons/case.svg' },
-  Insights: { tint: 'var(--color-category-blue-light)', icon: '/section-icons/insights.svg' },
-  'Design with AI': { tint: 'var(--color-category-green-light)', icon: '/section-icons/workflows.svg' },
+  Design: {
+    tint: 'var(--color-brand-light)',
+    strong: 'var(--color-accent-orange)',
+    icon: '/section-icons/case.svg',
+  },
+  Insights: {
+    tint: 'var(--color-category-blue-light)',
+    strong: 'var(--color-category-blue-mid)',
+    icon: '/section-icons/insights.svg',
+  },
+  'Design with AI': {
+    tint: 'var(--color-category-green-light)',
+    strong: 'var(--color-category-green-mid)',
+    icon: '/section-icons/workflows.svg',
+  },
 }
 
 export const RESOURCES_CHROME: ListingChrome = {
   tint: 'var(--color-category-purple-light)',
+  strong: 'var(--color-category-purple-mid)',
   icon: '/section-icons/resources.svg',
 }
 
 /** Chrome for a tag page — inherits its parent category's tint, drops the icon. */
 export function chromeForCategory(category: Category | undefined): ListingChrome {
-  return (category && CATEGORY_CHROME[category]) || { tint: 'var(--color-category-blue-light)', icon: null }
+  return (category && CATEGORY_CHROME[category]) || {
+      tint: 'var(--color-category-blue-light)',
+      strong: 'var(--color-category-blue-mid)',
+      icon: null,
+    }
 }
 
 /**

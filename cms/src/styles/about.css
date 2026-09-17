@@ -286,43 +286,27 @@
   padding: clamp(12px, 1.4vw, 18px);
   overflow: hidden;
   border-radius: var(--radius-card);
-  /* SATURATED, NOT DARKENED. The tints come from `listingChrome`, where they
-     are the pale grounds the listing bands wear — white on them measured 1.79
-     to 1.93:1, and the label owes 4.5. Mixing toward black got there and took
-     the colour with it: 60% of the peach is (145,103,82), a brown.
-
-     This drops the lightness in OKLCH and lifts the chroma a fifth, keeping
-     each hue exactly where `listingChrome` put it — the smallest move that
-     makes the label legible rather than the biggest one that makes it safe.
-
-     THE CHROMA IS ×1.2, NOT ×2. Doubled, hue 47° stops being the peach and
-     becomes #ba3300, a red: at high chroma that part of the wheel runs to
-     scarlet. A fifth is enough to keep the colour fresh at the lower
-     lightness without moving it off its own hue — #be6f46, still the orange.
-
-     3.44:1 AT WORST, which is the floor for large text, and the label is set
-     at 19px bold to be it — 14pt bold is 18.66px, so it qualifies by a third
-     of a pixel. Reaching 4.5 from these pastels needs `L 0.52`, and there the
-     four read as dark paint rather than as the sections' own colours.
-
-     The `color-mix` above is the fallback where relative colour syntax is
-     missing: duller, and still legible, which is the right way round. */
-  background-color: color-mix(in srgb, var(--card-tint, var(--color-category-purple-light)) 66%, var(--color-neutral-black));
-  background-color: oklch(from var(--card-tint, var(--color-category-purple-light)) 0.62 calc(c * 1.2) h);
+  /* EACH SECTION'S STRONG COLOUR (`listingChrome`'s `strong`): orange and the
+     three category mids. Their pale tints, used on the listing heroes, were
+     too quiet on this dark band. The label and arrow are white, as asked;
+     on the orange that is 2.8:1, under the 3:1 large text owes. */
+  background-color: var(--card-tint, var(--color-category-purple-mid));
+  box-shadow: var(--shadow-card);
   color: var(--color-neutral-black);
   text-align: start;
   text-decoration: none;
 }
 
-/* The same watermark as the bands, at the weight the promo banner uses — the
-   tint is a flat colour and the pattern is what stops four flat rectangles
-   reading as swatches. */
+/* The same watermark as the listing heroes, at their weight and blend — the tint
+   is a flat colour and the pattern is what stops four flat rectangles reading
+   as swatches. */
 .about-card::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
-  opacity: 0.25;
+  opacity: 0.35;
+  mix-blend-mode: soft-light;
   background: url('/hero-bg-pattern.svg') no-repeat center / cover;
   pointer-events: none;
 }
@@ -347,10 +331,7 @@
 
 /* The arrow rides the top-right corner, the way the promo banners put theirs on
    the trailing edge: a mark that the card goes somewhere, not a second button. */
-/* WHITE, RING AND GLYPH BOTH. On four different tints an ink arrow was four
-   different weights — nearly black on the mint, nearly invisible on nothing.
-   White is the one value that reads the same on all four, and it is the colour
-   the band's own type is set in. */
+/* WHITE, RING AND GLYPH, like the label. */
 .about-card__arrow {
   position: absolute;
   z-index: 1;
@@ -368,22 +349,25 @@
     color 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Fills on approach, and the glyph inverts with it — the ring was already
-   white, so a white fill alone would have erased the arrow inside it. */
+/* Fills on approach, and the glyph inverts with it. The card rises from the
+   list item and its shadow deepens with it. */
 @media (hover: hover) {
   .about-card:hover .about-card__arrow {
     background-color: var(--color-neutral-white);
     color: var(--color-neutral-black);
   }
+
+  .about-card {
+    transition: box-shadow 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .about-card:hover {
+    box-shadow: var(--shadow-card-hover);
+  }
 }
 
-/* WHITE, ASKED FOR — the label reversed out of the tint rather than set in
-   ink, which is how the design draws it.
-
-   19px, NOT THE SCALE'S 18. One pixel, and it is the pixel that makes this
-   large text: 14pt bold is 18.66px, and above that line the contrast floor is
-   3:1 rather than 4.5. It is what lets the cards keep their own colours at
-   3.44:1 instead of being darkened to paint. */
+/* White on the colour. Set in heading-5, large enough to hold its own at the
+   bottom of the card. */
 .about-card__label {
   position: relative;
   z-index: 1;

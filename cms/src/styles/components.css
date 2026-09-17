@@ -247,7 +247,8 @@
   position: relative;
   width: 100%;
   aspect-ratio: var(--card-ratio, 4 / 3);
-  border-radius: var(--radius-thumb);
+  /* Square corners: the photograph ends on a hard edge. */
+  border-radius: 0;
   overflow: hidden;
   /* Paints while the cover loads; the default colour when there isn't one. */
   background-color: var(--card-tint, var(--color-neutral-gray-400));
@@ -338,7 +339,6 @@
 
 .article-card--overlay .article-card__media {
   aspect-ratio: var(--card-ratio-mobile, 4 / 3);
-  border-radius: var(--radius-hero);
 }
 
 .article-card__plate {

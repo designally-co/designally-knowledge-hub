@@ -61,6 +61,7 @@ const COLOURS: { group: string; tokens: string[] }[] = [
       'category-purple-light', 'category-purple-mid',
     ],
   },
+  { group: 'Footer', tokens: ['footer-ochre-dark-60', 'footer-ochre'] },
 ]
 
 const TYPE_STYLES: { token: string; spec: string; serif?: boolean }[] = [
@@ -131,7 +132,7 @@ export default async function DesignSystemPage({ params }: { params: Promise<{ l
         </p>
       </header>
 
-      <Section title="Colour" note="28 tokens. Use them as var(--color-…); never type a hex.">
+      <Section title="Colour" note="28 system tokens plus the footer's two ochre stops. Use them as var(--color-…); never type a hex.">
         {COLOURS.map((g) => (
           <div key={g.group} className="ds-colour-group">
             <h3 className="ds-colour-group__title">{g.group}</h3>

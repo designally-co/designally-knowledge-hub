@@ -14,13 +14,13 @@ import {
 } from '@/lib/i18n'
 
 /*
- * SiteFooter — photo background under a dark wash + serif tagline. Link columns
+ * SiteFooter — photo background under an ochre wash + serif tagline. Link columns
  * use the Hub's real nav (Explore = categories + Resources, Topics = tags), all
  * locale-prefixed. Chrome strings come from the dictionary; the "Information"
  * column is omitted (no such pages yet). Styling lives in styles/layout.css.
  */
 
-const FOOTER_TOPICS = TAG_OPTIONS.slice(0, 8)
+const FOOTER_TOPICS = TAG_OPTIONS.slice(0, 4)
 
 export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const catAnchor = (c: (typeof CATEGORIES)[number]) =>
