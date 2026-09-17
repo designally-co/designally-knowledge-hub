@@ -22,16 +22,23 @@
 .resource-layout {
   padding-block: clamp(var(--space-6), 4.5vw, var(--space-16)) clamp(var(--space-10), 6vw, var(--space-20));
   display: grid;
-  gap: clamp(var(--space-6), 4vw, var(--space-16));
+  row-gap: clamp(var(--space-6), 4vw, var(--space-16));
+  column-gap: var(--grid-gap);
   align-items: start;
 }
 
+/* On the 12-column grid, with an empty column between the rail and the
+   reading column (as on the article page).
+   60-80em: rail on 1-4, reading column on 6-12.
+   From 80em: rail on 1-3, reading column on 5-12, the description held to
+   5-10 so its lines stay a readable length. */
 @media (min-width: 60em) {
   .resource-layout {
-    /* The rail is exactly the artwork's width, so the two columns share one
-       clean edge instead of the artwork floating inside a wider track. */
-    grid-template-columns: 340px minmax(0, 1fr);
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
   }
+
+  .resource-aside { grid-column: 1 / span 4; }
+  .resource-main { grid-column: 6 / span 7; }
 
   .resource-aside {
     position: sticky;
@@ -238,6 +245,18 @@
 .resource-page__body {
   margin-top: clamp(var(--space-6), 4vw, var(--space-10));
   max-width: 64ch;
+}
+
+/* On the grid the columns set the measure, not the 64ch cap. */
+@media (min-width: 60em) {
+  .resource-page__body { max-width: none; }
+}
+
+@media (min-width: 80em) {
+  .resource-aside { grid-column: 1 / span 3; }
+  .resource-main { grid-column: 5 / span 8; }
+  /* Six of the reading column's eight: columns 5-10. */
+  .resource-page__body { max-width: calc(6 * var(--column-width) + 5 * var(--grid-gap)); }
 }
 
 .resource-page__label {
