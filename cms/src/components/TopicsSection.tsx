@@ -10,7 +10,7 @@ import {
   MAX_THROW,
   park,
   SLEEP_FRAMES,
-  stepWorld,
+  advanceWorld,
   STILL_PX,
   wakeBody,
   type Size,
@@ -151,12 +151,13 @@ export function TopicsSection({
     let awokeAt = 0
 
     const step = (now: number) => {
-      // Clamping dt keeps a backgrounded tab from resuming with one enormous
-      // step that throws pills straight through the floor.
-      const dt = Math.min(0.022, Math.max(0.001, (now - last) / 1000))
+      // The simulation runs in its own fixed steps (see advanceWorld). Clamping
+      // the frame time still matters: a backgrounded tab would otherwise resume
+      // owing seconds of simulation and replay them in one frame.
+      const dt = Math.min(0.034, Math.max(0, (now - last) / 1000))
       last = now
 
-      const drift = stepWorld(world, dt, dragIndex)
+      const drift = advanceWorld(world, dt, dragIndex)
 
       for (let i = 0; i < els.length; i++) {
         if (world.bodies[i].live && els[i].style.opacity !== '1') {
@@ -167,7 +168,7 @@ export function TopicsSection({
       draw()
 
       const busy = dragIndex >= 0 || drift > STILL_PX
-      stillFrames = busy ? 0 : stillFrames + 1
+      if (drift >= 0) stillFrames = busy ? 0 : stillFrames + 1
       // Backstop. A heap that is both very crowded and very narrow can keep
       // finding somewhere to go for longer than anyone will watch, and a loop
       // that never sleeps is a phone battery draining behind a section nobody
@@ -246,7 +247,13 @@ export function TopicsSection({
       b.vy = 0
       b.omega = 0
       wakeBody(b)
-      els[index].setPointerCapture(ev.pointerId)
+      // Capture can throw if the pointer is already gone (a very fast tap);
+      // the heap must still wake, or the grabbed pill freezes in place.
+      try {
+        els[index].setPointerCapture(ev.pointerId)
+      } catch {
+        /* the drag still works through the window listeners */
+      }
       wake()
     }
 

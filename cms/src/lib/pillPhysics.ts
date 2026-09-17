@@ -54,6 +54,8 @@ export type World = {
   W: number
   H: number
   t: number
+  /** Frame time not yet simulated; `advanceWorld` spends it in fixed steps. */
+  pending: number
 }
 
 type Contact = {
@@ -85,7 +87,11 @@ const SLOP = 0.5 // penetration tolerated before the bias engages
 const LINEAR_DAMP = 0.12 // per-second bleed, so nothing drifts for ever
 const ANGULAR_DAMP = 1.4 // spin dies faster than travel, or pills look frictionless
 export const MAX_THROW = 2600 // px/s cap on a flick
-export const STILL_PX = 0.3 // per-frame travel below which the heap counts as still
+/** The simulation's own clock: fixed steps, whatever the display refreshes at. */
+export const STEP = 1 / 240
+const SPAWN_CLEARANCE = 4 // px of air a pill needs around its spawn pose
+const SPAWN_RETRY = 0.02 // s to wait before trying a blocked spawn again
+export const STILL_PX = 0.3 // travel per 1/60s below which the heap counts as still
 export const SLEEP_FRAMES = 10
 
 function clamp(v: number, lo: number, hi: number): number {
@@ -188,7 +194,7 @@ export function createWorld(sizes: Size[], W: number, seed: number): World {
     }
   })
 
-  return { bodies, sizes, W, H, t: 0 }
+  return { bodies, sizes, W, H, t: 0, pending: 0 }
 }
 
 /** Closest points between segments p1q1 and p2q2 (Ericson, Real-Time Collision Detection). */
@@ -236,6 +242,34 @@ function closestSegments(
 }
 
 const seg = { ax: 0, ay: 0, bx: 0, by: 0 }
+
+/**
+ * Whether a waiting pill would appear inside one already falling. Pills are let
+ * go 55ms apart into columns narrower than the pills, so a new one regularly
+ * lands on top of its neighbour, which has only dropped a few pixels by then.
+ * Released anyway, the two start up to 40px deep in each other and are shoved
+ * apart on the next step: a visible pop, and a kick of energy the heap then
+ * spends a second losing. Held back until its spot is clear, it simply falls a
+ * moment later.
+ */
+function spawnBlocked(world: World, i: number): boolean {
+  const A = world.bodies[i]
+  const ca = Math.cos(A.angle), sa = Math.sin(A.angle)
+  for (let j = 0; j < world.bodies.length; j++) {
+    const B = world.bodies[j]
+    if (j === i || !B.live) continue
+    const reach = A.hl + A.r + B.hl + B.r + SPAWN_CLEARANCE
+    if (Math.abs(B.x - A.x) > reach || Math.abs(B.y - A.y) > reach) continue
+    const cb = Math.cos(B.angle), sb = Math.sin(B.angle)
+    closestSegments(
+      A.x - ca * A.hl, A.y - sa * A.hl, A.x + ca * A.hl, A.y + sa * A.hl,
+      B.x - cb * B.hl, B.y - sb * B.hl, B.x + cb * B.hl, B.y + sb * B.hl,
+      seg,
+    )
+    if (Math.hypot(seg.ax - seg.bx, seg.ay - seg.by) < A.r + B.r + SPAWN_CLEARANCE) return true
+  }
+  return false
+}
 
 /** Gathers every contact in the world: pill against pill, and pill against the floor and walls. */
 function collect(world: World, contacts: Contact[]): number {
@@ -325,7 +359,9 @@ export function stepWorld(world: World, dt: number, drag: number): number {
 
   for (let i = 0; i < bodies.length; i++) {
     const b = bodies[i]
-    if (!b.live && world.t >= b.releaseAt) b.live = true
+    if (b.live || world.t < b.releaseAt) continue
+    if (spawnBlocked(world, i)) b.releaseAt = world.t + SPAWN_RETRY
+    else b.live = true
   }
 
   const linDecay = Math.exp(-LINEAR_DAMP * dt)
@@ -549,6 +585,34 @@ export function stepWorld(world: World, dt: number, drag: number): number {
     drift = Math.max(drift, Math.abs(b.x - beforeX[i]), Math.abs(b.y - beforeY[i]), swept)
   }
   return drift
+}
+
+/**
+ * Advances the world by a frame's worth of time in fixed STEP-sized steps and
+ * returns how far the busiest body travelled across them.
+ *
+ * Stepping by the frame time instead made the heap a different object on every
+ * display: at 60Hz a falling pill moved 20px a step, landed deep in whatever it
+ * hit and was thrown back out, and the pile took 4.7s to settle against 1.8s at
+ * 120Hz — and came to rest in a different shape. Fixed steps make the drop the
+ * same everywhere; the remainder carries over to the next frame. Returns -1
+ * when the frame was too short to take a step.
+ */
+export function advanceWorld(world: World, frameDt: number, drag: number): number {
+  world.pending += frameDt
+  let drift = 0
+  let steps = 0
+  while (world.pending >= STEP) {
+    world.pending -= STEP
+    drift += stepWorld(world, STEP, drag)
+    steps++
+  }
+  // A frame shorter than a step (displays above 240Hz) simulates nothing, and
+  // must not read as a heap that has stopped moving.
+  if (steps === 0) return -1
+  // Travel per 1/60s, so STILL_PX means the same thing at every refresh rate:
+  // a 30Hz frame covers twice the time and would otherwise never look still.
+  return (drift * (1 / 60)) / (steps * STEP)
 }
 
 /** Stops everything dead — used when the heap is put to sleep. */

@@ -111,6 +111,9 @@
   opacity: 0;
   transform-origin: center;
   will-change: transform;
+  /* Released pills fade in as they start to fall rather than blinking into
+     existence just above the heap. */
+  transition: opacity 180ms var(--ease-out-quart);
 }
 
 /* The wrapper owns the rotation, so drop the pill's own static tilt. */
