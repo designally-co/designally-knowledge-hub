@@ -4,7 +4,7 @@
   padding-block: clamp(64px, 10vw, 120px);
   padding-left: var(--case-page-edge);
   overflow: hidden;
-  background: var(--be-band-blush);
+  background: var(--color-brand-surface);
 }
 
 .case-studies__header {
@@ -26,9 +26,9 @@
   gap: 0.32em;
   min-width: 0;
   margin: 0;
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
   font: var(--type-display-2);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-display-2);
 }
 
 .case-studies__controls {
@@ -80,7 +80,7 @@
    holds the middle eight columns (page columns 3-10) from 48em up; phones give
    it the full width. */
 .case-studies__banner {
-  --promo-bg: #b9c7f3;
+  --promo-bg: var(--color-category-blue-light);
   grid-column: 1 / -1;
 }
 

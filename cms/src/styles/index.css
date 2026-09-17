@@ -4,10 +4,8 @@
    define the vocabulary, base sets document defaults + the breakpoint contract,
    then components and site chrome (header/drawer/footer).
 
-   NOTE: the fonts (Newsreader + Hanken Grotesk) and the warm-paper palette are
-   PLACEHOLDERS to be replaced once the real Designally brand assets arrive.
-   The webfonts are loaded via <link> in (frontend)/layout.tsx, not via CSS
-   @import, so Next can preconnect them. */
+   The fonts (Ovo + Geist) are loaded via <link> in (frontend)/layout.tsx, not
+   via CSS @import, so Next can preconnect them. */
 @import "tailwindcss";
 
 @import "./tokens/colors.css";
@@ -37,23 +35,23 @@
 @import "./notfound.css";
 
 :root {
-  --background: var(--surface-page);
-  --foreground: var(--text-primary);
-  --card: var(--surface-card);
-  --card-foreground: var(--text-primary);
-  --primary: var(--be-ink);
-  --primary-foreground: var(--be-paper);
-  --secondary: var(--be-line);
-  --secondary-foreground: var(--be-ink);
-  --muted: var(--be-line);
-  --muted-foreground: var(--text-secondary);
-  --accent: var(--be-line);
-  --accent-foreground: var(--be-ink);
-  --destructive: var(--be-brick);
-  --destructive-foreground: var(--be-white);
-  --border: var(--border-hairline);
-  --input: var(--border-hairline);
-  --ring: var(--be-ink);
+  --background: var(--color-brand-surface);
+  --foreground: var(--color-neutral-black);
+  --card: var(--color-neutral-white);
+  --card-foreground: var(--color-neutral-black);
+  --primary: var(--color-neutral-black);
+  --primary-foreground: var(--color-brand-surface);
+  --secondary: var(--color-neutral-gray-200);
+  --secondary-foreground: var(--color-neutral-black);
+  --muted: var(--color-neutral-gray-200);
+  --muted-foreground: var(--color-neutral-black-60);
+  --accent: var(--color-neutral-gray-200);
+  --accent-foreground: var(--color-neutral-black);
+  --destructive: var(--color-accent-red);
+  --destructive-foreground: var(--color-neutral-white);
+  --border: var(--color-neutral-gray-200);
+  --input: var(--color-neutral-gray-200);
+  --ring: var(--color-neutral-black);
 }
 
 @theme inline {

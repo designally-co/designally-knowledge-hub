@@ -6,8 +6,8 @@
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
-  background: var(--surface-raised);
-  border-bottom: 1px solid var(--border-hairline);
+  background: var(--color-neutral-white);
+  border-bottom: 1px solid var(--color-neutral-gray-200);
   padding-top: env(safe-area-inset-top);
 }
 
@@ -59,13 +59,13 @@
 }
 
 .wordmark__d {
-  background-color: var(--be-ink);
+  background-color: var(--color-neutral-black);
   clip-path: inset(0 26.21% 0 0);
 }
 
 /* The stop is the one part of this identity that has always been the accent. */
 .wordmark__dot {
-  background-color: var(--be-rust);
+  background-color: var(--color-accent-orange);
   clip-path: inset(0 0 0 73.79%);
 }
 
@@ -84,8 +84,10 @@
 
 .site-nav__link {
   position: relative;
-  font: var(--type-nav);
-  color: var(--be-ink);
+  font: var(--type-body-large-emphasis);
+  letter-spacing: var(--tracking-body-large-emphasis);
+  line-height: 1;
+  color: var(--color-neutral-black);
   text-decoration: none;
   white-space: nowrap;
   /* Room for the underline to sit clear of the descenders. */
@@ -111,7 +113,7 @@
   right: 0;
   bottom: 0;
   height: 1.5px;
-  background: var(--be-ink);
+  background: var(--color-neutral-black);
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform 0.28s var(--ease-out-quart);
@@ -138,9 +140,9 @@
     left: 0;
     right: 0;
     top: 100%;
-    background: var(--surface-raised);
-    border-top: 1px solid var(--border-hairline);
-    border-bottom: 1px solid var(--border-hairline);
+    background: var(--color-neutral-white);
+    border-top: 1px solid var(--color-neutral-gray-200);
+    border-bottom: 1px solid var(--color-neutral-gray-200);
     box-shadow: var(--shadow-card);
     animation: nav-panel-in 0.24s var(--ease-out-quart) both;
   }
@@ -165,17 +167,17 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
-  border-right: 1px solid var(--border-hairline);
+  border-right: 1px solid var(--color-neutral-gray-200);
   padding-right: clamp(16px, 2vw, 32px);
 }
 
 /* Chrome-scale serif: echoes the editorial display voice without competing with
    page headings, and stays narrow enough that "Creative Things" wraps to two
-   lines at most. No matching token exists at this size — the scale jumps from
-   --type-title-md (22px sans) to --type-section (up to 52px). */
+   lines at most. */
 .nav-panel__title {
-  font: 400 clamp(26px, 2vw, 34px) / 1.05 var(--font-serif);
-  color: var(--be-ink);
+  font: var(--type-heading-3);
+  letter-spacing: var(--tracking-heading-3);
+  color: var(--color-neutral-black);
   text-wrap: balance;
 }
 
@@ -183,15 +185,16 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font: var(--type-body-sm);
-  color: var(--text-secondary);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
   text-decoration: none;
 }
 
 .nav-panel__all svg { transition: transform 0.25s var(--ease-out-quart); }
 
 @media (hover: hover) {
-  .nav-panel__all:hover { color: var(--be-ink); }
+  .nav-panel__all:hover { color: var(--color-neutral-black); }
   .nav-panel__all:hover svg { transform: translateX(3px); }
 }
 
@@ -223,8 +226,9 @@
   display: flex;
   align-items: center;
   padding-block: 7px;
-  font: var(--type-body-sm);
-  color: var(--be-ink);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black);
   text-decoration: none;
 }
 
@@ -244,7 +248,7 @@
   right: 0;
   bottom: -2px;
   height: 1.5px;
-  background: var(--be-ink);
+  background: var(--color-neutral-black);
   transform: scaleX(0);
   transform-origin: left center;
   transition: transform 0.28s var(--ease-out-quart);
@@ -294,20 +298,21 @@
   border-radius: 8px;
   background: transparent;
   cursor: pointer;
-  font: 700 12px / 1 var(--font-sans);
-  letter-spacing: 0.03em;
-  color: var(--text-secondary);
+  font: var(--type-tag);
+  letter-spacing: var(--tracking-tag);
+  line-height: 1;
+  color: var(--color-neutral-black-60);
   transition: color var(--hover-state-dur) var(--ease-out-quart);
 }
 
 @media (hover: hover) {
   .locale-switcher__trigger:hover {
-    color: var(--be-ink);
+    color: var(--color-neutral-black);
   }
 }
 
 .locale-switcher__trigger[aria-expanded='true'] {
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
 }
 
 /* The caret points at where the menu went. */
@@ -331,8 +336,8 @@
   min-width: 136px;
   padding: 6px;
   border-radius: 14px;
-  background: var(--be-white);
-  border: 1px solid var(--border-hairline);
+  background: var(--color-neutral-white);
+  border: 1px solid var(--color-neutral-gray-200);
   box-shadow: var(--shadow-card);
   animation: locale-menu-in 0.16s var(--ease-out-quart) both;
 }
@@ -369,25 +374,27 @@
   gap: 16px;
   padding: 8px 10px;
   border-radius: 9px;
-  font: 600 13px / 1 var(--font-sans);
-  color: var(--text-secondary);
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1;
+  color: var(--color-neutral-black-60);
   text-decoration: none;
   transition: background var(--hover-state-dur) var(--ease-out-quart);
 }
 
 .locale-switcher__option.is-active {
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
 }
 
 @media (hover: hover) {
   .locale-switcher__option:hover {
-    color: var(--be-ink);
-    background: color-mix(in srgb, var(--be-ink) 6%, transparent);
+    color: var(--color-neutral-black);
+    background: color-mix(in srgb, var(--color-neutral-black) 6%, transparent);
   }
 }
 
 .locale-switcher__option:focus-visible {
-  outline: 2px solid var(--be-ink);
+  outline: 2px solid var(--color-neutral-black);
   outline-offset: -2px;
 }
 
@@ -419,7 +426,7 @@
   border: none;
   border-radius: var(--radius-pill);
   cursor: pointer;
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
 }
 
 @media (min-width: 64em) {
@@ -432,7 +439,7 @@
   position: fixed;
   inset: 0;
   z-index: var(--z-drawer-scrim);
-  background: rgba(18, 16, 13, 0.44);
+  background: var(--color-neutral-black-32);
   border: none;
   padding: 0;
   animation: drawer-scrim-in 0.25s var(--ease-out-quart) both;
@@ -445,8 +452,8 @@
   max-height: 100dvh;
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: var(--surface-page);
-  border-bottom: 1px solid var(--border-hairline);
+  background: var(--color-brand-surface);
+  border-bottom: 1px solid var(--color-neutral-gray-200);
   padding: calc(env(safe-area-inset-top) + 16px) var(--page-gutter)
     calc(env(safe-area-inset-bottom) + 32px);
   animation: drawer-in 0.28s var(--ease-out-quart) both;
@@ -488,11 +495,11 @@
 .drawer__link {
   display: block;
   padding: 14px 0;
-  font: 700 22px/1.2 var(--font-sans);
-  letter-spacing: var(--tracking-tight);
-  color: var(--be-ink);
+  font: var(--type-heading-5);
+  letter-spacing: var(--tracking-heading-5);
+  color: var(--color-neutral-black);
   text-decoration: none;
-  border-bottom: 1px solid var(--border-hairline);
+  border-bottom: 1px solid var(--color-neutral-gray-200);
   transition: padding-left var(--hover-state-dur) var(--ease-out-quart);
 }
 
@@ -531,8 +538,8 @@
      the end of the page, adding dead scroll below it. What it loses to the clip
      is the part the wash has already turned to flat ochre. */
   overflow: hidden;
-  color: var(--text-on-dark);
-  background-color: #a76a00;
+  color: var(--color-neutral-white);
+  background-color: var(--color-neutral-dark);
 }
 
 /* The mural, always at its own proportions. It used to be a `cover` background
@@ -553,8 +560,8 @@
   aspect-ratio: 1200 / 807;
   background-image: linear-gradient(
       to bottom,
-      rgba(108, 69, 0, 0.6) 0%,
-      rgba(167, 106, 0, 1) 60%
+      color-mix(in srgb, var(--color-neutral-dark) 60%, transparent) 0%,
+      var(--color-neutral-dark) 60%
     ),
     url('/footer-bg.jpg');
   background-size: cover;
@@ -571,8 +578,9 @@
 
 /* Serif tagline over the mural. */
 .site-footer__tagline {
-  font: 400 clamp(30px, 4.4vw, 52px) / 1.1 var(--font-serif);
-  color: var(--text-on-dark);
+  font: var(--type-heading-1);
+  letter-spacing: var(--tracking-heading-1);
+  color: var(--color-neutral-white);
   text-align: center;
   text-wrap: balance;
   max-width: 20ch;
@@ -580,7 +588,7 @@
 }
 
 .site-footer__rule {
-  border-top: 1px solid rgba(244, 237, 227, 0.35);
+  border-top: 1px solid var(--color-neutral-white-32);
   margin-bottom: clamp(36px, 6vw, 56px);
 }
 
@@ -623,11 +631,11 @@
   -webkit-mask: url('/designally-mark.png') no-repeat center / contain;
 }
 
-/* White, not the paper off-white: on the ochre band the warm #f9f6f4 read as a
+/* White, not the paper off-white: on the dark band the warm page colour read as a
    tinted D rather than a reversed one, and this is the only place in the
    identity where the letter is knocked out of a colour. */
 .site-footer__mark-d {
-  background-color: var(--be-white);
+  background-color: var(--color-neutral-white);
   clip-path: inset(0 26.21% 0 0);
 }
 
@@ -636,21 +644,23 @@
    knocked out whole. Two layers still, because the mask needs them — they just
    happen to be the same value on this ground. */
 .site-footer__mark-dot {
-  background-color: var(--be-white);
+  background-color: var(--color-neutral-white);
   clip-path: inset(0 0 0 73.79%);
 }
 
 .site-footer__blurb {
-  font: 700 clamp(18px, 3.6vw, 21px) / 1.35 var(--font-sans);
+  font: var(--type-heading-5);
+  letter-spacing: var(--tracking-heading-5);
   max-width: 24ch;
   margin: 0;
 }
 
 .site-footer__label {
-  font: var(--type-label);
-  letter-spacing: var(--tracking-label);
+  font: var(--type-tag);
+  letter-spacing: var(--tracking-tag);
+  line-height: 1;
   text-transform: uppercase;
-  color: var(--text-on-dark);
+  color: var(--color-neutral-white);
   margin: 0 0 20px;
 }
 
@@ -666,11 +676,11 @@
   width: var(--touch-target);
   height: var(--touch-target);
   border-radius: var(--radius-pill);
-  border: 1.5px solid rgba(244, 237, 227, 0.7);
+  border: 1.5px solid var(--color-neutral-white-60);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-on-dark);
+  color: var(--color-neutral-white);
 }
 
 .site-footer__col-list {
@@ -683,8 +693,9 @@
 }
 
 .site-footer__col-link {
-  font: 700 clamp(17px, 3.4vw, 20px) / 1.2 var(--font-sans);
-  color: var(--text-on-dark);
+  font: var(--type-heading-5);
+  letter-spacing: var(--tracking-heading-5);
+  color: var(--color-neutral-white);
   text-decoration: none;
   display: inline-block;
   position: relative;
@@ -729,9 +740,9 @@
 
   .site-footer__social-link:hover {
     opacity: 1;
-    background: var(--text-on-dark);
-    border-color: var(--text-on-dark);
-    color: var(--be-ink);
+    background: var(--color-neutral-white);
+    border-color: var(--color-neutral-white);
+    color: var(--color-neutral-black);
   }
 }
 
@@ -752,9 +763,9 @@
   padding: 20px 0;
   border: 0;
   background: none;
-  color: var(--text-on-dark);
-  font: 700 clamp(20px, 5.4vw, 26px) / 1.2 var(--font-sans);
-  letter-spacing: var(--tracking-tight);
+  color: var(--color-neutral-white);
+  font: var(--type-heading-4);
+  letter-spacing: var(--tracking-heading-4);
   text-align: left;
   cursor: pointer;
 }
@@ -763,7 +774,7 @@
    one, and a box drawn around each would be more furniture than the two rows
    are worth. */
 .footer-group + .footer-group .footer-group__toggle {
-  border-top: 1px solid rgba(244, 237, 227, 0.35);
+  border-top: 1px solid var(--color-neutral-white-32);
 }
 
 .footer-group__caret {
@@ -850,8 +861,9 @@
 }
 
 .site-footer__fineprint {
-  font: var(--type-body-sm);
-  color: var(--text-on-dark);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-white);
   margin: 0;
 }
 
@@ -862,18 +874,19 @@
 }
 
 .site-footer__locale .locale-switcher__trigger {
-  color: color-mix(in srgb, var(--text-on-dark) 80%, transparent);
-  font-size: 13px;
+  color: color-mix(in srgb, var(--color-neutral-white) 80%, transparent);
+  font: var(--type-overline);
+  letter-spacing: var(--tracking-overline);
 }
 
 @media (hover: hover) {
   .site-footer__locale .locale-switcher__trigger:hover {
-    color: var(--text-on-dark);
+    color: var(--color-neutral-white);
   }
 }
 
 .site-footer__locale .locale-switcher__trigger[aria-expanded='true'] {
-  color: var(--text-on-dark);
+  color: var(--color-neutral-white);
 }
 
 /* The base row keeps the switcher hard right at every width the site supports,

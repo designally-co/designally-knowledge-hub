@@ -7,7 +7,7 @@
   isolation: isolate;
   overflow: hidden;
   padding-block: clamp(56px, 9vw, 112px);
-  background: #ece1cd;
+  background: var(--color-brand-light);
 }
 
 .recent-article::after {
@@ -33,7 +33,7 @@
   aspect-ratio: 18 / 9;
   overflow: hidden;
   border-radius: 16px;
-  background: var(--cover-fallback);
+  background: var(--color-neutral-gray-400);
   /* The panel is measured against the frame, so its type and rhythm scale in
      cqh and it can never grow past half the stage height. */
   container: recent-article-stage / size;
@@ -74,7 +74,7 @@
   margin: 0;
   padding: clamp(12px, 4cqh, 40px);
   overflow: hidden;
-  background: var(--be-white);
+  background: var(--color-neutral-white);
 }
 
 .recent-article__tags {
@@ -91,8 +91,9 @@
   display: -webkit-box;
   max-width: 18ch;
   margin: 0;
-  color: var(--be-ink);
-  font: var(--type-title-lg);
+  color: var(--color-neutral-black);
+  font: var(--type-heading-2);
+  letter-spacing: var(--tracking-heading-2);
   font-size: clamp(15px, 5.2cqh, 40px);
   text-wrap: balance;
   -webkit-box-orient: vertical;
@@ -103,9 +104,9 @@
 
 .recent-article__date {
   margin: clamp(6px, 2.4cqh, 18px) 0 0;
-  color: var(--text-secondary);
-  font: var(--type-meta);
-  font-size: clamp(11px, 1.9cqh, 14px);
+  color: var(--color-neutral-black-60);
+  font: var(--type-body-small);
+  letter-spacing: var(--tracking-body-small);
 }
 
 .recent-article__link {
@@ -117,7 +118,7 @@
   margin-top: clamp(8px, 2.6cqh, 20px);
   border: 1px solid var(--border-outline);
   border-radius: var(--radius-pill);
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
   text-decoration: none;
   transition:
     background 0.18s var(--ease-out-quart),
@@ -132,9 +133,9 @@
 
 @media (hover: hover) {
   .recent-article__link:hover {
-    background: var(--be-ink);
-    color: var(--be-paper);
-    border-color: var(--be-ink);
+    background: var(--color-neutral-black);
+    color: var(--color-brand-surface);
+    border-color: var(--color-neutral-black);
     opacity: 1;
     transform: translateX(3px);
   }
@@ -163,6 +164,8 @@
 
   .recent-article__title {
     grid-column: 1 / -1;
+    font: var(--type-heading-2);
+    letter-spacing: var(--tracking-heading-2);
     font-size: clamp(15px, 5.6cqh, 24px);
     line-height: 1.15;
   }
@@ -170,7 +173,8 @@
   .recent-article__date {
     align-self: end;
     margin-top: 6px;
-    font-size: 12px;
+    font: var(--type-body-small);
+    letter-spacing: var(--tracking-body-small);
   }
 
   .recent-article__link {

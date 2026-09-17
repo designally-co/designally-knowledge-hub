@@ -70,7 +70,7 @@ export interface ResourceFigureProps {
 
 export function ResourceFigure({
   title,
-  color = 'var(--be-gold)',
+  color = 'var(--color-accent-orange)',
   glyph,
   className = '',
 }: ResourceFigureProps) {
@@ -95,7 +95,7 @@ export function ResourceFigure({
         <path
           d="M0,22 Q0,8 16,8 L60,8 C82,8 78,22 100,22 L184,22 Q200,22 200,36"
           fill="none"
-          stroke="rgba(255,255,255,0.55)"
+          style={{ stroke: 'var(--color-neutral-white-60)' }}
           strokeWidth="0.9"
           strokeLinejoin="round"
         />

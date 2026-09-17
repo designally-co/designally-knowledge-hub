@@ -4,12 +4,12 @@
    flat through the whole Workflows section and only fades to yellow across the
    Topics section, so the white ends exactly at the Workflows/Topics boundary. */
 .warm-band {
-  background: #ffffff;
+  background: var(--color-neutral-white);
 }
 
 .topics {
   padding-block: clamp(48px, 7vw, 88px) clamp(72px, 11vw, 132px);
-  background: linear-gradient(180deg, #ffffff 0%, #f6e6ac 100%);
+  background: linear-gradient(180deg, var(--color-neutral-white) 0%, var(--color-brand-light) 100%);
 }
 
 .topics__inner {
@@ -25,9 +25,9 @@
 
 .topics__heading {
   margin: 0;
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
   font: var(--type-display-2);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-display-2);
 }
 
 .topics__icons {
@@ -83,7 +83,9 @@
 @media (max-width: 35.999em) {
   .topics__cloud .topic-pill--lg {
     padding: 10px 16px;
-    font-size: 15px;
+    font: var(--type-overline);
+    letter-spacing: var(--tracking-overline);
+    line-height: 1;
   }
 
   /* And the heap is capped at eight. Twelve pills pile 480px high on a 320px
@@ -155,7 +157,7 @@
 
 .topics__cloud--live .topics__pill-drop.is-dragging .topic-pill {
   scale: 1.06;
-  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.22);
+  box-shadow: 0 18px 34px var(--color-neutral-black-32);
   transition:
     scale 160ms ease-out,
     box-shadow 160ms ease-out;

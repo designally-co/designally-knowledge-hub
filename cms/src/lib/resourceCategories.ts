@@ -41,11 +41,11 @@ export type ResourcePreset = {
 }
 
 export const RESOURCE_PRESETS: Record<ResourceCategory, ResourcePreset> = {
-  Templates: { color: 'var(--be-cobalt)', glyph: 'grid', typicalFormats: 'Figma, Sketch, PSD, AI' },
-  Fonts: { color: 'var(--be-brick)', glyph: 'type', typicalFormats: 'OTF, TTF, WOFF' },
-  'Ebooks & Guides': { color: 'var(--be-green)', glyph: 'book', typicalFormats: 'PDF, EPUB' },
-  Wallpapers: { color: 'var(--be-purple)', glyph: 'image', typicalFormats: 'PNG, JPG' },
-  Icons: { color: 'var(--be-gold)', glyph: 'shapes', typicalFormats: 'SVG, AI, Figma' },
+  Templates: { color: 'var(--color-category-blue-mid)', glyph: 'grid', typicalFormats: 'Figma, Sketch, PSD, AI' },
+  Fonts: { color: 'var(--color-accent-red)', glyph: 'type', typicalFormats: 'OTF, TTF, WOFF' },
+  'Ebooks & Guides': { color: 'var(--color-category-green-mid)', glyph: 'book', typicalFormats: 'PDF, EPUB' },
+  Wallpapers: { color: 'var(--color-category-purple-mid)', glyph: 'image', typicalFormats: 'PNG, JPG' },
+  Icons: { color: 'var(--color-accent-orange)', glyph: 'shapes', typicalFormats: 'SVG, AI, Figma' },
 }
 
 /** File formats an individual file can be tagged with, grouped by what uses them. */

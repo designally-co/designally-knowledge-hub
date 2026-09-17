@@ -25,32 +25,32 @@
     box-shadow 0.18s var(--ease-out-quart);
 }
 
-.btn--sm { padding: 8px 16px; font-size: 14px; gap: 6px; }
-.btn--md { padding: 12px 24px; font-size: 16px; gap: 8px; }
-.btn--lg { padding: 16px 30px; font-size: 17px; gap: 9px; }
+.btn--sm { padding: 8px 16px; gap: 6px; font: var(--type-overline); letter-spacing: var(--tracking-overline); line-height: 1; }
+.btn--md { padding: 12px 24px; gap: 8px; font: var(--type-body-large-emphasis); letter-spacing: var(--tracking-body-large-emphasis); line-height: 1; }
+.btn--lg { padding: 16px 30px; gap: 9px; font: var(--type-body-large-emphasis); letter-spacing: var(--tracking-body-large-emphasis); line-height: 1; }
 
 .btn--primary {
-  background: var(--be-ink);
-  color: var(--be-paper);
-  border: 1px solid var(--be-ink);
+  background: var(--color-neutral-black);
+  color: var(--color-brand-surface);
+  border: 1px solid var(--color-neutral-black);
 }
 
 .btn--secondary {
-  background: var(--be-white);
-  color: var(--be-ink);
+  background: var(--color-neutral-white);
+  color: var(--color-neutral-black);
   border: 1px solid var(--border-outline);
 }
 
 .btn--ghost {
   background: transparent;
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
   border: 1px solid transparent;
 }
 
 .btn--inverse {
-  background: var(--be-white);
-  color: var(--be-ink);
-  border: 1px solid var(--be-white);
+  background: var(--color-neutral-white);
+  color: var(--color-neutral-black);
+  border: 1px solid var(--color-neutral-white);
 }
 
 .btn:disabled,
@@ -64,12 +64,12 @@
 .btn:not(:disabled):active { transform: scale(0.97); }
 
 @media (hover: hover) {
-  .btn--primary:hover { background: var(--be-ink-70); border-color: var(--be-ink-70); }
-  .btn--secondary:hover { background: var(--be-paper); }
-  .btn--ghost:hover { background: rgba(18, 16, 13, 0.06); }
+  .btn--primary:hover { background: var(--color-neutral-black-60); border-color: var(--color-neutral-black-60); }
+  .btn--secondary:hover { background: var(--color-brand-surface); }
+  .btn--ghost:hover { background: var(--color-neutral-gray-100); }
   /* On dark bands this one had no hover of its own — it borrowed the blanket
      link fade, so it dimmed instead of responding. */
-  .btn--inverse:hover { background: var(--be-paper); border-color: var(--be-paper); }
+  .btn--inverse:hover { background: var(--color-brand-surface); border-color: var(--color-brand-surface); }
 
   /* A control that only changes colour reads flat next to cards that move.
      One pixel of rise and a shadow is the whole gesture. */
@@ -112,19 +112,19 @@
 .icon-btn--md { width: 44px; height: 44px; }
 .icon-btn--lg { width: 56px; height: 56px; }
 
-.icon-btn--outline { color: var(--be-ink); border: 1.5px solid var(--border-outline); }
+.icon-btn--outline { color: var(--color-neutral-black); border: 1.5px solid var(--border-outline); }
 .icon-btn--solid {
-  background: var(--be-ink);
-  color: var(--be-paper);
-  border: 1.5px solid var(--be-ink);
+  background: var(--color-neutral-black);
+  color: var(--color-brand-surface);
+  border: 1.5px solid var(--color-neutral-black);
 }
 .icon-btn--inverse {
-  color: var(--text-on-dark);
+  color: var(--color-neutral-white);
   border: 1.5px solid var(--border-outline);
 }
 .icon-btn--ghost {
-  background: var(--be-white);
-  color: var(--be-ink);
+  background: var(--color-neutral-white);
+  color: var(--color-neutral-black);
   border: 1.5px solid transparent;
 }
 .icon-btn--bare { background: none; border: none; color: inherit; }
@@ -132,12 +132,12 @@
 .icon-btn:active { transform: scale(0.94); }
 
 @media (hover: hover) {
-  .icon-btn--outline:hover { background: var(--be-ink); color: var(--be-paper); border-color: var(--be-ink); }
-  .icon-btn--inverse:hover { background: rgba(244, 237, 227, 0.14); }
-  .icon-btn--bare:hover { background: rgba(18, 16, 13, 0.06); }
+  .icon-btn--outline:hover { background: var(--color-neutral-black); color: var(--color-brand-surface); border-color: var(--color-neutral-black); }
+  .icon-btn--inverse:hover { background: var(--color-neutral-white-32); }
+  .icon-btn--bare:hover { background: var(--color-neutral-gray-100); }
   /* Both were relying on the blanket link fade when rendered as anchors. */
-  .icon-btn--solid:hover { background: var(--be-ink-70); border-color: var(--be-ink-70); }
-  .icon-btn--ghost:hover { background: var(--be-paper); border-color: var(--border-outline); }
+  .icon-btn--solid:hover { background: var(--color-neutral-black-60); border-color: var(--color-neutral-black-60); }
+  .icon-btn--ghost:hover { background: var(--color-brand-surface); border-color: var(--border-outline); }
 
   .icon-btn:not(:disabled):hover { opacity: 1; }
 }
@@ -165,22 +165,20 @@
   display: inline-flex;
   align-items: center;
   padding: 5px 11px;
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 11.5px;
+  font: var(--type-tag);
+  letter-spacing: var(--tracking-tag);
   line-height: 1;
-  letter-spacing: var(--tracking-label);
   text-transform: uppercase;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-outline);
+  border-radius: 9999px;
+  border: 1px solid currentColor;
   background: transparent;
   white-space: nowrap;
 }
 
-/* Outline colour comes from --border-outline (label colour @ 50%) on the base. */
-.tag--ink { color: var(--be-ink); }
-.tag--warm { color: var(--be-rust); }
-.tag--on-dark { color: var(--text-on-dark); }
+/* The outline is the label colour: black on the default tag. */
+.tag--ink { color: var(--color-neutral-black); }
+.tag--warm { color: var(--color-accent-orange); }
+.tag--on-dark { color: var(--color-neutral-white); }
 
 /* --- TopicPill --------------------------------------------------------- */
 
@@ -193,8 +191,8 @@
   letter-spacing: -0.01em;
   border-radius: var(--radius-pill);
   border: 1px solid transparent;
-  background: var(--be-white);
-  color: var(--be-ink);
+  background: var(--color-neutral-white);
+  color: var(--color-neutral-black);
   box-shadow: var(--shadow-sticker);
   cursor: pointer;
   white-space: nowrap;
@@ -204,19 +202,19 @@
 
 /* Sizes step down on small screens so a topic cloud stays a cloud and not
    a stack of full-width slabs. */
-.topic-pill--sm { padding: 8px 16px; font-size: 15px; }
-.topic-pill--md { padding: 10px 18px; font-size: 16px; }
-.topic-pill--lg { padding: 12px 22px; font-size: 18px; }
+.topic-pill--sm { padding: 8px 16px; font: var(--type-overline); letter-spacing: var(--tracking-overline); line-height: 1; }
+.topic-pill--md { padding: 10px 18px; font: var(--type-body-large-emphasis); letter-spacing: var(--tracking-body-large-emphasis); line-height: 1; }
+.topic-pill--lg { padding: 12px 22px; font: var(--type-heading-5); letter-spacing: var(--tracking-heading-5); line-height: 1; }
 
 @media (min-width: 36em) {
-  .topic-pill--md { padding: 11px 22px; font-size: 18px; }
-  .topic-pill--lg { padding: 14px 28px; font-size: 22px; }
+  .topic-pill--md { padding: 11px 22px; font: var(--type-heading-5); letter-spacing: var(--tracking-heading-5); line-height: 1; }
+  .topic-pill--lg { padding: 14px 28px; font: var(--type-heading-5); letter-spacing: var(--tracking-heading-5); line-height: 1; }
 }
 
 .topic-pill--active {
-  background: var(--be-ink);
-  color: var(--be-paper);
-  border-color: var(--be-ink);
+  background: var(--color-neutral-black);
+  color: var(--color-brand-surface);
+  border-color: var(--color-neutral-black);
 }
 
 @media (pointer: coarse) {
@@ -252,7 +250,7 @@
   border-radius: var(--radius-thumb);
   overflow: hidden;
   /* Paints while the cover loads; the default colour when there isn't one. */
-  background-color: var(--card-tint, var(--cover-fallback));
+  background-color: var(--card-tint, var(--color-neutral-gray-400));
   transition: box-shadow var(--hover-media-dur) var(--ease-out-quart);
 }
 
@@ -275,8 +273,7 @@
 
 .article-card__title {
   margin: 0;
-  color: var(--be-ink);
-  letter-spacing: var(--tracking-tight);
+  color: var(--color-neutral-black);
   text-wrap: pretty;
   /* The rule is always drawn, just transparent, so it fades and drops into
      place instead of snapping on at full weight. Decoration (not a ::after
@@ -290,13 +287,14 @@
     text-underline-offset var(--hover-state-dur) var(--ease-out-quart);
 }
 
-.article-card__title--sm { font: var(--type-title-sm); }
-.article-card__title--md { font: var(--type-title-md); }
-.article-card__title--lg { font: var(--type-title-lg); }
+.article-card__title--sm { font: var(--type-heading-5); letter-spacing: var(--tracking-heading-5); }
+.article-card__title--md { font: var(--type-heading-5); letter-spacing: var(--tracking-heading-5); }
+.article-card__title--lg { font: var(--type-heading-2); letter-spacing: var(--tracking-heading-2); }
 
 .article-card__date {
-  font: var(--type-meta);
-  color: var(--text-secondary);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
   margin: 0;
 }
 
@@ -344,7 +342,7 @@
 }
 
 .article-card__plate {
-  background: var(--be-paper);
+  background: var(--color-brand-surface);
   padding: 20px 22px 22px;
   border-bottom-right-radius: var(--radius-card);
   border-bottom-left-radius: var(--radius-card);
@@ -352,7 +350,7 @@
 
 .article-card__plate .article-card__tags { margin-bottom: 14px; }
 
-.article-card__plate .article-card__title { font: var(--type-title-lg); }
+.article-card__plate .article-card__title { font: var(--type-heading-2); letter-spacing: var(--tracking-heading-2); }
 
 .article-card__plate .article-card__date { margin-top: 14px; }
 
@@ -388,8 +386,8 @@
   aspect-ratio: 1 / 1;
   border-radius: 26px;
   overflow: hidden;
-  background: linear-gradient(150deg, #efe8f9 0%, #e5dcf4 52%, #dcd1ef 100%);
-  border: 2px solid rgba(255, 255, 255, 0.5);
+  background: linear-gradient(150deg, var(--color-neutral-gray-100) 0%, var(--color-category-purple-light) 52%);
+  border: 2px solid var(--color-neutral-white-60);
 }
 
 /* The panel is inset from the folder in container units, so the cover keeps its
@@ -403,14 +401,14 @@
   inset: var(--doc-inset) var(--doc-inset) auto var(--doc-inset);
   aspect-ratio: 1 / 1;
   border-radius: min(7cqw, 18px);
-  background: var(--doc-color, var(--be-gold));
+  background: var(--doc-color, var(--color-accent-orange));
   padding: clamp(18px, 6.5%, 26px) clamp(16px, 6%, 24px) 0;
 }
 
 .resource-card__doc-title {
-  font: 700 clamp(22px, 8cqw, 30px) / 1.16 var(--font-sans);
-  color: #fff;
-  letter-spacing: -0.01em;
+  font: var(--type-heading-5);
+  letter-spacing: var(--tracking-heading-5);
+  color: var(--color-neutral-white);
   display: block;
   max-width: 90%;
 }
@@ -424,7 +422,7 @@
   bottom: clamp(14px, 6%, 22px);
   width: clamp(26px, 13cqw, 44px);
   height: clamp(26px, 13cqw, 44px);
-  color: #fff;
+  color: var(--color-neutral-white);
   opacity: 0.42;
 }
 
@@ -447,7 +445,7 @@
   left: 16px;
   aspect-ratio: 1 / 1;
   border-radius: 18px;
-  background: var(--doc-color, var(--be-gold));
+  background: var(--doc-color, var(--color-accent-orange));
   padding: clamp(18px, 6.5%, 26px) clamp(16px, 6%, 24px) 0;
   filter: blur(38px) saturate(0.8) brightness(1.08);
 }
@@ -455,16 +453,16 @@
 .resource-card__pocket-cover-title {
   display: block;
   max-width: 90%;
-  color: #fff;
-  font: 700 clamp(22px, 8cqw, 30px) / 1.16 var(--font-sans);
-  letter-spacing: -0.01em;
+  color: var(--color-neutral-white);
+  font: var(--type-heading-5);
+  letter-spacing: var(--tracking-heading-5);
 }
 
 .resource-card__pocket::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(210, 194, 241, 0.5), rgba(176, 163, 228, 0.9));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-category-purple-light) 50%, transparent), color-mix(in srgb, var(--color-category-purple-light) 90%, transparent));
 }
 
 .resource-card__edge {
@@ -479,27 +477,28 @@
 .resource-card__tags { display: flex; flex-wrap: wrap; gap: 6px; }
 
 .resource-card__title {
-  font: var(--type-title-md);
-  color: var(--be-ink);
+  font: var(--type-heading-5);
+  letter-spacing: var(--tracking-heading-5);
+  color: var(--color-neutral-black);
   margin: 0;
-  letter-spacing: var(--tracking-tight);
   text-wrap: pretty;
 }
 
 .resource-card__date {
-  font: var(--type-meta);
-  color: var(--text-secondary);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
   margin: 0;
 }
 
 /* Formats the download ships in. Quieter than the date: it is reference detail,
    not the thing you scan the grid for. */
 .resource-card__formats {
-  font: var(--type-meta);
-  color: var(--text-secondary);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
   margin: 0;
   opacity: 0.8;
-  letter-spacing: 0.02em;
 }
 
 /* The figure is drawn, not photographed, so it answers with the gesture the
@@ -565,10 +564,10 @@
   width: auto;
   align-self: center;
   /* `align-self` centres the text's *line box*, but the glyphs don't fill it:
-     Newsreader sits on a 0.735/0.265 ascent/descent split with a 0.670 cap
-     height, so the visible text is centred 0.1em above the box centre and the
-     icon reads as hanging low. Lift it back onto the optical centre line. */
-  transform: translateY(-0.1em);
+     Ovo sits on a 0.86/0.26 ascent/descent split with a 0.66 cap height, so
+     at the headings' 1.125 line height the capitals are centred 0.03em above
+     the box centre. Lift the icon onto that optical centre line. */
+  transform: translateY(-0.03em);
 }
 
 /* --- SectionHeading ---------------------------------------------------- */
@@ -586,10 +585,10 @@
 .section-heading--center { justify-content: center; }
 
 .section-heading__title {
-  font: var(--type-section);
-  color: var(--be-ink);
+  font: var(--type-heading-1);
+  letter-spacing: var(--tracking-heading-1);
+  color: var(--color-neutral-black);
   margin: 0;
-  letter-spacing: 0.005em;
   text-wrap: balance;
   /* Long single words ("Recommendations") must never push the row wider
      than its column. */
@@ -597,7 +596,7 @@
   min-width: 0;
 }
 
-.section-heading--on-dark .section-heading__title { color: var(--text-on-dark); }
+.section-heading--on-dark .section-heading__title { color: var(--color-neutral-white); }
 
 .section-heading__link {
   display: inline-flex;
@@ -606,18 +605,20 @@
   padding: 10px 18px;
   border: 1px solid var(--border-outline);
   border-radius: var(--radius-pill);
-  font: var(--type-nav);
-  color: var(--be-ink);
+  font: var(--type-body-large-emphasis);
+  letter-spacing: var(--tracking-body-large-emphasis);
+  line-height: 1;
+  color: var(--color-neutral-black);
   text-decoration: none;
   white-space: nowrap;
 }
 
-.section-heading--on-dark .section-heading__link { color: var(--text-on-dark); }
+.section-heading--on-dark .section-heading__link { color: var(--color-neutral-white); }
 
 @media (pointer: coarse) {
   .section-heading__link { min-height: var(--touch-target); }
 }
 
 @media (hover: hover) {
-  .section-heading__link:hover { background: var(--be-ink); color: var(--be-paper); opacity: 1; }
+  .section-heading__link:hover { background: var(--color-neutral-black); color: var(--color-brand-surface); opacity: 1; }
 }

@@ -3,7 +3,7 @@
    email form on the right. Reusable across pages. */
 
 .cta {
-  --cta-bg: #edf2f1; /* pale mint */
+  --cta-bg: var(--color-neutral-gray-100);
   background: var(--cta-bg) url('/newsletter-waves.svg') no-repeat center / cover;
   padding-block: clamp(44px, 7vw, 84px);
 }
@@ -65,17 +65,18 @@
 }
 
 .cta__eyebrow {
-  font: 600 14px/1 var(--font-sans);
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
   margin: 0 0 clamp(14px, 2vw, 22px);
 }
 
 .cta__title {
-  font: 400 clamp(32px, 4.2vw, 58px)/1.05 var(--font-serif);
-  color: var(--be-ink);
-  letter-spacing: -0.005em;
+  font: var(--type-display-2);
+  letter-spacing: var(--tracking-display-2);
+  color: var(--color-neutral-black);
   margin: 0;
   text-wrap: balance;
   max-width: 12ch;
@@ -88,8 +89,9 @@
 }
 
 .cta__lede {
-  font: 700 clamp(18px, 1.6vw, 22px)/1.35 var(--font-sans);
-  color: var(--be-ink);
+  font: var(--type-heading-5);
+  letter-spacing: var(--tracking-heading-5);
+  color: var(--color-neutral-black);
   margin: 0 0 clamp(20px, 2.6vw, 28px);
   text-wrap: pretty;
 }
@@ -98,11 +100,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--be-white, #fff);
-  border: 1px solid rgba(18, 16, 13, 0.14);
+  background: var(--color-neutral-white);
+  border: 1px solid var(--color-neutral-black-12);
   border-radius: 12px;
   padding: 6px 6px 6px 20px;
-  box-shadow: 0 1px 2px rgba(18, 16, 13, 0.04);
+  box-shadow: 0 1px 2px var(--color-neutral-black-12);
 }
 
 .cta__input {
@@ -111,13 +113,14 @@
   border: none;
   background: none;
   outline: none;
-  font: var(--type-body);
-  color: var(--be-ink);
+  font: var(--type-body-large);
+  letter-spacing: var(--tracking-body-large);
+  color: var(--color-neutral-black);
   padding: 13px 0;
 }
 
 .cta__input::placeholder {
-  color: var(--be-ink-50);
+  color: var(--color-neutral-black-60);
 }
 
 .cta__submit {
@@ -125,10 +128,11 @@
   border: none;
   background: none;
   cursor: pointer;
-  font: 700 13px/1 var(--font-sans);
+  font: var(--type-overline);
+  letter-spacing: var(--tracking-overline);
+  line-height: 1;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
   padding: 13px 16px;
   border-radius: 8px;
   transition: background-color 0.15s ease;
@@ -136,7 +140,7 @@
 
 @media (hover: hover) {
   .cta__submit:hover {
-    background: rgba(18, 16, 13, 0.06);
+    background: var(--color-neutral-gray-100);
   }
 }
 
@@ -145,8 +149,9 @@
    ink-50 it measured 3.7:1 on the mint and 3.54 on the grey. It is 14px body
    text; it owes 4.5. */
 .cta__note {
-  font: var(--type-body-sm);
-  color: var(--be-ink-70);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
   margin: 12px 0 0;
 }
 
@@ -171,10 +176,10 @@
    success the field is gone and this sentence is the whole of the answer,
    which is why it is the darker ink rather than the quiet grey. */
 .cta__note--done {
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
   font-weight: 600;
 }
 
 .cta__note--error {
-  color: #b3261e;
+  color: var(--color-accent-red);
 }

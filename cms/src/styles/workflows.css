@@ -17,9 +17,9 @@
   align-items: center;
   gap: 0.32em;
   margin: 0 0 clamp(28px, 4vw, 48px);
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
   font: var(--type-display-2);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-display-2);
 }
 
 .workflows__layout {
@@ -44,8 +44,9 @@
 
 .workflows__date {
   margin-top: 12px;
-  font: var(--type-meta);
-  color: var(--text-secondary);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
 }
 
 /* --- Featured (left) --- */
@@ -63,7 +64,7 @@
   margin-bottom: clamp(18px, 2vw, 26px);
   aspect-ratio: var(--card-ratio, 4 / 3);
   overflow: hidden;
-  background-color: var(--card-tint, var(--cover-fallback));
+  background-color: var(--card-tint, var(--color-neutral-gray-400));
 }
 
 .workflows__feature-img {
@@ -73,9 +74,9 @@
 }
 
 .workflows__feature-title {
-  color: var(--be-ink);
-  font: var(--type-section);
-  letter-spacing: -0.02em;
+  color: var(--color-neutral-black);
+  font: var(--type-heading-1);
+  letter-spacing: var(--tracking-heading-1);
   text-wrap: pretty;
 }
 
@@ -93,13 +94,13 @@
 }
 
 .workflows__row {
-  border-top: 1px solid var(--border-hairline);
+  border-top: 1px solid var(--color-neutral-gray-200);
 }
 .workflows__row:first-child {
   border-top: 0;
 }
 .workflows__row:last-child {
-  border-bottom: 1px solid var(--border-hairline);
+  border-bottom: 1px solid var(--color-neutral-gray-200);
 }
 
 .workflows__row-link {
@@ -120,7 +121,7 @@
   position: relative;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  background-color: var(--card-tint, var(--cover-fallback));
+  background-color: var(--card-tint, var(--color-neutral-gray-400));
 }
 
 .workflows__row-img {
@@ -130,16 +131,16 @@
 }
 
 .workflows__row-title {
-  color: var(--be-ink);
-  font: var(--type-title-sm);
-  letter-spacing: var(--tracking-tight);
+  color: var(--color-neutral-black);
+  font: var(--type-heading-5);
+  letter-spacing: var(--tracking-heading-5);
   text-wrap: pretty;
 }
 
 /* Colour + placement — shared look lives in promo-banner.css. The graphic sits
    bottom-left; the text + button stack at the top-right. */
 .workflows__banner {
-  --promo-bg: var(--be-green);
+  --promo-bg: var(--color-category-green-mid);
   margin-top: clamp(24px, 3vw, 36px);
   align-items: flex-start;
   justify-content: flex-end;

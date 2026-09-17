@@ -9,10 +9,10 @@
 .search-overlay {
   /* The active tab's text: the pager's tan deepened until 15px text clears
      4.5:1 on the frosted white. Its underline keeps the tan itself. */
-  --search-tab-active: color-mix(in srgb, var(--be-tan) 70%, var(--be-ink));
+  --search-tab-active: color-mix(in srgb, var(--color-brand-primary) 70%, var(--color-neutral-black));
   /* The overlay's ground: a light grey rather than the page's paper, so it
      reads as a layer over the page, not more of it. */
-  --search-bg: #f2f2f2;
+  --search-bg: var(--color-neutral-gray-100);
   position: fixed;
   inset: 0;
   z-index: var(--z-search);
@@ -53,7 +53,7 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
   cursor: pointer;
 }
 
@@ -63,29 +63,30 @@
   justify-content: center;
   width: 48px;
   height: 48px;
-  border: 1px solid color-mix(in srgb, var(--be-ink) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-neutral-black) 16%, transparent);
   border-radius: 50%;
-  background: var(--be-white);
+  background: var(--color-neutral-white);
   transition: border-color var(--hover-state-dur) var(--ease-out-quart);
 }
 
 .search-overlay__close-label {
-  font: 600 13px / 1 var(--font-sans);
-  letter-spacing: 0.02em;
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1;
   text-transform: uppercase;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 @media (hover: hover) {
-  .search-overlay__close:hover .search-overlay__close-disc { border-color: var(--be-ink); }
+  .search-overlay__close:hover .search-overlay__close-disc { border-color: var(--color-neutral-black); }
 }
 
 .search-overlay__title {
   margin: 0;
-  color: var(--be-ink);
-  font: 700 clamp(30px, 3vw, 44px) / 1.1 var(--font-sans);
-  letter-spacing: -0.02em;
+  color: var(--color-neutral-black);
+  font: var(--type-heading-2);
+  letter-spacing: var(--tracking-heading-2);
   text-transform: uppercase;
 }
 
@@ -98,12 +99,12 @@
   gap: 12px;
   margin-top: 32px;
   padding: 0 0 10px 8px;
-  border-bottom: 1px solid color-mix(in srgb, var(--be-ink) 22%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-neutral-black) 22%, transparent);
   transition: border-color var(--hover-state-dur) var(--ease-out-quart);
 }
 
 /* The rule darkening is the field's focus mark, so the input drops its own. */
-.search-field:focus-within { border-bottom-color: var(--be-ink); }
+.search-field:focus-within { border-bottom-color: var(--color-neutral-black); }
 
 .search-field__input {
   flex: 1 1 auto;
@@ -112,11 +113,12 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--be-ink);
-  font: var(--type-body);
+  color: var(--color-neutral-black);
+  font: var(--type-body-large);
+  letter-spacing: var(--tracking-body-large);
 }
 
-.search-field__input::placeholder { color: var(--text-secondary); }
+.search-field__input::placeholder { color: var(--color-neutral-black-60); }
 .search-field__input:focus { outline: none; }
 
 .search-field__submit {
@@ -128,14 +130,14 @@
   height: 36px;
   border: 0;
   border-radius: 50%;
-  background: var(--be-ink);
-  color: var(--be-paper);
+  background: var(--color-neutral-black);
+  color: var(--color-brand-surface);
   cursor: pointer;
   transition: background var(--hover-state-dur) var(--ease-out-quart);
 }
 
 @media (hover: hover) {
-  .search-field__submit:hover { background: var(--be-ink-70); }
+  .search-field__submit:hover { background: var(--color-neutral-black-60); }
 }
 
 @media (pointer: coarse) {
@@ -171,9 +173,9 @@
 
 .search-block__title {
   margin: 0 0 16px;
-  color: var(--be-ink);
-  font: 600 clamp(18px, 1.5vw, 22px) / 1.25 var(--font-sans);
-  letter-spacing: var(--tracking-tight);
+  color: var(--color-neutral-black);
+  font: var(--type-heading-4);
+  letter-spacing: var(--tracking-heading-4);
 }
 
 .search-chips {
@@ -191,11 +193,13 @@
   gap: 6px;
   min-height: 34px;
   padding: 0 14px;
-  border: 1px solid color-mix(in srgb, var(--be-ink) 30%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-neutral-black) 30%, transparent);
   border-radius: var(--radius-pill);
   background: transparent;
-  color: var(--be-ink);
-  font: 600 13px / 1 var(--font-sans);
+  color: var(--color-neutral-black);
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  line-height: 1;
   cursor: pointer;
   transition: border-color var(--hover-state-dur) var(--ease-out-quart);
 }
@@ -229,7 +233,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  color: var(--text-secondary);
+  color: var(--color-neutral-black-60);
   transition:
     color var(--hover-state-dur) var(--ease-out-quart),
     background var(--hover-state-dur) var(--ease-out-quart);
@@ -237,11 +241,11 @@
 
 @media (hover: hover) {
   .search-chip--keyword:hover,
-  .search-chip--recent:hover { border-color: var(--be-ink); }
+  .search-chip--recent:hover { border-color: var(--color-neutral-black); }
 
   .search-chip__remove:hover {
-    color: var(--be-ink);
-    background: color-mix(in srgb, var(--be-ink) 8%, transparent);
+    color: var(--color-neutral-black);
+    background: color-mix(in srgb, var(--color-neutral-black) 8%, transparent);
   }
 }
 
@@ -276,8 +280,10 @@
   border: 0;
   border-bottom: 2px solid transparent;
   background: none;
-  color: var(--be-ink);
-  font: 600 15px / 1 var(--font-sans);
+  color: var(--color-neutral-black);
+  font: var(--type-body-large-emphasis);
+  letter-spacing: var(--tracking-body-large-emphasis);
+  line-height: 1;
   text-decoration: none;
   cursor: pointer;
   transition:
@@ -286,14 +292,14 @@
 }
 
 .search-tab--active {
-  color: var(--search-tab-active, color-mix(in srgb, var(--be-tan) 70%, var(--be-ink)));
-  border-bottom-color: var(--be-tan);
+  color: var(--search-tab-active, color-mix(in srgb, var(--color-brand-primary) 70%, var(--color-neutral-black)));
+  border-bottom-color: var(--color-brand-primary);
 }
 
 @media (hover: hover) {
   .search-tab:not(.search-tab--active):hover {
     opacity: 1;
-    border-bottom-color: color-mix(in srgb, var(--be-ink) 25%, transparent);
+    border-bottom-color: color-mix(in srgb, var(--color-neutral-black) 25%, transparent);
   }
 }
 
@@ -307,9 +313,9 @@
 
 .search-summary__count {
   margin: 0;
-  color: var(--text-secondary);
-  font: 600 clamp(18px, 1.6vw, 22px) / 1.3 var(--font-sans);
-  letter-spacing: var(--tracking-tight);
+  color: var(--color-neutral-black-60);
+  font: var(--type-heading-4);
+  letter-spacing: var(--tracking-heading-4);
 }
 
 .search-summary__all {
@@ -318,11 +324,13 @@
   gap: 8px;
   min-height: var(--touch-target);
   padding: 0 20px;
-  border: 1px solid color-mix(in srgb, var(--be-ink) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-neutral-black) 22%, transparent);
   border-radius: var(--radius-pill);
-  background: var(--be-white);
-  color: var(--be-ink);
-  font: 600 15px / 1 var(--font-sans);
+  background: var(--color-neutral-white);
+  color: var(--color-neutral-black);
+  font: var(--type-body-large-emphasis);
+  letter-spacing: var(--tracking-body-large-emphasis);
+  line-height: 1;
   text-decoration: none;
   transition: border-color var(--hover-state-dur) var(--ease-out-quart);
 }
@@ -330,7 +338,7 @@
 @media (hover: hover) {
   .search-summary__all:hover {
     opacity: 1;
-    border-color: var(--be-ink);
+    border-color: var(--color-neutral-black);
   }
 }
 
@@ -358,15 +366,16 @@
 
 .search-note {
   margin: clamp(28px, 3.4vw, 44px) 0 0;
-  color: var(--text-secondary);
-  font: var(--type-body-lg);
+  color: var(--color-neutral-black-60);
+  font: var(--type-body-large);
+  letter-spacing: var(--tracking-body-large);
 }
 
 /* --- The /search page ----------------------------------------------------- */
 .search-page__field { margin-top: 0; }
 
 .search-page .search-tab--active {
-  color: color-mix(in srgb, var(--be-tan) 70%, var(--be-ink));
+  color: color-mix(in srgb, var(--color-brand-primary) 70%, var(--color-neutral-black));
 }
 
 .search-page__count {
@@ -378,7 +387,8 @@
    font at one. */
 .listing-count.search-page__showing {
   margin-top: clamp(16px, 2vw, 24px);
-  font: 600 clamp(15px, 1.2vw, 17px) / 1.4 var(--font-sans);
+  font: var(--type-body-large-emphasis);
+  letter-spacing: var(--tracking-body-large-emphasis);
 }
 
 @media (prefers-reduced-motion: reduce) {

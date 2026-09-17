@@ -9,7 +9,7 @@
 
 .contact-write {
   padding-block: clamp(56px, 9vw, 112px);
-  background-color: var(--be-white);
+  background-color: var(--color-neutral-white);
 }
 
 .contact-write__inner {
@@ -29,17 +29,18 @@
 .contact-write__title {
   max-width: 16ch;
   margin: 0 0 clamp(14px, 1.8vw, 20px);
-  font: var(--type-section);
-  letter-spacing: -0.02em;
-  color: var(--be-ink);
+  font: var(--type-heading-1);
+  letter-spacing: var(--tracking-heading-1);
+  color: var(--color-neutral-black);
   text-wrap: balance;
 }
 
 .contact-write__lede {
   max-width: 40ch;
   margin: 0;
-  font: var(--type-body-sm);
-  color: var(--be-ink-50);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
 }
 
 /* BEHIND ITS OWN RULE, because it is a warning and not the next sentence of the
@@ -47,18 +48,19 @@
 .contact-write__caution {
   margin: clamp(24px, 3vw, 34px) 0 0;
   padding-block-start: clamp(20px, 2.4vw, 28px);
-  border-block-start: 1px solid var(--border-hairline);
-  font: var(--type-body-sm);
-  font-size: 13px;
-  color: var(--be-ink-50);
+  border-block-start: 1px solid var(--color-neutral-gray-200);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
 }
 
 .contact-write__social-label {
   margin: clamp(24px, 3vw, 34px) 0 12px;
-  font: var(--type-label);
-  letter-spacing: 0.08em;
+  font: var(--type-tag);
+  letter-spacing: var(--tracking-tag);
+  line-height: 1;
   text-transform: uppercase;
-  color: var(--be-ink-50);
+  color: var(--color-neutral-black-60);
 }
 
 .contact-social {
@@ -80,8 +82,8 @@
   position: relative;
   padding: clamp(24px, 3.4vw, 44px);
   border-radius: 4px;
-  background-color: var(--be-band-butter);
-  box-shadow: 14px 16px 0 -2px rgb(18 16 13 / 0.72);
+  background-color: var(--color-brand-light);
+  box-shadow: 14px 16px 0 -2px var(--color-neutral-black-60);
   transform: rotate(-1.2deg);
 }
 
@@ -97,22 +99,21 @@
   left: 46%;
   display: block;
   transform: rotate(1.2deg);
-  filter: drop-shadow(2px 3px 2px rgb(18 16 13 / 0.22));
+  filter: drop-shadow(2px 3px 2px var(--color-neutral-black-12));
 }
 
 .contact-note__title {
   margin: 0 0 10px;
-  font: var(--type-title-lg);
-  font-family: var(--font-serif);
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  color: var(--be-ink);
+  font: var(--type-heading-2);
+  letter-spacing: var(--tracking-heading-2);
+  color: var(--color-neutral-black);
 }
 
 .contact-note__lede {
   margin: 0 0 clamp(22px, 2.8vw, 32px);
-  font: var(--type-body-sm);
-  color: var(--be-ink-70);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
 }
 
 /* ---- the fields -------------------------------------------------------- */
@@ -143,32 +144,31 @@
 }
 
 .contact-field__label {
-  font: var(--type-body-sm);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--be-ink-70);
+  font: var(--type-overline);
+  letter-spacing: var(--tracking-overline);
+  color: var(--color-neutral-black-60);
 }
 
 .contact-field__input {
   width: 100%;
   padding: 8px 0;
   border: 0;
-  border-block-end: 1px solid rgb(18 16 13 / 0.28);
+  border-block-end: 1px solid var(--color-neutral-black-32);
   border-radius: 0;
   background: none;
-  font: var(--type-body-sm);
-  font-size: 15px;
-  color: var(--be-ink);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black);
   transition: border-color 160ms ease;
 }
 
 .contact-field__input::placeholder {
-  color: rgb(18 16 13 / 0.42);
+  color: var(--color-neutral-black-32);
 }
 
 .contact-field__input:focus {
   outline: none;
-  border-block-end-color: var(--be-ink);
+  border-block-end-color: var(--color-neutral-black);
 }
 
 /* The focus ring is drawn on the field's own line rather than as a box around
@@ -201,7 +201,7 @@
   position: absolute;
   right: 2px;
   bottom: 12px;
-  color: var(--be-ink-70);
+  color: var(--color-neutral-black-60);
   pointer-events: none;
 }
 
@@ -211,9 +211,9 @@
 .contact-note__help {
   margin: 0;
   padding-block-start: clamp(10px, 1.4vw, 14px);
-  font: var(--type-body-sm);
-  font-size: 13px;
-  color: var(--be-ink-50);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
 }
 
 /* ---- sending ----------------------------------------------------------- */
@@ -230,10 +230,9 @@
   flex: 1 1 16rem;
   max-width: 34ch;
   margin: 0;
-  font: var(--type-body-sm);
-  font-size: 12px;
-  line-height: 1.5;
-  color: rgb(18 16 13 / 0.55);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
 }
 
 /* Ink, not the accent: the accent band is two sections below and this is the
@@ -245,10 +244,11 @@
   padding: 0 24px;
   border: 0;
   border-radius: var(--radius-pill);
-  background-color: var(--be-ink);
-  font: var(--type-nav);
-  font-size: 14px;
-  color: var(--be-paper);
+  background-color: var(--color-neutral-black);
+  font: var(--type-body-large-emphasis);
+  letter-spacing: var(--tracking-body-large-emphasis);
+  line-height: 1;
+  color: var(--color-brand-surface);
   cursor: pointer;
   transition:
     background-color 160ms ease,
@@ -257,7 +257,7 @@
 
 @media (hover: hover) {
   .contact-note__send:hover {
-    background-color: var(--be-ink-70);
+    background-color: var(--color-neutral-black-60);
   }
 }
 
@@ -266,15 +266,15 @@
 }
 
 .contact-note__send:focus-visible {
-  outline: 3px solid var(--be-ink);
+  outline: 3px solid var(--color-neutral-black);
   outline-offset: 3px;
 }
 
 .contact-note__fallback {
   margin: 0;
-  font: var(--type-body-sm);
-  font-size: 13px;
-  color: var(--be-ink-70);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
 }
 
 /* ---- where we are ------------------------------------------------------ */
@@ -282,14 +282,10 @@
 /* GREY, NOT THE PAPER TINT. It carried the same warm parchment the hero above
    it does, which put two bands of one colour either side of the white the form
    sits on — the page read as paper, white, paper. A neutral grey separates the
-   half that is about writing to us from the half that is about where we are.
-
-   Mixed from `--be-ink` rather than typed as a hex: the ink is a warm near-black
-   (#12100d), so a low percentage of it against white is a grey that belongs to
-   this palette rather than a cool one borrowed from another. */
+   half that is about writing to us from the half that is about where we are. */
 .contact-where {
   padding-block: clamp(56px, 9vw, 112px);
-  background-color: color-mix(in srgb, var(--be-ink) 7%, var(--be-white));
+  background-color: var(--color-neutral-gray-100);
 }
 
 .contact-where__inner {
@@ -307,9 +303,9 @@
 .contact-where__title {
   max-width: 12ch;
   margin: 0;
-  font: var(--type-section);
-  letter-spacing: -0.02em;
-  color: var(--be-ink);
+  font: var(--type-heading-1);
+  letter-spacing: var(--tracking-heading-1);
+  color: var(--color-neutral-black);
   text-wrap: balance;
 }
 
@@ -323,11 +319,11 @@
   display: grid;
   gap: 6px 24px;
   padding-block: clamp(16px, 2.2vw, 24px);
-  border-block-start: 1px solid var(--border-hairline);
+  border-block-start: 1px solid var(--color-neutral-gray-200);
 }
 
 .contact-row:last-child {
-  border-block-end: 1px solid var(--border-hairline);
+  border-block-end: 1px solid var(--color-neutral-gray-200);
 }
 
 @media (min-width: 640px) {
@@ -341,10 +337,11 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font: var(--type-label);
-  letter-spacing: 0.08em;
+  font: var(--type-tag);
+  letter-spacing: var(--tracking-tag);
+  line-height: 1;
   text-transform: uppercase;
-  color: var(--be-ink-50);
+  color: var(--color-neutral-black-60);
 }
 
 /* AN OUTLINE AND NOTHING IN IT. The tile was filled white, which on the band's
@@ -356,19 +353,19 @@
   width: 34px;
   height: 34px;
   flex: none;
-  border: 1px solid var(--border-hairline);
+  border: 1px solid var(--color-neutral-gray-200);
   border-radius: 10px;
   background: none;
-  color: var(--be-ink-70);
+  color: var(--color-neutral-black-60);
 }
 
 .contact-row__value {
   display: grid;
   gap: 2px;
   margin: 0;
-  font: var(--type-body-sm);
-  font-size: 15px;
-  color: var(--be-ink);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black);
 }
 
 .contact-row__value a {
@@ -380,7 +377,7 @@
 
 @media (hover: hover) {
   .contact-row__value a:hover {
-    border-block-end-color: var(--be-ink);
+    border-block-end-color: var(--color-neutral-black);
   }
 }
 
@@ -423,11 +420,11 @@
   gap: 8px;
   padding: 12px 20px;
   border-radius: var(--radius-pill);
-  background-color: var(--be-ink);
-  font: var(--type-nav);
-  font-size: 14px;
+  background-color: var(--color-neutral-black);
+  font: var(--type-body-large-emphasis);
+  letter-spacing: var(--tracking-body-large-emphasis);
   line-height: 1;
-  color: var(--be-paper);
+  color: var(--color-brand-surface);
   text-decoration: none;
   transform: translateX(-50%);
   transition: background-color 160ms ease;
@@ -435,11 +432,11 @@
 
 @media (hover: hover) {
   .contact-map__link:hover {
-    background-color: var(--be-ink-70);
+    background-color: var(--color-neutral-black-60);
   }
 }
 
 .contact-map__link:focus-visible {
-  outline: 3px solid var(--be-ink);
+  outline: 3px solid var(--color-neutral-black);
   outline-offset: 3px;
 }

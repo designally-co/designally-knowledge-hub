@@ -1,6 +1,6 @@
 .insights {
   padding-block: clamp(64px, 10vw, 120px);
-  background: var(--be-band-mist);
+  background: var(--color-neutral-gray-100);
 }
 
 .insights__inner {
@@ -15,9 +15,9 @@
   align-items: center;
   gap: 0.32em;
   margin: 0 0 clamp(28px, 4vw, 48px);
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
   font: var(--type-display-2);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-display-2);
 }
 
 .insights__grid {
@@ -38,7 +38,7 @@
    (promo-banner.css). Portrait, the same 3:4 frame as the article covers
    beside it. */
 .insights__banner {
-  --promo-bg: #b9c7f3;
+  --promo-bg: var(--color-category-blue-light);
   aspect-ratio: 3 / 4;
 }
 

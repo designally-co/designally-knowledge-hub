@@ -22,14 +22,12 @@ import './showcase.css'
  */
 
 const SPOTS = [
-  ['--be-gold', 'gold'],
-  ['--be-cobalt', 'cobalt'],
-  ['--be-brick', 'brick'],
-  ['--be-green', 'green'],
-  ['--be-rust', 'rust'],
-  ['--be-purple', 'purple'],
-  ['--be-indigo', 'indigo'],
-  ['--be-orange', 'orange'],
+  ['--color-accent-red', 'accent-red'],
+  ['--color-accent-orange', 'accent-orange'],
+  ['--color-accent-navy', 'accent-navy'],
+  ['--color-category-blue-mid', 'category-blue-mid'],
+  ['--color-category-green-mid', 'category-green-mid'],
+  ['--color-category-purple-mid', 'category-purple-mid'],
 ] as const
 
 const SAMPLE_ARTICLES = [
@@ -37,25 +35,25 @@ const SAMPLE_ARTICLES = [
     title: 'A field guide to type pairing that actually holds up in production',
     date: '12 July 2026',
     tags: ['Typography', 'Guide'],
-    imageTint: '#2c5fb3',
+    imageTint: 'var(--color-category-blue-mid)',
   },
   {
     title: 'How to run a logo review that ends in a decision, not a debate',
     date: '8 July 2026',
     tags: ['Process'],
-    imageTint: '#b23127',
+    imageTint: 'var(--color-accent-red)',
   },
   {
     title: 'The brief template we hand every new client on day one',
     date: '1 July 2026',
     tags: ['Templates'],
-    imageTint: '#2e9e54',
+    imageTint: 'var(--color-category-green-mid)',
   },
   {
     title: 'Colour systems that survive contact with a real product',
     date: '24 June 2026',
     tags: ['Colour', 'Systems'],
-    imageTint: '#7b3fb0',
+    imageTint: 'var(--color-category-purple-mid)',
   },
 ]
 
@@ -172,7 +170,7 @@ export default function DesignSystemGallery() {
           title="The rebrand playbook: everything we ship in the first two weeks"
           date="16 July 2026"
           tags={['Playbook', 'Branding']}
-          imageTint="#12100d"
+          imageTint="var(--color-neutral-dark)"
           ratio="21 / 9"
           ratioMobile="4 / 3"
         />
@@ -186,19 +184,19 @@ export default function DesignSystemGallery() {
             title="The Practical Brand Strategy Starter Kit"
             date="12 July 2026"
             category="Figma File"
-            color="var(--be-gold)"
+            color="var(--color-accent-orange)"
           />
           <ResourceCard
             title="A Simple Checklist for Better Logo Reviews"
             date="8 July 2026"
             category="PDF"
-            color="var(--be-cobalt)"
+            color="var(--color-category-blue-mid)"
           />
           <ResourceCard
             title="24 Free Fonts for Modern Editorial Design"
             date="1 July 2026"
             category="Fonts"
-            color="var(--be-green)"
+            color="var(--color-category-green-mid)"
           />
         </div>
       </section>
@@ -223,22 +221,22 @@ export default function DesignSystemGallery() {
         <p className="ds-section__label">Type — scale</p>
         <div className="ds-type">
           <div className="ds-type__row">
-            <span style={{ font: 'var(--type-display-2)' }}>Display serif</span>
-            <span className="ds-type__meta">--type-display-2 · Newsreader</span>
+            <span style={{ font: 'var(--type-display-2)', letterSpacing: 'var(--tracking-display-2)' }}>Display serif</span>
+            <span className="ds-type__meta">--type-display-2 · Ovo</span>
           </div>
           <div className="ds-type__row">
-            <span style={{ font: 'var(--type-section)' }}>Section heading</span>
-            <span className="ds-type__meta">--type-section · Newsreader</span>
+            <span style={{ font: 'var(--type-heading-1)', letterSpacing: 'var(--tracking-heading-1)' }}>Heading 1</span>
+            <span className="ds-type__meta">--type-heading-1 · Ovo</span>
           </div>
           <div className="ds-type__row">
-            <span style={{ font: 'var(--type-title-lg)' }}>Title large (sans)</span>
-            <span className="ds-type__meta">--type-title-lg · Hanken Grotesk</span>
+            <span style={{ font: 'var(--type-heading-2)', letterSpacing: 'var(--tracking-heading-2)' }}>Heading 2</span>
+            <span className="ds-type__meta">--type-heading-2 · Geist</span>
           </div>
           <div className="ds-type__row">
-            <span style={{ font: 'var(--type-body-lg)' }}>
+            <span style={{ font: 'var(--type-body-large)' }}>
               Body large — the reading size for long-form editorial prose.
             </span>
-            <span className="ds-type__meta">--type-body-lg · Hanken Grotesk</span>
+            <span className="ds-type__meta">--type-body-large · Geist</span>
           </div>
         </div>
       </section>

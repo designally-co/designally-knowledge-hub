@@ -2,7 +2,7 @@
 
 .resources {
   padding-block: clamp(64px, 10vw, 120px);
-  background: #f5f3f8;
+  background: var(--color-neutral-gray-100);
 }
 
 .resources__inner {
@@ -25,9 +25,9 @@
   align-items: center;
   gap: 0.32em;
   margin: 0;
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
   font: var(--type-display-2);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-display-2);
 }
 
 .resources__grid {
@@ -42,7 +42,7 @@
    size, so its heading is capped to the tile (16cqi leaves a little room) and
    steps down only where it has to. */
 .resources__banner {
-  --promo-bg: #b9c7f3;
+  --promo-bg: var(--color-category-blue-light);
   --promo-label-fit: 16cqi;
   aspect-ratio: 1 / 1;
 }
@@ -64,8 +64,8 @@
   }
 
   .resources__grid .resource-card__title {
-    font-size: 17px;
-    line-height: 1.25;
+    font: var(--type-body-large-emphasis);
+    letter-spacing: var(--tracking-body-large-emphasis);
   }
 
   .resources__grid .resource-card {

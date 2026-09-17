@@ -1,8 +1,8 @@
 /* --- Insights video promo — dark, full-bleed band under the Insights grid --- */
 
 .ivp {
-  background: #000;
-  color: #fff;
+  background: var(--color-neutral-dark);
+  color: var(--color-neutral-white);
   overflow: hidden;
   padding-block: clamp(56px, 9vw, 104px);
 }
@@ -29,35 +29,29 @@
 
 .ivp__kicker {
   margin: 0 0 clamp(22px, 3vw, 30px);
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 12px;
+  font: var(--type-tag);
+  letter-spacing: var(--tracking-tag);
   line-height: 1;
-  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #fff;
+  color: var(--color-neutral-white);
 }
 
 .ivp__heading {
   margin: 0;
   max-width: 15ch;
   margin-inline: auto;
-  font-family: var(--font-serif);
-  font-weight: 400;
-  font-size: clamp(34px, 6vw, 64px);
-  line-height: 1.05;
-  color: #fff;
+  font: var(--type-display-2);
+  letter-spacing: var(--tracking-display-2);
+  color: var(--color-neutral-white);
   text-wrap: balance;
 }
 
 .ivp__body {
   margin: clamp(20px, 3vw, 28px) auto 0;
   max-width: 36ch;
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: clamp(16px, 1.6vw, 19px);
-  line-height: 1.5;
-  color: #fff;
+  font: var(--type-heading-5);
+  letter-spacing: var(--tracking-heading-5);
+  color: var(--color-neutral-white);
   text-wrap: pretty;
 }
 
@@ -75,30 +69,29 @@
   gap: 8px;
   padding: 12px 22px;
   border-radius: var(--radius-pill);
-  background: #fff;
-  color: var(--be-ink);
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: 15px;
+  background: var(--color-neutral-white);
+  color: var(--color-neutral-black);
+  font: var(--type-body-large-emphasis);
+  letter-spacing: var(--tracking-body-large-emphasis);
   line-height: 1;
   text-decoration: none;
   transition: background 0.15s var(--ease-out-quart, ease), transform 0.15s var(--ease-out-quart, ease);
 }
 .ivp__btn:hover {
-  background: #ededed;
+  background: var(--color-neutral-gray-100);
   transform: translateY(-1px);
 }
 .ivp__btn:focus-visible {
-  outline: 2px solid #fff;
+  outline: 2px solid var(--color-neutral-white);
   outline-offset: 3px;
 }
 
 .ivp__freq {
   margin: clamp(28px, 4vw, 40px) 0 0;
-  font-family: var(--font-sans);
-  font-size: 13px;
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
   line-height: 1;
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--color-neutral-white-60);
 }
 
 @media (prefers-reduced-motion: reduce) {

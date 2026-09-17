@@ -11,37 +11,41 @@
 }
 
 .ds-head__eyebrow {
-  font: var(--type-label);
-  letter-spacing: var(--tracking-label);
+  font: var(--type-tag);
+  letter-spacing: var(--tracking-tag);
+  line-height: 1;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--color-neutral-black-60);
   margin: 0 0 12px;
 }
 
 .ds-head__title {
   font: var(--type-display-2);
-  color: var(--be-ink);
+  letter-spacing: var(--tracking-display-2);
+  color: var(--color-neutral-black);
   margin: 0 0 16px;
   text-wrap: balance;
 }
 
 .ds-head__lede {
-  font: var(--type-body-lg);
-  color: var(--text-secondary);
+  font: var(--type-body-large);
+  letter-spacing: var(--tracking-body-large);
+  color: var(--color-neutral-black-60);
   max-width: 60ch;
   margin: 0;
 }
 
 .ds-section {
   padding-block: clamp(32px, 5vw, 56px);
-  border-top: 1px solid var(--border-hairline);
+  border-top: 1px solid var(--color-neutral-gray-200);
 }
 
 .ds-section__label {
-  font: var(--type-label);
-  letter-spacing: var(--tracking-label);
+  font: var(--type-tag);
+  letter-spacing: var(--tracking-tag);
+  line-height: 1;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: var(--color-neutral-black-60);
   margin: 0 0 24px;
 }
 
@@ -63,7 +67,7 @@
 }
 
 .ds-band {
-  background: var(--surface-inverse);
+  background: var(--color-neutral-dark);
   border-radius: var(--radius-card);
   padding: clamp(28px, 5vw, 48px);
   margin-top: 24px;
@@ -79,12 +83,13 @@
 .ds-swatch__chip {
   height: 72px;
   border-radius: var(--radius-input);
-  border: 1px solid var(--border-hairline);
+  border: 1px solid var(--color-neutral-gray-200);
 }
 
 .ds-swatch__name {
-  font: var(--type-body-sm);
-  color: var(--text-secondary);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
   margin: 8px 0 0;
 }
 
@@ -99,10 +104,11 @@
   flex-direction: column;
   gap: 4px;
   padding-bottom: 16px;
-  border-bottom: 1px dashed var(--border-hairline);
+  border-bottom: 1px dashed var(--color-neutral-gray-200);
 }
 
 .ds-type__meta {
-  font: var(--type-body-sm);
-  color: var(--text-muted);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-32);
 }

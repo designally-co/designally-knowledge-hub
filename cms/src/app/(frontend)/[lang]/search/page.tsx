@@ -21,9 +21,9 @@ import { getDictionary, isLocale, localeHref, type Locale } from '@/lib/i18n'
 type Params = { lang: string }
 type Search = { q?: string; type?: string; page?: string }
 
-/* The hero band in the page's own tan (--be-paper-deep): search belongs to no
+/* The hero band in the page's own tan (--color-brand-light): search belongs to no
    one section, so it wears none of their colours. */
-const SEARCH_TINT = '#ddc5a8'
+const SEARCH_TINT = 'var(--color-neutral-gray-100)'
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { lang } = await params

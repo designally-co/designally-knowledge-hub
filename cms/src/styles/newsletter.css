@@ -7,13 +7,13 @@
 
 /* #E4E4E4, ASKED FOR — a neutral grey rather than the warm parchment the About
    and Contact heroes take. It is the one literal colour on this page: nothing
-   in the palette lands on it, and mixing toward it from `--be-line` would put a
+   in the palette lands on it, and mixing toward it from `--color-neutral-gray-200` would put a
    warm cast back into a grey chosen for not having one. */
 .news-hero {
   position: relative;
   overflow: hidden;
   padding-block: clamp(44px, 7vw, 96px);
-  background-color: #e4e4e4;
+  background-color: var(--color-neutral-gray-200);
 }
 
 .news-hero::before {
@@ -62,8 +62,8 @@
   margin: 0 0 clamp(14px, 1.8vw, 20px);
   text-wrap: balance;
   font: var(--type-display-2);
-  letter-spacing: -0.02em;
-  color: var(--be-ink);
+  letter-spacing: var(--tracking-display-2);
+  color: var(--color-neutral-black);
   text-wrap: balance;
 }
 
@@ -77,9 +77,9 @@
    evenly rather than leaving four words alone on the second. */
 .news-hero__lede {
   margin: 0 0 clamp(22px, 3vw, 32px);
-  font: var(--type-body);
-  font-weight: 700;
-  color: var(--be-ink);
+  font: var(--type-body-large-emphasis);
+  letter-spacing: var(--tracking-body-large-emphasis);
+  color: var(--color-neutral-black);
   text-wrap: balance;
 }
 
@@ -101,7 +101,7 @@
 
 .news-why {
   padding-block: clamp(56px, 9vw, 120px);
-  background-color: var(--be-white);
+  background-color: var(--color-neutral-white);
 }
 
 .news-why__inner {
@@ -125,9 +125,9 @@
 
 .news-why__statement {
   margin: 0;
-  font: var(--type-section);
-  letter-spacing: -0.02em;
-  color: var(--be-ink);
+  font: var(--type-heading-1);
+  letter-spacing: var(--tracking-heading-1);
+  color: var(--color-neutral-black);
   text-wrap: balance;
 }
 
@@ -164,8 +164,8 @@
   flex: 1 1 0;
   min-width: 0;
   padding: var(--pad);
-  background-color: color-mix(in srgb, var(--card-tint) 52%, var(--be-white));
-  color: var(--be-ink);
+  background-color: color-mix(in srgb, var(--card-tint) 52%, var(--color-neutral-white));
+  color: var(--color-neutral-black);
   /* The middle card rides highest and the outer two fall away from it, which is
      how a spread hand sits. */
   transform: rotate(calc(var(--i) * -1.1deg)) translateY(calc(var(--lift) * 14px));
@@ -200,38 +200,33 @@
   align-items: baseline;
   gap: 8px;
   margin: 0 0 clamp(14px, 1.8vw, 20px);
-  font-family: var(--font-serif);
-  font-size: 13px;
-  letter-spacing: 0.01em;
-  color: var(--be-ink-70);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
 }
 
 .news-card__problem {
   margin: 0 0 clamp(16px, 2vw, 24px);
-  font: var(--type-body-sm);
-  font-size: 13px;
-  color: var(--be-ink-70);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
 }
 
 /* The turn: the problem is set as text and the answer is set as a heading,
    which is the whole shape of the card. */
 .news-card__title {
   margin: 0 0 10px;
-  font-family: var(--font-serif);
-  font-size: clamp(19px, 1.7vw, 24px);
-  font-weight: 400;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  color: var(--be-ink);
+  font: var(--type-heading-4);
+  letter-spacing: var(--tracking-heading-4);
+  color: var(--color-neutral-black);
   text-wrap: balance;
 }
 
 .news-card__answer {
   margin: 0;
-  font: var(--type-body-sm);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--be-ink);
+  font: var(--type-overline);
+  letter-spacing: var(--tracking-overline);
+  color: var(--color-neutral-black);
 }
 
 /* Below the fold-out width the fan is three stacked cards: at 375px, three

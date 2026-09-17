@@ -67,12 +67,12 @@ export const BE_DATA = {
     image: cover("photo-1513364776144-60967b0f800f", 1600, 800),
   },
   resources: [
-    { title: "The Practical Brand Strategy Starter Kit", date: "12 July 2026", tags: ["Brand Audit", "Design Tools"], color: "var(--be-gold)" },
-    { title: "A Simple Checklist for Better Logo Reviews", date: "8 July 2026", tags: ["Design Critique", "Design Tools"], color: "var(--be-cobalt)" },
-    { title: "The UX Research Planning Worksheet", date: "24 June 2026", tags: ["UX/UI", "Design Tools"], color: "var(--be-brick)" },
-    { title: "24 Free Fonts for Modern Editorial Design", date: "1 July 2026", tags: ["Typography", "Design Tools"], color: "var(--be-green)" },
-    { title: "The Rebrand Project Creative Brief", date: "20 June 2026", tags: ["Branding Systems", "Design Tools"], color: "var(--be-rust)" },
-    { title: "The AI Image Prompt Building Cheat Sheet", date: "15 June 2026", tags: ["AI Design", "Design Tools"], color: "var(--be-indigo)" },
+    { title: "The Practical Brand Strategy Starter Kit", date: "12 July 2026", tags: ["Brand Audit", "Design Tools"], color: "var(--color-accent-orange)" },
+    { title: "A Simple Checklist for Better Logo Reviews", date: "8 July 2026", tags: ["Design Critique", "Design Tools"], color: "var(--color-category-blue-mid)" },
+    { title: "The UX Research Planning Worksheet", date: "24 June 2026", tags: ["UX/UI", "Design Tools"], color: "var(--color-accent-red)" },
+    { title: "24 Free Fonts for Modern Editorial Design", date: "1 July 2026", tags: ["Typography", "Design Tools"], color: "var(--color-category-green-mid)" },
+    { title: "The Rebrand Project Creative Brief", date: "20 June 2026", tags: ["Branding Systems", "Design Tools"], color: "var(--color-accent-orange)" },
+    { title: "The AI Image Prompt Building Cheat Sheet", date: "15 June 2026", tags: ["AI Design", "Design Tools"], color: "var(--color-accent-navy)" },
   ],
   // The full topic taxonomy — every allowed article tag. Drives the "See all
   // topics" grid and the index-page filter row.

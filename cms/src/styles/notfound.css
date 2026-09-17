@@ -3,7 +3,7 @@
    TWO BANDS, THE SITE'S OWN. The paper the site opens on, carrying the
    apology and the two ways onward, and then white for the four articles
    underneath — the same pairing the About page uses to say "a new question
-   starts here". Nothing is invented: `--type-*` for the scale, `--be-*` for
+   starts here". Nothing is invented: `--type-*` for the scale, `--color-*` for
    the palette, `.shell` for the measure.
 
    IT IS SIZED LIKE A HERO, NOT LIKE AN ERROR. A visitor who followed a dead
@@ -14,7 +14,7 @@
 .notfound__hero {
   position: relative;
   overflow: hidden;
-  background-color: var(--be-paper);
+  background-color: var(--color-brand-surface);
   padding-block: clamp(56px, 9vw, 120px) clamp(40px, 6vw, 72px);
 }
 
@@ -39,24 +39,27 @@
    So it takes the same uppercase mark the eyebrows wear everywhere else. */
 .notfound__code {
   margin: 0 0 clamp(12px, 1.6vw, 18px);
-  font: var(--type-label);
-  letter-spacing: 0.08em;
+  font: var(--type-tag);
+  letter-spacing: var(--tracking-tag);
+  line-height: 1;
   text-transform: uppercase;
-  color: var(--be-ink-70);
+  color: var(--color-neutral-black-60);
 }
 
 .notfound__title {
   margin: 0 0 clamp(12px, 1.6vw, 20px);
   font: var(--type-display-2);
-  color: var(--be-ink);
+  letter-spacing: var(--tracking-display-2);
+  color: var(--color-neutral-black);
   text-wrap: balance;
 }
 
 .notfound__lede {
   margin: 0 0 clamp(24px, 3.2vw, 36px);
   max-inline-size: 34rem;
-  font: var(--type-body-lg);
-  color: var(--be-ink-70);
+  font: var(--type-body-large);
+  letter-spacing: var(--tracking-body-large);
+  color: var(--color-neutral-black-60);
 }
 
 .notfound__ways {
@@ -73,8 +76,9 @@
 
 .notfound__recent-title {
   margin: 0 0 clamp(20px, 2.6vw, 32px);
-  font: var(--type-title-md);
-  color: var(--be-ink);
+  font: var(--type-heading-5);
+  letter-spacing: var(--tracking-heading-5);
+  color: var(--color-neutral-black);
 }
 
 /* Four across on a desk, two on a tablet, one under a thumb — the grid the
@@ -102,6 +106,7 @@
    the report rather than the reader. */
 .notfound__digest {
   margin: clamp(20px, 2.6vw, 28px) 0 0;
-  font: var(--type-body-sm);
-  color: var(--be-ink-70);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
 }

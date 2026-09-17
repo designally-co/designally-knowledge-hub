@@ -30,13 +30,13 @@ const page = (title: string, body: string, status = 200) =>
 <style>
   :root { color-scheme: light }
   body { margin:0; min-height:100vh; display:grid; place-items:center;
-         background:#f9f6f4; color:#12100d; padding:24px;
+         background:#fbf5f3; color:#000000; padding:24px;
          font:400 16px/1.55 ui-sans-serif, system-ui, -apple-system, sans-serif }
   main { max-width:32rem; text-align:center }
   h1 { margin:0 0 12px; font-size:clamp(28px,5vw,40px); line-height:1.1; font-weight:400 }
-  p { margin:0 0 24px; color:#4a453d }
+  p { margin:0 0 24px; color:#666666 }
   a { display:inline-block; padding:12px 20px; border-radius:999px;
-      background:#12100d; color:#fff; text-decoration:none; font-weight:600 }
+      background:#000000; color:#ffffff; text-decoration:none; font-weight:600 }
 </style></head>
 <body><main><h1>${title}</h1><p>${body}</p>
 <a href="/">Back to the Hub</a></main></body></html>`,

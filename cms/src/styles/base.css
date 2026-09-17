@@ -27,8 +27,8 @@ html,
 body { margin: 0; }
 
 body {
-  background: var(--surface-page);
-  color: var(--text-primary);
+  background: var(--color-brand-surface);
+  color: var(--color-neutral-black);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   /* Notch and home-indicator safety on iOS; harmless elsewhere. */
@@ -50,7 +50,7 @@ button,
 textarea,
 select { font: inherit; color: inherit; }
 
-a { color: var(--text-primary); }
+a { color: var(--color-neutral-black); }
 
 /* Hover is a pointer affordance, not a state touch devices can reach.
    Guarding it stops the sticky-hover artefact on tap.
@@ -68,7 +68,7 @@ a { color: var(--text-primary); }
    Every interactive element gets a visible ring. The site previously had
    none, and stripped the browser default off both email inputs. */
 :focus-visible {
-  outline: 2px solid var(--be-ink);
+  outline: 2px solid var(--color-neutral-black);
   outline-offset: 3px;
   border-radius: 2px;
 }
@@ -76,7 +76,7 @@ a { color: var(--text-primary); }
 /* On dark and saturated bands the ink ring disappears; invert it. */
 .on-dark :focus-visible,
 .site-footer :focus-visible {
-  outline-color: var(--text-on-dark);
+  outline-color: var(--color-neutral-white);
 }
 
 .skip-link {
@@ -86,9 +86,11 @@ a { color: var(--text-primary); }
   z-index: var(--z-skip-link);
   transform: translateY(-150%);
   padding: 12px 20px;
-  background: var(--be-ink);
-  color: var(--be-paper);
-  font: var(--type-nav);
+  background: var(--color-neutral-black);
+  color: var(--color-brand-surface);
+  font: var(--type-body-large-emphasis);
+  letter-spacing: var(--tracking-body-large-emphasis);
+  line-height: 1;
   text-decoration: none;
   border-radius: 0 0 var(--radius-input) var(--radius-input);
   transition: transform 0.18s var(--ease-out-quart);
@@ -207,8 +209,8 @@ body {
   @page { margin: 18mm 16mm; }
 
   body {
-    background: #fff;
-    color: #000;
+    background: var(--color-neutral-white);
+    color: var(--color-neutral-black);
     font-size: 11pt;
   }
 

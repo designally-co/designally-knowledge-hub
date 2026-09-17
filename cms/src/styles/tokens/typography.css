@@ -1,35 +1,72 @@
 /* Branding Explained — Typography tokens
-   Two families: an editorial serif (Newsreader) for display statements and
-   section titles, and a neutral grotesque (Hanken Grotesk) for UI, article
-   titles, body and meta. See tokens/fonts.css for the @font-face / import. */
+   Sixteen text styles in two families: Ovo, a serif, for display and some
+   headings; Geist, a sans, for UI, body and the rest. Loaded in the frontend
+   layout.
+
+   A style is a pair: `font: var(--type-X)` and `letter-spacing:
+   var(--tracking-X)`, because the `font` shorthand cannot carry tracking.
+   Always set both.
+
+   Thai pages use the same styles with Thai families: Athiti in place of Ovo,
+   IBM Plex Sans Thai in place of Geist. Sizes, line heights and tracking are
+   identical. The serif styles (display-1, display-2, heading-1, heading-3)
+   also go from 400 to 600, because Athiti Regular is too thin for Thai
+   display text; the sans styles keep their weights.
+
+   The four largest styles are fluid. They reach the design's size at 1440px
+   and shrink with the viewport below it, down to a floor that still fits a
+   phone. Their line height and tracking are ratios of the size, so the
+   proportions hold at every width. Everything from heading-3 down is fixed. */
 :root {
-  /* Thai faces (Noto Serif/Sans Thai) sit in the stack after the Latin faces, so
-     the browser renders Latin glyphs with Newsreader/Hanken and Thai glyphs with
-     the Noto Thai faces automatically (per-glyph fallback). Loaded in the
-     frontend layout alongside the Latin webfonts. */
-  --font-serif: "Newsreader", "Noto Serif Thai", Georgia, "Times New Roman", serif;
-  --font-sans: "Hanken Grotesk", "Noto Sans Thai", "Helvetica Neue", Arial, sans-serif;
+  /* English pages. The Thai faces follow as fallbacks so the odd Thai word on
+     an English page (the language switcher's "ไทย") is never set in a system
+     font: Geist and Ovo have no Thai glyphs. */
+  --font-serif: "Ovo", "Athiti", Georgia, "Times New Roman", serif;
+  --font-sans: "Geist", "IBM Plex Sans Thai", "Helvetica Neue", Arial, sans-serif;
+  /* The serif styles' weight: Ovo is set Regular. */
+  --font-serif-weight: 400;
 
-  /* Display serif — big editorial statements */
-  --type-display-1: 400 clamp(44px, 6vw, 92px)/1.02 var(--font-serif);
-  --type-display-2: 400 clamp(34px, 4.4vw, 64px)/1.06 var(--font-serif);
-  --type-section: 400 clamp(30px, 3.6vw, 52px)/1.05 var(--font-serif);
+  /*                      weight  size                              / line height */
+  --type-display-1:          var(--font-serif-weight) clamp(40px, 5.556vw, 80px) / 1        var(--font-serif); /* 80/80  */
+  --type-display-2:          var(--font-serif-weight) clamp(34px, 4.444vw, 64px) / 1.125    var(--font-serif); /* 64/72  */
+  --type-heading-1:          var(--font-serif-weight) clamp(30px, 3.333vw, 48px) / 1.16667  var(--font-serif); /* 48/56  */
+  --type-heading-2:          600 clamp(26px, 2.778vw, 40px) / 1.2      var(--font-sans);  /* 40/48  */
+  --type-heading-3:          var(--font-serif-weight) 32px / 40px var(--font-serif);
+  --type-heading-4:          600 24px / 32px var(--font-sans);
+  --type-heading-5:          700 20px / 28px var(--font-sans);
+  --type-subtitle:           600 20px / 28px var(--font-sans);
+  --type-body-large:         400 16px / 24px var(--font-sans);
+  --type-body-large-emphasis: 600 16px / 24px var(--font-sans);
+  --type-body:               400 14px / 20px var(--font-sans);
+  --type-label:              600 14px / 20px var(--font-sans);
+  --type-overline:           700 14px / 20px var(--font-sans);
+  --type-tag:                700 12px / 18px var(--font-sans);
+  --type-caption:            600 12px / 18px var(--font-sans);
+  --type-body-small:         400 12px / 18px var(--font-sans);
 
-  /* Sans headings — article + card titles */
-  --type-title-lg: 700 clamp(26px, 3vw, 40px)/1.14 var(--font-sans);
-  --type-title-md: 700 22px/1.2 var(--font-sans);
-  --type-title-sm: 700 18px/1.28 var(--font-sans);
+  --tracking-display-1: -0.0375em;   /* -3px at 80px */
+  --tracking-display-2: -0.03125em;  /* -2px at 64px */
+  --tracking-heading-1: -0.02083em;  /* -1px at 48px */
+  --tracking-heading-2: -0.0075em;   /* -0.3px at 40px */
+  --tracking-heading-3: -0.2px;
+  --tracking-heading-4: -0.1px;
+  --tracking-heading-5: -0.1px;
+  --tracking-subtitle: -0.1px;
+  --tracking-body-large: 0;
+  --tracking-body-large-emphasis: 0;
+  --tracking-body: 0;
+  --tracking-label: 0;
+  --tracking-overline: 0;
+  --tracking-tag: 0;
+  --tracking-caption: 0;
+  --tracking-body-small: 0;
+}
 
-  /* Body */
-  --type-body-lg: 400 19px/1.5 var(--font-sans);
-  --type-body: 400 16px/1.55 var(--font-sans);
-  --type-body-sm: 400 14px/1.5 var(--font-sans);
-
-  /* Meta + labels */
-  --type-meta: 400 14px/1.4 var(--font-sans);
-  --type-nav: 700 16px/1 var(--font-sans);
-  --type-label: 700 12px/1 var(--font-sans);      /* uppercase tag / eyebrow */
-
-  --tracking-label: 0.06em;   /* uppercase eyebrows + tags */
-  --tracking-tight: -0.01em;  /* large sans titles */
+/* Thai pages: `<html lang="th">`. The swap sits on the root element because
+   that is where the --type-* values above are resolved; a font override on an
+   inner element would come too late to reach them. */
+:root:lang(th) {
+  --font-serif: "Athiti", "Ovo", Georgia, serif;
+  --font-sans: "IBM Plex Sans Thai", "Geist", Arial, sans-serif;
+  --font-serif-weight: 600;
 }

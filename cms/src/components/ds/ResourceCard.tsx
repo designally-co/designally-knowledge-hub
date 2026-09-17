@@ -32,7 +32,7 @@ export function ResourceCard({
   title,
   date,
   category,
-  color = 'var(--be-gold)',
+  color = 'var(--color-accent-orange)',
   glyph,
   formats,
   href = '#',

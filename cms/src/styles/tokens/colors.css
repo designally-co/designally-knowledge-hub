@@ -1,69 +1,46 @@
 /* Branding Explained — Color tokens
-   An editorial, warm-paper palette with saturated spot colors used for
-   category-coded thumbnails, folder cards and full-bleed section bands. */
+   The audited palette: 28 named colours in four groups. Every colour on the
+   public site comes from here; see the Figma design system for where each one
+   is used. Opacity variants are part of the name (`-60` = 60%). */
 :root {
-  /* ---- Base neutrals (warm paper) ---- */
-  --be-ink: #12100d;          /* near-black, text + logo + primary button */
-  --be-ink-70: #4a453d;
-  --be-ink-50: #7c766b;       /* meta / secondary text (warm grey) */
-  --be-ink-35: #a9a297;
-  --be-paper: #f9f6f4;        /* main page background (soft off-white) */
-  --be-paper-deep: #ddc5a8;   /* hero band tan */
-  --be-white: #ffffff;        /* card / image surfaces */
-  --be-line: #e2d7c9;         /* hairline dividers on paper */
-  --be-line-ink: #d8cdbd;
-  /* Listing pager's current page. A shade deeper than the design's tan so the
-     paper numeral on it clears 3:1 (large text: 20px bold). */
-  --be-tan: #a98e70;
+  /* ---- Neutrals ---- */
+  --color-neutral-black: #000000;                   /* primary text, borders */
+  --color-neutral-black-60: rgba(0, 0, 0, 0.6);     /* secondary text */
+  --color-neutral-black-32: rgba(0, 0, 0, 0.32);    /* muted / placeholder text */
+  --color-neutral-black-12: rgba(0, 0, 0, 0.12);    /* subtle borders, dividers */
+  --color-neutral-dark: #16160f;                    /* dark backgrounds, footer */
+  --color-neutral-gray-400: #c9c9c9;                /* borders, disabled states */
+  --color-neutral-gray-200: #e4e4e4;                /* light borders, dividers */
+  --color-neutral-gray-100: #f2f2f2;                /* light backgrounds, cards */
+  --color-neutral-white: #ffffff;                   /* white surfaces, text on dark */
+  --color-neutral-white-60: rgba(255, 255, 255, 0.6);  /* muted text on dark */
+  --color-neutral-white-32: rgba(255, 255, 255, 0.32); /* subtle text on dark */
 
-  /* ---- Section band tints (full-bleed) ---- */
-  --be-band-hero: #dabfa9;    /* hero band — was hard-coded in HomePage */
-  --be-band-mint: #e3efe4;
-  --be-band-butter: #f7e7be;
-  --be-band-lavender: #f1eefa;
-  --be-band-mist: #f5f7fa;    /* Insights band — cool near-white */
-  --be-band-blush: #fbf5f3;   /* Case Studies band — warm near-white */
-  --be-band-black: #0a0908;
-  --be-band-ochre: #c6890e;   /* footer mustard */
+  /* ---- Brand ---- */
+  --color-brand-dark: #554435;
+  --color-brand-mid: #7e593f;
+  --color-brand-mid-12: rgba(126, 89, 63, 0.12);
+  --color-brand-mid-30: rgba(126, 89, 63, 0.3);
+  --color-brand-primary: #ba9779;                   /* primary brand colour, CTAs */
+  --color-brand-primary-4: rgba(186, 151, 121, 0.04);
+  --color-brand-light: #f5d7c8;
+  --color-brand-surface: #fbf5f3;                   /* page background */
 
-  /* ---- Spot / accent colors (category-coded) ---- */
-  --be-gold: #d9a521;
-  --be-cobalt: #2c5fb3;
-  --be-brick: #b23127;
-  --be-green: #2e9e54;
-  --be-rust: #c0491f;
-  --be-purple: #7b3fb0;
-  --be-indigo: #322fbe;
-  --be-orange: #e8531d;       /* promo / summit banner */
+  /* ---- Accent ---- */
+  --color-accent-red: #b02b1b;                      /* errors, destructive actions */
+  --color-accent-orange: #e87e42;
+  --color-accent-navy: #012169;
 
-  /* ---- Frosted resource-card glass ---- */
-  --be-glass-pink: rgba(214,160,224,0.45);
-  --be-glass-lilac: rgba(178,166,230,0.5);
+  /* ---- Category ---- */
+  --color-category-blue-light: #d8ddf0;
+  --color-category-blue-mid: #6579d0;
+  --color-category-green-light: #adf0cc;
+  --color-category-green-mid: #538f70;
+  --color-category-purple-light: #e7d8ef;
+  --color-category-purple-mid: #a55ac7;
 
-  /* ---- Semantic aliases ---- */
-  --text-primary: var(--be-ink);
-  --text-secondary: var(--be-ink-50);
-  --text-muted: var(--be-ink-35);
-  --text-on-dark: #f4ede3;
-  --text-on-dark-dim: rgba(244,237,227,0.6);
-
-  --surface-page: var(--be-paper);
-  --surface-card: var(--be-white);
-  --surface-inverse: var(--be-band-black);
-  --surface-raised: var(--be-white);
-
-  --border-hairline: var(--be-line);
-  --border-pill: var(--be-ink);
-  --border-tag: rgba(18,16,13,0.35);
-  --border-tag-warm: rgba(192,73,31,0.45);
   /* Outline = the element's own label colour at 50% opacity. currentColor
-     resolves per element, so every tag / button / pill gets a matching,
-     lighter outline (ink label -> grey, rust label -> faded rust, etc.). */
+     resolves per element, so a button or pill gets an outline that matches
+     its label. Derived from a token, not a colour of its own. */
   --border-outline: color-mix(in srgb, currentColor 50%, transparent);
-
-  --accent: var(--be-ink);
-  --accent-contrast: var(--be-paper);
-
-  /* Default cover colour, shown when a resource has no image cover at all. */
-  --cover-fallback: #cfc3b0;
 }

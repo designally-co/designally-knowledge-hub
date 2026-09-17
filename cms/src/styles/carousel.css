@@ -85,14 +85,14 @@
   height: var(--card-h);
   object-fit: cover;
   /* Photo paints on top; the default colour shows when there's no cover. */
-  background-color: var(--card-tint, var(--cover-fallback));
-  box-shadow: 0 18px 40px -24px rgba(18, 16, 13, calc(0.35 * var(--emph)));
+  background-color: var(--card-tint, var(--color-neutral-gray-400));
+  box-shadow: 0 18px 40px -24px color-mix(in srgb, var(--color-neutral-black-32) calc(100% * var(--emph)), transparent);
 }
 
 .carousel__title {
   margin: 0;
-  color: var(--be-ink);
-  letter-spacing: var(--tracking-tight);
+  color: var(--color-neutral-black);
+  letter-spacing: var(--tracking-heading-5);
   text-decoration: underline;
   text-decoration-color: transparent;
   text-decoration-thickness: 2px;
@@ -113,8 +113,9 @@
 }
 
 .carousel__date {
-  font: var(--type-meta);
-  color: var(--text-secondary);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
   margin: 0;
   opacity: var(--emph);
 }
@@ -151,11 +152,11 @@
 .carousel__mist--left {
   left: 0;
   width: clamp(40px, 12%, 180px);
-  background: linear-gradient(90deg, var(--be-paper), rgba(244, 235, 225, 0));
+  background: linear-gradient(90deg, var(--color-brand-surface), transparent);
 }
 
 .carousel__mist--right {
   right: 0;
   width: clamp(40px, 12%, 180px);
-  background: linear-gradient(270deg, var(--be-paper), rgba(244, 235, 225, 0));
+  background: linear-gradient(270deg, var(--color-brand-surface), transparent);
 }

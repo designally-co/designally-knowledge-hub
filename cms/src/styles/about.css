@@ -7,7 +7,7 @@
    which is the site's own `.cta`, not a sixth thing invented here.
 
    Everything below reuses the site's vocabulary: `--type-*` for the scale,
-   `--be-*` for the palette, `.shell` for the measure, `.band` for the vertical
+   `--color-*` for the palette, `.shell` for the measure, `.band` for the vertical
    rhythm, and `hero-bg-pattern.svg` for the watermark the hero, the article
    header and the promo banners already carry. --- */
 
@@ -21,18 +21,19 @@
    under on both, and the darker grey is what made it obvious. */
 .about-eyebrow {
   margin: 0 0 clamp(16px, 2.4vw, 28px);
-  font: var(--type-label);
-  letter-spacing: 0.08em;
+  font: var(--type-tag);
+  letter-spacing: var(--tracking-tag);
+  line-height: 1;
   text-transform: uppercase;
-  color: var(--be-ink-70);
+  color: var(--color-neutral-black-60);
 }
 
 .about-eyebrow--on-dark {
-  color: rgb(255 255 255 / 0.62);
+  color: var(--color-neutral-white-60);
 }
 
 .about-eyebrow--on-accent {
-  color: rgb(255 255 255 / 0.72);
+  color: var(--color-neutral-white-60);
 }
 
 /* ---- the opening ------------------------------------------------------- */
@@ -44,8 +45,8 @@
   position: relative;
   overflow: hidden;
   padding-block: clamp(48px, 8vw, 104px) clamp(56px, 9vw, 120px);
-  background-color: var(--be-line);
-  background-color: color-mix(in srgb, var(--be-line) 42%, var(--be-paper));
+  background-color: var(--color-neutral-gray-200);
+  background-color: color-mix(in srgb, var(--color-neutral-gray-200) 42%, var(--color-brand-surface));
 }
 
 .about-hero::before {
@@ -66,8 +67,8 @@
 .about-hero__title {
   margin: 0 0 clamp(16px, 2vw, 24px);
   font: var(--type-display-2);
-  letter-spacing: -0.02em;
-  color: var(--be-ink);
+  letter-spacing: var(--tracking-display-2);
+  color: var(--color-neutral-black);
   text-wrap: balance;
 }
 
@@ -76,8 +77,9 @@
 .about-hero__lede {
   max-width: 52ch;
   margin: 0;
-  font: var(--type-body-lg);
-  color: var(--be-ink-70);
+  font: var(--type-body-large);
+  letter-spacing: var(--tracking-body-large);
+  color: var(--color-neutral-black-60);
 }
 
 /* ---- why we exist ------------------------------------------------------ */
@@ -100,10 +102,11 @@
 
 .about-why__label {
   margin: 0;
-  font: var(--type-label);
-  letter-spacing: 0.08em;
+  font: var(--type-tag);
+  letter-spacing: var(--tracking-tag);
+  line-height: 1;
   text-transform: uppercase;
-  color: var(--be-ink);
+  color: var(--color-neutral-black);
 }
 
 .about-why__column {
@@ -115,7 +118,7 @@
    at the shape the photograph will take, so the composition is the composition
    whether or not the image has arrived.
 
-   IT HAS TO READ AS A FRAME, NOT A GAP. Tinted from `--be-white` it measured
+   IT HAS TO READ AS A FRAME, NOT A GAP. Tinted from `--color-neutral-white` it measured
    within a shade of the hero band behind it and the slot disappeared into the
    page — a 649x365 hole where the picture goes. Mixed toward the line colour
    instead, and closed with the hairline, it is visibly a reserved space. */
@@ -124,9 +127,9 @@
   aspect-ratio: 16 / 9;
   margin: 0 0 clamp(24px, 4vw, 40px);
   overflow: hidden;
-  border: 1px solid var(--border-hairline);
+  border: 1px solid var(--color-neutral-gray-200);
   border-radius: var(--radius-hero);
-  background-color: color-mix(in srgb, var(--be-line) 78%, var(--be-white));
+  background-color: color-mix(in srgb, var(--color-neutral-gray-200) 78%, var(--color-neutral-white));
 }
 
 .about-why__figure::after {
@@ -175,10 +178,10 @@
 .about-why__statement {
   margin: 0 0 clamp(24px, 4vw, 40px);
   padding-block-end: clamp(24px, 4vw, 40px);
-  border-block-end: 1px solid var(--border-hairline);
-  font: var(--type-section);
-  letter-spacing: -0.015em;
-  color: var(--be-ink);
+  border-block-end: 1px solid var(--color-neutral-gray-200);
+  font: var(--type-heading-1);
+  letter-spacing: var(--tracking-heading-1);
+  color: var(--color-neutral-black);
   text-wrap: balance;
 }
 
@@ -197,16 +200,17 @@
 
 .about-why__body p {
   margin: 0;
-  font: var(--type-body-sm);
-  color: var(--be-ink-70);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
 }
 
 /* ---- the four surfaces ------------------------------------------------- */
 
 .about-find {
   padding-block: clamp(64px, 10vw, 132px);
-  background-color: #3f342b;
-  color: var(--be-white);
+  background-color: var(--color-brand-dark);
+  color: var(--color-neutral-white);
   text-align: center;
 }
 
@@ -217,8 +221,9 @@
 .about-find__lede {
   max-width: 46ch;
   margin: 0 auto;
-  font: var(--type-body-sm);
-  color: rgb(255 255 255 / 0.66);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-white-60);
 }
 
 /* THE FAN. Four upright rectangles in a row would be a nav bar; a hand of cards
@@ -302,9 +307,9 @@
 
      The `color-mix` above is the fallback where relative colour syntax is
      missing: duller, and still legible, which is the right way round. */
-  background-color: color-mix(in srgb, var(--card-tint, var(--be-band-lavender)) 66%, #000000);
-  background-color: oklch(from var(--card-tint, var(--be-band-lavender)) 0.62 calc(c * 1.2) h);
-  color: var(--be-ink);
+  background-color: color-mix(in srgb, var(--card-tint, var(--color-category-purple-light)) 66%, var(--color-neutral-black));
+  background-color: oklch(from var(--card-tint, var(--color-category-purple-light)) 0.62 calc(c * 1.2) h);
+  color: var(--color-neutral-black);
   text-align: start;
   text-decoration: none;
 }
@@ -356,8 +361,8 @@
   width: 26px;
   height: 26px;
   border-radius: var(--radius-pill);
-  border: 1.5px solid var(--be-white);
-  color: var(--be-white);
+  border: 1.5px solid var(--color-neutral-white);
+  color: var(--color-neutral-white);
   transition:
     background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
     color 180ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -367,8 +372,8 @@
    white, so a white fill alone would have erased the arrow inside it. */
 @media (hover: hover) {
   .about-card:hover .about-card__arrow {
-    background-color: var(--be-white);
-    color: var(--be-ink);
+    background-color: var(--color-neutral-white);
+    color: var(--color-neutral-black);
   }
 }
 
@@ -382,14 +387,13 @@
 .about-card__label {
   position: relative;
   z-index: 1;
-  font: var(--type-title-sm);
-  font-size: 19px;
-  letter-spacing: -0.01em;
-  color: var(--be-white);
+  font: var(--type-heading-5);
+  letter-spacing: var(--tracking-heading-5);
+  color: var(--color-neutral-white);
 }
 
 .about-card:focus-visible {
-  outline: 3px solid var(--be-white);
+  outline: 3px solid var(--color-neutral-white);
   outline-offset: 3px;
 }
 
@@ -425,7 +429,7 @@
 
 .about-principles {
   padding-block: clamp(64px, 10vw, 132px);
-  background-color: var(--be-white);
+  background-color: var(--color-neutral-white);
 }
 
 .about-principles__inner {
@@ -442,9 +446,9 @@
 
 .about-principles__title {
   margin: 0;
-  font: var(--type-section);
-  letter-spacing: -0.02em;
-  color: var(--be-ink);
+  font: var(--type-heading-1);
+  letter-spacing: var(--tracking-heading-1);
+  color: var(--color-neutral-black);
 }
 
 /* THE NUMBER IS DRAWN BY THE LIST, not typed into each row: an ordered list
@@ -462,14 +466,14 @@
   display: grid;
   gap: 6px 24px;
   padding-block: clamp(18px, 2.4vw, 26px);
-  border-block-start: 1px solid var(--border-hairline);
+  border-block-start: 1px solid var(--color-neutral-gray-200);
   counter-increment: principle;
 }
 
 /* The rule closes the list as well as separating it, so the last row does not
    hang. */
 .about-principle:last-child {
-  border-block-end: 1px solid var(--border-hairline);
+  border-block-end: 1px solid var(--color-neutral-gray-200);
 }
 
 @media (min-width: 720px) {
@@ -484,24 +488,24 @@
    not data — and in the grotesque it read as a table's row index. */
 .about-principle::before {
   content: counter(principle, decimal-leading-zero);
-  font-family: var(--font-serif);
-  font-size: 15px;
-  line-height: 1.5;
+  font: var(--type-body-large);
+  letter-spacing: var(--tracking-body-large);
   font-variant-numeric: tabular-nums;
-  color: var(--be-ink-35);
+  color: var(--color-neutral-black-32);
 }
 
 .about-principle__title {
   margin: 0;
-  font: var(--type-title-sm);
-  letter-spacing: -0.01em;
-  color: var(--be-ink);
+  font: var(--type-heading-5);
+  letter-spacing: var(--tracking-heading-5);
+  color: var(--color-neutral-black);
 }
 
 .about-principle__body {
   margin: 0;
-  font: var(--type-body-sm);
-  color: var(--be-ink-50);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-black-60);
 }
 
 /* ---- who makes it ------------------------------------------------------ */
@@ -510,8 +514,8 @@
    own voice rather than about the work. */
 .about-studio {
   padding-block: clamp(56px, 9vw, 116px);
-  background-color: var(--be-orange);
-  color: var(--be-white);
+  background-color: var(--color-accent-orange);
+  color: var(--color-neutral-white);
 }
 
 .about-studio__inner {
@@ -529,17 +533,18 @@
 .about-studio__title {
   max-width: 14ch;
   margin: 0;
-  font: var(--type-section);
-  letter-spacing: -0.02em;
-  color: var(--be-white);
+  font: var(--type-heading-1);
+  letter-spacing: var(--tracking-heading-1);
+  color: var(--color-neutral-white);
   text-wrap: balance;
 }
 
 .about-studio__body p {
   max-width: 48ch;
   margin: 0 0 clamp(20px, 2.6vw, 28px);
-  font: var(--type-body-sm);
-  color: rgb(255 255 255 / 0.88);
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
+  color: var(--color-neutral-white);
 }
 
 /* An underline that arrives on approach: on a colour field a link needs to be
@@ -549,9 +554,9 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font: var(--type-body-sm);
-  font-weight: 700;
-  color: var(--be-white);
+  font: var(--type-overline);
+  letter-spacing: var(--tracking-overline);
+  color: var(--color-neutral-white);
   text-decoration: none;
   border-block-end: 1.5px solid transparent;
   transition: border-color 180ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -559,11 +564,11 @@
 
 @media (hover: hover) {
   .about-studio__link:hover {
-    border-block-end-color: var(--be-white);
+    border-block-end-color: var(--color-neutral-white);
   }
 }
 
 .about-studio__link:focus-visible {
-  outline: 3px solid var(--be-white);
+  outline: 3px solid var(--color-neutral-white);
   outline-offset: 4px;
 }

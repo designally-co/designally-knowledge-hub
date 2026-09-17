@@ -131,13 +131,13 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
               <svg fill="none" height="42" viewBox="0 0 34 42" width="34">
                 <path
                   d="M17 21.5v16"
-                  stroke="var(--be-ink)"
+                  style={{ stroke: 'var(--color-neutral-black)' }}
                   strokeLinecap="round"
                   strokeWidth="1.5"
                 />
-                <ellipse cx="17" cy="14" fill="var(--be-ink-70)" rx="10" ry="7.5" />
-                <ellipse cx="17" cy="11.5" fill="var(--be-ink)" rx="10" ry="7.5" />
-                <ellipse cx="13" cy="9.5" fill="rgb(255 255 255 / 0.28)" rx="3" ry="2" />
+                <ellipse cx="17" cy="14" style={{ fill: 'var(--color-neutral-black-60)' }} rx="10" ry="7.5" />
+                <ellipse cx="17" cy="11.5" style={{ fill: 'var(--color-neutral-black)' }} rx="10" ry="7.5" />
+                <ellipse cx="13" cy="9.5" style={{ fill: 'var(--color-neutral-white-32)' }} rx="3" ry="2" />
               </svg>
             </span>
 
