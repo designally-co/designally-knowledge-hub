@@ -14,16 +14,38 @@
   gap: clamp(var(--space-8), 5vw, var(--space-16));
 }
 
+/* Desktop: on the 12-column grid. The illustration takes columns 1-2, the
+   headline 3-6 and the signup 7-12. The lead is a six-column grid of its own
+   with the same gutter, so its two parts land on the page's column lines. */
 @media (min-width: 64em) {
   .cta__inner {
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gap);
     align-items: center;
-    gap: clamp(var(--space-10), 5vw, var(--space-20));
   }
-  /* Both columns grow to fill the row evenly. */
-  .cta__lead,
-  .cta__signup {
-    flex: 1 1 0;
+
+  /* Qualified by the band: the base .cta__lead and .cta__art rules come
+     later in this file and would otherwise win. */
+  .cta__inner .cta__lead {
+    grid-column: 1 / span 6;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+  }
+
+  .cta__inner .cta__art {
+    grid-column: 1 / span 2;
+    width: 100%;
+  }
+
+  .cta__inner .cta__copy {
+    grid-column: 3 / span 4;
+    min-width: 0;
+  }
+
+  .cta__inner .cta__signup {
+    grid-column: 7 / span 6;
     width: auto;
     min-width: 0;
   }
