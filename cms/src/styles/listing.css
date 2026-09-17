@@ -247,31 +247,37 @@
   text-wrap: pretty;
 }
 
-/* Inline: the intro sits beside the title, sharing its baseline, and wraps
-   under it only when the line runs out. */
-.listing-hero--inline .listing-hero__inner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--space-1) 0.6em;
+/* A heading in two sizes: a small first line (search's "Search results for")
+   over the title at its full display size. The kicker stays inside the h1 so
+   the pair is read as one heading. */
+.listing-hero__heading--kicked {
+  display: block;
 }
 
-.listing-hero--inline .listing-hero__desc {
-  max-width: none;
-  margin: 0;
+.listing-hero__kicker {
+  display: block;
+  margin-bottom: var(--space-2);
+  font: var(--type-subtitle);
+  letter-spacing: var(--tracking-subtitle);
+  color: color-mix(in srgb, var(--color-neutral-black) 88%, transparent);
+}
+
+.listing-hero__heading--kicked .listing-hero__title {
+  display: block;
+  overflow-wrap: anywhere;
 }
 
 /* On the grid from tablet up: the intro holds columns 1-10 (48-64em), then
    1-6, rather than a character count, so its right edge falls on a column
    line. Both keep it to about three lines. */
 @media (min-width: 48em) and (max-width: 63.999em) {
-  .listing-hero:not(.listing-hero--inline) .listing-hero__desc {
+  .listing-hero__desc {
     max-width: calc(10 * var(--column-width) + 9 * var(--grid-gap));
   }
 }
 
 @media (min-width: 64em) {
-  .listing-hero:not(.listing-hero--inline) .listing-hero__desc {
+  .listing-hero__desc {
     max-width: calc(6 * var(--column-width) + 5 * var(--grid-gap));
   }
 }

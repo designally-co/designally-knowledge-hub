@@ -276,25 +276,29 @@ function SearchOverlay({
             </p>
           ) : (
             <>
-              <Tabs
-                className="search-tabs"
-                label={dict.search.label}
-                items={tabs.map((g) => ({
-                  key: g.key,
-                  label: `${groupLabel(g.key, locale, dict)} (${g.total})`,
-                  active: g.key === group.key,
-                  onClick: () => setActive(g.key),
-                }))}
-              />
+              {/* One bar: the tabs on the left, the count and the way to the
+                  full list on the right. */}
+              <div className="search-bar">
+                <Tabs
+                  className="search-tabs"
+                  label={dict.search.label}
+                  items={tabs.map((g) => ({
+                    key: g.key,
+                    label: `${groupLabel(g.key, locale, dict)} (${g.total})`,
+                    active: g.key === group.key,
+                    onClick: () => setActive(g.key),
+                  }))}
+                />
 
-              <div className="search-summary">
-                <p className="search-summary__count" aria-live="polite">
-                  {countLabel(group.total, dict)}
-                </p>
-                <Link className="search-summary__all" href={searchHref(locale, results.query, group.key)}>
-                  {dict.search.viewAll}
-                  <Icon name="arrow-right" size={18} />
-                </Link>
+                <div className="search-summary">
+                  <p className="search-summary__count" aria-live="polite">
+                    {countLabel(group.total, dict)}
+                  </p>
+                  <Link className="search-summary__all" href={searchHref(locale, results.query, group.key)}>
+                    {dict.search.viewAll}
+                    <Icon name="arrow-right" size={18} />
+                  </Link>
+                </div>
               </div>
 
               <SearchHitGrid hits={group.hits} className={pending ? 'is-pending' : undefined} />

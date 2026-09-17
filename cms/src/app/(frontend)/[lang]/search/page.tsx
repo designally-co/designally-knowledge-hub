@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { Icon, Tabs } from '@/components/ds'
+import { Tabs } from '@/components/ds'
 import { ListingHero } from '@/components/listing/ListingHero'
 import { ListingPager } from '@/components/listing/ListingPager'
 import { NewsletterCta } from '@/components/NewsletterCta'
@@ -13,16 +13,16 @@ import {
   MIN_QUERY,
   searchHref,
   searchTypeFromSlug,
-  searchTypeSlug,
 } from '@/lib/searchShared'
-import { getDictionary, isLocale, localeHref, type Locale } from '@/lib/i18n'
+import { getDictionary, isLocale, type Locale } from '@/lib/i18n'
 
 type Params = { lang: string }
 type Search = { q?: string; type?: string; page?: string }
 
-/* The hero band in neutral grey, the search overlay's ground: search belongs to
-   no one section, so it wears none of their colours. */
-const SEARCH_TINT = 'var(--color-neutral-gray-100)'
+/* A band of its own: search belongs to no one section, so it wears none of
+   their four tints. The brand brown at 30% reads as a warm sand over the page,
+   mid-toned enough for the white wave pattern to show. */
+const SEARCH_TINT = 'var(--color-brand-mid-30)'
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { lang } = await params
@@ -67,48 +67,39 @@ export default async function SearchPage({
 
   return (
     <div className="listing-page search-page">
-      <ListingHero
-        title={dict.search.title}
-        description={searching ? dict.search.resultsFor.replace('{q}', q) : dict.search.prompt}
-        tint={SEARCH_TINT}
-        inline
-      />
+      {/* With a query: "Search results for" small, the query itself as the page
+          title. Without one: the plain "Search" title and the prompt. */}
+      {searching ? (
+        <ListingHero kicker={dict.search.resultsHeading} title={`“${q}”`} tint={SEARCH_TINT} />
+      ) : (
+        <ListingHero title={dict.search.title} description={dict.search.prompt} tint={SEARCH_TINT} />
+      )}
 
       <div className="listing-body">
-        <form className="search-field search-page__field" role="search" action={localeHref(locale, '/search')}>
-          <input
-            type="text"
-            name="q"
-            defaultValue={q}
-            className="search-field__input"
-            placeholder={dict.search.placeholder}
-            aria-label={dict.search.label}
-            autoComplete="off"
-            enterKeyHint="search"
-          />
-          {type !== 'all' && <input type="hidden" name="type" value={searchTypeSlug(type)} />}
-          <button type="submit" className="search-field__submit" aria-label={dict.search.submit}>
-            <Icon name="search" size={16} strokeWidth={2.4} />
-          </button>
-        </form>
-
         {overview && listing && (
           overview.total === 0 ? (
             <p className="search-note">{dict.search.empty.replace('{q}', q)}</p>
           ) : (
             <>
-              <Tabs
-                className="search-tabs"
-                label={dict.search.label}
-                items={tabs.map((g) => ({
-                  key: g.key,
-                  label: `${groupLabel(g.key, locale, dict)} (${g.total})`,
-                  active: g.key === type,
-                  href: searchHref(locale, q, g.key),
-                }))}
-              />
-
-              <p className="search-summary__count search-page__count">{countLabel(listing.total, dict)}</p>
+              {/* The catalog pages' control row: the result tabs where their
+                  filters sit, and the count at the end of the line. There is no
+                  field here — the query was typed to get here, and the header
+                  search is one click away for another. */}
+              <div className="listing-controls search-page__controls">
+                <Tabs
+                  className="listing-filters"
+                  label={dict.search.label}
+                  items={tabs.map((g) => ({
+                    key: g.key,
+                    label: `${groupLabel(g.key, locale, dict)} (${g.total})`,
+                    active: g.key === type,
+                    href: searchHref(locale, q, g.key),
+                  }))}
+                />
+                <p className="search-page__count" aria-live="polite">
+                  {countLabel(listing.total, dict)}
+                </p>
+              </div>
 
               <SearchHitGrid hits={listing.items} />
 

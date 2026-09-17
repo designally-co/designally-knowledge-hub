@@ -246,6 +246,8 @@ export type Dictionary = {
     viewAll: string
     /** The search page's intro: "Results for “{q}”". */
     resultsFor: string
+    /** The small first line of the search page's heading, above the query. */
+    resultsHeading: string
     /** Unit in the search page's "Showing a–b of n {unit}". */
     items: string
   }
@@ -497,6 +499,7 @@ const en: Dictionary = {
     result: '1 result found',
     viewAll: 'View all results',
     resultsFor: 'Results for “{q}”',
+    resultsHeading: 'Search results for',
     items: 'items',
   },
 }
@@ -745,6 +748,7 @@ const th: Dictionary = {
     result: 'พบ 1 รายการ',
     viewAll: 'ดูผลลัพธ์ทั้งหมด',
     resultsFor: 'ผลการค้นหาสำหรับ “{q}”',
+    resultsHeading: 'ผลการค้นหาสำหรับ',
     items: 'รายการ',
   },
 }

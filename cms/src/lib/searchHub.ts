@@ -27,8 +27,8 @@ import type { Locale } from './i18n'
  * path, and every value that crosses back is a plain object.
  */
 
-/** Cards per tab in the overlay: two rows of its four-up grid. The rest is /search's. */
-const OVERLAY_HITS = 8
+/** Cards per tab in the overlay: one row of its four-up grid. The rest is /search's. */
+const OVERLAY_HITS = 4
 
 /**
  * Every tab's total and its first cards in one call, so switching tabs in the
