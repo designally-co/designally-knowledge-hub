@@ -36,12 +36,30 @@
 
 /* The drawing sits beside the offer at width and above it below that — the
    arrangement the newsletter band already uses, so the two read as one object
-   in two sizes. */
+   in two sizes. At width it is the 12-column grid: the offer on 1-7 (seven,
+   because "Better design thinking," alone runs ~690px at the display size and
+   six columns would break it onto three lines), the form within it on 1-5,
+   and the drawing on 8-12. */
 @media (min-width: 64em) {
   .news-hero__inner {
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gap);
     align-items: center;
-    justify-content: space-between;
+  }
+
+  .news-hero__inner > .news-hero__copy {
+    grid-column: 1 / span 7;
+    max-width: none;
+  }
+
+  .news-hero__copy .news-hero__form {
+    max-width: calc(5 * var(--column-width) + 4 * var(--grid-gap));
+  }
+
+  .news-hero__inner > .news-hero__art {
+    grid-column: 8 / span 5;
+    width: 100%;
   }
 }
 
@@ -115,11 +133,17 @@
 /* THE LABEL KEEPS THE LEFT AND THE STATEMENT TAKES THE RIGHT — the same
    arrangement the About page's "Why we exist" uses, and for the same reason:
    the section's name is a margin note, and the sentence is the section. */
+/* On the grid, as on the About page: the label on 1-4, the statement on
+   6-12, column 5 open between. */
 @media (min-width: 900px) {
   .news-why__inner {
-    grid-template-columns: minmax(0, 4fr) minmax(0, 6fr);
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gap);
     align-items: start;
   }
+
+  .news-why__inner > .news-why__label { grid-column: 1 / span 4; }
+  .news-why__inner > .news-why__statement { grid-column: 6 / span 7; }
 }
 
 .news-why__label {
