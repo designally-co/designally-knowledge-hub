@@ -13,8 +13,8 @@ import { Icon } from '@/components/ds'
  * button of its own: the whole banner is the link. `arrow={false}` drops the
  * arrow and leaves the label alone.
  *
- * `man-reading.png` is the placeholder art shared by all banners until the
- * per-section illustrations arrive — pass a different `graphic` to override.
+ * Each section passes its own `graphic` from /public/promo; `man-reading.png`
+ * is the fallback for a banner that has none yet (Case Studies).
  */
 type PromoBannerProps = {
   label: string

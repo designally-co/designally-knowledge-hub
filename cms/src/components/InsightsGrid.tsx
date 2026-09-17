@@ -46,6 +46,7 @@ export function InsightsGrid({
 
           <PromoBannerCell
             bannerClassName="insights__banner"
+            graphic="/promo/insights.png"
             label={bannerLabel}
             href={bannerHref}
             seeAllLabel={seeAllLabel}

@@ -137,24 +137,33 @@
   text-wrap: pretty;
 }
 
-/* Colour + placement — shared look lives in promo-banner.css. The graphic sits
-   bottom-left; the text + button stack at the top-right. */
+/* Colour + placement — shared look lives in promo-banner.css. Two even
+   halves: the scene centred in the left one, standing on the foot of the
+   banner, and the heading centred in the right one on both axes. */
 .workflows__banner {
   --promo-bg: var(--color-category-green-mid);
+  color: var(--color-neutral-white);
   margin-top: clamp(var(--space-6), 3vw, var(--space-8));
-  align-items: flex-start;
+  align-items: center;
   justify-content: flex-end;
 }
 
 .workflows__banner .promo-banner__content {
+  flex: 0 0 50%;
   max-width: 50%;
+  align-items: center;
+  text-align: center;
 }
 
 .workflows__banner .promo-banner__art {
   right: auto;
-  left: clamp(24px, 4vw, 44px);
+  left: 0;
   bottom: 0;
-  max-width: 42%;
+  width: 50%;
+  max-width: none;
+  height: 92%;
+  object-position: center bottom;
+  transform-origin: center bottom;
 }
 
 .workflows__feature-img,

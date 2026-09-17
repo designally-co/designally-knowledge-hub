@@ -104,8 +104,10 @@
   .resources__banner .promo-banner__art {
     right: 12px;
     left: auto;
+    width: auto;
     max-width: 46%;
     height: 92%;
+    max-height: none;
   }
 }
 

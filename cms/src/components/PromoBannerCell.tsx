@@ -16,6 +16,7 @@ type PromoBannerCellProps = {
   seeAllLabel: string
   className?: string
   bannerClassName?: string
+  graphic?: string
 }
 
 export function PromoBannerCell({
@@ -24,6 +25,7 @@ export function PromoBannerCell({
   seeAllLabel,
   className = '',
   bannerClassName = '',
+  graphic,
 }: PromoBannerCellProps) {
   return (
     <div className={['promo-cell', className].filter(Boolean).join(' ')}>
@@ -32,6 +34,7 @@ export function PromoBannerCell({
         label={label}
         href={href}
         arrow={false}
+        graphic={graphic}
       />
       <a className="promo-see-all" href={href}>
         <span>{seeAllLabel}</span>

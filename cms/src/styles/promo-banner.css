@@ -71,6 +71,8 @@
 
 .promo-banner__label {
   display: block;
+  font-size: var(--promo-label-size);
+  text-transform: uppercase;
 }
 
 .promo-banner__art {
@@ -123,7 +125,6 @@
   .promo-banner__content {
     max-width: 68%;
   }
-  .promo-banner__label { font: var(--type-heading-3); letter-spacing: var(--tracking-heading-3); }
   .promo-banner__art {
     right: 12px;
     max-width: 46%;
@@ -184,15 +185,19 @@
 
 .promo-banner--tile .promo-banner__label {
   font-size: min(var(--promo-label-size), var(--promo-label-fit, 9999px));
-  text-transform: uppercase;
 }
 
+/* The section scene spans the tile edge to edge at its foot; the height cap
+   keeps it clear of the heading on a short tile. */
 .promo-banner--tile .promo-banner__art {
-  right: auto;
-  left: clamp(16px, 1.4vw, 24px);
+  right: 0;
+  left: 0;
   bottom: 0;
-  max-width: 55%;
-  height: 42%;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  max-height: 72%;
+  transform-origin: center bottom;
 }
 
 /* The banner and its "see all" line share one grid cell, the line under it. */

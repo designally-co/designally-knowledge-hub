@@ -97,8 +97,10 @@ export function WorkflowsGrid({ items, title, bannerLabel, bannerHref, seeAllLab
 
             <PromoBanner
               className="workflows__banner"
+              graphic="/promo/workflows.png"
               label={bannerLabel}
               href={bannerHref}
+              arrow={false}
               ariaLabel={seeAllLabel}
             />
           </div>

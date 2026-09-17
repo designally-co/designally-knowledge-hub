@@ -51,6 +51,7 @@ export function ResourcesSection({ items, title, seeAllLabel, seeAllHref }: Reso
           <PromoBannerCell
             className="resources__banner-cell"
             bannerClassName="resources__banner"
+            graphic="/promo/resources.png"
             label={title}
             href={seeAllHref}
             seeAllLabel={seeAllLabel}

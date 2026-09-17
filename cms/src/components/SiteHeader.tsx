@@ -294,7 +294,7 @@ function Drawer({ onClose, returnFocusTo, locale, dict }: DrawerProps) {
             </ul>
           </nav>
 
-          <Button href="#newsletter" className="drawer__cta" onClick={onClose}>
+          <Button href={localeHref(locale, '/newsletter')} className="drawer__cta" onClick={onClose}>
             {dict.nav.subscribe}
           </Button>
 
@@ -431,7 +431,7 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
             {/* Subscribe scrolls to the newsletter band rather than routing:
                 every content page carries one, and there is no provider behind
                 the form yet to send anyone to. */}
-            <Button size="sm" href="#newsletter" className="site-header__subscribe">
+            <Button size="sm" href={localeHref(locale, '/newsletter')} className="site-header__subscribe">
               {dict.nav.subscribe}
             </Button>
             <LocaleSwitcher locale={locale} className="site-header__locale" />
