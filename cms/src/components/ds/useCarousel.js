@@ -81,6 +81,20 @@ export function useCarousel({ count, clones, autoAdvanceMs = 0 }) {
     setPos((p) => p + delta);
   }, [clones]);
 
+  /* A move goes at most one slide past the real band either way. The fold back
+     happens on `transitionend`, and a transform replaced mid-slide never ends,
+     so presses faster than the slide would otherwise walk the track through
+     the clones into empty space. One slide out is always backed by a full row
+     of clones; a press there waits for that slide to land and fold back. */
+  const move = React.useCallback(
+    (steps) =>
+      setPos((p) => {
+        const c = clonesRef.current;
+        return Math.max(c - 1, Math.min(c + count, p + steps));
+      }),
+    [count],
+  );
+
   /* Auto-advance. Suspended by an explicit pause, a caller-raised hold, a
      backgrounded tab, and reduced-motion preferences. The two pause sources
      stay separate so releasing a transient hold cannot silently resume
@@ -90,9 +104,9 @@ export function useCarousel({ count, clones, autoAdvanceMs = 0 }) {
 
   React.useEffect(() => {
     if (!autoplay) return undefined;
-    const id = setInterval(() => setPos((p) => p + 1), autoAdvanceMs);
+    const id = setInterval(() => move(1), autoAdvanceMs);
     return () => clearInterval(id);
-  }, [autoplay, autoAdvanceMs]);
+  }, [autoplay, autoAdvanceMs, move]);
 
   // Re-arm the transition one frame after a silent jump. Two frames, because a
   // single one can be batched into the same style flush and animate the jump.
@@ -124,9 +138,9 @@ export function useCarousel({ count, clones, autoAdvanceMs = 0 }) {
   // to the new position should land, not slide. Re-armed like any silent jump.
   const snap = React.useCallback(() => setAnimated(false), []);
 
-  const next = React.useCallback(() => setPos((p) => p + 1), []);
-  const prev = React.useCallback(() => setPos((p) => p - 1), []);
-  const advance = React.useCallback((steps) => setPos((p) => p + steps), []);
+  const next = React.useCallback(() => move(1), [move]);
+  const prev = React.useCallback(() => move(-1), [move]);
+  const advance = move;
 
   return {
     pos,

@@ -236,7 +236,16 @@ export function HeroCarousel({ items }: { items: CarouselItem[] }) {
         }}
       >
         <div
-          className={`carousel__track${dragging || !car.animated ? ' carousel__track--static' : ''}`}
+          className={[
+            'carousel__track',
+            (dragging || !car.animated) && 'carousel__track--static',
+            // The silent loop jump: the emphasis moves from a clone to its real
+            // twin in the same frame, so the cards' own grow/shrink must not
+            // animate either, or the big card visibly shrinks and regrows.
+            !car.animated && 'carousel__track--jump',
+          ]
+            .filter(Boolean)
+            .join(' ')}
           onTransitionEnd={car.onTransitionEnd}
           style={{ transform: `translate3d(${translateX}px,0,0)` }}
         >

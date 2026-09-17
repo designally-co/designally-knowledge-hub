@@ -49,6 +49,13 @@
   transition: none;
 }
 
+/* The loop jump itself. The emphasis passes from a clone to the real card in
+   one frame; with the cards' --emph transition still on, the real card would
+   start small and grow for 900ms — the glitch at every wrap. */
+.carousel__track--jump .carousel__card {
+  transition: none;
+}
+
 .carousel__card {
   --emph: 0;
   /* Height is the shared constant; width follows from the cover's own ratio. */
