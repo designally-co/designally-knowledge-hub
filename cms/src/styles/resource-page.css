@@ -4,8 +4,8 @@
    the artwork is the same folder the card uses (ResourceFigure) — arriving here
    is that card opening, not a different page design.
 
-   One grid holds the whole page: a sticky rail carrying the artwork and the
-   files, and a reading column beside it. It was three misaligned blocks before
+   One grid holds the whole page: a sticky rail carrying the artwork, and a
+   reading column beside it with the description and then the files. It was three misaligned blocks before
    — artwork left, title far right, prose back at the left gutter — which left
    an L-shaped hole down the middle of the page and pushed the download out of
    view exactly when someone was reading the description of it.
@@ -85,7 +85,7 @@
    files, and the terms they come under — one card rather than a panel with the
    licence floating below it. */
 .resource-dl {
-  margin-top: clamp(var(--space-4), 2vw, var(--space-6));
+  margin-top: clamp(var(--space-6), 4vw, var(--space-10));
   padding: var(--space-4);
   border-radius: var(--radius-card);
   background: var(--color-neutral-white);
@@ -255,8 +255,10 @@
 @media (min-width: 80em) {
   .resource-aside { grid-column: 1 / span 3; }
   .resource-main { grid-column: 5 / span 8; }
-  /* Six of the reading column's eight: columns 5-10. */
-  .resource-page__body { max-width: calc(6 * var(--column-width) + 5 * var(--grid-gap)); }
+  /* Six of the reading column's eight: columns 5-10, for the description and
+     the files under it alike. */
+  .resource-page__body,
+  .resource-main .resource-dl { max-width: calc(6 * var(--column-width) + 5 * var(--grid-gap)); }
 }
 
 .resource-page__label {

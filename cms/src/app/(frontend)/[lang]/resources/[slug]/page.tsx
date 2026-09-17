@@ -100,9 +100,7 @@ export default async function ResourcePage({ params }: { params: Promise<Params>
       />
     <div className="resource-page">
       <div className="shell resource-layout">
-        {/* The rail holds the artwork and the files. It is sticky, so the
-            download stays reachable while the description is read — the whole
-            reason someone opened this page should never scroll away. */}
+        {/* The rail holds the artwork, and stays in view beside the text. */}
         <aside className="resource-aside">
           <ResourceFigure
             className="resource-aside__art"
@@ -110,10 +108,33 @@ export default async function ResourcePage({ params }: { params: Promise<Params>
             color={resource.color}
             glyph={resource.glyph}
           />
+        </aside>
 
-          {/* One card holds the whole transaction: what you get, the files
-              themselves, and the terms. The facts used to sit outside it, which
-              left the licence describing a download it wasn't attached to. */}
+        <div className="resource-main">
+          {resource.category && (
+            <div className="resource-page__tags">
+              <Tag>{resource.category}</Tag>
+            </div>
+          )}
+          <h1 className="resource-page__title">{resource.title}</h1>
+          {resource.date && <p className="resource-page__date">{resource.date}</p>}
+
+          {resource.description && (
+            <section className="resource-page__body">
+              <h2 className="resource-page__label">{dict.resources.aboutThis}</h2>
+              {resource.description
+                .split(/\n{2,}/)
+                .map((para) => para.trim())
+                .filter(Boolean)
+                .map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+            </section>
+          )}
+
+          {/* The files follow the description: read what it is, then take it.
+              One card holds the whole transaction — the files and the terms —
+              so the licence describes the download it is attached to. */}
           {files.length > 0 ? (
             <div className="resource-dl">
               <div className="resource-dl__head">
@@ -130,7 +151,7 @@ export default async function ResourcePage({ params }: { params: Promise<Params>
                   <li key={f.url}>
                     {/* The row is the control, outlined rather than filled: it
                         has to read as pressable without stacking into a wall of
-                        black beside the artwork. */}
+                        black under the description. */}
                     <a
                       className="resource-dl__row"
                       href={f.url}
@@ -168,30 +189,6 @@ export default async function ResourcePage({ params }: { params: Promise<Params>
               <h2 className="resource-dl__title">{dict.resources.noFiles}</h2>
               <p className="resource-dl__note">{dict.resources.noFilesNote}</p>
             </div>
-          )}
-
-        </aside>
-
-        <div className="resource-main">
-          {resource.category && (
-            <div className="resource-page__tags">
-              <Tag>{resource.category}</Tag>
-            </div>
-          )}
-          <h1 className="resource-page__title">{resource.title}</h1>
-          {resource.date && <p className="resource-page__date">{resource.date}</p>}
-
-          {resource.description && (
-            <section className="resource-page__body">
-              <h2 className="resource-page__label">{dict.resources.aboutThis}</h2>
-              {resource.description
-                .split(/\n{2,}/)
-                .map((para) => para.trim())
-                .filter(Boolean)
-                .map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
-            </section>
           )}
         </div>
       </div>
