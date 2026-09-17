@@ -87,7 +87,7 @@ export default async function ResourcesPage({
       <ListingHero
         title={dict.resources.title}
         description={description}
-        icon={RESOURCES_CHROME.icon}
+        icon={RESOURCES_CHROME.heroIcon ?? RESOURCES_CHROME.icon}
         tint={RESOURCES_CHROME.tint}
       />
 

@@ -106,7 +106,7 @@ export default async function CategoryPage({
       <ListingHero
         title={categoryLabel(category, locale)}
         description={description}
-        icon={chrome.icon}
+        icon={chrome.heroIcon ?? chrome.icon}
         tint={chrome.tint}
       />
 

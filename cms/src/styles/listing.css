@@ -261,23 +261,57 @@
   margin: 0;
 }
 
+/* On the grid from tablet up: the intro holds columns 1-10 (48-64em), then
+   1-6, rather than a character count, so its right edge falls on a column
+   line. Both keep it to about three lines. */
+@media (min-width: 48em) and (max-width: 63.999em) {
+  .listing-hero:not(.listing-hero--inline) .listing-hero__desc {
+    max-width: calc(10 * var(--column-width) + 9 * var(--grid-gap));
+  }
+}
+
+@media (min-width: 64em) {
+  .listing-hero:not(.listing-hero--inline) .listing-hero__desc {
+    max-width: calc(6 * var(--column-width) + 5 * var(--grid-gap));
+  }
+}
+
 /* --- Page body -------------------------------------------------------- */
 .listing-body {
   width: 100%;
   max-width: var(--page-max);
   margin-inline: auto;
-  padding: clamp(var(--space-6), 4vw, var(--space-10)) var(--page-gutter) clamp(var(--space-16), 8vw, var(--space-24));
+  /* A full section step above the filters, so they read as their own row
+     rather than a strip pressed against the hero. */
+  padding: clamp(var(--space-10), 5vw, var(--space-16)) var(--page-gutter) clamp(var(--space-16), 8vw, var(--space-24));
 }
 
 /* --- Controls: filters + search --------------------------------------- */
-/* Two columns: the tag filters flow in a flexible first column, the search box
-   holds a fixed second column, so the search never wraps under the pills. */
+/* The filters flow in the first stretch of the 12-column grid and the search
+   box holds the last columns, so the search never wraps under the pills. The
+   search takes more columns as they narrow, to stay a usable width. One empty
+   column separates them, so the last pill never crowds the field:
+   48-64em filters 1-6 / search 8-12, 64-80em 1-7 / 9-12, from 80em 1-8 / 10-12.
+   Below 48em the two stack. */
 .listing-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(260px, 28vw, 360px);
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
   align-items: start;
-  gap: var(--space-4) var(--space-6);
-  margin-bottom: clamp(var(--space-6), 3vw, var(--space-8));
+  gap: var(--space-4) var(--grid-gap);
+  margin-bottom: clamp(var(--space-10), 5vw, var(--space-16));
+}
+
+.listing-controls > .listing-filters { grid-column: 1 / span 6; }
+.listing-controls > .listing-search { grid-column: 8 / span 5; }
+
+@media (min-width: 64em) {
+  .listing-controls > .listing-filters { grid-column: 1 / span 7; }
+  .listing-controls > .listing-search { grid-column: 9 / span 4; }
+}
+
+@media (min-width: 80em) {
+  .listing-controls > .listing-filters { grid-column: 1 / span 8; }
+  .listing-controls > .listing-search { grid-column: 10 / span 3; }
 }
 
 .listing-filters {
@@ -310,7 +344,8 @@
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-pill);
-  border: 1px solid var(--color-neutral-gray-200);
+  /* The same outline as a tag at rest: ink at 32%. */
+  border: 1px solid var(--color-neutral-black-32);
   background: transparent;
   width: 100%;
   min-width: 0;
@@ -571,6 +606,9 @@
   .listing-controls {
     grid-template-columns: 1fr;
   }
+
+  .listing-controls > .listing-filters,
+  .listing-controls > .listing-search { grid-column: auto; }
 }
 
 /* Anchor target for the header's Subscribe control. The header is sticky, so

@@ -91,7 +91,7 @@ export default async function TagPage({
 
   return (
     <div className="listing-page">
-      <ListingHero title={tagLabel(tag, locale)} icon={chrome.icon} tint={chrome.tint} />
+      <ListingHero title={tagLabel(tag, locale)} icon={chrome.heroIcon ?? chrome.icon} tint={chrome.tint} />
 
       <div className="listing-body">
         <ListingControls

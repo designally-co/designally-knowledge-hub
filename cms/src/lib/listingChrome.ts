@@ -14,6 +14,9 @@ export interface ListingChrome {
   strong: string
   /** Public path to the section icon, or null when the surface has none. */
   icon: string | null
+  /** The same icon on a white tile, for the listing hero: the pale tile the
+   *  homepage uses disappears into the hero's own tint. */
+  heroIcon?: string
 }
 
 // Chrome follows the public LABEL: Design = "Case Studies", Insights, Design with
@@ -23,16 +26,19 @@ export const CATEGORY_CHROME: Record<Category, ListingChrome> = {
     tint: 'var(--color-brand-light)',
     strong: 'var(--color-accent-orange)',
     icon: '/section-icons/case.svg',
+    heroIcon: '/section-icons/case-white.svg',
   },
   Insights: {
     tint: 'var(--color-category-blue-light)',
     strong: 'var(--color-category-blue-mid)',
     icon: '/section-icons/insights.svg',
+    heroIcon: '/section-icons/insights-white.svg',
   },
   'Design with AI': {
     tint: 'var(--color-category-green-light)',
     strong: 'var(--color-category-green-mid)',
     icon: '/section-icons/workflows.svg',
+    heroIcon: '/section-icons/workflows-white.svg',
   },
 }
 
@@ -40,6 +46,7 @@ export const RESOURCES_CHROME: ListingChrome = {
   tint: 'var(--color-category-purple-light)',
   strong: 'var(--color-category-purple-mid)',
   icon: '/section-icons/resources.svg',
+  heroIcon: '/section-icons/resources-white.svg',
 }
 
 /** Chrome for a tag page — inherits its parent category's tint, drops the icon. */
