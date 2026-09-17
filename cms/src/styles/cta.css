@@ -5,20 +5,20 @@
 .cta {
   --cta-bg: var(--color-neutral-gray-100);
   background: var(--cta-bg) url('/newsletter-waves.svg') no-repeat center / cover;
-  padding-block: clamp(44px, 7vw, 84px);
+  padding-block: clamp(var(--space-10), 7vw, var(--space-20));
 }
 
 .cta__inner {
   display: flex;
   flex-direction: column;
-  gap: clamp(32px, 5vw, 56px);
+  gap: clamp(var(--space-8), 5vw, var(--space-16));
 }
 
 @media (min-width: 64em) {
   .cta__inner {
     flex-direction: row;
     align-items: center;
-    gap: clamp(40px, 5vw, 80px);
+    gap: clamp(var(--space-10), 5vw, var(--space-20));
   }
   /* Both columns grow to fill the row evenly. */
   .cta__lead,
@@ -34,7 +34,7 @@
 .cta__lead {
   display: flex;
   align-items: center;
-  gap: clamp(20px, 3vw, 44px);
+  gap: clamp(var(--space-4), 3vw, var(--space-10));
   min-width: 0;
 }
 
@@ -52,7 +52,7 @@
   .cta__lead {
     flex-direction: column;
     align-items: flex-start;
-    gap: 20px;
+    gap: var(--space-4);
   }
 
   .cta__art {
@@ -70,7 +70,7 @@
   line-height: 1;
   text-transform: uppercase;
   color: var(--color-neutral-black);
-  margin: 0 0 clamp(14px, 2vw, 22px);
+  margin: 0 0 clamp(var(--space-3), 2vw, var(--space-6));
 }
 
 .cta__title {
@@ -92,18 +92,18 @@
   font: var(--type-heading-5);
   letter-spacing: var(--tracking-heading-5);
   color: var(--color-neutral-black);
-  margin: 0 0 clamp(20px, 2.6vw, 28px);
+  margin: 0 0 clamp(var(--space-4), 2.6vw, var(--space-6));
   text-wrap: pretty;
 }
 
 .cta__form {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   background: var(--color-neutral-white);
   border: 1px solid var(--color-neutral-black-12);
   border-radius: 12px;
-  padding: 6px 6px 6px 20px;
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
   box-shadow: 0 1px 2px var(--color-neutral-black-12);
 }
 
@@ -116,7 +116,7 @@
   font: var(--type-body-large);
   letter-spacing: var(--tracking-body-large);
   color: var(--color-neutral-black);
-  padding: 13px 0;
+  padding: var(--space-3) 0;
 }
 
 .cta__input::placeholder {
@@ -133,7 +133,7 @@
   line-height: 1;
   text-transform: uppercase;
   color: var(--color-neutral-black);
-  padding: 13px 16px;
+  padding: var(--space-3) var(--space-4);
   border-radius: 8px;
   transition: background-color 0.15s ease;
 }
@@ -152,7 +152,7 @@
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black-60);
-  margin: 12px 0 0;
+  margin: var(--space-3) 0 0;
 }
 
 /* ---- the sign-up's own answers ----------------------------------------- */

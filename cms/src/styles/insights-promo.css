@@ -4,7 +4,7 @@
   background: var(--color-neutral-dark);
   color: var(--color-neutral-white);
   overflow: hidden;
-  padding-block: clamp(56px, 9vw, 104px);
+  padding-block: clamp(var(--space-16), 9vw, var(--space-24));
 }
 
 .ivp__inner {
@@ -14,7 +14,7 @@
 /* --- Three-phone image --- */
 
 .ivp__stage {
-  margin: 0 auto clamp(40px, 5vw, 60px);
+  margin: 0 auto clamp(var(--space-10), 5vw, var(--space-16));
   width: 100%;
   max-width: 880px;
 }
@@ -28,7 +28,7 @@
 /* --- Copy --- */
 
 .ivp__kicker {
-  margin: 0 0 clamp(22px, 3vw, 30px);
+  margin: 0 0 clamp(var(--space-6), 3vw, var(--space-8));
   font: var(--type-tag);
   letter-spacing: var(--tracking-tag);
   line-height: 1;
@@ -47,7 +47,7 @@
 }
 
 .ivp__body {
-  margin: clamp(20px, 3vw, 28px) auto 0;
+  margin: clamp(var(--space-4), 3vw, var(--space-6)) auto 0;
   max-width: 36ch;
   font: var(--type-heading-5);
   letter-spacing: var(--tracking-heading-5);
@@ -59,15 +59,15 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 12px;
-  margin-top: clamp(24px, 4vw, 36px);
+  gap: var(--space-3);
+  margin-top: clamp(var(--space-6), 4vw, var(--space-8));
 }
 
 .ivp__btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 22px;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-6);
   border-radius: var(--radius-pill);
   background: var(--color-neutral-white);
   color: var(--color-neutral-black);
@@ -87,7 +87,7 @@
 }
 
 .ivp__freq {
-  margin: clamp(28px, 4vw, 40px) 0 0;
+  margin: clamp(var(--space-6), 4vw, var(--space-10)) 0 0;
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   line-height: 1;

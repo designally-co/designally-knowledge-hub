@@ -1,7 +1,7 @@
 .case-studies {
   --case-page-edge: var(--page-gutter);
   width: 100%;
-  padding-block: clamp(64px, 10vw, 120px);
+  padding-block: clamp(var(--space-16), 10vw, var(--space-24));
   padding-left: var(--case-page-edge);
   overflow: hidden;
   background: var(--color-brand-surface);
@@ -15,9 +15,9 @@
      and two 44px arrows come to within a few pixels of the available width,
      and any longer translation squeezes the title to two words a line. */
   flex-wrap: wrap;
-  gap: clamp(12px, 3vw, 24px);
+  gap: clamp(var(--space-3), 3vw, var(--space-6));
   padding-right: var(--case-page-edge);
-  margin-bottom: clamp(28px, 4vw, 48px);
+  margin-bottom: clamp(var(--space-6), 4vw, var(--space-10));
 }
 
 .case-studies__heading {
@@ -33,7 +33,7 @@
 
 .case-studies__controls {
   display: flex;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .case-studies__control:disabled {
@@ -65,16 +65,16 @@
 }
 
 /* The section only pads its left edge (the track bleeds right), so the row
-   restores the right one to sit on the same 10 content columns as every other
+   restores the right one to sit on the same content width as every other
    section. */
 .case-studies__banner-row {
-  margin-top: clamp(56px, 8vw, 96px);
+  margin-top: clamp(var(--space-16), 8vw, var(--space-24));
   margin-right: var(--case-page-edge);
 }
 
 /* Placement + colour only — shared look lives in promo-banner.css. The banner
-   holds the middle eight columns (page columns 3-10) from 48em up; phones give
-   it the full width. */
+   holds the middle eight of the twelve content columns from 48em up; phones
+   give it the full width. */
 .case-studies__banner {
   --promo-bg: var(--color-category-blue-light);
   grid-column: 1 / -1;
@@ -111,7 +111,7 @@
 
 @media (min-width: 48em) {
   .case-studies__banner {
-    grid-column: 2 / span 8;
+    grid-column: 3 / span 8;
   }
 
   .case-studies__banner .promo-banner__content {
@@ -132,9 +132,12 @@
   }
 }
 
+/* Desktop: each card is exactly three of the twelve grid columns, so four
+   fill the content width and line up with the grids below. The track runs on
+   into the right margin, where the next card shows. */
 @media (min-width: 64em) {
   .case-studies__track {
-    grid-auto-columns: calc((100% - 3 * var(--case-gap)) / 4.18);
+    grid-auto-columns: calc(3 * var(--column-width) + 2 * var(--grid-gap));
   }
 }
 

@@ -33,7 +33,7 @@
 .article__masthead {
   position: relative;
   isolation: isolate;
-  padding-top: clamp(40px, 7vw, 76px);
+  padding-top: clamp(var(--space-10), 7vw, var(--space-20));
   background: var(--masthead-band, var(--color-brand-light));
 }
 
@@ -58,7 +58,7 @@
 .article__back {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--space-2);
   background: none;
   border: none;
   cursor: pointer;
@@ -68,14 +68,14 @@
   color: var(--color-neutral-black-60);
   text-decoration: none;
   padding: 0;
-  margin-bottom: clamp(20px, 4vw, 28px);
+  margin-bottom: clamp(var(--space-4), 4vw, var(--space-6));
 }
 
 .article__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 20px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
 }
 
 .article__tag-link {
@@ -94,10 +94,7 @@
   }
 }
 
-/* Title styled to match Creative Boom's article title: medium (500) weight,
-   sans display face, 40/46 stepping up to 60/66 at >=48rem. (Their exact face is
-   Roobert/ABC Diatype — licensed — so this uses the Hub's sans; swap --font-sans
-   for the real face if it's added.) */
+/* The page title, in display-2 like every other page's. */
 .article__title {
   font: var(--type-display-2);
   letter-spacing: var(--tracking-display-2);
@@ -108,19 +105,13 @@
   -webkit-font-smoothing: antialiased;
 }
 
-@media (min-width: 48rem) {
-  .article__title {
-  }
-}
-
 /* Dek / subtitle — the one-sentence lede under the title. */
-/* Deck matched to Creative Boom's: medium (500), 24/30, sans, near-black, with
-   their 24px (space-y-6) gap under the title. */
+/* heading-4, a space-6 gap under the title. */
 .article__dek {
   font: var(--type-heading-4);
   letter-spacing: var(--tracking-heading-4);
   color: var(--color-neutral-black);
-  margin: 24px 0 0;
+  margin: var(--space-6) 0 0;
   max-width: 60ch;
   text-wrap: pretty;
   -webkit-font-smoothing: antialiased;
@@ -129,8 +120,8 @@
 .article__byline {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin: clamp(20px, 4vw, 26px) 0 0;
+  gap: var(--space-3);
+  margin: clamp(var(--space-4), 4vw, var(--space-6)) 0 0;
   flex-wrap: wrap;
 }
 
@@ -151,7 +142,7 @@
   max-width: var(--article-max);
   margin-inline: auto;
   padding-inline: var(--page-gutter);
-  margin-top: clamp(24px, 5vw, 36px);
+  margin-top: clamp(var(--space-6), 5vw, var(--space-8));
 }
 
 /* Frame = HALF the cover's height. Sized by padding-bottom (50% / r of its own
@@ -194,7 +185,7 @@
   margin-top: 0;
   padding-inline: var(--page-gutter);
   display: grid;
-  gap: clamp(28px, 4vw, 56px);
+  gap: clamp(var(--space-6), 4vw, var(--space-16));
   grid-template-columns: minmax(0, 1fr);
 }
 
@@ -260,7 +251,7 @@
   line-height: 1;
   text-transform: uppercase;
   color: var(--color-neutral-black-60);
-  margin: 0 0 14px;
+  margin: 0 0 var(--space-3);
 }
 
 .article-toc__list {
@@ -274,7 +265,7 @@
 
 .article-toc__link {
   display: block;
-  padding: 6px 0 6px 14px;
+  padding: var(--space-2) 0 var(--space-2) var(--space-3);
   margin-left: -1px;
   border-left: 2px solid transparent;
   font: var(--type-body);
@@ -285,7 +276,7 @@
 }
 
 .article-toc__item--h3 .article-toc__link {
-  padding-left: 28px;
+  padding-left: var(--space-6);
 }
 
 @media (hover: hover) {
@@ -316,7 +307,7 @@
   font: var(--type-body-large);
   letter-spacing: var(--tracking-body-large);
   color: var(--color-neutral-black-60);
-  margin: 0 0 24px;
+  margin: 0 0 var(--space-6);
   text-wrap: pretty;
 }
 
@@ -329,7 +320,7 @@
   font: var(--type-heading-5);
   letter-spacing: var(--tracking-heading-5);
   color: var(--color-neutral-black);
-  margin: clamp(36px, 6vw, 48px) 0 16px;
+  margin: clamp(var(--space-8), 6vw, var(--space-10)) 0 var(--space-4);
   text-wrap: balance;
 }
 
@@ -337,7 +328,7 @@
   font: var(--type-heading-5);
   letter-spacing: var(--tracking-heading-5);
   color: var(--color-neutral-black);
-  margin: clamp(28px, 4vw, 32px) 0 12px;
+  margin: clamp(var(--space-6), 4vw, var(--space-8)) 0 var(--space-3);
 }
 
 .article-body ul,
@@ -345,12 +336,12 @@
   font: var(--type-body-large);
   letter-spacing: var(--tracking-body-large);
   color: var(--color-neutral-black-60);
-  margin: 0 0 24px;
+  margin: 0 0 var(--space-6);
   padding-left: 1.4em;
 }
 
 .article-body li {
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
   text-wrap: pretty;
 }
 
@@ -380,8 +371,8 @@
 }
 
 .article-body blockquote {
-  margin: clamp(32px, 6vw, 40px) 0;
-  padding: clamp(24px, 4vw, 32px) 0;
+  margin: clamp(var(--space-8), 6vw, var(--space-10)) 0;
+  padding: clamp(var(--space-6), 4vw, var(--space-8)) 0;
   border-top: 1px solid var(--color-neutral-gray-200);
   border-bottom: 1px solid var(--color-neutral-gray-200);
   font: var(--type-display-2);
@@ -394,8 +385,8 @@
 /* --- Share row (end of article) ---------------------------------------- */
 
 .article-share {
-  margin-top: clamp(36px, 6vw, 48px);
-  padding-top: clamp(24px, 4vw, 32px);
+  margin-top: clamp(var(--space-8), 6vw, var(--space-10));
+  padding-top: clamp(var(--space-6), 4vw, var(--space-8));
   border-top: 1px solid var(--color-neutral-gray-200);
 }
 
@@ -405,13 +396,13 @@
   line-height: 1;
   text-transform: uppercase;
   color: var(--color-neutral-black-60);
-  margin: 0 0 16px;
+  margin: 0 0 var(--space-4);
 }
 
 .article-share__row {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 .article-share__btn {
@@ -472,15 +463,16 @@
 /* Full-bleed grey band, followed by the full-bleed CTA band below it. */
 .article__related {
   background: var(--color-neutral-gray-200);
-  margin-top: clamp(48px, 9vw, 72px);
-  padding-block: clamp(40px, 7vw, 72px);
+  margin-top: clamp(var(--space-10), 9vw, var(--space-16));
+  padding-block: clamp(var(--space-10), 7vw, var(--space-16));
 }
 
 .article__related-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(20px, 3vw, 32px);
-  margin-top: 24px;
+  row-gap: clamp(var(--space-4), 3vw, var(--space-8));
+  column-gap: var(--grid-gap);
+  margin-top: var(--space-6);
   /* Cards follow their cover's natural ratio, so heights vary — top-align them
      rather than stretching to the tallest in the row. */
   align-items: start;
@@ -509,8 +501,8 @@
    -------------------------------------------------------------------------- */
 
 .article-refs {
-  margin-top: clamp(40px, 7vw, 56px);
-  padding-top: clamp(24px, 4vw, 32px);
+  margin-top: clamp(var(--space-10), 7vw, var(--space-16));
+  padding-top: clamp(var(--space-6), 4vw, var(--space-8));
   border-top: 1px solid var(--color-neutral-gray-200);
 }
 
@@ -518,7 +510,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 /* The section's own voice: the display serif the rest of the page uses for
@@ -582,11 +574,11 @@
 
 .article-refs__list {
   list-style: none;
-  margin: 16px 0 0;
-  padding: 14px;
+  margin: var(--space-4) 0 0;
+  padding: var(--space-3);
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--space-2);
   /* The band. Paper is the page, so the recess is a step darker than paper
      rather than a new colour. */
   background-color: color-mix(in srgb, var(--color-neutral-black) 6%, var(--color-brand-surface));
@@ -596,8 +588,8 @@
 .article-refs__chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 14px 7px 8px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-2);
   border-radius: 999px;
   /* Outlined, like the filter chips: no fill, the label colour at half
      strength for the ring. */

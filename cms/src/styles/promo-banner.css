@@ -18,7 +18,7 @@
 #main {
   --promo-label-size: clamp(
     20px,
-    0.084 * (10 * (var(--grid-width) - 11 * var(--grid-gap)) / 12 + 168px),
+    0.084 * var(--content-width),
     34px
   );
 }
@@ -27,7 +27,7 @@
   #main {
     --promo-label-size: clamp(
       20px,
-      0.056 * (8 * (var(--grid-width) - 11 * var(--grid-gap)) / 12 + 72px),
+      0.056 * (8 * var(--column-width) + 7 * var(--grid-gap)),
       44px
     );
   }
@@ -38,9 +38,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: var(--space-6);
   min-height: clamp(112px, 14vw, 176px);
-  padding: clamp(24px, 4vw, 48px);
+  padding: clamp(var(--space-6), 4vw, var(--space-10));
   overflow: hidden;
   border-radius: 16px;
   background: var(--promo-bg, var(--color-category-blue-light));
@@ -93,7 +93,7 @@
   width: var(--touch-target);
   height: var(--touch-target);
   flex: none;
-  margin-top: clamp(16px, 2vw, 24px);
+  margin-top: clamp(var(--space-4), 2vw, var(--space-6));
   border: 1px solid currentColor;
   border-radius: var(--radius-pill);
   transition: transform 0.2s var(--ease-out-quart);
@@ -102,7 +102,7 @@
 /* The text CTA takes the arrow's place and spacing. Plain text: the banner is
    the button, so the line only underlines when the banner is hovered. */
 .promo-banner__cta {
-  margin-top: clamp(16px, 2vw, 24px);
+  margin-top: clamp(var(--space-4), 2vw, var(--space-6));
   font: var(--type-heading-5);
   letter-spacing: var(--tracking-heading-5);
   text-decoration: underline;
@@ -172,7 +172,7 @@
 .promo-banner--tile {
   container-type: inline-size;
   min-height: 0;
-  padding: clamp(16px, 1.4vw, 24px);
+  padding: clamp(var(--space-4), 1.4vw, var(--space-6));
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
@@ -199,7 +199,7 @@
 .promo-cell {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-4);
   min-width: 0;
 }
 
@@ -209,9 +209,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-4);
   min-height: var(--touch-target);
-  padding-block: 14px;
+  padding-block: var(--space-3);
   border-top: 1px solid var(--color-neutral-black);
   border-bottom: 1px solid var(--color-neutral-black);
   color: var(--color-neutral-black);

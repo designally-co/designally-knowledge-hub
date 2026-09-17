@@ -1,16 +1,18 @@
 /* Branding Explained — Spacing, radii, shadows, layout */
 :root {
-  /* Spacing scale (4px base) */
-  --sp-1: 4px;
-  --sp-2: 8px;
-  --sp-3: 12px;
-  --sp-4: 16px;
-  --sp-5: 24px;
-  --sp-6: 32px;
-  --sp-7: 48px;
-  --sp-8: 64px;
-  --sp-9: 96px;
-  --sp-10: 128px;
+  /* Spacing scale — the 8-point grid. Every margin, padding and gap on the
+     public site is one of these. The number is the multiple of 4px. */
+  --space-1: 4px;    /* micro: tag gaps, inline icon offsets */
+  --space-2: 8px;    /* tight: inside components, small gaps */
+  --space-3: 12px;   /* component padding, small content gaps */
+  --space-4: 16px;   /* element spacing, form field gaps */
+  --space-6: 24px;   /* grid gutters, content block gaps */
+  --space-8: 32px;   /* medium content gaps */
+  --space-10: 40px;  /* container side padding, section content gaps */
+  --space-16: 64px;  /* section title to content */
+  --space-20: 80px;  /* hero sections, top and bottom */
+  --space-24: 96px;  /* standard section, top and bottom */
+  --space-36: 144px; /* featured section, top and bottom */
 
   /* Radii */
   --radius-card: 16px;    /* resource + promo cards */
@@ -33,24 +35,28 @@
   --hover-media-dur: 640ms;
   --hover-state-dur: 240ms;
 
-  /* Layout */
-  /* The layout grid: 12 columns across the page, 24px between them, growing
-     with the screen up to --grid-max and centred beyond it. Content holds the
-     middle 10, so the side margin is one column plus one gap, plus whatever the
-     cap leaves either side. `cqi` is the page's own width (body is the `page`
-     container, see base.css), which unlike `vw` leaves out the scrollbar and
-     resolves to the same length on any element, however deeply nested. */
+  /* Layout — the 12-column grid.
+     A 1536px container, centred, with 40px padding each side: a 1456px content
+     area of 12 columns and 24px gutters (a column is ~99px at full width).
+     `cqi` is the page's own width (body is the `page` container, see base.css),
+     which unlike `vw` leaves out the scrollbar and resolves to the same length
+     on any element, however deeply nested. */
+  --container-max: 1536px;
+  --container-padding: var(--space-10);
   --grid-columns: 12;
-  --content-columns: 10;
-  --grid-gap: 24px; /* @kind spacing */
-  --grid-max: 1920px; /* content tops out at ~1596px */
-  --grid-width: min(100cqi, var(--grid-max));
+  --content-columns: 12;
+  --grid-gap: var(--space-6); /* @kind spacing */
+  --container-width: min(100cqi, var(--container-max));
+  --content-width: calc(var(--container-width) - 2 * var(--container-padding));
+  --column-width: calc((var(--content-width) - 11 * var(--grid-gap)) / 12);
+  /* The distance from the page edge to the content: the container's padding,
+     plus whatever the cap leaves either side on a wide screen. */
   --page-gutter: calc(
-    (100cqi - var(--grid-width)) / 2 + (var(--grid-width) - 11 * var(--grid-gap)) / 12 + var(--grid-gap)
+    (100cqi - var(--container-width)) / 2 + var(--container-padding)
   ); /* @kind spacing */
   /* The cap lives in the gutter above, so containers need no max-width. */
   --page-max: none;
-  --section-gap: clamp(56px, 8vw, 128px);
+  --section-gap: clamp(var(--space-16), 8vw, var(--space-36));
 
   /* Minimum comfortable touch target (WCAG 2.5.8). Applied under
      `pointer: coarse` so pointer devices keep the tighter desktop rhythm. */

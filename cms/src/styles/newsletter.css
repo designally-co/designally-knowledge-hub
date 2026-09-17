@@ -12,7 +12,7 @@
 .news-hero {
   position: relative;
   overflow: hidden;
-  padding-block: clamp(44px, 7vw, 96px);
+  padding-block: clamp(var(--space-10), 7vw, var(--space-24));
   background-color: var(--color-neutral-gray-200);
 }
 
@@ -31,7 +31,7 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: clamp(28px, 4vw, 48px);
+  gap: clamp(var(--space-6), 4vw, var(--space-10));
 }
 
 /* The drawing sits beside the offer at width and above it below that — the
@@ -59,7 +59,7 @@
 }
 
 .news-hero__title {
-  margin: 0 0 clamp(14px, 1.8vw, 20px);
+  margin: 0 0 clamp(var(--space-3), 1.8vw, var(--space-4));
   text-wrap: balance;
   font: var(--type-display-2);
   letter-spacing: var(--tracking-display-2);
@@ -76,7 +76,7 @@
    the two share one edge and both come out at two lines. `balance` splits them
    evenly rather than leaving four words alone on the second. */
 .news-hero__lede {
-  margin: 0 0 clamp(22px, 3vw, 32px);
+  margin: 0 0 clamp(var(--space-6), 3vw, var(--space-8));
   font: var(--type-body-large-emphasis);
   letter-spacing: var(--tracking-body-large-emphasis);
   color: var(--color-neutral-black);
@@ -100,16 +100,16 @@
 /* ---- why --------------------------------------------------------------- */
 
 .news-why {
-  padding-block: clamp(56px, 9vw, 120px);
+  padding-block: clamp(var(--space-16), 9vw, var(--space-24));
   /* More room under the fan: the lean and drop of the outer cards eat into the
      bottom edge, so the same padding as the top read as a tight fit. */
-  padding-block-end: clamp(88px, 13vw, 184px);
+  padding-block-end: clamp(var(--space-20), 13vw, var(--space-36));
   background-color: var(--color-neutral-white);
 }
 
 .news-why__inner {
   display: grid;
-  gap: clamp(20px, 3vw, 36px);
+  gap: clamp(var(--space-4), 3vw, var(--space-8));
 }
 
 /* THE LABEL KEEPS THE LEFT AND THE STATEMENT TAKES THE RIGHT — the same
@@ -147,7 +147,7 @@
   display: flex;
   flex-wrap: nowrap;
   align-items: start;
-  margin: clamp(32px, 5vw, 56px) 0 0;
+  margin: clamp(var(--space-8), 5vw, var(--space-16)) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -159,8 +159,8 @@
 }
 
 .news-card {
-  --pad: clamp(18px, 2.2vw, 30px);
-  --overlap: clamp(20px, 3vw, 40px);
+  --pad: clamp(var(--space-4), 2.2vw, var(--space-8));
+  --overlap: clamp(var(--space-4), 3vw, var(--space-10));
 
   position: relative;
   z-index: var(--z);
@@ -208,15 +208,15 @@
 .news-card__index {
   display: flex;
   align-items: baseline;
-  gap: 8px;
-  margin: 0 0 clamp(14px, 1.8vw, 20px);
+  gap: var(--space-2);
+  margin: 0 0 clamp(var(--space-3), 1.8vw, var(--space-4));
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black-60);
 }
 
 .news-card__problem {
-  margin: 0 0 clamp(48px, 6vw, 88px);
+  margin: 0 0 clamp(var(--space-10), 6vw, var(--space-20));
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black-60);
@@ -225,7 +225,7 @@
 /* The turn: the problem is set as text and the answer is set as a heading,
    which is the whole shape of the card. */
 .news-card__title {
-  margin: auto 0 12px;
+  margin: auto 0 var(--space-3);
   font: var(--type-heading-3);
   letter-spacing: var(--tracking-heading-3);
   color: var(--color-neutral-black);
@@ -258,6 +258,6 @@
 
   .news-card + .news-card {
     margin-inline-start: 0;
-    margin-block-start: 12px;
+    margin-block-start: var(--space-3);
   }
 }

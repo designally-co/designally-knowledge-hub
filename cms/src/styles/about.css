@@ -20,7 +20,7 @@
    band it measured 3.9 and on the newsletter's #E4E4E4 it fell to 3.54 —
    under on both, and the darker grey is what made it obvious. */
 .about-eyebrow {
-  margin: 0 0 clamp(16px, 2.4vw, 28px);
+  margin: 0 0 clamp(var(--space-4), 2.4vw, var(--space-6));
   font: var(--type-tag);
   letter-spacing: var(--tracking-tag);
   line-height: 1;
@@ -44,7 +44,7 @@
 .about-hero {
   position: relative;
   overflow: hidden;
-  padding-block: clamp(48px, 8vw, 104px) clamp(56px, 9vw, 120px);
+  padding-block: clamp(var(--space-10), 8vw, var(--space-24)) clamp(var(--space-16), 9vw, var(--space-24));
   background-color: var(--color-neutral-gray-200);
   background-color: color-mix(in srgb, var(--color-neutral-gray-200) 42%, var(--color-brand-surface));
 }
@@ -65,7 +65,7 @@
 }
 
 .about-hero__title {
-  margin: 0 0 clamp(16px, 2vw, 24px);
+  margin: 0 0 clamp(var(--space-4), 2vw, var(--space-6));
   font: var(--type-display-2);
   letter-spacing: var(--tracking-display-2);
   color: var(--color-neutral-black);
@@ -89,8 +89,8 @@
    a stack. Below the fold-out width the label simply sits above what it names. */
 .about-why {
   display: grid;
-  gap: clamp(20px, 4vw, 48px);
-  margin-block-start: clamp(48px, 8vw, 96px);
+  gap: clamp(var(--space-4), 4vw, var(--space-10));
+  margin-block-start: clamp(var(--space-10), 8vw, var(--space-24));
 }
 
 @media (min-width: 900px) {
@@ -125,7 +125,7 @@
 .about-why__figure {
   position: relative;
   aspect-ratio: 16 / 9;
-  margin: 0 0 clamp(24px, 4vw, 40px);
+  margin: 0 0 clamp(var(--space-6), 4vw, var(--space-10));
   overflow: hidden;
   border: 1px solid var(--color-neutral-gray-200);
   border-radius: var(--radius-hero);
@@ -176,8 +176,8 @@
    of it. The rule closes it and opens them — one line, doing the job the white
    space alone could not at this size. */
 .about-why__statement {
-  margin: 0 0 clamp(24px, 4vw, 40px);
-  padding-block-end: clamp(24px, 4vw, 40px);
+  margin: 0 0 clamp(var(--space-6), 4vw, var(--space-10));
+  padding-block-end: clamp(var(--space-6), 4vw, var(--space-10));
   border-block-end: 1px solid var(--color-neutral-gray-200);
   font: var(--type-heading-1);
   letter-spacing: var(--tracking-heading-1);
@@ -189,7 +189,7 @@
    is a spread while two columns of 20 is a fragment. */
 .about-why__body {
   display: grid;
-  gap: clamp(16px, 2.4vw, 32px);
+  gap: clamp(var(--space-4), 2.4vw, var(--space-8));
 }
 
 @media (min-width: 720px) {
@@ -208,14 +208,14 @@
 /* ---- the four surfaces ------------------------------------------------- */
 
 .about-find {
-  padding-block: clamp(64px, 10vw, 132px);
+  padding-block: clamp(var(--space-16), 10vw, var(--space-36));
   background-color: var(--color-brand-dark);
   color: var(--color-neutral-white);
   text-align: center;
 }
 
 .about-find__heading {
-  margin-block-end: clamp(12px, 1.6vw, 18px);
+  margin-block-end: clamp(var(--space-3), 1.6vw, var(--space-4));
 }
 
 .about-find__lede {
@@ -237,7 +237,7 @@
 .about-cards {
   display: flex;
   justify-content: center;
-  margin: clamp(40px, 6vw, 72px) 0 0;
+  margin: clamp(var(--space-10), 6vw, var(--space-16)) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -261,7 +261,7 @@
    where three of the four were half-covered. 16 is enough to read as a stack
    and shallow enough to leave all four marks whole. */
 .about-cards__item + .about-cards__item {
-  margin-inline-start: clamp(-16px, -1.2vw, -10px);
+  margin-inline-start: clamp(calc(var(--space-4) * -1), -1.2vw, calc(var(--space-2) * -1));
 }
 
 /* Straightens and lifts clear under the pointer, and comes to the front while
@@ -283,7 +283,7 @@
   flex-direction: column;
   justify-content: space-between;
   aspect-ratio: 3 / 4;
-  padding: clamp(12px, 1.4vw, 18px);
+  padding: clamp(var(--space-3), 1.4vw, var(--space-4));
   overflow: hidden;
   border-radius: var(--radius-card);
   /* EACH SECTION'S STRONG COLOUR (`listingChrome`'s `strong`): orange and the
@@ -388,7 +388,7 @@
   .about-cards {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: var(--space-3);
   }
 
   .about-cards__item {
@@ -412,13 +412,13 @@
 /* ---- editorial principles ---------------------------------------------- */
 
 .about-principles {
-  padding-block: clamp(64px, 10vw, 132px);
+  padding-block: clamp(var(--space-16), 10vw, var(--space-36));
   background-color: var(--color-neutral-white);
 }
 
 .about-principles__inner {
   display: grid;
-  gap: clamp(32px, 5vw, 72px);
+  gap: clamp(var(--space-8), 5vw, var(--space-16));
 }
 
 @media (min-width: 900px) {
@@ -448,8 +448,8 @@
 
 .about-principle {
   display: grid;
-  gap: 6px 24px;
-  padding-block: clamp(18px, 2.4vw, 26px);
+  gap: var(--space-2) var(--space-6);
+  padding-block: clamp(var(--space-4), 2.4vw, var(--space-6));
   border-block-start: 1px solid var(--color-neutral-gray-200);
   counter-increment: principle;
 }
@@ -497,14 +497,14 @@
 /* The accent band, which is the one place on this page the brand speaks in its
    own voice rather than about the work. */
 .about-studio {
-  padding-block: clamp(56px, 9vw, 116px);
+  padding-block: clamp(var(--space-16), 9vw, var(--space-24));
   background-color: var(--color-accent-orange);
   color: var(--color-neutral-white);
 }
 
 .about-studio__inner {
   display: grid;
-  gap: clamp(24px, 4vw, 56px);
+  gap: clamp(var(--space-6), 4vw, var(--space-16));
 }
 
 @media (min-width: 900px) {
@@ -525,7 +525,7 @@
 
 .about-studio__body p {
   max-width: 48ch;
-  margin: 0 0 clamp(20px, 2.6vw, 28px);
+  margin: 0 0 clamp(var(--space-4), 2.6vw, var(--space-6));
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-white);
@@ -537,7 +537,7 @@
 .about-studio__link {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   font: var(--type-overline);
   letter-spacing: var(--tracking-overline);
   color: var(--color-neutral-white);

@@ -15,7 +15,7 @@
   position: relative;
   overflow: hidden;
   background-color: var(--color-brand-surface);
-  padding-block: clamp(56px, 9vw, 120px) clamp(40px, 6vw, 72px);
+  padding-block: clamp(var(--space-16), 9vw, var(--space-24)) clamp(var(--space-10), 6vw, var(--space-16));
 }
 
 /* The watermark the hero, the article header and the promo banners carry. One
@@ -38,7 +38,7 @@
    the failure the subject of the page; the sentence under it is the subject.
    So it takes the same uppercase mark the eyebrows wear everywhere else. */
 .notfound__code {
-  margin: 0 0 clamp(12px, 1.6vw, 18px);
+  margin: 0 0 clamp(var(--space-3), 1.6vw, var(--space-4));
   font: var(--type-tag);
   letter-spacing: var(--tracking-tag);
   line-height: 1;
@@ -47,7 +47,7 @@
 }
 
 .notfound__title {
-  margin: 0 0 clamp(12px, 1.6vw, 20px);
+  margin: 0 0 clamp(var(--space-3), 1.6vw, var(--space-4));
   font: var(--type-display-2);
   letter-spacing: var(--tracking-display-2);
   color: var(--color-neutral-black);
@@ -55,7 +55,7 @@
 }
 
 .notfound__lede {
-  margin: 0 0 clamp(24px, 3.2vw, 36px);
+  margin: 0 0 clamp(var(--space-6), 3.2vw, var(--space-8));
   max-inline-size: 34rem;
   font: var(--type-body-large);
   letter-spacing: var(--tracking-body-large);
@@ -65,17 +65,17 @@
 .notfound__ways {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--space-3);
 }
 
 /* ---- what is still here ------------------------------------------------ */
 
 .notfound__recent {
-  padding-block: clamp(40px, 6vw, 72px);
+  padding-block: clamp(var(--space-10), 6vw, var(--space-16));
 }
 
 .notfound__recent-title {
-  margin: 0 0 clamp(20px, 2.6vw, 32px);
+  margin: 0 0 clamp(var(--space-4), 2.6vw, var(--space-8));
   font: var(--type-heading-5);
   letter-spacing: var(--tracking-heading-5);
   color: var(--color-neutral-black);
@@ -86,7 +86,7 @@
 .notfound__grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(16px, 2vw, 24px);
+  gap: clamp(var(--space-4), 2vw, var(--space-6));
 }
 
 @media (max-width: 60rem) {
@@ -105,7 +105,7 @@
    between what a visitor saw and a line in the logs. Quiet, because it is for
    the report rather than the reader. */
 .notfound__digest {
-  margin: clamp(20px, 2.6vw, 28px) 0 0;
+  margin: clamp(var(--space-4), 2.6vw, var(--space-6)) 0 0;
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black-60);

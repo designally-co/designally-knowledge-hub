@@ -1,7 +1,7 @@
 /* --- Workflows — Design with AI: featured story + divided list + banner --- */
 
 .workflows {
-  padding-block: clamp(64px, 10vw, 120px);
+  padding-block: clamp(var(--space-16), 10vw, var(--space-24));
   /* Transparent — sits on the shared .warm-band gradient (see topics.css). */
 }
 
@@ -16,7 +16,7 @@
   display: flex;
   align-items: center;
   gap: 0.32em;
-  margin: 0 0 clamp(28px, 4vw, 48px);
+  margin: 0 0 clamp(var(--space-6), 4vw, var(--space-10));
   color: var(--color-neutral-black);
   font: var(--type-display-2);
   letter-spacing: var(--tracking-display-2);
@@ -25,7 +25,7 @@
 .workflows__layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(32px, 4vw, 56px) var(--grid-gap);
+  gap: clamp(var(--space-8), 4vw, var(--space-16)) var(--grid-gap);
 }
 
 /* Shared card body (tags → title → date) for feature and rows. */
@@ -38,12 +38,12 @@
 .workflows__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 14px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
 .workflows__date {
-  margin-top: 12px;
+  margin-top: var(--space-3);
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black-60);
@@ -61,7 +61,7 @@
   display: block;
   position: relative;
   width: 100%;
-  margin-bottom: clamp(18px, 2vw, 26px);
+  margin-bottom: clamp(var(--space-4), 2vw, var(--space-6));
   aspect-ratio: var(--card-ratio, 4 / 3);
   overflow: hidden;
   background-color: var(--card-tint, var(--color-neutral-gray-400));
@@ -106,9 +106,9 @@
 .workflows__row-link {
   display: grid;
   grid-template-columns: clamp(116px, 15vw, 168px) minmax(0, 1fr);
-  gap: clamp(16px, 2vw, 28px);
+  gap: clamp(var(--space-4), 2vw, var(--space-6));
   align-items: start;
-  padding-block: clamp(20px, 2.4vw, 30px);
+  padding-block: clamp(var(--space-4), 2.4vw, var(--space-8));
   text-decoration: none;
 }
 /* First row starts flush with the featured cover on the same top plane. */
@@ -141,7 +141,7 @@
    bottom-left; the text + button stack at the top-right. */
 .workflows__banner {
   --promo-bg: var(--color-category-green-mid);
-  margin-top: clamp(24px, 3vw, 36px);
+  margin-top: clamp(var(--space-6), 3vw, var(--space-8));
   align-items: flex-start;
   justify-content: flex-end;
 }

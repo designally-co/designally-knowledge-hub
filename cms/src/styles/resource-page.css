@@ -20,9 +20,9 @@
 }
 
 .resource-layout {
-  padding-block: clamp(28px, 4.5vw, 64px) clamp(40px, 6vw, 80px);
+  padding-block: clamp(var(--space-6), 4.5vw, var(--space-16)) clamp(var(--space-10), 6vw, var(--space-20));
   display: grid;
-  gap: clamp(28px, 4vw, 64px);
+  gap: clamp(var(--space-6), 4vw, var(--space-16));
   align-items: start;
 }
 
@@ -54,8 +54,8 @@
 .resource-page__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: clamp(12px, 2vw, 18px);
+  gap: var(--space-2);
+  margin-bottom: clamp(var(--space-3), 2vw, var(--space-4));
 }
 
 .resource-page__title {
@@ -70,7 +70,7 @@
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: color-mix(in srgb, var(--color-neutral-black) 68%, transparent);
-  margin: clamp(10px, 1.5vw, 14px) 0 0;
+  margin: clamp(var(--space-2), 1.5vw, var(--space-3)) 0 0;
 }
 
 /* --- Download card ------------------------------------------------------
@@ -78,8 +78,8 @@
    files, and the terms they come under — one card rather than a panel with the
    licence floating below it. */
 .resource-dl {
-  margin-top: clamp(16px, 2vw, 22px);
-  padding: clamp(15px, 2vw, 18px);
+  margin-top: clamp(var(--space-4), 2vw, var(--space-6));
+  padding: var(--space-4);
   border-radius: var(--radius-card);
   background: var(--color-neutral-white);
   box-shadow: var(--shadow-card);
@@ -89,8 +89,8 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
 .resource-dl__title {
@@ -113,7 +113,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 /* Outlined, not filled. An outline reads as pressable on its own, and several
@@ -122,8 +122,8 @@
 .resource-dl__row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 9px 10px 9px 9px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-2);
   border: 1px solid var(--color-neutral-gray-200);
   border-radius: var(--radius-pill);
   text-decoration: none;
@@ -199,9 +199,9 @@
 .resource-dl__facts {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 18px;
-  margin: 14px 0 0;
-  padding-top: 12px;
+  gap: var(--space-1) var(--space-4);
+  margin: var(--space-3) 0 0;
+  padding-top: var(--space-3);
   border-top: 1px solid var(--color-neutral-gray-200);
 }
 
@@ -231,12 +231,12 @@
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black-60);
-  margin: 6px 0 0;
+  margin: var(--space-2) 0 0;
 }
 
 /* --- Prose ------------------------------------------------------------- */
 .resource-page__body {
-  margin-top: clamp(28px, 4vw, 44px);
+  margin-top: clamp(var(--space-6), 4vw, var(--space-10));
   max-width: 64ch;
 }
 
@@ -246,7 +246,7 @@
   line-height: 1;
   text-transform: uppercase;
   color: var(--color-neutral-black-60);
-  margin: 0 0 clamp(12px, 1.6vw, 16px);
+  margin: 0 0 clamp(var(--space-3), 1.6vw, var(--space-4));
 }
 
 .resource-page__body p {
@@ -262,12 +262,12 @@
   font: var(--type-heading-5);
   letter-spacing: var(--tracking-heading-5);
   color: var(--color-neutral-black);
-  margin: 0 0 clamp(16px, 2.5vw, 24px);
+  margin: 0 0 clamp(var(--space-4), 2.5vw, var(--space-6));
 }
 
 /* Related sits full width below the grid, with a rule to close the reading
    column off rather than letting the two run together. */
 .resource-page__more {
-  padding-block: clamp(40px, 6vw, 72px) clamp(56px, 8vw, 96px);
+  padding-block: clamp(var(--space-10), 6vw, var(--space-16)) clamp(var(--space-16), 8vw, var(--space-24));
   border-top: 1px solid var(--color-neutral-gray-200);
 }

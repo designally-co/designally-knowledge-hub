@@ -8,13 +8,13 @@
 /* ---- the message ------------------------------------------------------- */
 
 .contact-write {
-  padding-block: clamp(56px, 9vw, 112px);
+  padding-block: clamp(var(--space-16), 9vw, var(--space-24));
   background-color: var(--color-neutral-white);
 }
 
 .contact-write__inner {
   display: grid;
-  gap: clamp(40px, 6vw, 80px);
+  gap: clamp(var(--space-10), 6vw, var(--space-20));
 }
 
 /* The note is the wider half: it holds four fields and a button, and the column
@@ -28,7 +28,7 @@
 
 .contact-write__title {
   max-width: 16ch;
-  margin: 0 0 clamp(14px, 1.8vw, 20px);
+  margin: 0 0 clamp(var(--space-3), 1.8vw, var(--space-4));
   font: var(--type-heading-1);
   letter-spacing: var(--tracking-heading-1);
   color: var(--color-neutral-black);
@@ -46,8 +46,8 @@
 /* BEHIND ITS OWN RULE, because it is a warning and not the next sentence of the
    paragraph above it. The line is what stops it being read as one. */
 .contact-write__caution {
-  margin: clamp(24px, 3vw, 34px) 0 0;
-  padding-block-start: clamp(20px, 2.4vw, 28px);
+  margin: clamp(var(--space-6), 3vw, var(--space-8)) 0 0;
+  padding-block-start: clamp(var(--space-4), 2.4vw, var(--space-6));
   border-block-start: 1px solid var(--color-neutral-gray-200);
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
@@ -55,7 +55,7 @@
 }
 
 .contact-write__social-label {
-  margin: clamp(24px, 3vw, 34px) 0 12px;
+  margin: clamp(var(--space-6), 3vw, var(--space-8)) 0 var(--space-3);
   font: var(--type-tag);
   letter-spacing: var(--tracking-tag);
   line-height: 1;
@@ -64,7 +64,7 @@
 }
 
 .contact-social {
-  gap: 10px;
+  gap: var(--space-2);
 }
 
 /* ---- the note ---------------------------------------------------------- */
@@ -76,7 +76,7 @@
    it. */
 .contact-note {
   position: relative;
-  padding: clamp(24px, 3.4vw, 44px);
+  padding: clamp(var(--space-6), 3.4vw, var(--space-10));
   border-radius: 4px;
   background-color: var(--color-brand-light);
   box-shadow: 14px 16px 0 -2px var(--color-neutral-black-60);
@@ -99,14 +99,14 @@
 }
 
 .contact-note__title {
-  margin: 0 0 10px;
+  margin: 0 0 var(--space-2);
   font: var(--type-heading-2);
   letter-spacing: var(--tracking-heading-2);
   color: var(--color-neutral-black);
 }
 
 .contact-note__lede {
-  margin: 0 0 clamp(22px, 2.8vw, 32px);
+  margin: 0 0 clamp(var(--space-6), 2.8vw, var(--space-8));
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black-60);
@@ -119,12 +119,12 @@
    the field, and it darkens when the field has the caret. */
 .contact-note__form {
   display: grid;
-  gap: clamp(16px, 2vw, 22px);
+  gap: clamp(var(--space-4), 2vw, var(--space-6));
 }
 
 .contact-field-row {
   display: grid;
-  gap: clamp(16px, 2vw, 22px);
+  gap: clamp(var(--space-4), 2vw, var(--space-6));
 }
 
 @media (min-width: 560px) {
@@ -135,7 +135,7 @@
 
 .contact-field {
   display: grid;
-  gap: 6px;
+  gap: var(--space-2);
   min-width: 0;
 }
 
@@ -147,7 +147,7 @@
 
 .contact-field__input {
   width: 100%;
-  padding: 8px 0;
+  padding: var(--space-2) 0;
   border: 0;
   border-block-end: 1px solid var(--color-neutral-black-32);
   border-radius: 0;
@@ -171,7 +171,7 @@
    a borderless control, which would trace a rectangle nothing else here has. */
 .contact-field__input:focus-visible {
   border-block-end-width: 2px;
-  padding-block-end: 7px;
+  padding-block-end: var(--space-2);
 }
 
 .contact-field__input--area {
@@ -189,7 +189,7 @@
 
 .contact-field__select select {
   appearance: none;
-  padding-inline-end: 28px;
+  padding-inline-end: var(--space-6);
   cursor: pointer;
 }
 
@@ -206,7 +206,7 @@
    boundary this note sits below. */
 .contact-note__help {
   margin: 0;
-  padding-block-start: clamp(10px, 1.4vw, 14px);
+  padding-block-start: clamp(var(--space-2), 1.4vw, var(--space-3));
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black-60);
@@ -219,7 +219,7 @@
   flex-wrap: wrap;
   align-items: end;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .contact-note__consent {
@@ -237,7 +237,7 @@
 .contact-note__send {
   flex: none;
   min-height: 46px;
-  padding: 0 24px;
+  padding: 0 var(--space-6);
   border: 0;
   border-radius: var(--radius-pill);
   background-color: var(--color-neutral-black);
@@ -280,13 +280,13 @@
    sits on — the page read as paper, white, paper. A neutral grey separates the
    half that is about writing to us from the half that is about where we are. */
 .contact-where {
-  padding-block: clamp(56px, 9vw, 112px);
+  padding-block: clamp(var(--space-16), 9vw, var(--space-24));
   background-color: var(--color-neutral-gray-100);
 }
 
 .contact-where__inner {
   display: grid;
-  gap: clamp(32px, 5vw, 72px);
+  gap: clamp(var(--space-8), 5vw, var(--space-16));
 }
 
 @media (min-width: 900px) {
@@ -313,8 +313,8 @@
 
 .contact-row {
   display: grid;
-  gap: 6px 24px;
-  padding-block: clamp(16px, 2.2vw, 24px);
+  gap: var(--space-2) var(--space-6);
+  padding-block: clamp(var(--space-4), 2.2vw, var(--space-6));
   border-block-start: 1px solid var(--color-neutral-gray-200);
 }
 
@@ -332,7 +332,7 @@
 .contact-row__label {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   font: var(--type-tag);
   letter-spacing: var(--tracking-tag);
   line-height: 1;
@@ -413,8 +413,8 @@
   left: 50%;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px 20px;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-pill);
   background-color: var(--color-neutral-black);
   font: var(--type-body-large-emphasis);

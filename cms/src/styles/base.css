@@ -85,7 +85,7 @@ a { color: var(--color-neutral-black); }
   top: 0;
   z-index: var(--z-skip-link);
   transform: translateY(-150%);
-  padding: 12px 20px;
+  padding: var(--space-3) var(--space-4);
   background: var(--color-neutral-black);
   color: var(--color-brand-surface);
   font: var(--type-body-large-emphasis);
@@ -116,8 +116,7 @@ body {
   container: page / inline-size;
 }
 
-/* The content area's own grid: the 10 middle columns of the page grid, so its
-   columns line up with the page's exactly. */
+/* The content area's own grid: the 12 columns of the page grid. */
 .content-grid {
   display: grid;
   grid-template-columns: repeat(var(--content-columns), minmax(0, 1fr));
@@ -135,10 +134,10 @@ body {
 /* Full-bleed colour bands. Vertical rhythm scales with the viewport so
    mobile isn't padded like a desktop. */
 .band {
-  padding-block: clamp(48px, 9vw, 88px);
+  padding-block: clamp(var(--space-10), 9vw, var(--space-20));
 }
 
-.band--tight { padding-block: clamp(40px, 7vw, 72px); }
+.band--tight { padding-block: clamp(var(--space-10), 7vw, var(--space-16)); }
 
 .visually-hidden {
   position: absolute;

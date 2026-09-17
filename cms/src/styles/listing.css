@@ -3,8 +3,8 @@
 .card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: clamp(24px, 3vw, 40px);
-  margin-top: clamp(24px, 4vw, 36px);
+  gap: clamp(var(--space-6), 3vw, var(--space-10));
+  margin-top: clamp(var(--space-6), 4vw, var(--space-8));
 }
 
 /* --- Homepage category sections ---------------------------------------- */
@@ -19,10 +19,11 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: clamp(28px, 6vw, 56px);
-  padding-block: clamp(48px, 8vw, 96px);
-  /* On the same 10 content columns as every section below it. */
-  padding-inline: var(--page-gutter);
+  gap: clamp(var(--space-6), 6vw, var(--space-16));
+  padding-block: clamp(var(--space-10), 8vw, var(--space-24));
+  /* Edge to edge: this band ignores the container cap and keeps only the
+     container's 40px padding, so the headline can run large on one line. */
+  padding-inline: var(--container-padding);
 }
 
 .home-topics__intro,
@@ -30,12 +31,8 @@
   min-width: 0;
 }
 
-/* Sized in vw so the sentence fills the band edge to edge. It used to carry
-   `white-space: nowrap`, which meant that whenever the string did not fit —
-   every phone width, and any locale whose translation runs longer — the H1
-   was silently cut off by the page's `overflow-x: clip` rather than wrapping.
-   The floor also stops it collapsing to 22px on a phone, which left the page's
-   main heading smaller than the card titles under it. */
+/* The page's H1, in display-1, always on one line from 48em. From 80em it
+   shares the row with the pills, half each, sized to fit its half (below). */
 .home-topics__heading {
   max-width: none;
   margin: 0;
@@ -50,7 +47,7 @@
   align-content: flex-start;
   align-items: flex-start;
   flex-wrap: wrap;
-  gap: 12px 10px;
+  gap: var(--space-3) var(--space-2);
 }
 
 /* This topic cluster is a calm index, not the scattered sticker cloud used
@@ -79,34 +76,40 @@
   }
 }
 
-/* Desktop: the headline takes content columns 1-5 and the pills 6-10, the
-   grid gap between them. The headline is sized off its own five columns (cqi of
-   the intro) rather than the viewport, so it keeps to that box on a screen
-   wider than the grid's cap. */
-@media (min-width: 64em) {
+/* Stacked (tablet to small laptop), the headline has the full width at its
+   full display-1 size and holds one line; the pills sit under it. */
+@media (min-width: 48em) and (max-width: 79.999em) {
+  .home-topics__heading { white-space: nowrap; }
+}
+
+/* From 80em: two exact halves of the band, headline and pills, not tied to the
+   column grid. Narrower than that, a one-line headline in half the width would
+   drop below display-1's 40px floor, so the row stacks instead. The headline's
+   half keeps a gutter on its trailing side so the words never touch a pill. */
+@media (min-width: 80em) {
   .home-topics {
     display: grid;
-    grid-template-columns: repeat(var(--content-columns), minmax(0, 1fr));
-    column-gap: var(--grid-gap);
-    align-items: end;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0;
+    align-items: center;
   }
 
   .home-topics__intro {
-    grid-column: 1 / span 5;
+    padding-inline-end: var(--space-6);
     container-type: inline-size;
   }
 
-  .home-topics__list {
-    grid-column: 6 / span 5;
-  }
-
+  /* ONE LINE, SIZED TO ITS HALF. At display-1's 80px the sentence is 13.56
+     times its font size wide, so 7.3cqi of the half fills it with a hair to
+     spare; 80px stays the ceiling. Everything but the size is display-1. */
   .home-topics__heading {
-    font-size: 7cqi;
+    font-size: min(7.3cqi, 80px);
+    white-space: nowrap;
   }
 }
 
 .home-section {
-  padding-block: clamp(32px, 6vw, 64px);
+  padding-block: clamp(var(--space-8), 6vw, var(--space-16));
 }
 
 .home-section + .home-section {
@@ -116,7 +119,7 @@
 /* --- Tag listing page -------------------------------------------------- */
 
 .listing {
-  padding-block: clamp(28px, 5vw, 48px) clamp(64px, 10vw, 96px);
+  padding-block: clamp(var(--space-6), 5vw, var(--space-10)) clamp(var(--space-16), 10vw, var(--space-24));
 }
 
 .listing__back {
@@ -126,7 +129,7 @@
   line-height: 1;
   color: var(--color-neutral-black-60);
   text-decoration: none;
-  margin-bottom: clamp(20px, 4vw, 28px);
+  margin-bottom: clamp(var(--space-4), 4vw, var(--space-6));
   transition:
     color var(--hover-state-dur) var(--ease-out-quart),
     transform var(--hover-state-dur) var(--ease-out-quart);
@@ -147,7 +150,7 @@
   line-height: 1;
   text-transform: uppercase;
   color: var(--color-neutral-black-60);
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-2);
 }
 
 .listing__title {
@@ -162,14 +165,14 @@
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black-60);
-  margin: 12px 0 0;
+  margin: var(--space-3) 0 0;
 }
 
 .listing__empty {
   font: var(--type-body-large);
   letter-spacing: var(--tracking-body-large);
   color: var(--color-neutral-black-60);
-  margin-top: clamp(32px, 6vw, 48px);
+  margin-top: clamp(var(--space-8), 6vw, var(--space-10));
 }
 
 /* ======================================================================
@@ -185,7 +188,7 @@
   isolation: isolate;
   overflow: hidden;
   background: var(--band, var(--color-brand-surface));
-  padding-block: clamp(44px, 7vw, 96px);
+  padding-block: clamp(var(--space-10), 7vw, var(--space-24));
 }
 
 /* Faint wave texture, echoing the homepage hero. Soft-light keeps it a tonal
@@ -233,7 +236,7 @@
    deliberate two-to-three-line block, and `balance` evens the ragged edge. */
 .listing-hero__desc {
   max-width: 46ch;
-  margin: clamp(16px, 2.2vw, 24px) 0 0;
+  margin: clamp(var(--space-4), 2.2vw, var(--space-6)) 0 0;
   color: color-mix(in srgb, var(--color-neutral-black) 88%, transparent);
   font: var(--type-heading-4);
   letter-spacing: var(--tracking-heading-4);
@@ -248,7 +251,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 4px 0.6em;
+  gap: var(--space-1) 0.6em;
 }
 
 .listing-hero--inline .listing-hero__desc {
@@ -261,7 +264,7 @@
   width: 100%;
   max-width: var(--page-max);
   margin-inline: auto;
-  padding: clamp(28px, 4vw, 48px) var(--page-gutter) clamp(56px, 8vw, 96px);
+  padding: clamp(var(--space-6), 4vw, var(--space-10)) var(--page-gutter) clamp(var(--space-16), 8vw, var(--space-24));
 }
 
 /* --- Controls: filters + search --------------------------------------- */
@@ -271,14 +274,14 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(260px, 28vw, 360px);
   align-items: start;
-  gap: 16px 24px;
-  margin-bottom: clamp(24px, 3vw, 36px);
+  gap: var(--space-4) var(--space-6);
+  margin-bottom: clamp(var(--space-6), 3vw, var(--space-8));
 }
 
 .listing-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--space-2);
   min-width: 0;
 }
 
@@ -287,11 +290,11 @@
    over the 24px minimum target, and the row it saves goes back to the grid. */
 @media (max-width: 35.999em) {
   .listing-filters {
-    gap: 6px;
+    gap: var(--space-2);
   }
 
   .listing-filters .filter-chip {
-    padding: 5px 12px;
+    padding: var(--space-1) var(--space-3);
     min-height: 34px;
   }
 }
@@ -302,8 +305,8 @@
 .listing-search {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-pill);
   border: 1px solid var(--color-neutral-gray-200);
   background: transparent;
@@ -363,7 +366,7 @@
 /* --- Count line ------------------------------------------------------- */
 /* Sits below the pager as a quiet footer count. */
 .listing-count {
-  margin: clamp(24px, 4vw, 56px) 0 0;
+  margin: clamp(var(--space-6), 4vw, var(--space-16)) 0 0;
   font: var(--type-heading-4);
   letter-spacing: var(--tracking-heading-4);
   color: var(--color-neutral-black-60);
@@ -378,7 +381,9 @@
 .listing-grid:not(.listing-grid--uniform) {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(14px, 1.4vw, 24px);
+  /* Columns are the page grid's gutter, so four cards are three columns each. */
+  row-gap: clamp(var(--space-3), 1.4vw, var(--space-6));
+  column-gap: var(--grid-gap);
 }
 
 @media (min-width: 36em) {
@@ -403,10 +408,13 @@
    artwork and a title need. Above 36em there is space for the track to decide
    for itself again. */
 .listing-grid--uniform {
-  --uniform-gap: clamp(14px, 2.4vw, 36px);
+  /* The page grid's gutter between columns, so four tiles are three columns
+     each; rows keep their own, looser rhythm. */
+  --uniform-gap: var(--grid-gap);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--uniform-gap);
+  row-gap: clamp(var(--space-3), 2.4vw, var(--space-8));
+  column-gap: var(--uniform-gap);
 }
 
 /* Tiles are at least 232px, and never more than four to a row: the minimum
@@ -436,12 +444,12 @@
   }
 
   .listing-grid--uniform .resource-card {
-    gap: 12px;
+    gap: var(--space-3);
   }
 }
 
 .listing-empty {
-  margin: clamp(28px, 5vw, 44px) 0;
+  margin: clamp(var(--space-6), 5vw, var(--space-10)) 0;
   font: var(--type-body-large);
   letter-spacing: var(--tracking-body-large);
   color: var(--color-neutral-black-60);
@@ -457,12 +465,12 @@
    grows to the 44px touch target. */
 .listing-pager {
   --pager-size: 40px;
-  --pager-gap: 4px;
+  --pager-gap: var(--space-1);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--pager-gap);
-  margin-top: clamp(40px, 6vw, 72px);
+  margin-top: clamp(var(--space-10), 6vw, var(--space-16));
 }
 
 .listing-pager__list {
@@ -537,13 +545,13 @@
 }
 
 @media (min-width: 36em) {
-  .listing-pager { --pager-gap: 6px; }
+  .listing-pager { --pager-gap: var(--space-2); }
   .listing-pager__item--tablet { display: block; }
   .listing-pager__control--edge { display: inline-flex; }
 }
 
 @media (min-width: 64em) {
-  .listing-pager { --pager-gap: 11px; }
+  .listing-pager { --pager-gap: var(--space-3); }
   .listing-pager__item--desktop { display: block; }
 }
 
@@ -553,7 +561,7 @@
 
 /* Compact (search): a tighter row. */
 .listing-pager.listing-pager--compact {
-  --pager-gap: 6px;
+  --pager-gap: var(--space-2);
 }
 
 /* --- Small screens ---------------------------------------------------- */

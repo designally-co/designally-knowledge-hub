@@ -25,9 +25,9 @@
     box-shadow 0.18s var(--ease-out-quart);
 }
 
-.btn--sm { padding: 8px 16px; gap: 6px; font: var(--type-overline); letter-spacing: var(--tracking-overline); line-height: 1; }
-.btn--md { padding: 12px 24px; gap: 8px; font: var(--type-body-large-emphasis); letter-spacing: var(--tracking-body-large-emphasis); line-height: 1; }
-.btn--lg { padding: 16px 30px; gap: 9px; font: var(--type-body-large-emphasis); letter-spacing: var(--tracking-body-large-emphasis); line-height: 1; }
+.btn--sm { padding: var(--space-2) var(--space-4); gap: var(--space-2); font: var(--type-overline); letter-spacing: var(--tracking-overline); line-height: 1; }
+.btn--md { padding: var(--space-3) var(--space-6); gap: var(--space-2); font: var(--type-body-large-emphasis); letter-spacing: var(--tracking-body-large-emphasis); line-height: 1; }
+.btn--lg { padding: var(--space-4) var(--space-8); gap: var(--space-2); font: var(--type-body-large-emphasis); letter-spacing: var(--tracking-body-large-emphasis); line-height: 1; }
 
 .btn--primary {
   background: var(--color-neutral-black);
@@ -89,7 +89,7 @@
 
 /* Touch: guarantee the 44px target without inflating the pointer layout. */
 @media (pointer: coarse) {
-  .btn--sm { min-height: var(--touch-target); padding-block: 10px; }
+  .btn--sm { min-height: var(--touch-target); padding-block: var(--space-2); }
   .btn--md,
   .btn--lg { min-height: var(--touch-target); }
 }
@@ -164,7 +164,7 @@
 .tag {
   display: inline-flex;
   align-items: center;
-  padding: 5px 11px;
+  padding: var(--space-1) var(--space-3);
   font: var(--type-tag);
   letter-spacing: var(--tracking-tag);
   line-height: 1;
@@ -202,13 +202,13 @@
 
 /* Sizes step down on small screens so a topic cloud stays a cloud and not
    a stack of full-width slabs. */
-.topic-pill--sm { padding: 8px 16px; font: var(--type-overline); letter-spacing: var(--tracking-overline); line-height: 1; }
-.topic-pill--md { padding: 10px 18px; font: var(--type-body-large-emphasis); letter-spacing: var(--tracking-body-large-emphasis); line-height: 1; }
-.topic-pill--lg { padding: 12px 22px; font: var(--type-heading-5); letter-spacing: var(--tracking-heading-5); line-height: 1; }
+.topic-pill--sm { padding: var(--space-2) var(--space-4); font: var(--type-overline); letter-spacing: var(--tracking-overline); line-height: 1; }
+.topic-pill--md { padding: var(--space-2) var(--space-4); font: var(--type-body-large-emphasis); letter-spacing: var(--tracking-body-large-emphasis); line-height: 1; }
+.topic-pill--lg { padding: var(--space-3) var(--space-6); font: var(--type-heading-5); letter-spacing: var(--tracking-heading-5); line-height: 1; }
 
 @media (min-width: 36em) {
-  .topic-pill--md { padding: 11px 22px; font: var(--type-heading-5); letter-spacing: var(--tracking-heading-5); line-height: 1; }
-  .topic-pill--lg { padding: 14px 28px; font: var(--type-heading-5); letter-spacing: var(--tracking-heading-5); line-height: 1; }
+  .topic-pill--md { padding: var(--space-3) var(--space-6); font: var(--type-heading-5); letter-spacing: var(--tracking-heading-5); line-height: 1; }
+  .topic-pill--lg { padding: var(--space-3) var(--space-6); font: var(--type-heading-5); letter-spacing: var(--tracking-heading-5); line-height: 1; }
 }
 
 .topic-pill--active {
@@ -238,7 +238,7 @@
 .article-card {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--space-3);
   text-decoration: none;
 }
 
@@ -269,7 +269,7 @@
 .article-card__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-2);
 }
 
 .article-card__title {
@@ -343,16 +343,16 @@
 
 .article-card__plate {
   background: var(--color-brand-surface);
-  padding: 20px 22px 22px;
+  padding: var(--space-4) var(--space-6) var(--space-6);
   border-bottom-right-radius: var(--radius-card);
   border-bottom-left-radius: var(--radius-card);
 }
 
-.article-card__plate .article-card__tags { margin-bottom: 14px; }
+.article-card__plate .article-card__tags { margin-bottom: var(--space-3); }
 
 .article-card__plate .article-card__title { font: var(--type-heading-2); letter-spacing: var(--tracking-heading-2); }
 
-.article-card__plate .article-card__date { margin-top: 14px; }
+.article-card__plate .article-card__date { margin-top: var(--space-3); }
 
 @media (min-width: 48em) {
   .article-card--overlay .article-card__media {
@@ -364,7 +364,7 @@
     left: 0;
     bottom: 0;
     max-width: min(520px, 62%);
-    padding: 24px 28px 26px;
+    padding: var(--space-6) var(--space-6) var(--space-6);
     border-radius: 0;
     border-top-right-radius: var(--radius-card);
   }
@@ -375,7 +375,7 @@
 .resource-card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-4);
   text-decoration: none;
 }
 
@@ -396,13 +396,13 @@
    while the cover inside it looked shrunken. `min()` holds the old value at the
    sizes where it was already correct and only steps down on small tiles. */
 .resource-card__doc {
-  --doc-inset: min(6cqw, 16px);
+  --doc-inset: min(6cqw, var(--space-4));
   position: absolute;
   inset: var(--doc-inset) var(--doc-inset) auto var(--doc-inset);
   aspect-ratio: 1 / 1;
   border-radius: min(7cqw, 18px);
   background: var(--doc-color, var(--color-accent-orange));
-  padding: clamp(18px, 6.5%, 26px) clamp(16px, 6%, 24px) 0;
+  padding: clamp(var(--space-4), 6.5%, var(--space-6)) clamp(var(--space-4), 6%, var(--space-6)) 0;
 }
 
 .resource-card__doc-title {
@@ -446,7 +446,7 @@
   aspect-ratio: 1 / 1;
   border-radius: 18px;
   background: var(--doc-color, var(--color-accent-orange));
-  padding: clamp(18px, 6.5%, 26px) clamp(16px, 6%, 24px) 0;
+  padding: clamp(var(--space-4), 6.5%, var(--space-6)) clamp(var(--space-4), 6%, var(--space-6)) 0;
   filter: blur(38px) saturate(0.8) brightness(1.08);
 }
 
@@ -474,7 +474,7 @@
   pointer-events: none;
 }
 
-.resource-card__tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.resource-card__tags { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 
 .resource-card__title {
   font: var(--type-heading-5);
@@ -557,14 +557,14 @@
 .tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 8px;
+  gap: var(--space-1) var(--space-2);
 }
 
 .tab {
   display: inline-flex;
   align-items: center;
   min-height: var(--touch-target);
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   border: 0;
   border-bottom: 2px solid transparent;
   background: none;
@@ -596,7 +596,7 @@
 .filter-chip {
   display: inline-flex;
   align-items: center;
-  padding: 8px 15px;
+  padding: var(--space-2) var(--space-4);
   border-radius: var(--radius-pill);
   border: 1px solid var(--border-outline);
   font: var(--type-overline);
@@ -633,7 +633,7 @@
 
 .social-links {
   display: flex;
-  gap: 10px;
+  gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -711,7 +711,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 20px;
+  gap: var(--space-4);
   /* The action wraps beneath the title on narrow screens instead of
      squeezing a long serif heading into two words per line. */
   flex-wrap: wrap;
@@ -736,8 +736,8 @@
 .section-heading__link {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 18px;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
   border: 1px solid var(--border-outline);
   border-radius: var(--radius-pill);
   font: var(--type-body-large-emphasis);

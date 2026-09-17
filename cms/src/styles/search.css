@@ -37,7 +37,7 @@
 }
 
 .search-overlay__inner {
-  padding: clamp(28px, 5vw, 56px) var(--page-gutter) clamp(56px, 8vw, 96px);
+  padding: clamp(var(--space-6), 5vw, var(--space-16)) var(--page-gutter) clamp(var(--space-16), 8vw, var(--space-24));
 }
 
 /* Close sits in the margin at the top right: a disc and its word under it. */
@@ -49,7 +49,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   padding: 0;
   border: 0;
   background: none;
@@ -96,9 +96,9 @@
 .search-field {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-top: 32px;
-  padding: 0 0 10px 8px;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+  padding: 0 0 var(--space-2) var(--space-2);
   border-bottom: 1px solid color-mix(in srgb, var(--color-neutral-black) 22%, transparent);
   transition: border-color var(--hover-state-dur) var(--ease-out-quart);
 }
@@ -150,29 +150,29 @@
 /* --- Idle: recent + popular beside trending ------------------------------ */
 .search-idle {
   display: grid;
-  gap: clamp(36px, 5vw, 48px);
-  margin-top: clamp(32px, 4vw, 48px);
+  gap: clamp(var(--space-8), 5vw, var(--space-10));
+  margin-top: clamp(var(--space-8), 4vw, var(--space-10));
 }
 
 .search-idle__lists {
   display: grid;
   align-content: start;
-  gap: clamp(28px, 3.4vw, 40px);
+  gap: clamp(var(--space-6), 3.4vw, var(--space-10));
 }
 
-/* Desktop: the lists on content columns 1-5, trending on 6-10. */
+/* Desktop: the lists on content columns 1-6, trending on 7-12. */
 @media (min-width: 64em) {
   .search-idle {
     grid-template-columns: repeat(var(--content-columns), minmax(0, 1fr));
     column-gap: var(--grid-gap);
   }
 
-  .search-idle__lists { grid-column: 1 / span 5; }
-  .search-idle__trending { grid-column: 6 / span 5; }
+  .search-idle__lists { grid-column: 1 / span 6; }
+  .search-idle__trending { grid-column: 7 / span 6; }
 }
 
 .search-block__title {
-  margin: 0 0 16px;
+  margin: 0 0 var(--space-4);
   color: var(--color-neutral-black);
   font: var(--type-heading-4);
   letter-spacing: var(--tracking-heading-4);
@@ -181,7 +181,7 @@
 .search-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--space-2);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -190,9 +190,9 @@
 .search-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   min-height: 34px;
-  padding: 0 14px;
+  padding: 0 var(--space-3);
   border: 1px solid color-mix(in srgb, var(--color-neutral-black) 30%, transparent);
   border-radius: var(--radius-pill);
   background: transparent;
@@ -212,7 +212,7 @@
 
 /* A recent search is two controls in one pill: the term, and its remove. */
 .search-chip--recent {
-  padding-right: 6px;
+  padding-right: var(--space-2);
   cursor: default;
 }
 
@@ -256,7 +256,7 @@
 .search-trending {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(28px, 3vw, 40px) var(--grid-gap);
+  gap: clamp(var(--space-6), 3vw, var(--space-10)) var(--grid-gap);
   align-items: start;
 }
 
@@ -266,15 +266,15 @@
 
 /* --- Results: tabs, count, grid ------------------------------------------ */
 .search-tabs {
-  margin-top: clamp(28px, 3.4vw, 44px);
+  margin-top: clamp(var(--space-6), 3.4vw, var(--space-10));
 }
 
 .search-summary {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 12px 20px;
-  margin: clamp(20px, 2.6vw, 32px) 0 clamp(24px, 3vw, 36px);
+  gap: var(--space-3) var(--space-4);
+  margin: clamp(var(--space-4), 2.6vw, var(--space-8)) 0 clamp(var(--space-6), 3vw, var(--space-8));
 }
 
 .search-summary__count {
@@ -287,9 +287,9 @@
 .search-summary__all {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   min-height: var(--touch-target);
-  padding: 0 20px;
+  padding: 0 var(--space-4);
   border: 1px solid color-mix(in srgb, var(--color-neutral-black) 22%, transparent);
   border-radius: var(--radius-pill);
   background: var(--color-neutral-white);
@@ -311,7 +311,7 @@
 .search-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(32px, 3.4vw, 44px) var(--grid-gap);
+  gap: clamp(var(--space-8), 3.4vw, var(--space-10)) var(--grid-gap);
   align-items: start;
   margin: 0;
   padding: 0;
@@ -331,7 +331,7 @@
 }
 
 .search-note {
-  margin: clamp(28px, 3.4vw, 44px) 0 0;
+  margin: clamp(var(--space-6), 3.4vw, var(--space-10)) 0 0;
   color: var(--color-neutral-black-60);
   font: var(--type-body-large);
   letter-spacing: var(--tracking-body-large);
@@ -345,14 +345,14 @@
 }
 
 .search-page__count {
-  margin: clamp(20px, 2.6vw, 32px) 0 clamp(24px, 3vw, 36px);
+  margin: clamp(var(--space-4), 2.6vw, var(--space-8)) 0 clamp(var(--space-6), 3vw, var(--space-8));
 }
 
 /* Under the compact pager, at its scale rather than the category pages' 28px.
    Two classes: listing.css loads after this file and sets .listing-count's
    font at one. */
 .listing-count.search-page__showing {
-  margin-top: clamp(16px, 2vw, 24px);
+  margin-top: clamp(var(--space-4), 2vw, var(--space-6));
   font: var(--type-body-large-emphasis);
   letter-spacing: var(--tracking-body-large-emphasis);
 }

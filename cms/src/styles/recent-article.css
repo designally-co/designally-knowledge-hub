@@ -6,7 +6,7 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding-block: clamp(56px, 9vw, 112px);
+  padding-block: clamp(var(--space-16), 9vw, var(--space-24));
   background: var(--color-brand-light);
 }
 
@@ -72,7 +72,7 @@
   width: min(74%, 520px);
   max-height: 50cqh;
   margin: 0;
-  padding: clamp(12px, 4cqh, 40px);
+  padding: clamp(var(--space-3), 4cqh, var(--space-10));
   overflow: hidden;
   background: var(--color-neutral-white);
 }
@@ -80,10 +80,10 @@
 .recent-article__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--space-2);
   /* One row only — a second row of pills would eat the panel's height budget. */
   max-height: 24px;
-  margin-bottom: clamp(6px, 2.4cqh, 18px);
+  margin-bottom: clamp(var(--space-2), 2.4cqh, var(--space-4));
   overflow: hidden;
 }
 
@@ -103,7 +103,7 @@
 }
 
 .recent-article__date {
-  margin: clamp(6px, 2.4cqh, 18px) 0 0;
+  margin: clamp(var(--space-2), 2.4cqh, var(--space-4)) 0 0;
   color: var(--color-neutral-black-60);
   font: var(--type-body-small);
   letter-spacing: var(--tracking-body-small);
@@ -115,7 +115,7 @@
   justify-content: center;
   width: clamp(32px, 5.8cqh, var(--touch-target));
   height: clamp(32px, 5.8cqh, var(--touch-target));
-  margin-top: clamp(8px, 2.6cqh, 20px);
+  margin-top: clamp(var(--space-2), 2.6cqh, var(--space-4));
   border: 1px solid var(--border-outline);
   border-radius: var(--radius-pill);
   color: var(--color-neutral-black);
@@ -153,13 +153,13 @@
   .recent-article__panel {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 12px;
-    padding: clamp(10px, 3.4cqh, 24px);
+    column-gap: var(--space-3);
+    padding: clamp(var(--space-2), 3.4cqh, var(--space-6));
   }
 
   .recent-article__tags {
     grid-column: 1 / -1;
-    margin-bottom: 6px;
+    margin-bottom: var(--space-2);
   }
 
   .recent-article__title {
@@ -172,7 +172,7 @@
 
   .recent-article__date {
     align-self: end;
-    margin-top: 6px;
+    margin-top: var(--space-2);
     font: var(--type-body-small);
     letter-spacing: var(--tracking-body-small);
   }
@@ -180,7 +180,7 @@
   .recent-article__link {
     width: var(--touch-target);
     height: var(--touch-target);
-    margin: 6px 0 0;
+    margin: var(--space-2) 0 0;
   }
 }
 

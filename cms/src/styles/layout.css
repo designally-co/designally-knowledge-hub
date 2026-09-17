@@ -14,12 +14,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-4);
   height: 64px;
 }
 
 @media (min-width: 48em) {
-  .site-header__bar { height: 82px; gap: 24px; }
+  .site-header__bar { height: 82px; gap: var(--space-6); }
 }
 
 /* The brand, in the header and at the head of the drawer. It holds the mark
@@ -76,7 +76,7 @@
   .site-nav {
     display: flex;
     align-items: center;
-    gap: 30px;
+    gap: var(--space-8);
     min-width: 0;
   }
 }
@@ -90,7 +90,7 @@
   text-decoration: none;
   white-space: nowrap;
   /* Room for the underline to sit clear of the descenders. */
-  padding-block: 6px;
+  padding-block: var(--space-2);
 }
 
 /* The Information item is a disclosure rather than a destination, so it is a
@@ -155,8 +155,8 @@
 .nav-panel__inner {
   display: grid;
   grid-template-columns: minmax(180px, 22%) 1fr;
-  gap: clamp(24px, 4vw, 64px);
-  padding-block: clamp(28px, 3vw, 44px);
+  gap: clamp(var(--space-6), 4vw, var(--space-16));
+  padding-block: clamp(var(--space-6), 3vw, var(--space-10));
 }
 
 /* Left rail: the category stated once, in the display serif, with the escape
@@ -165,9 +165,9 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
+  gap: var(--space-3);
   border-right: 1px solid var(--color-neutral-gray-200);
-  padding-right: clamp(16px, 2vw, 32px);
+  padding-right: clamp(var(--space-4), 2vw, var(--space-8));
 }
 
 /* Chrome-scale serif: echoes the editorial display voice without competing with
@@ -183,7 +183,7 @@
 .nav-panel__all {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black-60);
@@ -202,7 +202,7 @@
    last column (10 -> 3/3/3/1). */
 .nav-panel__tags {
   columns: 3;
-  column-gap: clamp(16px, 2.5vw, 40px);
+  column-gap: clamp(var(--space-4), 2.5vw, var(--space-10));
   list-style: none;
   margin: 0;
   padding: 0;
@@ -224,7 +224,7 @@
 .nav-panel__tag {
   display: flex;
   align-items: center;
-  padding-block: 7px;
+  padding-block: var(--space-2);
   font: var(--type-body);
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black);
@@ -271,12 +271,12 @@
 .site-header__actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
   flex: none;
 }
 
 @media (min-width: 48em) {
-  .site-header__actions { gap: 16px; }
+  .site-header__actions { gap: var(--space-4); }
 }
 
 /* Language switcher — the current locale and a caret, opening a small menu.
@@ -291,8 +291,8 @@
 .locale-switcher__trigger {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 6px 8px;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-2);
   border: 0;
   border-radius: 8px;
   background: transparent;
@@ -333,7 +333,7 @@
   right: 0;
   top: calc(100% + 8px);
   min-width: 136px;
-  padding: 6px;
+  padding: var(--space-2);
   border-radius: 14px;
   background: var(--color-neutral-white);
   border: 1px solid var(--color-neutral-gray-200);
@@ -370,8 +370,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 8px 10px;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-2);
   border-radius: 9px;
   font: var(--type-label);
   letter-spacing: var(--tracking-label);
@@ -453,8 +453,8 @@
   overscroll-behavior: contain;
   background: var(--color-brand-surface);
   border-bottom: 1px solid var(--color-neutral-gray-200);
-  padding: calc(env(safe-area-inset-top) + 16px) var(--page-gutter)
-    calc(env(safe-area-inset-bottom) + 32px);
+  padding: calc(env(safe-area-inset-top) + var(--space-4)) var(--page-gutter)
+    calc(env(safe-area-inset-bottom) + var(--space-8));
   animation: drawer-in 0.28s var(--ease-out-quart) both;
 }
 
@@ -479,13 +479,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 28px;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
 }
 
 .drawer__list {
   list-style: none;
-  margin: 0 0 32px;
+  margin: 0 0 var(--space-8);
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -493,7 +493,7 @@
 
 .drawer__link {
   display: block;
-  padding: 14px 0;
+  padding: var(--space-3) 0;
   font: var(--type-heading-5);
   letter-spacing: var(--tracking-heading-5);
   color: var(--color-neutral-black);
@@ -507,24 +507,24 @@
 @media (hover: hover) {
   .drawer__link:hover {
     opacity: 1;
-    padding-left: 6px;
+    padding-left: var(--space-2);
   }
 }
 
-.drawer__cta { width: 100%; margin-top: 24px; }
+.drawer__cta { width: 100%; margin-top: var(--space-6); }
 
 /* Pulled left by the trigger's own padding, so the label lines up with the nav
    above it. Which edge its menu hangs from is measured, not declared. */
 .drawer__locale {
-  margin-top: 24px;
-  margin-left: -8px;
+  margin-top: var(--space-6);
+  margin-left: calc(var(--space-2) * -1);
 }
 
 /* Last thing in the drawer, and its menu opens down into space the drawer does
    not otherwise have — so the drawer grows while the menu is open rather than
    clipping it against its own scroll edge. */
 .drawer:has(.drawer__locale .locale-switcher__menu) {
-  padding-bottom: calc(env(safe-area-inset-bottom) + 128px);
+  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-36));
 }
 
 /* --- Footer ------------------------------------------------------------ */
@@ -571,8 +571,8 @@
 
 .site-footer__inner {
   position: relative;
-  padding-top: clamp(72px, 12vw, 150px);
-  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  padding-top: clamp(var(--space-16), 12vw, var(--space-36));
+  padding-bottom: calc(var(--space-10) + env(safe-area-inset-bottom));
 }
 
 /* Serif tagline over the mural. */
@@ -583,17 +583,17 @@
   text-align: center;
   text-wrap: balance;
   max-width: 20ch;
-  margin: 0 auto clamp(40px, 7vw, 72px);
+  margin: 0 auto clamp(var(--space-10), 7vw, var(--space-16));
 }
 
 .site-footer__rule {
-  margin-bottom: clamp(36px, 6vw, 56px);
+  margin-bottom: clamp(var(--space-8), 6vw, var(--space-16));
 }
 
 .site-footer__cols {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 40px;
+  gap: var(--space-10);
 }
 
 @media (min-width: 36em) {
@@ -619,7 +619,7 @@
   display: block;
   inline-size: clamp(56px, 11vw, 74px);
   aspect-ratio: 290 / 256;
-  margin: 0 0 24px;
+  margin: 0 0 var(--space-6);
 }
 
 .site-footer__mark i {
@@ -659,14 +659,14 @@
   line-height: 1;
   text-transform: uppercase;
   color: var(--color-neutral-white);
-  margin: 0 0 20px;
+  margin: 0 0 var(--space-4);
 }
 
-.site-footer__label--social { margin-top: clamp(28px, 5vw, 40px); }
+.site-footer__label--social { margin-top: clamp(var(--space-6), 5vw, var(--space-10)); }
 
 .site-footer__social {
-  gap: 14px;
-  margin-top: 16px;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
 }
 
 .site-footer__col-list {
@@ -675,7 +675,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: var(--space-3);
 }
 
 .site-footer__col-link {
@@ -730,9 +730,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-4);
   width: 100%;
-  padding: 20px 0;
+  padding: var(--space-4) 0;
   border: 0;
   background: none;
   color: var(--color-neutral-white);
@@ -776,7 +776,7 @@
 }
 
 .footer-group__panel.is-open .footer-group__panel-inner {
-  padding-bottom: 24px;
+  padding-bottom: var(--space-6);
 }
 
 @media (min-width: 36em) {
@@ -804,21 +804,21 @@
 
   .site-footer__masthead {
     order: 1;
-    margin-top: 44px;
+    margin-top: var(--space-10);
     text-align: center;
   }
 
   .site-footer__blurb { margin-inline: auto; }
 
   .site-footer__label--social {
-    margin-top: clamp(28px, 5vw, 40px);
+    margin-top: clamp(var(--space-6), 5vw, var(--space-10));
   }
 
   .site-footer__social { justify-content: center; }
 
   .site-footer__base {
     flex-direction: column;
-    gap: 14px;
+    gap: var(--space-3);
     text-align: center;
   }
 }
@@ -828,8 +828,8 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  margin-top: clamp(48px, 8vw, 72px);
+  gap: var(--space-4);
+  margin-top: clamp(var(--space-10), 8vw, var(--space-16));
 }
 
 .site-footer__fineprint {
