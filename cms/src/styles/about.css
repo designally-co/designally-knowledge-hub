@@ -93,11 +93,29 @@
   margin-block-start: clamp(var(--space-10), 8vw, var(--space-24));
 }
 
+/* On the 12-column grid. The hero's lede holds columns 1-4. Below it "Why we
+   exist" hangs its label on 1-4 and runs the statement and figure down 6-12,
+   column 5 left open between them. Inside those seven columns the two
+   paragraphs take three each (6-8 and 10-12), column 9 between them. */
 @media (min-width: 900px) {
+  .about-hero__lede { max-width: calc(4 * var(--column-width) + 3 * var(--grid-gap)); }
+
   .about-why {
-    grid-template-columns: minmax(140px, 1fr) minmax(0, 2fr);
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gap);
     align-items: start;
   }
+
+  .about-why > .about-why__label { grid-column: 1 / span 4; }
+  .about-why > .about-why__column { grid-column: 6 / span 7; }
+
+  .about-why .about-why__body {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+  }
+
+  .about-why__body > p:nth-child(odd) { grid-column: 1 / span 3; }
+  .about-why__body > p:nth-child(even) { grid-column: 5 / span 3; }
 }
 
 .about-why__label {
@@ -192,9 +210,11 @@
   gap: clamp(var(--space-4), 2.4vw, var(--space-8));
 }
 
+/* Two halves of the eight-column statement, four columns each. */
 @media (min-width: 720px) {
   .about-why__body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
   }
 }
 
@@ -421,11 +441,40 @@
   gap: clamp(var(--space-8), 5vw, var(--space-16));
 }
 
+/* Tablet: the list is full width, so each row is the full grid — the folio in
+   column 1, the title on 2-6, the explanation on 7-12. */
+@media (min-width: 720px) and (max-width: 899.98px) {
+  .about-principles__list .about-principle {
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+  }
+
+  .about-principle::before { grid-column: 1; }
+  .about-principles__list .about-principle__title { grid-column: 2 / span 5; }
+  .about-principles__list .about-principle__body { grid-column: 7 / span 6; }
+}
+
+/* On the grid: the heading on 1-5, the list on 6-12. Each row is itself seven
+   columns — the folio in column 6, which doubles as the gap after the heading,
+   the title on 7-9 and the explanation on 10-12. */
 @media (min-width: 900px) {
   .about-principles__inner {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gap);
     align-items: start;
   }
+
+  .about-principles__inner > .about-principles__lead { grid-column: 1 / span 5; }
+  .about-principles__inner > .about-principles__list { grid-column: 6 / span 7; }
+
+  .about-principles__list .about-principle {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+  }
+
+  .about-principle::before { grid-column: 1; }
+  .about-principles__list .about-principle__title { grid-column: 2 / span 3; }
+  .about-principles__list .about-principle__body { grid-column: 5 / span 3; }
 }
 
 .about-principles__title {
@@ -507,15 +556,32 @@
   gap: clamp(var(--space-6), 4vw, var(--space-16));
 }
 
+/* On the grid: the eyebrow and heading on 1-5, the text and link on 7-12
+   (column 6 left open as breathing room),
+   centred on the heading itself. The lead dissolves into the grid so the
+   eyebrow takes a row of its own above, and the text shares the heading's
+   row — centred on the heading, not on heading plus eyebrow. */
 @media (min-width: 900px) {
   .about-studio__inner {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: start;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    row-gap: 0;
   }
+
+  .about-studio__inner > .about-studio__lead { display: contents; }
+  .about-studio__lead > * { grid-column: 1 / span 5; }
+  .about-studio__lead > :last-child { grid-row: 2; align-self: center; }
+
+  .about-studio__inner > .about-studio__body {
+    grid-column: 7 / span 6;
+    grid-row: 2;
+    align-self: center;
+  }
+
 }
 
 .about-studio__title {
-  max-width: 14ch;
+  /* No character cap: it fills its five columns and settles on two lines. */
   margin: 0;
   font: var(--type-heading-1);
   letter-spacing: var(--tracking-heading-1);
@@ -523,12 +589,23 @@
   text-wrap: balance;
 }
 
+/* A lede, not a caption — but a step below the heading so the heading leads:
+   subtitle (20/28), large enough to hold its own beside 48px serif. */
 .about-studio__body p {
-  max-width: 48ch;
-  margin: 0 0 clamp(var(--space-4), 2.6vw, var(--space-6));
-  font: var(--type-body);
-  letter-spacing: var(--tracking-body);
+  margin: 0 0 clamp(var(--space-6), 3vw, var(--space-8));
+  font: var(--type-subtitle);
+  letter-spacing: var(--tracking-subtitle);
   color: var(--color-neutral-white);
+  text-wrap: pretty;
+}
+
+/* On a phone the lede would run long at 20px; body-large keeps it a
+   paragraph. */
+@media (max-width: 47.999em) {
+  .about-studio__body p {
+    font: var(--type-body-large);
+    letter-spacing: var(--tracking-body-large);
+  }
 }
 
 /* An underline that arrives on approach: on a colour field a link needs to be
@@ -538,8 +615,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  font: var(--type-overline);
-  letter-spacing: var(--tracking-overline);
+  font: var(--type-body-large-emphasis);
+  letter-spacing: var(--tracking-body-large-emphasis);
   color: var(--color-neutral-white);
   text-decoration: none;
   border-block-end: 1.5px solid transparent;
