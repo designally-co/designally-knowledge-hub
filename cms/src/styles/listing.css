@@ -282,44 +282,6 @@
   min-width: 0;
 }
 
-.listing-filter {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 15px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-outline);
-  font: var(--type-overline);
-  letter-spacing: var(--tracking-overline);
-  line-height: 1;
-  color: var(--color-neutral-black);
-  text-decoration: none;
-  white-space: nowrap;
-  transition:
-    background var(--hover-state-dur) var(--ease-out-quart),
-    border-color var(--hover-state-dur) var(--ease-out-quart),
-    color var(--hover-state-dur) var(--ease-out-quart);
-}
-
-.listing-filter--active {
-  background: var(--color-neutral-black);
-  border-color: var(--color-neutral-black);
-  color: var(--color-brand-surface);
-}
-
-@media (hover: hover) {
-  .listing-filter:not(.listing-filter--active):hover {
-    border-color: var(--color-neutral-black);
-    background: var(--color-neutral-black);
-    color: var(--color-brand-surface);
-  }
-}
-
-@media (pointer: coarse) {
-  .listing-filter {
-    min-height: var(--touch-target);
-  }
-}
-
 /* Six filters at 44px tall ran to three rows on a phone, so the controls cost
    more height than the first row of results. Smaller here: still 34px, well
    over the 24px minimum target, and the row it saves goes back to the grid. */
@@ -328,15 +290,8 @@
     gap: 6px;
   }
 
-  .listing-filter {
+  .listing-filters .filter-chip {
     padding: 5px 12px;
-    font: var(--type-overline);
-    letter-spacing: var(--tracking-overline);
-    line-height: 1;
-  }
-
-  .listing-filter,
-  .listing-filter:is(a, button) {
     min-height: 34px;
   }
 }

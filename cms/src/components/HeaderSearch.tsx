@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
 
-import { ArticleCard, Icon } from './ds'
+import { ArticleCard, Icon, Tabs } from './ds'
 import { SearchHitGrid } from './search/SearchHitGrid'
 import { getSearchIdle, searchHub } from '@/lib/searchHub'
 import {
@@ -276,19 +276,16 @@ function SearchOverlay({
             </p>
           ) : (
             <>
-              <div className="search-tabs">
-                {tabs.map((g) => (
-                  <button
-                    key={g.key}
-                    type="button"
-                    className={`search-tab${g.key === group.key ? ' search-tab--active' : ''}`}
-                    aria-pressed={g.key === group.key}
-                    onClick={() => setActive(g.key)}
-                  >
-                    {groupLabel(g.key, locale, dict)} ({g.total})
-                  </button>
-                ))}
-              </div>
+              <Tabs
+                className="search-tabs"
+                label={dict.search.label}
+                items={tabs.map((g) => ({
+                  key: g.key,
+                  label: `${groupLabel(g.key, locale, dict)} (${g.total})`,
+                  active: g.key === group.key,
+                  onClick: () => setActive(g.key),
+                }))}
+              />
 
               <div className="search-summary">
                 <p className="search-summary__count" aria-live="polite">

@@ -9,7 +9,7 @@
 .search-overlay {
   /* The active tab's text: the pager's tan deepened until 15px text clears
      4.5:1 on the frosted white. Its underline keeps the tan itself. */
-  --search-tab-active: color-mix(in srgb, var(--color-brand-primary) 70%, var(--color-neutral-black));
+  --tab-active: color-mix(in srgb, var(--color-brand-primary) 70%, var(--color-neutral-black));
   /* The overlay's ground: a light grey rather than the page's paper, so it
      reads as a layer over the page, not more of it. */
   --search-bg: var(--color-neutral-gray-100);
@@ -266,41 +266,7 @@
 
 /* --- Results: tabs, count, grid ------------------------------------------ */
 .search-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 8px;
   margin-top: clamp(28px, 3.4vw, 44px);
-}
-
-.search-tab {
-  display: inline-flex;
-  align-items: center;
-  min-height: var(--touch-target);
-  padding: 0 16px;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  background: none;
-  color: var(--color-neutral-black);
-  font: var(--type-body-large-emphasis);
-  letter-spacing: var(--tracking-body-large-emphasis);
-  line-height: 1;
-  text-decoration: none;
-  cursor: pointer;
-  transition:
-    color var(--hover-state-dur) var(--ease-out-quart),
-    border-color var(--hover-state-dur) var(--ease-out-quart);
-}
-
-.search-tab--active {
-  color: var(--search-tab-active, color-mix(in srgb, var(--color-brand-primary) 70%, var(--color-neutral-black)));
-  border-bottom-color: var(--color-brand-primary);
-}
-
-@media (hover: hover) {
-  .search-tab:not(.search-tab--active):hover {
-    opacity: 1;
-    border-bottom-color: color-mix(in srgb, var(--color-neutral-black) 25%, transparent);
-  }
 }
 
 .search-summary {

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { Icon } from '@/components/ds'
+import { Icon, SocialLinks } from '@/components/ds'
 import { ContactForm } from '@/components/ContactForm'
 import { getDictionary, isLocale, type Locale } from '@/lib/i18n'
 
@@ -94,33 +94,7 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
             <p className="contact-write__caution">{c.formCaution}</p>
 
             <p className="contact-write__social-label">{c.social}</p>
-            {/* The two channels that exist. The footer records the same
-                decision: an icon pointing at an account nobody has costs more
-                trust than a missing one. Add TikTok back with its URL. */}
-            <ul className="contact-social">
-              <li>
-                <a
-                  aria-label="Facebook"
-                  className="icon-btn icon-btn--outline icon-btn--md"
-                  href="https://www.facebook.com/designallyco/"
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  <Icon name="facebook" size={18} />
-                </a>
-              </li>
-              <li>
-                <a
-                  aria-label="Instagram"
-                  className="icon-btn icon-btn--outline icon-btn--md"
-                  href="https://www.instagram.com/designally.co/"
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  <Icon name="instagram" size={18} />
-                </a>
-              </li>
-            </ul>
+            <SocialLinks className="contact-social" />
           </div>
 
           {/* THE NOTE. A form on a coloured card, tacked up and sitting a

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 
-import { Icon } from '@/components/ds'
+import { Icon, Tabs } from '@/components/ds'
 import { ListingHero } from '@/components/listing/ListingHero'
 import { ListingPager } from '@/components/listing/ListingPager'
 import { NewsletterCta } from '@/components/NewsletterCta'
@@ -21,8 +20,8 @@ import { getDictionary, isLocale, localeHref, type Locale } from '@/lib/i18n'
 type Params = { lang: string }
 type Search = { q?: string; type?: string; page?: string }
 
-/* The hero band in the page's own tan (--color-brand-light): search belongs to no
-   one section, so it wears none of their colours. */
+/* The hero band in neutral grey, the search overlay's ground: search belongs to
+   no one section, so it wears none of their colours. */
 const SEARCH_TINT = 'var(--color-neutral-gray-100)'
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
@@ -98,18 +97,16 @@ export default async function SearchPage({
             <p className="search-note">{dict.search.empty.replace('{q}', q)}</p>
           ) : (
             <>
-              <nav className="search-tabs" aria-label={dict.search.label}>
-                {tabs.map((g) => (
-                  <Link
-                    key={g.key}
-                    className={`search-tab${g.key === type ? ' search-tab--active' : ''}`}
-                    href={searchHref(locale, q, g.key)}
-                    aria-current={g.key === type ? 'page' : undefined}
-                  >
-                    {groupLabel(g.key, locale, dict)} ({g.total})
-                  </Link>
-                ))}
-              </nav>
+              <Tabs
+                className="search-tabs"
+                label={dict.search.label}
+                items={tabs.map((g) => ({
+                  key: g.key,
+                  label: `${groupLabel(g.key, locale, dict)} (${g.total})`,
+                  active: g.key === type,
+                  href: searchHref(locale, q, g.key),
+                }))}
+              />
 
               <p className="search-summary__count search-page__count">{countLabel(listing.total, dict)}</p>
 

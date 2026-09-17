@@ -552,6 +552,141 @@
   }
 }
 
+/* --- Tabs -------------------------------------------------------------- */
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  padding: 0 16px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--color-neutral-black);
+  font: var(--type-body-large-emphasis);
+  letter-spacing: var(--tracking-body-large-emphasis);
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    color var(--hover-state-dur) var(--ease-out-quart),
+    border-color var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.tab--active {
+  color: var(--tab-active, color-mix(in srgb, var(--color-brand-primary) 70%, var(--color-neutral-black)));
+  border-bottom-color: var(--color-brand-primary);
+}
+
+@media (hover: hover) {
+  .tab:not(.tab--active):hover {
+    opacity: 1;
+    border-bottom-color: color-mix(in srgb, var(--color-neutral-black) 25%, transparent);
+  }
+}
+
+/* --- FilterChip -------------------------------------------------------- */
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 15px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-outline);
+  font: var(--type-overline);
+  letter-spacing: var(--tracking-overline);
+  line-height: 1;
+  color: var(--color-neutral-black);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background var(--hover-state-dur) var(--ease-out-quart),
+    border-color var(--hover-state-dur) var(--ease-out-quart),
+    color var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.filter-chip--active {
+  background: var(--color-neutral-black);
+  border-color: var(--color-neutral-black);
+  color: var(--color-brand-surface);
+}
+
+@media (hover: hover) {
+  .filter-chip:not(.filter-chip--active):hover {
+    border-color: var(--color-neutral-black);
+    background: var(--color-neutral-black);
+    color: var(--color-brand-surface);
+  }
+}
+
+@media (pointer: coarse) {
+  .filter-chip { min-height: var(--touch-target); }
+}
+
+/* --- SocialLinks ------------------------------------------------------- */
+
+.social-links {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--border-outline);
+  color: var(--color-neutral-black);
+  transition:
+    background-color var(--hover-state-dur) var(--ease-out-quart),
+    color var(--hover-state-dur) var(--ease-out-quart),
+    border-color var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.social-link--on-dark {
+  border-color: var(--color-neutral-white-60);
+  color: var(--color-neutral-white);
+}
+
+.social-link:active { transform: scale(0.94); }
+
+@media (hover: hover) {
+  .social-link:hover {
+    opacity: 1;
+    background: var(--color-neutral-black);
+    border-color: var(--color-neutral-black);
+    color: var(--color-brand-surface);
+  }
+
+  .social-link--on-dark:hover {
+    background: var(--color-neutral-white);
+    border-color: var(--color-neutral-white);
+    color: var(--color-neutral-black);
+  }
+}
+
+/* --- Divider ----------------------------------------------------------- */
+
+.divider {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--color-neutral-gray-200);
+}
+
+.divider--on-dark { border-top-color: var(--color-neutral-white-32); }
+
 /* --- Section icon ------------------------------------------------------ */
 
 /* The small graphic that sits in front of a section heading. Sized in `em` so

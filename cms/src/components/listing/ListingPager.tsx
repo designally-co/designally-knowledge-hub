@@ -19,7 +19,7 @@ export interface ListingPagerProps {
   totalPages: number
   hrefForPage: (page: number) => string
   labels: { first: string; previous: string; next: string; last: string; page: string }
-  /** `compact` keeps the 44px discs at every width (search); the default grows to 64px on desktop. */
+  /** `compact` tightens the gap between items (search). */
   size?: 'default' | 'compact'
 }
 

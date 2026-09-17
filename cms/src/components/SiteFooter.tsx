@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 
-import { Icon } from './ds'
+import { Divider, SocialLinks } from './ds'
 import { FooterNavGroup } from './FooterNavGroup'
 import { LocaleSwitcher } from './LocaleSwitcher'
 import { CATEGORIES, TAG_OPTIONS, categorySlug, tagSlug } from '@/lib/tags'
@@ -14,7 +14,7 @@ import {
 } from '@/lib/i18n'
 
 /*
- * SiteFooter — photo background under an ochre wash + serif tagline. Link columns
+ * SiteFooter — photo background under a dark wash + serif tagline. Link columns
  * use the Hub's real nav (Explore = categories + Resources, Topics = tags), all
  * locale-prefixed. Chrome strings come from the dictionary; the "Information"
  * column is omitted (no such pages yet). Styling lives in styles/layout.css.
@@ -35,7 +35,7 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
           {dict.footer.tagline[1]}
         </p>
 
-        <div className="site-footer__rule" />
+        <Divider tone="onDark" className="site-footer__rule" />
 
         <div className="site-footer__cols">
           <div className="site-footer__masthead">
@@ -48,30 +48,7 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
             </p>
             <p className="site-footer__blurb">{dict.footer.blurb}</p>
             <p className="site-footer__label site-footer__label--social">{dict.footer.social}</p>
-            {/* Only channels with a real destination. The TikTok icon was
-                removed rather than left pointing at "#": an icon that goes
-                nowhere costs more trust than a missing one. Add it back with
-                the account URL. */}
-            <div className="site-footer__social">
-              <a
-                className="site-footer__social-link"
-                href="https://www.facebook.com/designallyco/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Designally on Facebook"
-              >
-                <Icon name="facebook" size={18} />
-              </a>
-              <a
-                className="site-footer__social-link"
-                href="https://www.instagram.com/designally.co/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Designally on Instagram"
-              >
-                <Icon name="instagram" size={18} />
-              </a>
-            </div>
+            <SocialLinks tone="onDark" className="site-footer__social" />
           </div>
 
           <FooterNavGroup label={dict.footer.explore}>

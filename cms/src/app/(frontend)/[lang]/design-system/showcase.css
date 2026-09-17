@@ -1,6 +1,5 @@
-/* Layout-only styles for the Phase 1 design-system gallery. Throwaway once the
-   real pages land in Phase 2 — it only arranges the ported components on a
-   page, it does not restyle them. */
+/* Layout for the design-system gallery. It only arranges the shared components
+   and token specimens on a page; it never restyles them. */
 
 .ds-page {
   padding-block: clamp(48px, 8vw, 96px);
@@ -10,10 +9,11 @@
   margin-bottom: clamp(40px, 6vw, 72px);
 }
 
-.ds-head__eyebrow {
+.ds-head__eyebrow,
+.ds-section__label,
+.ds-colour-group__title {
   font: var(--type-tag);
   letter-spacing: var(--tracking-tag);
-  line-height: 1;
   text-transform: uppercase;
   color: var(--color-neutral-black-60);
   margin: 0 0 12px;
@@ -41,12 +41,15 @@
 }
 
 .ds-section__label {
-  font: var(--type-tag);
-  letter-spacing: var(--tracking-tag);
-  line-height: 1;
-  text-transform: uppercase;
+  color: var(--color-neutral-black);
+}
+
+.ds-section__note {
+  font: var(--type-body);
+  letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black-60);
-  margin: 0 0 24px;
+  max-width: 70ch;
+  margin: -4px 0 24px;
 }
 
 .ds-row {
@@ -58,6 +61,10 @@
 
 .ds-row + .ds-row {
   margin-top: 20px;
+}
+
+.ds-gap {
+  height: 32px;
 }
 
 .ds-grid {
@@ -73,42 +80,88 @@
   margin-top: 24px;
 }
 
-/* Colour + type token specimens */
+/* --- Colour specimens --- */
+.ds-colour-group + .ds-colour-group {
+  margin-top: 32px;
+}
+
 .ds-swatches {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 16px;
 }
 
+/* The token is layered over a checkerboard so translucent ones show their
+   opacity. */
 .ds-swatch__chip {
-  height: 72px;
+  height: 64px;
   border-radius: var(--radius-input);
   border: 1px solid var(--color-neutral-gray-200);
+  background:
+    linear-gradient(var(--swatch), var(--swatch)),
+    repeating-conic-gradient(var(--color-neutral-gray-200) 0% 25%, var(--color-neutral-white) 0% 50%) 0 0 / 16px 16px;
+}
+
+/* White tokens are meant for dark bands, so they are shown on one. */
+.ds-swatch__chip--on-dark {
+  background:
+    linear-gradient(var(--swatch), var(--swatch)),
+    repeating-conic-gradient(var(--color-neutral-dark) 0% 25%, var(--color-brand-dark) 0% 50%) 0 0 / 16px 16px;
 }
 
 .ds-swatch__name {
-  font: var(--type-body);
-  letter-spacing: var(--tracking-body);
+  font: var(--type-body-small);
+  letter-spacing: var(--tracking-body-small);
   color: var(--color-neutral-black-60);
   margin: 8px 0 0;
+  overflow-wrap: anywhere;
 }
 
+/* --- Type specimens --- */
 .ds-type {
   display: flex;
   flex-direction: column;
-  gap: 20px;
 }
 
 .ds-type__row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding-bottom: 16px;
-  border-bottom: 1px dashed var(--color-neutral-gray-200);
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: 8px 32px;
+  padding-block: 16px;
+  border-bottom: 1px solid var(--color-neutral-gray-200);
 }
 
 .ds-type__meta {
-  font: var(--type-body);
-  letter-spacing: var(--tracking-body);
-  color: var(--color-neutral-black-32);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  font: var(--type-body-small);
+  letter-spacing: var(--tracking-body-small);
+  color: var(--color-neutral-black-60);
+}
+
+.ds-type__token {
+  font: var(--type-label);
+  letter-spacing: var(--tracking-label);
+  color: var(--color-neutral-black);
+}
+
+.ds-type__sample {
+  margin: 0;
+  color: var(--color-neutral-black);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 63.999em) {
+  .ds-type__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.ds-filetype {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
 }

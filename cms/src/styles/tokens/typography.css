@@ -17,7 +17,13 @@
    and shrink with the viewport below it, down to a floor that still fits a
    phone. Their line height and tracking are ratios of the size, so the
    proportions hold at every width. Everything from heading-3 down is fixed. */
-:root {
+/* The families and the styles built from them are declared on every element
+   that carries a `lang` attribute, not only the root. A custom property that
+   references another is resolved where it is declared, so this is what lets a
+   `lang="th"` passage inside an English page (or `lang="en"` inside a Thai one)
+   get its own fonts. */
+:root,
+[lang] {
   /* English pages. The Thai faces follow as fallbacks so the odd Thai word on
      an English page (the language switcher's "ไทย") is never set in a system
      font: Geist and Ovo have no Thai glyphs. */
@@ -43,7 +49,9 @@
   --type-tag:                700 12px / 18px var(--font-sans);
   --type-caption:            600 12px / 18px var(--font-sans);
   --type-body-small:         400 12px / 18px var(--font-sans);
+}
 
+:root {
   --tracking-display-1: -0.0375em;   /* -3px at 80px */
   --tracking-display-2: -0.03125em;  /* -2px at 64px */
   --tracking-heading-1: -0.02083em;  /* -1px at 48px */
@@ -62,10 +70,8 @@
   --tracking-body-small: 0;
 }
 
-/* Thai pages: `<html lang="th">`. The swap sits on the root element because
-   that is where the --type-* values above are resolved; a font override on an
-   inner element would come too late to reach them. */
-:root:lang(th) {
+/* Thai: whole pages (`<html lang="th">`) and Thai passages anywhere. */
+[lang="th"] {
   --font-serif: "Athiti", "Ovo", Georgia, serif;
   --font-sans: "IBM Plex Sans Thai", "Geist", Arial, sans-serif;
   --font-serif-weight: 600;

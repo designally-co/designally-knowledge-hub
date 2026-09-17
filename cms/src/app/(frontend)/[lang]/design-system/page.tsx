@@ -1,87 +1,186 @@
 import React from 'react'
+import type { Metadata } from 'next'
+import { headers } from 'next/headers'
+import { notFound } from 'next/navigation'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 
 import {
-  Button,
-  IconButton,
-  Tag,
-  TopicPill,
   ArticleCard,
+  Button,
+  Divider,
+  FileTypeIcon,
+  FilterChip,
+  IconButton,
   ResourceCard,
   SectionHeading,
+  SocialLinks,
+  Tabs,
+  Tag,
+  TopicPill,
 } from '@/components/ds'
+import { ListingPager } from '@/components/listing/ListingPager'
+import { getDictionary, isLocale, localeHref } from '@/lib/i18n'
 import './showcase.css'
 
 /**
- * PHASE 1 CHECKPOINT — design-system gallery.
+ * The design system, rendered: every colour token, every text style in English
+ * and Thai, and every shared component. The reference for anyone building a
+ * page — if a value is not on this page, it is not in the system.
  *
- * Renders every ported component in its variants so the placeholder visual
- * system can be verified running under Next (server components + the three
- * interactive client components). No CMS data is wired yet; the sample content
- * below is inline and throwaway. Phase 2 replaces this file with the real
- * homepage at `/`.
+ * Team only. Anywhere but local development it needs a signed-in Hub admin,
+ * and to anyone else it is a 404.
  */
 
-const SPOTS = [
-  ['--color-accent-red', 'accent-red'],
-  ['--color-accent-orange', 'accent-orange'],
-  ['--color-accent-navy', 'accent-navy'],
-  ['--color-category-blue-mid', 'category-blue-mid'],
-  ['--color-category-green-mid', 'category-green-mid'],
-  ['--color-category-purple-mid', 'category-purple-mid'],
-] as const
+export const metadata: Metadata = {
+  title: 'Design system — Designally Knowledge Hub',
+  robots: { index: false, follow: false },
+}
 
-const SAMPLE_ARTICLES = [
+const COLOURS: { group: string; tokens: string[] }[] = [
   {
-    title: 'A field guide to type pairing that actually holds up in production',
-    date: '12 July 2026',
-    tags: ['Typography', 'Guide'],
-    imageTint: 'var(--color-category-blue-mid)',
+    group: 'Neutrals',
+    tokens: [
+      'neutral-black', 'neutral-black-60', 'neutral-black-32', 'neutral-black-12', 'neutral-dark',
+      'neutral-gray-400', 'neutral-gray-200', 'neutral-gray-100', 'neutral-white', 'neutral-white-60',
+      'neutral-white-32',
+    ],
   },
   {
-    title: 'How to run a logo review that ends in a decision, not a debate',
-    date: '8 July 2026',
-    tags: ['Process'],
-    imageTint: 'var(--color-accent-red)',
+    group: 'Brand',
+    tokens: [
+      'brand-dark', 'brand-mid', 'brand-mid-12', 'brand-mid-30', 'brand-primary', 'brand-primary-4',
+      'brand-light', 'brand-surface',
+    ],
   },
+  { group: 'Accent', tokens: ['accent-red', 'accent-orange', 'accent-navy'] },
   {
-    title: 'The brief template we hand every new client on day one',
-    date: '1 July 2026',
-    tags: ['Templates'],
-    imageTint: 'var(--color-category-green-mid)',
-  },
-  {
-    title: 'Colour systems that survive contact with a real product',
-    date: '24 June 2026',
-    tags: ['Colour', 'Systems'],
-    imageTint: 'var(--color-category-purple-mid)',
+    group: 'Category',
+    tokens: [
+      'category-blue-light', 'category-blue-mid', 'category-green-light', 'category-green-mid',
+      'category-purple-light', 'category-purple-mid',
+    ],
   },
 ]
 
-export default function DesignSystemGallery() {
+const TYPE_STYLES: { token: string; spec: string; serif?: boolean }[] = [
+  { token: 'display-1', spec: '80 / 80 · −3', serif: true },
+  { token: 'display-2', spec: '64 / 72 · −2', serif: true },
+  { token: 'heading-1', spec: '48 / 56 · −1', serif: true },
+  { token: 'heading-2', spec: '40 / 48 · −0.3 · 600' },
+  { token: 'heading-3', spec: '32 / 40 · −0.2', serif: true },
+  { token: 'heading-4', spec: '24 / 32 · −0.1 · 600' },
+  { token: 'heading-5', spec: '20 / 28 · −0.1 · 700' },
+  { token: 'subtitle', spec: '20 / 28 · −0.1 · 600' },
+  { token: 'body-large', spec: '16 / 24 · 400' },
+  { token: 'body-large-emphasis', spec: '16 / 24 · 600' },
+  { token: 'body', spec: '14 / 20 · 400' },
+  { token: 'label', spec: '14 / 20 · 600' },
+  { token: 'overline', spec: '14 / 20 · 700' },
+  { token: 'tag', spec: '12 / 18 · 700' },
+  { token: 'caption', spec: '12 / 18 · 600' },
+  { token: 'body-small', spec: '12 / 18 · 400' },
+]
+
+const typeStyle = (token: string): React.CSSProperties => ({
+  font: `var(--type-${token})`,
+  letterSpacing: `var(--tracking-${token})`,
+})
+
+const SAMPLE_ARTICLES = [
+  { title: 'A field guide to type pairing that holds up in production', date: '12 July 2026', tags: ['Typography'], tint: 'var(--color-category-blue-light)' },
+  { title: 'How to run a logo review that ends in a decision', date: '8 July 2026', tags: ['Design Critique'], tint: 'var(--color-brand-light)' },
+  { title: 'The brief template we hand every new client', date: '1 July 2026', tags: ['Design Process'], tint: 'var(--color-category-green-light)' },
+]
+
+async function isTeam(): Promise<boolean> {
+  if (process.env.NODE_ENV !== 'production') return true
+  try {
+    const payload = await getPayload({ config })
+    const { user } = await payload.auth({ headers: await headers() })
+    return Boolean(user)
+  } catch {
+    return false
+  }
+}
+
+function Section({ title, note, children }: { title: string; note?: string; children?: React.ReactNode }) {
+  return (
+    <section className="ds-section">
+      <h2 className="ds-section__label">{title}</h2>
+      {note && <p className="ds-section__note">{note}</p>}
+      {children}
+    </section>
+  )
+}
+
+export default async function DesignSystemPage({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params
+  if (!isLocale(lang) || !(await isTeam())) notFound()
+  const dict = getDictionary(lang)
+  const here = localeHref(lang, '/design-system')
+
   return (
     <div className="ds-page shell">
       <header className="ds-head">
-        <p className="ds-head__eyebrow">Designally Knowledge Hub — Phase 1</p>
-        <h1 className="ds-head__title">Design system, running under Next</h1>
+        <p className="ds-head__eyebrow">Designally Knowledge Hub · team only</p>
+        <h1 className="ds-head__title">Design system</h1>
         <p className="ds-head__lede">
-          The ported component library and design tokens rendered as server
-          components (with three interactive client components). Fonts and palette
-          are placeholders to be replaced with the real Designally brand.
+          Every colour, text style and shared component on the public site. Tokens live in
+          styles/tokens, components in components/ds.
         </p>
       </header>
 
-      {/* Buttons */}
-      <section className="ds-section">
-        <p className="ds-section__label">Button — variants &amp; sizes</p>
+      <Section title="Colour" note="28 tokens. Use them as var(--color-…); never type a hex.">
+        {COLOURS.map((g) => (
+          <div key={g.group} className="ds-colour-group">
+            <h3 className="ds-colour-group__title">{g.group}</h3>
+            <div className="ds-swatches">
+              {g.tokens.map((t) => (
+                <div key={t} className="ds-swatch">
+                  <div
+                    className={`ds-swatch__chip${t.startsWith('neutral-white') ? ' ds-swatch__chip--on-dark' : ''}`}
+                    style={{ '--swatch': `var(--color-${t})` } as React.CSSProperties}
+                  />
+                  <p className="ds-swatch__name">{t}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </Section>
+
+      <Section
+        title="Typography"
+        note="16 styles. Set both font: var(--type-…) and letter-spacing: var(--tracking-…). Thai swaps Ovo for Athiti (set 600) and Geist for IBM Plex Sans Thai; sizes are identical. The four largest shrink below 1440px."
+      >
+        <div className="ds-type">
+          {TYPE_STYLES.map((s) => (
+            <div key={s.token} className="ds-type__row">
+              <p className="ds-type__meta">
+                <span className="ds-type__token">{s.token}</span>
+                <span>
+                  {s.serif ? 'Ovo · Athiti 600' : 'Geist · IBM Plex Sans Thai'} · {s.spec}
+                </span>
+              </p>
+              <p className="ds-type__sample" lang="en" style={typeStyle(s.token)}>
+                Better brands are built
+              </p>
+              <p className="ds-type__sample" lang="th" style={typeStyle(s.token)}>
+                สร้างแบรนด์ที่ดีกว่า
+              </p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      <Section title="Button">
         <div className="ds-row">
           <Button variant="primary">Primary</Button>
           <Button variant="secondary">Secondary</Button>
           <Button variant="ghost">Ghost</Button>
-          <Button variant="primary" icon="search">
+          <Button variant="primary" iconRight="arrow-right">
             With icon
-          </Button>
-          <Button variant="secondary" iconRight="arrow-right">
-            Read more
           </Button>
           <Button variant="primary" disabled>
             Disabled
@@ -92,11 +191,12 @@ export default function DesignSystemGallery() {
           <Button size="md">Medium</Button>
           <Button size="lg">Large</Button>
         </div>
-      </section>
+        <div className="ds-band">
+          <Button variant="inverse">Inverse, on dark</Button>
+        </div>
+      </Section>
 
-      {/* Icon buttons */}
-      <section className="ds-section">
-        <p className="ds-section__label">IconButton — variants</p>
+      <Section title="IconButton">
         <div className="ds-row">
           <IconButton icon="arrow-right" variant="outline" label="Next" />
           <IconButton icon="arrow-right" variant="solid" label="Next" />
@@ -104,22 +204,39 @@ export default function DesignSystemGallery() {
           <IconButton icon="arrow-left" variant="outline" size="sm" label="Previous" />
           <IconButton icon="arrow-right" variant="outline" size="lg" label="Next" />
         </div>
-      </section>
+      </Section>
 
-      {/* Tags */}
-      <section className="ds-section">
-        <p className="ds-section__label">Tag — tones</p>
+      <Section title="Tag" note="The category label on cards. Not interactive.">
         <div className="ds-row">
-          <Tag tone="ink">Case Study</Tag>
-          <Tag tone="warm">Design Tools</Tag>
-          <Tag tone="ink">Typography</Tag>
+          <Tag>Case Study</Tag>
+          <Tag>Typography</Tag>
           <Tag tone="warm">Templates</Tag>
         </div>
-      </section>
+      </Section>
 
-      {/* Topic pills */}
-      <section className="ds-section">
-        <p className="ds-section__label">TopicPill — sizes &amp; state</p>
+      <Section title="FilterChip" note="Narrows a listing; a link, so the filter is in the URL.">
+        <div className="ds-row">
+          <FilterChip href={here} active>
+            All
+          </FilterChip>
+          <FilterChip href={here}>Branding Systems</FilterChip>
+          <FilterChip href={here}>Visual Identity</FilterChip>
+          <FilterChip href={here}>UX/UI</FilterChip>
+        </div>
+      </Section>
+
+      <Section title="Tabs" note="Links when each tab is its own URL; buttons when it switches in place.">
+        <Tabs
+          label="Example tabs"
+          items={[
+            { key: 'all', label: 'All (18)', active: true, href: here },
+            { key: 'case', label: 'Case Studies (9)', active: false, href: here },
+            { key: 'res', label: 'Resources (4)', active: false, href: here },
+          ]}
+        />
+      </Section>
+
+      <Section title="TopicPill">
         <div className="ds-row">
           <TopicPill size="sm">Branding</TopicPill>
           <TopicPill size="md" rotate={-2}>
@@ -132,114 +249,78 @@ export default function DesignSystemGallery() {
             Active
           </TopicPill>
         </div>
-      </section>
+      </Section>
 
-      {/* Section heading */}
-      <section className="ds-section">
-        <p className="ds-section__label">SectionHeading</p>
+      <Section title="Pagination" note="40×40 items; 44 on touch screens.">
+        <ListingPager page={3} totalPages={9} hrefForPage={() => here} labels={dict.listing} />
+      </Section>
+
+      <Section title="SectionHeading">
         <SectionHeading action="arrow">Case Studies</SectionHeading>
-        <div style={{ height: 32 }} />
+        <div className="ds-gap" />
         <SectionHeading actionLabel="See all resources">Resources</SectionHeading>
-        <div className="ds-band on-dark">
+        <div className="ds-band">
           <SectionHeading action="arrow" onDark>
             On a dark band
           </SectionHeading>
         </div>
-      </section>
+      </Section>
 
-      {/* Article cards */}
-      <section className="ds-section">
-        <p className="ds-section__label">ArticleCard — vertical grid</p>
+      <Section title="ArticleCard">
         <div className="ds-grid">
           {SAMPLE_ARTICLES.map((a) => (
-            <ArticleCard
-              key={a.title}
-              title={a.title}
-              date={a.date}
-              tags={a.tags}
-              imageTint={a.imageTint}
-            />
+            <ArticleCard key={a.title} title={a.title} date={a.date} tags={a.tags} imageTint={a.tint} />
           ))}
         </div>
-      </section>
-
-      <section className="ds-section">
-        <p className="ds-section__label">ArticleCard — overlay (hero)</p>
+        <div className="ds-gap" />
         <ArticleCard
           layout="overlay"
           title="The rebrand playbook: everything we ship in the first two weeks"
           date="16 July 2026"
-          tags={['Playbook', 'Branding']}
+          tags={['Case Study']}
           imageTint="var(--color-neutral-dark)"
           ratio="21 / 9"
           ratioMobile="4 / 3"
         />
-      </section>
+      </Section>
 
-      {/* Resource cards */}
-      <section className="ds-section">
-        <p className="ds-section__label">ResourceCard — downloadable files</p>
+      <Section title="ResourceCard">
         <div className="ds-grid">
-          <ResourceCard
-            title="The Practical Brand Strategy Starter Kit"
-            date="12 July 2026"
-            category="Figma File"
-            color="var(--color-accent-orange)"
-          />
-          <ResourceCard
-            title="A Simple Checklist for Better Logo Reviews"
-            date="8 July 2026"
-            category="PDF"
-            color="var(--color-category-blue-mid)"
-          />
-          <ResourceCard
-            title="24 Free Fonts for Modern Editorial Design"
-            date="1 July 2026"
-            category="Fonts"
-            color="var(--color-category-green-mid)"
-          />
+          <ResourceCard title="The Practical Brand Strategy Starter Kit" date="12 July 2026" category="Templates" color="var(--color-category-blue-mid)" />
+          <ResourceCard title="24 Free Fonts for Modern Editorial Design" date="1 July 2026" category="Fonts" color="var(--color-accent-red)" />
+          <ResourceCard title="The UX Research Planning Worksheet" date="24 June 2026" category="Ebooks & Guides" color="var(--color-category-green-mid)" />
         </div>
-      </section>
+      </Section>
 
-      {/* Colour tokens */}
-      <section className="ds-section">
-        <p className="ds-section__label">Colour — spot palette</p>
-        <div className="ds-swatches">
-          {SPOTS.map(([varName, name]) => (
-            <div key={varName}>
-              <div className="ds-swatch__chip" style={{ background: `var(${varName})` }} />
-              <p className="ds-swatch__name">
-                {name} · {varName}
-              </p>
-            </div>
+      <Section title="FileTypeIcon">
+        <div className="ds-row">
+          {['guide.pdf', 'cover.png', 'display.otf', 'pack.zip', 'kit.fig', 'notes.csv'].map((f) => (
+            <span key={f} className="ds-filetype">
+              <FileTypeIcon filename={f} size={36} />
+              <span className="ds-swatch__name">{f}</span>
+            </span>
           ))}
         </div>
-      </section>
+      </Section>
 
-      {/* Type scale */}
-      <section className="ds-section">
-        <p className="ds-section__label">Type — scale</p>
-        <div className="ds-type">
-          <div className="ds-type__row">
-            <span style={{ font: 'var(--type-display-2)', letterSpacing: 'var(--tracking-display-2)' }}>Display serif</span>
-            <span className="ds-type__meta">--type-display-2 · Ovo</span>
-          </div>
-          <div className="ds-type__row">
-            <span style={{ font: 'var(--type-heading-1)', letterSpacing: 'var(--tracking-heading-1)' }}>Heading 1</span>
-            <span className="ds-type__meta">--type-heading-1 · Ovo</span>
-          </div>
-          <div className="ds-type__row">
-            <span style={{ font: 'var(--type-heading-2)', letterSpacing: 'var(--tracking-heading-2)' }}>Heading 2</span>
-            <span className="ds-type__meta">--type-heading-2 · Geist</span>
-          </div>
-          <div className="ds-type__row">
-            <span style={{ font: 'var(--type-body-large)' }}>
-              Body large — the reading size for long-form editorial prose.
-            </span>
-            <span className="ds-type__meta">--type-body-large · Geist</span>
-          </div>
+      <Section title="SocialLinks">
+        <SocialLinks />
+        <div className="ds-band">
+          <SocialLinks tone="onDark" />
         </div>
-      </section>
+      </Section>
+
+      <Section title="Divider">
+        <Divider />
+        <div className="ds-band">
+          <Divider tone="onDark" />
+        </div>
+      </Section>
+
+      <Section
+        title="Site furniture"
+        note="The header (SiteHeader), footer (SiteFooter) and newsletter block (NewsletterCta) are shared components too; they frame every page, including this one."
+      />
     </div>
   )
 }

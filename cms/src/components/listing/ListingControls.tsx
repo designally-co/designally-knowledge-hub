@@ -1,7 +1,5 @@
 import React from 'react'
-import Link from 'next/link'
-
-import { Icon } from '@/components/ds'
+import { FilterChip, Icon } from '@/components/ds'
 
 /*
  * ListingControls — the filter + search row beneath the hero. Filter pills are
@@ -39,15 +37,9 @@ export function ListingControls({
     <div className="listing-controls">
       <div className="listing-filters" role="list">
         {filters.map((f) => (
-          <Link
-            key={f.href + f.label}
-            href={f.href}
-            role="listitem"
-            className={`listing-filter${f.active ? ' listing-filter--active' : ''}`}
-            aria-current={f.active ? 'true' : undefined}
-          >
+          <FilterChip key={f.href + f.label} href={f.href} active={f.active} role="listitem">
             {f.label}
-          </Link>
+          </FilterChip>
         ))}
       </div>
 

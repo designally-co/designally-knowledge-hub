@@ -599,8 +599,10 @@
   gap: 8px;
   padding: 7px 14px 7px 8px;
   border-radius: 999px;
-  background-color: var(--color-neutral-white);
-  border: 1px solid var(--color-neutral-gray-200);
+  /* Outlined, like the filter chips: no fill, the label colour at half
+     strength for the ring. */
+  background-color: transparent;
+  border: 1px solid var(--border-outline);
   text-decoration: none;
   color: var(--color-neutral-black);
   max-inline-size: 100%;
