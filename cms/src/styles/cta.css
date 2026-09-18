@@ -4,8 +4,11 @@
 
 .cta {
   --cta-bg: var(--color-neutral-gray-100);
-  /* The headline's size, shared with the illustration's sizing below. */
+  /* The headline's size and the eyebrow's line, shared with the
+     illustration's sizing below. */
   --cta-title-size: clamp(34px, 4.444vw, 64px);
+  --cta-title-lines: 3;
+  --cta-eyebrow-line: 14px;
   background: var(--cta-bg) url('/newsletter-waves.svg') no-repeat center / cover;
   padding-block: clamp(var(--space-10), 7vw, var(--space-20));
 }
@@ -76,7 +79,7 @@
 @media (max-width: 63.999em) {
   .cta__lead {
     --cta-copy-h: calc(
-      14px + clamp(var(--space-3), 2vw, var(--space-6)) + 3 * 1.125 * var(--cta-title-size)
+      var(--cta-eyebrow-line) + clamp(var(--space-3), 2vw, var(--space-6)) + var(--cta-title-lines) * 1.125 * var(--cta-title-size)
     );
     display: grid;
     grid-template-columns: calc(var(--cta-copy-h) * 235 / 280) minmax(0, 1fr);
@@ -93,15 +96,32 @@
   }
 }
 
-/* Narrower than a 375px phone the copy column cannot hold three lines at 34px;
-   a size down (two on the smallest phones) keeps the headline on three, and
-   the drawing follows it. */
-@media (max-width: 23.4em) {
-  .cta { --cta-title-size: 30px; }
-}
+/* Phones: the same step-down as the video band above it — a 10px eyebrow, the
+   headline on two lines, the form at the touch height with its 16px field (any
+   smaller and iOS zooms the page), and the note at the small size. The
+   headline runs the copy column's full width and scales with the phone,
+   22px at 320 to 30px from ~400, the largest that holds two lines; the
+   drawing follows the copy's new height. */
+@media (max-width: 47.999em) {
+  .cta {
+    --cta-title-size: clamp(22px, 10.9vw - 13.5px, 30px);
+    --cta-title-lines: 2;
+    --cta-eyebrow-line: 10px;
+  }
 
-@media (max-width: 21.25em) {
-  .cta { --cta-title-size: 26px; }
+  .cta .cta__eyebrow { font-size: 10px; }
+
+  /* About half the sentence a line, so it breaks in two even where one would fit. */
+  .cta .cta__title { max-width: 20ch; }
+
+  .cta .cta__input { padding-block: var(--space-2); }
+
+  .cta .cta__submit { min-height: var(--touch-target); }
+
+  .cta .cta__note {
+    font: var(--type-body-small);
+    letter-spacing: var(--tracking-body-small);
+  }
 }
 
 /* Below the desktop the headline is 34-45px, and the lede at 20px bold stood

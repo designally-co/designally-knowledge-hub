@@ -111,6 +111,7 @@ export function CaseStudyCarousel({
       <div className="case-studies__banner-row content-grid">
         <PromoBanner
           className="case-studies__banner"
+          graphic="/promo/case-studies.png"
           label={bannerLabel}
           href={bannerHref}
           arrow={false}

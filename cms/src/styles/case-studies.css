@@ -88,19 +88,30 @@
   max-width: 100%;
 }
 
-/* Tablet: the middle six of eight columns; desktop: the middle eight of 12. */
+/* Tablet: the middle six of eight columns; desktop: the middle eight of 12.
+   Laid out like the Workflows banner: the scene first, centred in the left
+   half and standing on the foot, the section's name centred in the right. */
 @media (min-width: 48em) {
   .case-studies__banner {
     grid-column: 2 / span 6;
+    justify-content: flex-end;
   }
 
   .case-studies__banner .promo-banner__content {
-    max-width: 66%;
+    flex: 0 0 50%;
+    max-width: 50%;
+    align-items: center;
+    text-align: center;
   }
 
   .case-studies__banner .promo-banner__art {
-    max-width: 44%;
-    height: 96%;
+    right: auto;
+    left: 0;
+    width: 50%;
+    max-width: none;
+    height: 92%;
+    object-position: center bottom;
+    transform-origin: center bottom;
   }
 }
 

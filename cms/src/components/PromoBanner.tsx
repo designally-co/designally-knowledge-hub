@@ -14,7 +14,7 @@ import { Icon } from '@/components/ds'
  * arrow and leaves the label alone.
  *
  * Each section passes its own `graphic` from /public/promo; `man-reading.png`
- * is the fallback for a banner that has none yet (Case Studies).
+ * is the fallback for a banner that has none.
  */
 type PromoBannerProps = {
   label: string
