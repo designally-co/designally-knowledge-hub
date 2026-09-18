@@ -17,11 +17,11 @@ import { getDictionary, isLocale, type Locale } from '@/lib/i18n'
  */
 
 const CONTACT = {
-  /* The studio, as given. The plus code is what the map is centred on: it is
-     exact to a few metres, where a street address in Bangkok is frequently
-     resolved to the wrong end of a soi. */
+  /* The studio, as given. `mapQuery` is what the embedded map and the "Open in
+     Google Maps" link search for: the address as Google itself spells it (the
+     plus code it replaced resolved to the wrong spot). */
   address: ['368 Ratchadaphisek 42 Alley, Chan Kasem', 'Chatuchak, Bangkok 10900, Thailand'],
-  plusCode: 'RHGJ+88 Bangkok',
+  mapQuery: '368 Ratchadaphisek 42 Alley, Chan Kasem, Chatuchak, Krung Thep Maha Nakhon 10900',
   phone: '+66 65 005 5993',
   /* Dialling form: no spaces, and the country code as `+66`. */
   phoneHref: 'tel:+66650055993',
@@ -52,7 +52,7 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
   const dict = getDictionary(locale)
   const c = dict.contact
 
-  const mapQuery = encodeURIComponent(CONTACT.plusCode)
+  const mapQuery = encodeURIComponent(CONTACT.mapQuery)
 
   const rows = [
     { icon: 'phone', label: c.phoneLabel, value: CONTACT.phone, href: CONTACT.phoneHref },
@@ -80,13 +80,11 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
       </section>
 
       {/* ---- the message ------------------------------------------------- */}
-      <section className="contact-write" aria-labelledby="contact-write-title">
+      <section className="contact-write" aria-labelledby="contact-note-title">
         <div className="shell contact-write__inner">
           <div className="contact-write__lead">
             <p className="about-eyebrow">{c.formLabel}</p>
-            <h2 className="contact-write__title" id="contact-write-title">
-              {c.formTitle}
-            </h2>
+            <h2 className="contact-write__title">{c.formTitle}</h2>
             <p className="contact-write__lede">{c.formLede}</p>
 
             {/* Behind its own rule, because it is a warning rather than the
@@ -115,7 +113,9 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
               </svg>
             </span>
 
-            <h2 className="contact-note__title">{c.cardTitle}</h2>
+            <h2 className="contact-note__title" id="contact-note-title">
+              {c.cardTitle}
+            </h2>
             <p className="contact-note__lede">{c.cardLede}</p>
 
             <ContactForm dict={dict} to={CONTACT.email} />
@@ -129,7 +129,7 @@ export default async function ContactPage({ params }: { params: Promise<{ lang: 
           <div className="contact-where__lead">
             <p className="about-eyebrow">{c.whereLabel}</p>
             <h2 className="contact-where__title" id="contact-where-title">
-              {c.whereTitle}
+              <span>{c.whereTitle[0]}</span> <span>{c.whereTitle[1]}</span>
             </h2>
           </div>
 

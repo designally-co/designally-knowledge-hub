@@ -173,7 +173,8 @@ export type Dictionary = {
     /** Shown when the browser has no mail client to hand the message to. */
     sendFallback: string
     whereLabel: string
-    whereTitle: string
+    /** Two lines, each held whole: the break falls after "Bangkok.". */
+    whereTitle: [string, string]
     phoneLabel: string
     emailRowLabel: string
     lineLabel: string
@@ -417,7 +418,7 @@ const en: Dictionary = {
     send: 'Start communication',
     sendFallback: 'Write to clients@designally.co',
     whereLabel: 'Where we are',
-    whereTitle: 'Made in Bangkok. Read everywhere.',
+    whereTitle: ['Made in Bangkok.', 'Read everywhere.'],
     phoneLabel: 'Talk with us',
     emailRowLabel: 'Drop us a line',
     lineLabel: 'Add on LINE',
@@ -669,7 +670,7 @@ const th: Dictionary = {
     send: 'เริ่มการสนทนา',
     sendFallback: 'เขียนถึง clients@designally.co',
     whereLabel: 'เราอยู่ที่ไหน',
-    whereTitle: 'สร้างที่กรุงเทพฯ อ่านได้ทุกที่',
+    whereTitle: ['สร้างที่กรุงเทพฯ', 'อ่านได้ทุกที่'],
     phoneLabel: 'โทรหาเรา',
     emailRowLabel: 'ส่งอีเมล',
     lineLabel: 'เพิ่มเพื่อนใน LINE',

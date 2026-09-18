@@ -62,6 +62,7 @@
 .contact-write__social-label {
   margin: clamp(var(--space-6), 3vw, var(--space-8)) 0 var(--space-3);
   font: var(--type-tag);
+  font-weight: 500;
   letter-spacing: var(--tracking-tag);
   line-height: 1;
   text-transform: uppercase;
@@ -101,6 +102,17 @@
   display: block;
   transform: rotate(1.2deg);
   filter: drop-shadow(2px 3px 2px var(--color-neutral-black-12));
+}
+
+/* Phones: the note sits square. At a phone's width the tilt reads as the form
+   being crooked rather than as paper tacked up, and it staggers the fields'
+   rules against the screen edge. The tack and the shadow keep the idea. */
+@media (max-width: 47.999em) {
+  .contact-note,
+  .contact-note > *,
+  .contact-note__tack {
+    transform: none;
+  }
 }
 
 .contact-note__title {
@@ -146,6 +158,8 @@
 
 .contact-field__label {
   font: var(--type-overline);
+  /* Medium, as the site's labels. */
+  font-weight: 500;
   letter-spacing: var(--tracking-overline);
   color: var(--color-neutral-black-60);
 }
@@ -322,13 +336,18 @@
   .contact-where__inner > .contact-rows { grid-column: 6 / span 7; }
 }
 
+/* Two lines at every width, the break after "Bangkok.": each sentence is its
+   own line and never breaks inside. */
 .contact-where__title {
-  max-width: 12ch;
   margin: 0;
   font: var(--type-heading-1);
   letter-spacing: var(--tracking-heading-1);
   color: var(--color-neutral-black);
-  text-wrap: balance;
+}
+
+.contact-where__title > span {
+  display: block;
+  white-space: nowrap;
 }
 
 /* A definition list, because that is what it is: four labels and the thing each
@@ -341,11 +360,13 @@
   display: grid;
   gap: var(--space-2) var(--space-6);
   padding-block: clamp(var(--space-4), 2.2vw, var(--space-6));
-  border-block-start: 1px solid var(--color-neutral-gray-200);
+  /* Gray-400, not gray-200: on the band's gray-100 the lighter rule all but
+     vanished (1.1:1), and the rows stopped reading as a list. */
+  border-block-start: 1px solid var(--color-neutral-gray-400);
 }
 
 .contact-row:last-child {
-  border-block-end: 1px solid var(--color-neutral-gray-200);
+  border-block-end: 1px solid var(--color-neutral-gray-400);
 }
 
 /* Each row on the grid as well, the label on the value's centre line however
@@ -379,6 +400,7 @@
   align-items: center;
   gap: var(--space-3);
   font: var(--type-tag);
+  font-weight: 500;
   letter-spacing: var(--tracking-tag);
   line-height: 1;
   text-transform: uppercase;
@@ -394,7 +416,8 @@
   width: 34px;
   height: 34px;
   flex: none;
-  border: 1px solid var(--color-neutral-gray-200);
+  /* The tag's outline, ink at 32%: the gray-200 frame was lost on the band. */
+  border: 1px solid var(--color-neutral-black-32);
   border-radius: 10px;
   background: none;
   color: var(--color-neutral-black-60);
@@ -414,7 +437,31 @@
   color: var(--color-neutral-black);
 }
 
-.contact-row__value a {
+/* Stacked (below 640px, where label and value share no row): the icon stands
+   in the row's margin, and the label and its value sit together beside it —
+   4px apart, both on the same indent (the icon frame and the gap after it),
+   the icon's top edge on the label's. Proximity: the pair reads as one item,
+   the rule and the row padding separate the items. */
+@media (max-width: 39.999em) {
+  .contact-row {
+    position: relative;
+    row-gap: var(--space-1);
+    padding-inline-start: calc(34px + var(--space-3));
+    min-height: calc(34px + 2 * var(--space-4));
+  }
+
+  .contact-row__label {
+    display: block;
+  }
+
+  .contact-row__mark {
+    position: absolute;
+    left: 0;
+    top: var(--space-4);
+  }
+}
+
+.contact-row__value > a {
   justify-self: start;
   color: inherit;
   text-decoration: none;
@@ -423,7 +470,7 @@
 }
 
 @media (hover: hover) {
-  .contact-row__value a:hover {
+  .contact-row__value > a:hover {
     border-block-end-color: var(--color-neutral-black);
   }
 }
@@ -460,17 +507,27 @@
    legible whatever is under it. */
 .contact-map__link {
   position: absolute;
-  bottom: clamp(16px, 2.4vw, 28px);
+  /* Level with Google's own round camera control in the map's bottom-right
+     corner, at every width: that control stands 24px off the foot of the
+     frame and is 40px tall, so the button takes both. (The map-type
+     thumbnail, bottom-left, sits 12px lower; it is Google's, inside the
+     frame, and cannot be moved from here.) */
+  bottom: 24px;
   left: 50%;
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
+  height: 40px;
+  padding: 0 var(--space-4);
   border-radius: var(--radius-pill);
   background-color: var(--color-neutral-black);
   font: var(--type-body-large-emphasis);
   letter-spacing: var(--tracking-body-large-emphasis);
   line-height: 1;
+  /* Positioned from the centre line, it is only offered the right half of the
+     map to fit in, and on a phone "Open in Google Maps" wrapped there. It
+     keeps one line. */
+  white-space: nowrap;
   color: var(--color-brand-surface);
   text-decoration: none;
   transform: translateX(-50%);
@@ -486,4 +543,14 @@
 .contact-map__link:focus-visible {
   outline: 3px solid var(--color-neutral-black);
   outline-offset: 3px;
+}
+
+/* Phones: the two ledes at the site's 16px reading line, as on the About
+   page; the notes around the form (caution, help, consent) stay at 14px. */
+@media (max-width: 47.999em) {
+  .contact-write__lede,
+  .contact-note__lede {
+    font: var(--type-body-large);
+    letter-spacing: var(--tracking-body-large);
+  }
 }
