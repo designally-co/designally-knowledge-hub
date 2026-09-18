@@ -66,16 +66,6 @@
   scroll-snap-align: start;
 }
 
-/* Two to a phone screen, a card is ~150px wide: at the 20px card title a
-   headline ran five and six lines. The Resources cards step down the same
-   way there. */
-@media (max-width: 47.999em) {
-  .case-studies__card .article-card__title {
-    font: var(--type-body-large-emphasis);
-    letter-spacing: var(--tracking-body-large-emphasis);
-  }
-}
-
 /* The section only pads its left edge (the track bleeds right), so the row
    restores the right one to sit on the same content width as every other
    section. */

@@ -136,6 +136,13 @@
   margin: 0;
 }
 
+@media (max-width: 47.999em) {
+  .article__meta {
+    font: var(--type-body-small);
+    letter-spacing: var(--tracking-body-small);
+  }
+}
+
 /* Cover sits inside the same left/right gutter as the header text, so its edges
    line up with the title above it. */
 .article__cover {

@@ -80,6 +80,13 @@
   margin: clamp(var(--space-2), 1.5vw, var(--space-3)) 0 0;
 }
 
+@media (max-width: 47.999em) {
+  .resource-page__date {
+    font: var(--type-body-small);
+    letter-spacing: var(--tracking-body-small);
+  }
+}
+
 /* --- Download card ------------------------------------------------------
    The object the page exists to hand over: a heading that names the act, the
    files, and the terms they come under — one card rather than a panel with the

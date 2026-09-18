@@ -175,6 +175,15 @@
   white-space: nowrap;
 }
 
+/* Phones: a size down, to sit with the 16px card titles under it — 10px
+   capitals and 8px either side, about 20px tall. */
+@media (max-width: 47.999em) {
+  .tag {
+    padding: var(--space-1) var(--space-2);
+    font-size: 10px;
+  }
+}
+
 /* The outline is the label colour two steps lighter: neutral-black-32 on the
    default tag. */
 .tag--ink { color: var(--color-neutral-black); }
@@ -355,6 +364,19 @@
 
 .article-card__plate .article-card__date { margin-top: var(--space-3); }
 
+/* On a phone every card title, article or resource, lead or paired, is set in
+   the standard body line: 16px, at a medium 500 — the emphasis weight's 600
+   read heavy stacked down a list. The 20-32px card sizes are for rows of
+   cards on a wider screen. */
+@media (max-width: 47.999em) {
+  .article-card .article-card__title,
+  .resource-card .resource-card__title {
+    font: var(--type-body-large-emphasis);
+    font-weight: 500;
+    letter-spacing: var(--tracking-body-large-emphasis);
+  }
+}
+
 @media (min-width: 48em) {
   .article-card--overlay .article-card__media {
     aspect-ratio: var(--card-ratio, 21 / 9);
@@ -406,12 +428,31 @@
   padding: clamp(var(--space-4), 6.5%, var(--space-6)) clamp(var(--space-4), 6%, var(--space-6)) 0;
 }
 
-.resource-card__doc-title {
-  font: var(--type-heading-5);
-  letter-spacing: var(--tracking-heading-5);
-  color: var(--color-neutral-white);
-  display: block;
+/* The name on the document, sized to the folder (7.5% of its width, 11-20px)
+   and set tight, so it stays on the part of the document that shows above the
+   pocket: three lines at most, which on a phone's 2-up tile (the pocket ~40px
+   down) needs the document's top padding cut to 8px. The pocket's blurred
+   copy matches it. */
+.resource-card__doc-title,
+.resource-card__pocket-cover-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
   max-width: 90%;
+  color: var(--color-neutral-white);
+  font: var(--type-heading-5);
+  font-size: clamp(11px, 7.5cqw, 20px);
+  line-height: 1.2;
+  letter-spacing: var(--tracking-heading-5);
+}
+
+@media (max-width: 47.999em) {
+  .resource-card__doc,
+  .resource-card__pocket-cover {
+    padding-top: var(--space-2);
+  }
 }
 
 /* Category glyph, sitting bottom-right of the document panel. Resources carry
@@ -439,11 +480,6 @@
   mask: var(--folder-mask) no-repeat 0 0 / 100% 100%;
 }
 
-@media (max-width: 47.999em) {
-  .resource-card__figure { border-radius: var(--space-2); }
-  .resource-card__doc { border-radius: var(--space-1); }
-}
-
 .resource-card__pocket-cover {
   position: absolute;
   right: 16px;
@@ -454,14 +490,6 @@
   background: var(--doc-color, var(--color-accent-orange));
   padding: clamp(var(--space-4), 6.5%, var(--space-6)) clamp(var(--space-4), 6%, var(--space-6)) 0;
   filter: blur(38px) saturate(0.8) brightness(1.08);
-}
-
-.resource-card__pocket-cover-title {
-  display: block;
-  max-width: 90%;
-  color: var(--color-neutral-white);
-  font: var(--type-heading-5);
-  letter-spacing: var(--tracking-heading-5);
 }
 
 .resource-card__pocket::after {
@@ -495,6 +523,15 @@
   letter-spacing: var(--tracking-body);
   color: var(--color-neutral-black-60);
   margin: 0;
+}
+
+/* Phones: dates a size down with the tags, 12px, under the 16px titles. */
+@media (max-width: 47.999em) {
+  .article-card .article-card__date,
+  .resource-card .resource-card__date {
+    font: var(--type-body-small);
+    letter-spacing: var(--tracking-body-small);
+  }
 }
 
 /* Formats the download ships in. Quieter than the date: it is reference detail,

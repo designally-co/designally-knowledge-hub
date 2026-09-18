@@ -53,36 +53,23 @@
   }
 }
 
-/* Phones keep two columns rather than dropping to one. Eight full-width
-   squares stacked ran the section past 3,000px of scroll for what is a row of
-   browsable objects; at 2-up the same set is half the height and still reads,
-   because the folder art is drawn in container units and scales with the tile.
-   Below 22em there genuinely is not room, so it drops to one. */
-@media (max-width: 30em) {
+/* Phones: two to a row, two columns of the four each, four resources and
+   then the banner across the row. Eight full-width squares stacked ran the
+   section past 3,000px of scroll for what is a row of browsable objects; the
+   folder art is drawn in container units, so it scales with the tile. Below
+   22em there genuinely is not room, so it drops to one. */
+@media (max-width: 47.999em) {
   .resources__grid {
     gap: var(--space-6) var(--grid-gap);
-  }
-
-  .resources__grid .resource-card__title {
-    font: var(--type-body-large-emphasis);
-    letter-spacing: var(--tracking-body-large-emphasis);
   }
 
   .resources__grid .resource-card {
     gap: var(--space-3);
   }
 
-  /* Seven cards plus a row-spanning banner would leave one dead cell in the
-     last row. Six fills three clean rows with the banner closing the block. */
-  .resources__grid .resource-card:nth-of-type(7) {
+  /* Four cards fill two clean rows, and the banner closes the block. */
+  .resources__grid .resource-card:nth-of-type(n + 5) {
     display: none;
-  }
-
-  /* The doc-panel title is sized in cqw, but its 22px floor was written for a
-     full-width tile and would not step down inside a 165px one. */
-  .resources__grid .resource-card__doc-title,
-  .resources__grid .resource-card__pocket-cover-title {
-    font-size: clamp(13px, 8cqw, 30px);
   }
 
   /* A 165px square is too small for the heading and the art together, so the

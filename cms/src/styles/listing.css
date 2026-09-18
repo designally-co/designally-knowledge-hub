@@ -536,21 +536,9 @@
   }
 }
 
-/* The folder art is drawn in container units and follows the tile down on its
-   own, but the type inside it has floors written for a full-width card: at
-   161px the doc title held 22px and ran off its panel. The homepage's own
-   2-up grid steps the same values down. */
+/* A 2-up tile on a phone: the folder art and the name on it scale with the
+   tile (components.css); only the card's own rhythm tightens here. */
 @media (max-width: 35.999em) {
-  .listing-grid--uniform .resource-card__doc-title,
-  .listing-grid--uniform .resource-card__pocket-cover-title {
-    font-size: clamp(13px, 8cqw, 30px);
-  }
-
-  .listing-grid--uniform .resource-card__title {
-    font: var(--type-body-large-emphasis);
-    letter-spacing: var(--tracking-body-large-emphasis);
-  }
-
   .listing-grid--uniform .resource-card {
     gap: var(--space-3);
   }

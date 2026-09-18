@@ -54,13 +54,6 @@
   .insights__grid > .promo-cell { grid-column: 1 / -1; }
   .insights__grid > .insights__card:nth-child(n + 4) { display: none; }
 
-  /* Two to a row, a card is ~165px wide: its title steps down to 16px, as
-     the Case Studies and Resources cards do there. */
-  .insights__card:not(:first-child) .article-card__title {
-    font: var(--type-body-large-emphasis);
-    letter-spacing: var(--tracking-body-large-emphasis);
-  }
-
   .insights__banner {
     aspect-ratio: auto;
     min-height: clamp(112px, 14vw, 176px);

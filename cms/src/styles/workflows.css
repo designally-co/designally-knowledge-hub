@@ -49,6 +49,13 @@
   color: var(--color-neutral-black-60);
 }
 
+@media (max-width: 47.999em) {
+  .workflows__date {
+    font: var(--type-body-small);
+    letter-spacing: var(--tracking-body-small);
+  }
+}
+
 /* --- Featured (left) --- */
 
 .workflows__feature {
@@ -96,6 +103,8 @@
 .workflows__row {
   border-top: 1px solid var(--color-neutral-gray-200);
 }
+/* The first row shown has no rule above it: the lead row on a phone, the one
+   after it from tablet up, where the lead row is hidden. */
 .workflows__row:first-child {
   border-top: 0;
 }
@@ -128,11 +137,31 @@
 @media (max-width: 47.999em) {
   .workflows__row-media { grid-column: 1 / span 1; }
   .workflows__row-link > .workflows__body { grid-column: 2 / -1; }
+
+  /* The standard 16px card title, as every card has on a phone. */
+  .workflows__row-link .workflows__row-title {
+    font: var(--type-body-large-emphasis);
+    font-weight: 500;
+    letter-spacing: var(--tracking-body-large-emphasis);
+  }
 }
 
 /* First row starts flush with the featured cover on the same top plane. */
 .workflows__row:first-child .workflows__row-link {
   padding-top: 0;
+}
+
+/* Phone: the list is the whole section, the lead article its first row. From
+   tablet up the lead is the large story again and its row stands down. */
+@media (max-width: 47.999em) {
+  .workflows__feature { display: none; }
+}
+
+@media (min-width: 48em) {
+  .workflows__row--lead { display: none; }
+
+  .workflows__row--lead + .workflows__row { border-top: 0; }
+  .workflows__row--lead + .workflows__row .workflows__row-link { padding-top: 0; }
 }
 
 .workflows__row-media {

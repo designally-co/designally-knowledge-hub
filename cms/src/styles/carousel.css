@@ -127,6 +127,13 @@
   opacity: var(--emph);
 }
 
+@media (max-width: 47.999em) {
+  .carousel__date {
+    font: var(--type-body-small);
+    letter-spacing: var(--tracking-body-small);
+  }
+}
+
 /* The rail already animates emphasis from position, and it is a drag surface,
    so hover stays out of its way: no scale, no shadow (both are driven by
    --emph), just the rule marking which card the cursor would open. Pointer
