@@ -108,9 +108,10 @@
     text-decoration-color var(--hover-state-dur) var(--ease-out-quart),
     text-underline-offset var(--hover-state-dur) var(--ease-out-quart);
   font-family: var(--font-sans);
-  /* 14px/400 passing -> 22px/700 emphasised, continuously. */
+  /* 14px/400 passing -> 22px/500 emphasised, continuously. Medium, not bold:
+     at 22px the size already marks it out, and 700 read heavy. */
   font-size: calc(14px + 8px * var(--emph));
-  font-weight: calc(400 + 300 * var(--emph));
+  font-weight: calc(400 + 100 * var(--emph));
   line-height: 1.3;
   display: -webkit-box;
   -webkit-box-orient: vertical;

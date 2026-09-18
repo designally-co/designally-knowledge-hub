@@ -166,6 +166,9 @@
   align-items: center;
   padding: var(--space-1) var(--space-3);
   font: var(--type-tag);
+  /* Medium, not the tag style's bold: small capitals at 700 shouted over the
+     titles they label. */
+  font-weight: 500;
   letter-spacing: var(--tracking-tag);
   line-height: 1;
   text-transform: uppercase;
@@ -220,6 +223,9 @@
   .topic-pill--md { padding: var(--space-3) var(--space-6); font: var(--type-heading-5); letter-spacing: var(--tracking-heading-5); line-height: 1; }
   .topic-pill--lg { padding: var(--space-3) var(--space-6); font: var(--type-heading-5); letter-spacing: var(--tracking-heading-5); line-height: 1; }
 }
+
+/* Every size at medium weight, over the size styles' bold. */
+.topic-pill:is(.topic-pill--sm, .topic-pill--md, .topic-pill--lg) { font-weight: 500; }
 
 .topic-pill--active {
   background: var(--color-neutral-black);
@@ -643,6 +649,7 @@
   border-radius: var(--radius-pill);
   border: 1px solid var(--border-label-32);
   font: var(--type-overline);
+  font-weight: 500;
   letter-spacing: var(--tracking-overline);
   line-height: 1;
   color: var(--color-neutral-black);
