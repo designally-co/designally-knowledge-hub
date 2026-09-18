@@ -54,6 +54,22 @@
   width: 100%;
 }
 
+/* Below the desktop the folder stands on its own above the title: smaller
+   than the column and centred — three of a phone's four columns wide, four
+   of a tablet's eight — so the title and the files come into view with it. */
+@media (max-width: 63.999em) {
+  .resource-aside__art {
+    max-width: calc(4 * var(--column-width) + 3 * var(--grid-gap));
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 47.999em) {
+  .resource-aside__art {
+    max-width: calc(3 * var(--column-width) + 2 * var(--grid-gap));
+  }
+}
+
 .resource-main {
   min-width: 0;
 }
@@ -109,6 +125,8 @@
 
 .resource-dl__title {
   font: var(--type-heading-5);
+  /* 600, as the article's section headings. */
+  font-weight: 600;
   letter-spacing: var(--tracking-heading-5);
   color: var(--color-neutral-black);
   margin: 0;
@@ -270,6 +288,7 @@
 
 .resource-page__label {
   font: var(--type-tag);
+  font-weight: 500;
   letter-spacing: var(--tracking-tag);
   line-height: 1;
   text-transform: uppercase;
@@ -286,11 +305,14 @@
 
 .resource-page__body p:last-child { margin-bottom: 0; }
 
+/* The article page's "Related articles" heading, so the two detail pages
+   close the same way: the serif heading-1, 24px over the cards. */
 .resource-page__section-title {
-  font: var(--type-heading-5);
-  letter-spacing: var(--tracking-heading-5);
+  font: var(--type-heading-1);
+  letter-spacing: var(--tracking-heading-1);
   color: var(--color-neutral-black);
-  margin: 0 0 clamp(var(--space-4), 2.5vw, var(--space-6));
+  margin: 0 0 var(--space-6);
+  text-wrap: balance;
 }
 
 /* Related sits full width below the grid, with a rule to close the reading
