@@ -528,13 +528,6 @@
   .article__related-grid { row-gap: var(--space-6); }
 }
 
-/* Two to a row, the covers share one 3:4 frame (as the home's Insights pair
-   does), cropped to fill, so the pair lines up instead of a short cover
-   beside a tall one. The desktop's row of four keeps each cover's shape. */
-@media (max-width: 63.999em) {
-  .article__related-grid .article-card__media { aspect-ratio: 3 / 4; }
-}
-
 @media (min-width: 64em) {
   .article__related-grid {
     grid-template-columns: repeat(4, 1fr);
