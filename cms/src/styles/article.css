@@ -109,12 +109,27 @@
 /* heading-4, a space-6 gap under the title. */
 .article__dek {
   font: var(--type-heading-4);
+  /* Medium, not the style's 600: a standfirst reads as the opening of the
+     text under the headline, not a second headline. */
+  font-weight: 500;
   letter-spacing: var(--tracking-heading-4);
   color: var(--color-neutral-black);
   margin: var(--space-6) 0 0;
   max-width: 60ch;
   text-wrap: pretty;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Phone: at 24px under a 34px headline the standfirst read as a second
+   headline. The 16px body line, at medium weight, sets it clearly under the
+   title; the weight keeps it apart from the body text that follows. */
+@media (max-width: 47.999em) {
+  .article__dek {
+    font: var(--type-body-large);
+    font-weight: 500;
+    letter-spacing: var(--tracking-body-large);
+    margin-top: var(--space-4);
+  }
 }
 
 .article__byline {
