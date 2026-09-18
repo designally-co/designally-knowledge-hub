@@ -17,11 +17,13 @@ import { getDictionary, isLocale, type Locale } from '@/lib/i18n'
  */
 
 const CONTACT = {
-  /* The studio, as given. `mapQuery` is what the embedded map and the "Open in
-     Google Maps" link search for: the address as Google itself spells it (the
-     plus code it replaced resolved to the wrong spot). */
+  /* The studio, as given. The map and the "Open in Google Maps" link search for
+     the studio's own Google listing — its name and street — so they open on the
+     Designally pin, with its hours, phone and reviews. The address alone, the
+     plus code (RHGJ+88 Bangkok) or its coordinates all land a few metres off,
+     on a bare dropped pin beside the listing rather than on it. */
   address: ['368 Ratchadaphisek 42 Alley, Chan Kasem', 'Chatuchak, Bangkok 10900, Thailand'],
-  mapQuery: '368 Ratchadaphisek 42 Alley, Chan Kasem, Chatuchak, Krung Thep Maha Nakhon 10900',
+  mapQuery: 'Designally, Soi Ratchadaphisek 42, Chatuchak, Bangkok',
   phone: '+66 65 005 5993',
   /* Dialling form: no spaces, and the country code as `+66`. */
   phoneHref: 'tel:+66650055993',
