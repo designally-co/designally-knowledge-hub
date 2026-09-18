@@ -510,9 +510,11 @@
   padding-block: clamp(var(--space-10), 7vw, var(--space-16));
 }
 
+/* Two to a row below the desktop — a 2x2 of the four — each card two of a
+   phone's four columns. */
 .article__related-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   row-gap: clamp(var(--space-4), 3vw, var(--space-8));
   column-gap: var(--grid-gap);
   margin-top: var(--space-6);
@@ -521,15 +523,16 @@
   align-items: start;
 }
 
-/* Phones: the site's list spacing — 24px between cards (8px inside them). */
+/* Phones take the site's list spacing: 24px between rows, 8px inside a card. */
 @media (max-width: 47.999em) {
   .article__related-grid { row-gap: var(--space-6); }
 }
 
-@media (min-width: 40em) {
-  .article__related-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* Two to a row, the covers share one 3:4 frame (as the home's Insights pair
+   does), cropped to fill, so the pair lines up instead of a short cover
+   beside a tall one. The desktop's row of four keeps each cover's shape. */
+@media (max-width: 63.999em) {
+  .article__related-grid .article-card__media { aspect-ratio: 3 / 4; }
 }
 
 @media (min-width: 64em) {
