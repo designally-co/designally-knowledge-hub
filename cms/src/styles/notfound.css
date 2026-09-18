@@ -46,6 +46,7 @@
 .notfound__code {
   margin: 0 0 clamp(var(--space-3), 1.6vw, var(--space-4));
   font: var(--type-tag);
+  font-weight: 500;
   letter-spacing: var(--tracking-tag);
   line-height: 1;
   text-transform: uppercase;
@@ -83,6 +84,7 @@
 .notfound__recent-title {
   margin: 0 0 clamp(var(--space-4), 2.6vw, var(--space-8));
   font: var(--type-heading-5);
+  font-weight: 600;
   letter-spacing: var(--tracking-heading-5);
   color: var(--color-neutral-black);
 }
@@ -101,9 +103,15 @@
   }
 }
 
-@media (max-width: 36rem) {
+/* Phones: two to a row, a 2x2 of the four, as the article page's related
+   articles — each cover at its own ratio, top-aligned, the rows 24px apart.
+   One to a row put four full-width covers under the apology, four screens of
+   pictures before the footer. */
+@media (max-width: 47.999em) {
   .notfound__grid {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    row-gap: var(--space-6);
   }
 }
 
