@@ -233,8 +233,12 @@
   border-color: var(--color-neutral-black);
 }
 
+/* Category pills are compact on touch too, 32px — except the falling topic
+   cloud, which keeps the button size (the touch target): it is the section's
+   centrepiece, not a row of filters. */
 @media (pointer: coarse) {
-  .topic-pill { min-height: var(--touch-target); }
+  .topic-pill { min-height: 32px; }
+  .topics__cloud .topic-pill { min-height: var(--touch-target); }
 }
 
 /* The scattered-sticker rotation is decorative. It costs horizontal room,
@@ -693,9 +697,10 @@
   }
 }
 
-@media (pointer: coarse) {
-  .filter-chip { min-height: var(--touch-target); }
-}
+/* Category pills are compact at every width, touch included: 32px, not the
+   40-44px touch height buttons and fields take (still well over WCAG's 24px
+   minimum target). */
+.filter-chip { min-height: 32px; }
 
 /* --- SocialLinks ------------------------------------------------------- */
 

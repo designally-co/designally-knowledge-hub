@@ -53,15 +53,7 @@
      over): three on a phone, two once the headline holds one line. The
      pill height is for the clip below. */
   --pill-rows: 3;
-  --pill-h: 34px;
-}
-
-@media (pointer: coarse) {
-  .home-topics__links { --pill-h: var(--touch-target); }
-}
-
-@media (min-width: 36em) {
-  .home-topics__links { --pill-h: 46px; }
+  --pill-h: 32px;
 }
 
 @media (min-width: 48em) {
@@ -88,12 +80,17 @@
   transform: none;
 }
 
-/* This cluster is real navigation, and at 16px text with 10px padding it drew
-   a 38px target. Height only — widening the pills would break the rhythm of
-   the cluster. */
-@media (pointer: coarse) {
-  .home-topics__pill { min-height: var(--touch-target); }
+/* The category pills' size, as the catalog's filter chips: 14px medium, 8px
+   by 16px, 32px tall at every width. */
+.home-topics__links .home-topics__pill {
+  min-height: 32px;
+  padding: var(--space-2) var(--space-4);
+  font: var(--type-label);
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  line-height: 1;
 }
+
 
 @media (hover: hover) {
   .home-topics__pill:hover {
@@ -489,9 +486,12 @@
 /* --- Count line ------------------------------------------------------- */
 /* Sits below the pager as a quiet footer count. */
 .listing-count {
-  margin: clamp(var(--space-6), 4vw, var(--space-16)) 0 0;
-  font: var(--type-heading-4);
-  letter-spacing: var(--tracking-heading-4);
+  /* A note on the pager, set as the site's notes are: 12px, muted, close
+     under the page numbers it describes. At heading-4 it outweighed the card
+     titles above it. */
+  margin: var(--space-3) 0 0;
+  font: var(--type-body-small);
+  letter-spacing: var(--tracking-body-small);
   color: var(--color-neutral-black-60);
   text-align: center;
 }

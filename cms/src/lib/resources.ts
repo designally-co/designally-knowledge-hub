@@ -416,6 +416,10 @@ export interface ArticleListingOptions {
   locale?: Locale
 }
 
+/** Items per page on the catalog pages (articles by category or tag, and
+    resources); the pager takes over past it. */
+export const CATALOG_PAGE_SIZE = 10
+
 /**
  * A filtered, paginated slice of published articles, newest first — the engine
  * behind the category and tag listing pages and search. `tag` (exact) takes
@@ -428,7 +432,7 @@ export async function getArticleListing({
   tag,
   q,
   page = 1,
-  perPage = 15,
+  perPage = CATALOG_PAGE_SIZE,
   locale = 'en',
 }: ArticleListingOptions): Promise<Listing<CarouselItem>> {
   const empty: Listing<CarouselItem> = { items: [], total: 0, totalPages: 0, page, perPage }
@@ -555,7 +559,7 @@ export async function getResourceListing({
   category,
   q,
   page = 1,
-  perPage = 15,
+  perPage = CATALOG_PAGE_SIZE,
   locale = 'en',
 }: ResourceListingOptions): Promise<Listing<ResourceItem>> {
   const empty: Listing<ResourceItem> = { items: [], total: 0, totalPages: 0, page, perPage }

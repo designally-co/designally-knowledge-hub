@@ -218,7 +218,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  min-height: 34px;
+  min-height: 32px;
   padding: 0 var(--space-3);
   border: 1px solid color-mix(in srgb, var(--color-neutral-black) 30%, transparent);
   border-radius: var(--radius-pill);
@@ -278,9 +278,7 @@
   }
 }
 
-@media (pointer: coarse) {
-  .search-chip { min-height: var(--touch-target); }
-}
+
 
 .search-trending {
   display: grid;
@@ -289,9 +287,9 @@
   align-items: start;
 }
 
-@media (max-width: 35.999em) {
-  .search-trending { grid-template-columns: minmax(0, 1fr); }
-}
+/* Two to a row at every width — a 2x2 of four on a phone, each card two of
+   its four columns — the covers at their own ratios, top-aligned, as the
+   article page's related articles. */
 
 /* --- Results: tabs, count, grid ------------------------------------------ */
 .search-tabs {
@@ -423,15 +421,6 @@
    under the band. */
 .search-page .search-note {
   margin: 0 0 clamp(var(--space-10), 5vw, var(--space-16));
-}
-
-/* Under the compact pager, at its scale rather than the category pages' 28px.
-   Two classes: listing.css loads after this file and sets .listing-count's
-   font at one. */
-.listing-count.search-page__showing {
-  margin-top: clamp(var(--space-4), 2vw, var(--space-6));
-  font: var(--type-body-large-emphasis);
-  letter-spacing: var(--tracking-body-large-emphasis);
 }
 
 @media (prefers-reduced-motion: reduce) {

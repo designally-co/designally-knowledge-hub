@@ -615,6 +615,12 @@
   margin-bottom: clamp(var(--space-8), 6vw, var(--space-16));
 }
 
+/* Phones: no rule under the tagline — the first group's own row opens the
+   lists, and the rules between the groups carry on from there. */
+@media (max-width: 47.999em) {
+  .site-footer__rule { display: none; }
+}
+
 .site-footer__cols {
   display: grid;
   grid-template-columns: 1fr;

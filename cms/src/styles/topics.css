@@ -76,6 +76,7 @@
   .topics__cloud .topic-pill--lg {
     padding: var(--space-2) var(--space-4);
     font: var(--type-overline);
+    font-weight: 500;
     letter-spacing: var(--tracking-overline);
     line-height: 1;
   }
