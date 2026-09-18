@@ -129,6 +129,10 @@
   box-shadow: 0 1px 2px var(--color-neutral-black-12);
 }
 
+@media (max-width: 47.999em) {
+  .cta__form { border-radius: var(--space-2); }
+}
+
 .cta__input {
   flex: 1;
   min-width: 0;

@@ -592,6 +592,10 @@
   border-radius: 14px;
 }
 
+@media (max-width: 47.999em) {
+  .article-refs__list { border-radius: var(--space-2); }
+}
+
 .article-refs__chip {
   display: inline-flex;
   align-items: center;

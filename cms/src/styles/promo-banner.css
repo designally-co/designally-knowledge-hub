@@ -53,7 +53,7 @@
   min-height: clamp(112px, 14vw, 176px);
   padding: clamp(var(--space-6), 4vw, var(--space-10));
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   background: var(--promo-bg, var(--color-category-blue-light));
   color: var(--color-neutral-black);
   font: var(--type-heading-1);
@@ -228,8 +228,9 @@
   gap: var(--space-4);
   min-height: var(--touch-target);
   padding-block: var(--space-3);
-  border-top: 1px solid var(--color-neutral-black);
-  border-bottom: 1px solid var(--color-neutral-black);
+  /* Rules lighter than the label, as a chip's outline is: its ink at 32%. */
+  border-top: 1px solid var(--border-label-32);
+  border-bottom: 1px solid var(--border-label-32);
   color: var(--color-neutral-black);
   font: var(--type-heading-5);
   letter-spacing: var(--tracking-heading-5);

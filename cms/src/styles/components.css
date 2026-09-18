@@ -439,6 +439,11 @@
   mask: var(--folder-mask) no-repeat 0 0 / 100% 100%;
 }
 
+@media (max-width: 47.999em) {
+  .resource-card__figure { border-radius: var(--space-2); }
+  .resource-card__doc { border-radius: var(--space-1); }
+}
+
 .resource-card__pocket-cover {
   position: absolute;
   right: 16px;

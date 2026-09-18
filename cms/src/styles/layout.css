@@ -362,6 +362,10 @@
   animation: locale-menu-in 0.16s var(--ease-out-quart) both;
 }
 
+@media (max-width: 47.999em) {
+  .locale-switcher__menu { border-radius: var(--space-2); }
+}
+
 /* Set when a right-anchored menu would have opened off the left of the screen —
    see the measurement in LocaleSwitcher. */
 .locale-switcher__menu--start {

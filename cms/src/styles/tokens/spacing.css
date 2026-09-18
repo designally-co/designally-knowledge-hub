@@ -105,5 +105,9 @@
     --grid-columns: 4;
     --content-columns: 4;
     --grid-gap: var(--space-3);
+    /* Corners at phone scale: a 16-20px radius is a large bite out of a
+       343px block, so every card, banner and frame takes 8px here. */
+    --radius-card: var(--space-2);
+    --radius-hero: var(--space-2);
   }
 }
