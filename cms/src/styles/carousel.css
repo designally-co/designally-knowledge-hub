@@ -145,9 +145,9 @@
   }
 }
 
-/* Paper mist fading both edges, over the card before the emphasis card and the
-   last card in the row. HeroCarousel drops the left one when the emphasis card
-   itself sits at the left edge. */
+/* Paper mist fading both edges: over the card before the emphasis card and the
+   last card in the row on a wide screen, over the two neighbours peeking
+   beside the centred emphasis card on a phone. */
 .carousel__mist {
   position: absolute;
   top: 0;

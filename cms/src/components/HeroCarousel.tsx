@@ -24,19 +24,27 @@ const MIN_UNIT = 140
 // Every cover takes the same square frame (images crop to it), so the row sums
 // to the screen width exactly whichever card holds the emphasis.
 const CARD_RATIO = 1
+// On a phone, how much of each neighbour shows beside the centred emphasis card.
+const PEEK = 40
 
 type Metrics = {
   unit: number // width of a passing card
   visible: number
+  gap: number // between cards
+  inset: number // where the row starts when the emphasis card leads (phones)
 }
 
-/** The most cards (up to MAX_VISIBLE) that fit across `w`, and their width. */
+/** The most cards (up to MAX_VISIBLE) that fit across `w`, and their width.
+    With three or more, the rail runs edge to edge. Narrower (phones), the
+    emphasis card sits in the middle with PEEK of each neighbour either side,
+    faded by the mists, so the row reads as going both ways. */
 function fitRow(w: number): Metrics {
-  for (let n = MAX_VISIBLE; n > 1; n--) {
+  for (let n = MAX_VISIBLE; n > 2; n--) {
     const unit = (w - (n - 1) * GAP) / (n - 1 + EMPH_SCALE)
-    if (unit >= MIN_UNIT) return { unit, visible: n }
+    if (unit >= MIN_UNIT) return { unit, visible: n, gap: GAP, inset: 0 }
   }
-  return { unit: w / EMPH_SCALE, visible: 1 }
+  const emph = w - 2 * (PEEK + GAP)
+  return { unit: emph / EMPH_SCALE, visible: 2, gap: GAP, inset: (w - emph) / 2 }
 }
 
 /* A single carousel card. The emphasised card is a real 1.5x taller box and
@@ -122,15 +130,14 @@ export function HeroCarousel({
     return () => ro.disconnect()
   }, [])
 
-  const { unit, visible } = metrics
+  const { unit, visible, gap, inset } = metrics
   const railH1 = unit / CARD_RATIO
   const railH2 = railH1 * EMPH_SCALE
-  const step = unit + GAP
+  const step = unit + gap
   // A full row of clones either side, so the seam is never on screen.
   const clones = visible + 1
-  // The card that just left the emphasis stays on screen to its left. With two
-  // cards or fewer (phones) that would pin the emphasis card to the right edge,
-  // so there it leads instead.
+  // The card that just left the emphasis stays on screen to its left. On a
+  // phone the emphasis card leads instead, pushed in by `inset` to the middle.
   const lead = visible >= 3 ? 1 : 0
 
   const car = useCarousel({ count: len, clones, autoAdvanceMs: DWELL })
@@ -159,7 +166,7 @@ export function HeroCarousel({
   const nearestTo = (target: number) =>
     Math.max(0, Math.min(strip.length - 1, Math.round(target / step)))
 
-  const translateX = -offsetAt(car.pos - lead) + dragDelta
+  const translateX = -offsetAt(car.pos - lead) + inset + dragDelta
   const activePos = dragging ? nearestTo(offsetAt(car.pos) - dragDelta) : car.pos
 
   // ---- Swipe / drag interaction ----
@@ -224,7 +231,7 @@ export function HeroCarousel({
           {
             '--rail-h1': `${railH1}px`,
             '--rail-h2': `${railH2}px`,
-            '--carousel-gap': `${GAP}px`,
+            '--carousel-gap': `${gap}px`,
           } as React.CSSProperties
         }
         onPointerDown={onPointerDown}
@@ -273,7 +280,9 @@ export function HeroCarousel({
             />
           ))}
         </div>
-        {lead > 0 && <div className="carousel__mist carousel__mist--left" />}
+        {/* Both edges fade: over the card that just left the emphasis on a
+            wide screen, over the neighbour peeking beside it on a phone. */}
+        <div className="carousel__mist carousel__mist--left" />
         <div className="carousel__mist carousel__mist--right" />
       </div>
     </section>

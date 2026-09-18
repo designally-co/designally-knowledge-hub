@@ -133,15 +133,21 @@
 /* THE LABEL KEEPS THE LEFT AND THE STATEMENT TAKES THE RIGHT — the same
    arrangement the About page's "Why we exist" uses, and for the same reason:
    the section's name is a margin note, and the sentence is the section. */
-/* On the grid, as on the About page: the label on 1-4, the statement on
-   6-12, column 5 open between. */
-@media (min-width: 900px) {
+/* On the grid, as on the About page: tablet (8 columns) the label on 1-3 and
+   the statement on 4-8; desktop (12) the label on 1-4, the statement on 6-12,
+   column 5 open between. */
+@media (min-width: 48em) {
   .news-why__inner {
     grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
     column-gap: var(--grid-gap);
     align-items: start;
   }
 
+  .news-why__inner > .news-why__label { grid-column: 1 / span 3; }
+  .news-why__inner > .news-why__statement { grid-column: 4 / span 5; }
+}
+
+@media (min-width: 64em) {
   .news-why__inner > .news-why__label { grid-column: 1 / span 4; }
   .news-why__inner > .news-why__statement { grid-column: 6 / span 7; }
 }
@@ -176,7 +182,7 @@
   list-style: none;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 48em) {
   .news-cards {
     grid-column: 1 / -1;
   }
@@ -271,7 +277,11 @@
     flex-direction: column;
   }
 
+  /* Stacked, each card is as tall as its words: the row's `flex: 1 1 0`
+     would otherwise share out a column with no height, and crush all three
+     to their padding with the text spilling over the footer. */
   .news-card {
+    flex: none;
     transform: none;
     min-height: 0;
   }

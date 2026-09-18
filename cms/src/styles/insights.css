@@ -38,6 +38,29 @@
   aspect-ratio: 3 / 4;
 }
 
+/* One column on a phone, where a full-width 3:4 tile runs ~460px tall for a
+   one-word heading. It takes the wide strip the Resources banner takes there
+   instead: heading on the left, art standing on the right. */
+@media (max-width: 35.999em) {
+  .insights__banner {
+    aspect-ratio: auto;
+    min-height: clamp(112px, 14vw, 176px);
+  }
+
+  .insights__banner .promo-banner__content {
+    max-width: 68%;
+  }
+
+  .insights__banner .promo-banner__art {
+    right: 12px;
+    left: auto;
+    width: auto;
+    max-width: 46%;
+    height: 92%;
+    max-height: none;
+  }
+}
+
 @media (min-width: 36em) {
   .insights__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

@@ -109,16 +109,15 @@
   height: 52%;
 }
 
+/* Tablet: the middle six of eight columns; desktop: the middle eight of 12. */
 @media (min-width: 48em) {
   .case-studies__banner {
-    grid-column: 3 / span 8;
+    grid-column: 2 / span 6;
   }
 
   .case-studies__banner .promo-banner__content {
     max-width: 66%;
   }
-
-
 
   .case-studies__banner .promo-banner__art {
     max-width: 44%;
@@ -136,6 +135,10 @@
    fill the content width and line up with the grids below. The track runs on
    into the right margin, where the next card shows. */
 @media (min-width: 64em) {
+  .case-studies__banner {
+    grid-column: 3 / span 8;
+  }
+
   .case-studies__track {
     grid-auto-columns: calc(3 * var(--column-width) + 2 * var(--grid-gap));
   }

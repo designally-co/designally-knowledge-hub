@@ -370,13 +370,17 @@
 .listing-controls.search-page__controls { align-items: center; }
 
 .search-page__controls > .search-page__count {
-  grid-column: 10 / span 3;
+  grid-column: 6 / span 3;
   justify-self: end;
   margin: 0;
   color: var(--color-neutral-black-60);
   font: var(--type-body-large-emphasis);
   letter-spacing: var(--tracking-body-large-emphasis);
   white-space: nowrap;
+}
+
+@media (min-width: 64em) {
+  .search-page__controls > .search-page__count { grid-column: 10 / span 3; }
 }
 
 /* Below 48em the row stacks; the count sits under the tabs, at the start. */

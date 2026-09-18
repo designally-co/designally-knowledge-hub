@@ -60,7 +60,7 @@
    Below 22em there genuinely is not room, so it drops to one. */
 @media (max-width: 30em) {
   .resources__grid {
-    gap: var(--space-3);
+    gap: var(--space-6) var(--grid-gap);
   }
 
   .resources__grid .resource-card__title {

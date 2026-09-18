@@ -267,12 +267,12 @@
   overflow-wrap: anywhere;
 }
 
-/* On the grid from tablet up: the intro holds columns 1-10 (48-64em), then
-   1-6, rather than a character count, so its right edge falls on a column
-   line. Both keep it to about three lines. */
+/* On the grid from tablet up: the intro holds columns 1-6 of the tablet's 8,
+   then 1-6 of 12, rather than a character count, so its right edge falls on a
+   column line. Both keep it to about three lines. */
 @media (min-width: 48em) and (max-width: 63.999em) {
   .listing-hero__desc {
-    max-width: calc(10 * var(--column-width) + 9 * var(--grid-gap));
+    max-width: calc(6 * var(--column-width) + 5 * var(--grid-gap));
   }
 }
 
@@ -297,8 +297,8 @@
    box holds the last columns, so the search never wraps under the pills. The
    search takes more columns as they narrow, to stay a usable width. One empty
    column separates them, so the last pill never crowds the field:
-   48-64em filters 1-6 / search 8-12, 64-80em 1-7 / 9-12, from 80em 1-8 / 10-12.
-   Below 48em the two stack. */
+   48-64em (8 columns) filters 1-4 / search 6-8, 64-80em 1-7 / 9-12, from 80em
+   1-8 / 10-12. Below 48em the two stack. */
 .listing-controls {
   display: grid;
   grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
@@ -307,8 +307,8 @@
   margin-bottom: clamp(var(--space-10), 5vw, var(--space-16));
 }
 
-.listing-controls > .listing-filters { grid-column: 1 / span 6; }
-.listing-controls > .listing-search { grid-column: 8 / span 5; }
+.listing-controls > .listing-filters { grid-column: 1 / span 4; }
+.listing-controls > .listing-search { grid-column: 6 / span 3; }
 
 @media (min-width: 64em) {
   .listing-controls > .listing-filters { grid-column: 1 / span 7; }
@@ -327,17 +327,27 @@
   min-width: 0;
 }
 
-/* Six filters at 44px tall ran to three rows on a phone, so the controls cost
-   more height than the first row of results. Smaller here: still 34px, well
-   over the 24px minimum target, and the row it saves goes back to the grid. */
-@media (max-width: 35.999em) {
-  .listing-filters {
-    gap: var(--space-2);
+/* A phone holds the filters on one row that scrolls sideways, run out to the
+   screen edges so the next chip shows it can scroll. Wrapped, a dozen filters
+   stacked five rows deep ahead of the first result; in a row they cost one,
+   and keep their full 44px touch height. */
+@media (max-width: 47.999em) {
+  .listing-controls > .listing-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    margin-inline: calc(-1 * var(--page-gutter));
+    padding-inline: var(--page-gutter);
+    scroll-padding-inline: var(--page-gutter);
   }
 
-  .listing-filters .filter-chip {
-    padding: var(--space-1) var(--space-3);
-    min-height: 34px;
+  .listing-controls > .listing-filters::-webkit-scrollbar { display: none; }
+
+  .listing-controls > .listing-filters > * {
+    flex: none;
+    scroll-snap-align: start;
   }
 }
 
@@ -381,6 +391,31 @@
 
 .listing-search__input:focus {
   outline: none;
+}
+
+/* On touch the pill is a full 44px row, like the filter chips beside it, and
+   the 18px icon answers to a 44px square around it. */
+@media (pointer: coarse) {
+  .listing-search { min-height: var(--touch-target); }
+
+  /* 16px, or iOS Safari zooms the page in when the field takes focus. */
+  .listing-search__input {
+    font: var(--type-body-large);
+    letter-spacing: var(--tracking-body-large);
+  }
+
+  .listing-search__submit {
+    position: relative;
+  }
+
+  .listing-search__submit::after {
+    content: "";
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: var(--touch-target);
+    height: var(--touch-target);
+    transform: translate(-50%, -50%);
+  }
 }
 
 /* Icon-only submit — no fill, no label. */

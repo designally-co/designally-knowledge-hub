@@ -29,10 +29,10 @@
 
 /* On the 12-column grid, with an empty column between the rail and the
    reading column (as on the article page).
-   60-80em: rail on 1-4, reading column on 6-12.
+   64-80em: rail on 1-4, reading column on 6-12. Below 64em they stack.
    From 80em: rail on 1-3, reading column on 5-12, the description held to
    5-10 so its lines stay a readable length. */
-@media (min-width: 60em) {
+@media (min-width: 64em) {
   .resource-layout {
     grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
   }
@@ -248,7 +248,7 @@
 }
 
 /* On the grid the columns set the measure, not the 64ch cap. */
-@media (min-width: 60em) {
+@media (min-width: 64em) {
   .resource-page__body { max-width: none; }
 }
 

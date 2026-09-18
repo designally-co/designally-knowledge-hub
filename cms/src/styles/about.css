@@ -93,18 +93,26 @@
   margin-block-start: clamp(var(--space-10), 8vw, var(--space-24));
 }
 
-/* On the 12-column grid. The hero's lede holds columns 1-4. Below it "Why we
-   exist" hangs its label on 1-4 and runs the statement and figure down 6-12,
-   column 5 left open between them. Inside those seven columns the two
-   paragraphs take three each (6-8 and 10-12), column 9 between them. */
-@media (min-width: 900px) {
-  .about-hero__lede { max-width: calc(4 * var(--column-width) + 3 * var(--grid-gap)); }
+/* On the page grid. Tablet (8 columns): the lede holds 1-5, and "Why we
+   exist" hangs its label on 1-3 with the statement and figure on 4-8, the two
+   paragraphs stacked. Desktop (12): the lede holds 1-4, the label 1-4 and the
+   statement 6-12, column 5 left open between them; inside those seven columns
+   the two paragraphs take three each (6-8 and 10-12), column 9 between. */
+@media (min-width: 48em) {
+  .about-hero__lede { max-width: calc(5 * var(--column-width) + 4 * var(--grid-gap)); }
 
   .about-why {
     grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
     column-gap: var(--grid-gap);
     align-items: start;
   }
+
+  .about-why > .about-why__label { grid-column: 1 / span 3; }
+  .about-why > .about-why__column { grid-column: 4 / span 5; }
+}
+
+@media (min-width: 64em) {
+  .about-hero__lede { max-width: calc(4 * var(--column-width) + 3 * var(--grid-gap)); }
 
   .about-why > .about-why__label { grid-column: 1 / span 4; }
   .about-why > .about-why__column { grid-column: 6 / span 7; }
@@ -210,13 +218,8 @@
   gap: clamp(var(--space-4), 2.4vw, var(--space-8));
 }
 
-/* Two halves of the eight-column statement, four columns each. */
-@media (min-width: 720px) {
-  .about-why__body {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: var(--grid-gap);
-  }
-}
+/* The paragraphs stack until the desktop grid gives them three columns each
+   (below); on a tablet's five columns two halves would be fragments. */
 
 .about-why__body p {
   margin: 0;
@@ -408,7 +411,7 @@
   .about-cards {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-3);
+    gap: var(--grid-gap);
   }
 
   .about-cards__item {
@@ -441,23 +444,24 @@
   gap: clamp(var(--space-8), 5vw, var(--space-16));
 }
 
-/* Tablet: the list is full width, so each row is the full grid — the folio in
-   column 1, the title on 2-6, the explanation on 7-12. */
-@media (min-width: 720px) and (max-width: 899.98px) {
+/* Tablet (8 columns): the list is full width under the heading, so each row
+   is the full grid — the folio in column 1, the title on 2-4, the
+   explanation on 5-8. */
+@media (min-width: 48em) and (max-width: 63.999em) {
   .about-principles__list .about-principle {
     grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
     column-gap: var(--grid-gap);
   }
 
   .about-principle::before { grid-column: 1; }
-  .about-principles__list .about-principle__title { grid-column: 2 / span 5; }
-  .about-principles__list .about-principle__body { grid-column: 7 / span 6; }
+  .about-principles__list .about-principle__title { grid-column: 2 / span 3; }
+  .about-principles__list .about-principle__body { grid-column: 5 / span 4; }
 }
 
-/* On the grid: the heading on 1-5, the list on 6-12. Each row is itself seven
-   columns — the folio in column 6, which doubles as the gap after the heading,
-   the title on 7-9 and the explanation on 10-12. */
-@media (min-width: 900px) {
+/* Desktop (12): the heading on 1-5, the list on 6-12. Each row is itself
+   seven columns — the folio in column 6, which doubles as the gap after the
+   heading, the title on 7-9 and the explanation on 10-12. */
+@media (min-width: 64em) {
   .about-principles__inner {
     grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
     column-gap: var(--grid-gap);
@@ -556,12 +560,12 @@
   gap: clamp(var(--space-6), 4vw, var(--space-16));
 }
 
-/* On the grid: the eyebrow and heading on 1-5, the text and link on 7-12
-   (column 6 left open as breathing room),
-   centred on the heading itself. The lead dissolves into the grid so the
-   eyebrow takes a row of its own above, and the text shares the heading's
+/* On the grid, centred on the heading itself: tablet (8 columns) the eyebrow
+   and heading on 1-4, the text and link on 5-8; desktop (12) 1-5 and 7-12,
+   column 6 left open as breathing room. The lead dissolves into the grid so
+   the eyebrow takes a row of its own above, and the text shares the heading's
    row — centred on the heading, not on heading plus eyebrow. */
-@media (min-width: 900px) {
+@media (min-width: 48em) {
   .about-studio__inner {
     grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
     column-gap: var(--grid-gap);
@@ -569,15 +573,19 @@
   }
 
   .about-studio__inner > .about-studio__lead { display: contents; }
-  .about-studio__lead > * { grid-column: 1 / span 5; }
+  .about-studio__lead > * { grid-column: 1 / span 4; }
   .about-studio__lead > :last-child { grid-row: 2; align-self: center; }
 
   .about-studio__inner > .about-studio__body {
-    grid-column: 7 / span 6;
+    grid-column: 5 / span 4;
     grid-row: 2;
     align-self: center;
   }
+}
 
+@media (min-width: 64em) {
+  .about-studio__lead > * { grid-column: 1 / span 5; }
+  .about-studio__inner > .about-studio__body { grid-column: 7 / span 6; }
 }
 
 .about-studio__title {

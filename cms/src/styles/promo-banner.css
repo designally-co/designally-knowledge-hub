@@ -8,7 +8,8 @@
    (whose `cqi` is the page) and registered as a length, so it arrives in each
    banner already resolved: a banner that is itself a size container would
    otherwise read `cqi` against its own width. Below 48em the figure matches a
-   full-width banner; above, an eight-column one, each capped. */
+   full-width banner; on a tablet a six-of-eight-column one, and on a desktop
+   an eight-of-twelve one — the Case Studies banner's width in each — capped. */
 @property --promo-label-size {
   syntax: '<length>';
   inherits: true;
@@ -24,6 +25,16 @@
 }
 
 @media (min-width: 48em) {
+  #main {
+    --promo-label-size: clamp(
+      20px,
+      0.056 * (6 * var(--column-width) + 5 * var(--grid-gap)),
+      44px
+    );
+  }
+}
+
+@media (min-width: 64em) {
   #main {
     --promo-label-size: clamp(
       20px,

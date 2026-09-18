@@ -35,9 +35,12 @@
   --hover-media-dur: 640ms;
   --hover-state-dur: 240ms;
 
-  /* Layout — the 12-column grid.
+  /* Layout — the 12-column grid (desktop, 1024px and up).
      A 1536px container, centred, with 40px padding each side: a 1456px content
      area of 12 columns and 24px gutters (a column is ~99px at full width).
+     Tablets (768–1023px) run 8 columns, 24px padding and gutters; phones
+     (under 768px) 4 columns, 16px padding, 12px gutters — see the media blocks
+     after :root. Spans are written per range against those counts.
      `cqi` is the page's own width (body is the `page` container, see base.css),
      which unlike `vw` leaves out the scrollbar and resolves to the same length
      on any element, however deeply nested. */
@@ -48,7 +51,9 @@
   --grid-gap: var(--space-6); /* @kind spacing */
   --container-width: min(100cqi, var(--container-max));
   --content-width: calc(var(--container-width) - 2 * var(--container-padding));
-  --column-width: calc((var(--content-width) - 11 * var(--grid-gap)) / 12);
+  --column-width: calc(
+    (var(--content-width) - (var(--grid-columns) - 1) * var(--grid-gap)) / var(--grid-columns)
+  );
   /* The distance from the page edge to the content: the container's padding,
      plus whatever the cap leaves either side on a wide screen. */
   --page-gutter: calc(
@@ -80,4 +85,25 @@
   --ease-out-cubic: cubic-bezier(0.215, 0.61, 0.355, 1);
   --ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
   --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Tablet: 8 columns, 24px padding and gutters. */
+@media (max-width: 63.999em) {
+  :root {
+    --container-padding: var(--space-6);
+    --grid-columns: 8;
+    --content-columns: 8;
+  }
+}
+
+/* Phone: 4 columns, 16px padding, 12px gutters. The gutter is tighter than
+   the page padding on purpose: items in one group sit closer to each other
+   than the group sits to the screen edge. */
+@media (max-width: 47.999em) {
+  :root {
+    --container-padding: var(--space-4);
+    --grid-columns: 4;
+    --content-columns: 4;
+    --grid-gap: var(--space-3);
+  }
 }
