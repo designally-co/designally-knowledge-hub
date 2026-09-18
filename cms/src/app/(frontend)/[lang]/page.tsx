@@ -12,7 +12,7 @@ import { ResourcesSection } from '@/components/ResourcesSection'
 import { HeroCarousel } from '@/components/HeroCarousel'
 import { NewsletterCta } from '@/components/NewsletterCta'
 import { getArticlesByCategory, getDownloadableFiles, getLatestTags, getRecentArticles } from '@/lib/resources'
-import { TAG_OPTIONS, TAXONOMY, tagSlug } from '@/lib/tags'
+import { TAG_OPTIONS, TAXONOMY, tagPath } from '@/lib/tags'
 import { getDictionary, isLocale, localeHref, type Locale } from '@/lib/i18n'
 
 /**
@@ -68,7 +68,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
               {TAXONOMY['Insights'].map((topic) => (
                 <TopicPill
                   className="home-topics__pill"
-                  href={localeHref(locale, `/tag/${tagSlug(topic)}`)}
+                  href={localeHref(locale, tagPath(topic))}
                   key={topic}
                   size="md"
                 >

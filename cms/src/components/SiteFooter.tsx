@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Divider, SocialLinks } from './ds'
 import { FooterNavGroup } from './FooterNavGroup'
 import { LocaleSwitcher } from './LocaleSwitcher'
-import { CATEGORIES, TAG_OPTIONS, categorySlug, tagSlug } from '@/lib/tags'
+import { CATEGORIES, TAG_OPTIONS, categorySlug, tagPath } from '@/lib/tags'
 import {
   categoryLabel,
   localeHref,
@@ -72,7 +72,7 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
             <ul className="site-footer__col-list">
               {FOOTER_TOPICS.map((t) => (
                 <li key={t}>
-                  <Link className="site-footer__col-link" href={localeHref(locale, `/tag/${tagSlug(t)}`)}>
+                  <Link className="site-footer__col-link" href={localeHref(locale, tagPath(t))}>
                     {tagLabel(t, locale)}
                   </Link>
                 </li>

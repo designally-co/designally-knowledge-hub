@@ -5,7 +5,7 @@ import { getAllArticleSlugs, getAllResourceSlugs } from '@/lib/resources'
 /* The SAME lists and the SAME slug helpers the two routes build themselves
    from — `generateStaticParams` on each page maps over exactly these. A
    sitemap that invented its own URLs would advertise pages that 404. */
-import { CATEGORIES, TAG_OPTIONS, categorySlug, tagSlug } from '@/lib/tags'
+import { CATEGORIES, categorySlug } from '@/lib/tags'
 import { siteURL } from '@/lib/siteURL'
 
 /**
@@ -69,9 +69,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...articleSlugs.map((slug) => entry(`/articles/${slug}`, 'monthly', 0.8)),
     ...resourceSlugs.map((slug) => entry(`/resources/${slug}`, 'monthly', 0.8)),
 
-    /* Tag and category pages are the taxonomy's own landing pages — the ones a
-       search for "grid systems" should be able to reach. */
-    ...TAG_OPTIONS.map((tag) => entry(`/tag/${tagSlug(tag)}`, 'weekly', 0.6)),
+    /* The category pages are the taxonomy's landing pages; a tag is a filter
+       on its category's page rather than a page of its own. */
     ...CATEGORIES.map((category) => entry(`/category/${categorySlug(category)}`, 'weekly', 0.6)),
   ]
 }

@@ -114,6 +114,18 @@ export function tagSlug(tag: string): string {
     .replace(/^-+|-+$/g, '')
 }
 
+/**
+ * Where a tag lives: its category's listing, filtered on it — e.g. "Branding
+ * Systems" → `/category/design?tag=branding-systems`, the Case Studies page with
+ * that pill on. A tag has no page of its own (the old `/tag/…` URLs redirect
+ * here). Unlocalised; wrap it in `localeHref`.
+ */
+export function tagPath(tag: string): string {
+  const category = categoryForTag(tag)
+  if (!category) return '/'
+  return `/category/${categorySlug(category)}?tag=${tagSlug(tag)}`
+}
+
 /** slug → tag reverse lookup (all 34 slugs are unique). */
 export const TAG_BY_SLUG: Record<string, string> = Object.fromEntries(
   TAG_OPTIONS.map((t) => [tagSlug(t), t]),

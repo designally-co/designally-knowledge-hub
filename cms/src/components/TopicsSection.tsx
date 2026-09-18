@@ -16,7 +16,7 @@ import {
   type Size,
   type World,
 } from '@/lib/pillPhysics'
-import { tagSlug } from '@/lib/tags'
+import { tagPath } from '@/lib/tags'
 
 /**
  * "Topics" — a centred index: the serif title, a row of five category icons,
@@ -435,7 +435,7 @@ export function TopicsSection({
               className="topics__pill"
               size="lg"
               rotate={t.rotate}
-              href={localeHref(locale, `/tag/${tagSlug(t.label)}`)}
+              href={localeHref(locale, tagPath(t.label))}
               draggable={false}
             >
               {t.label}

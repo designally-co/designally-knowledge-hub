@@ -13,7 +13,7 @@ import {
   getArticleBySlug,
   getRelatedArticles,
 } from '@/lib/resources'
-import { categoryForTag, tagSlug } from '@/lib/tags'
+import { categoryForTag, tagPath } from '@/lib/tags'
 import { chromeForCategory } from '@/lib/listingChrome'
 import { getDictionary, isLocale, localeHref, tagLabel, LOCALES, type Locale } from '@/lib/i18n'
 
@@ -118,7 +118,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
               {article.tags.map((t) => (
                 <a
                   key={t}
-                  href={localeHref(locale, `/tag/${tagSlug(t)}`)}
+                  href={localeHref(locale, tagPath(t))}
                   className="article__tag-link"
                 >
                   <Tag>{tagLabel(t, locale)}</Tag>

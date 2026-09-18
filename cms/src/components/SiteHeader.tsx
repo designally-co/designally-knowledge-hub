@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Button, Icon } from './ds'
 import { LocaleSwitcher } from './LocaleSwitcher'
 import { HeaderSearch } from './HeaderSearch'
-import { CATEGORIES, TAXONOMY, categorySlug, tagSlug, type Category } from '@/lib/tags'
+import { CATEGORIES, TAXONOMY, categorySlug, tagPath, tagSlug, type Category } from '@/lib/tags'
 import { RESOURCE_CATEGORIES, resourceCategorySlug } from '@/lib/resourceCategories'
 import {
   categoryLabel,
@@ -94,7 +94,7 @@ function NavPanel({ category, locale, dict }: { category: Category; locale: Loca
         <ul className="nav-panel__tags">
           {tags.map((tag, i) => (
             <li key={tag} style={{ '--i': i } as React.CSSProperties}>
-              <Link className="nav-panel__tag" href={localeHref(locale, `/tag/${tagSlug(tag)}`)}>
+              <Link className="nav-panel__tag" href={localeHref(locale, tagPath(tag))}>
                 <span>{tagLabel(tag, locale)}</span>
               </Link>
             </li>
@@ -203,7 +203,7 @@ function Drawer({ onClose, returnFocusTo, locale, dict }: DrawerProps) {
       label: categoryLabel(category, locale),
       items: TAXONOMY[category].map((tag) => ({
         label: tagLabel(tag, locale),
-        href: localeHref(locale, `/tag/${tagSlug(tag)}`),
+        href: localeHref(locale, tagPath(tag)),
       })),
     })),
     {
