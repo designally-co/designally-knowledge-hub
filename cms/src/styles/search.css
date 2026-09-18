@@ -417,6 +417,26 @@
   }
 }
 
+/* Phones. Two results to a row, as the overlay's "Trending now" and the
+   Resources catalog set them: one to a row put each cover and folder the full
+   width of the screen, and six results ran to five screens. Covers keep their
+   own ratios, top-aligned. The count under the tabs is a note on them, not a
+   second heading; the tabs' labels take the labels' 500. */
+@media (max-width: 47.999em) {
+  .search-page .search-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .search-page .tab {
+    font-weight: 500;
+  }
+
+  .search-page__controls > .search-page__count {
+    font: var(--type-body);
+    letter-spacing: var(--tracking-body);
+  }
+}
+
 /* On the page the note sits where the control row would, a section step
    under the band. */
 .search-page .search-note {

@@ -303,6 +303,16 @@
   color: color-mix(in srgb, var(--color-neutral-black) 88%, transparent);
 }
 
+/* Phones: the kicker a step down and at the labels' weight, so the query
+   under it is plainly the title. */
+@media (max-width: 47.999em) {
+  .listing-hero__kicker {
+    font: var(--type-body-large);
+    font-weight: 500;
+    letter-spacing: var(--tracking-body-large);
+  }
+}
+
 .listing-hero__heading--kicked .listing-hero__title {
   display: block;
   overflow-wrap: anywhere;
