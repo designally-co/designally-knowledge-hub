@@ -82,6 +82,28 @@
   .search-overlay__close:hover .search-overlay__close-disc { border-color: var(--color-neutral-black); }
 }
 
+/* Phones: the disc alone, at the 40px touch size. The word stays for screen
+   readers (hidden the visually-hidden way, not display:none), so the button
+   is still "Close". */
+@media (max-width: 47.999em) {
+  .search-overlay__close-disc {
+    width: var(--touch-target);
+    height: var(--touch-target);
+  }
+
+  .search-overlay__close-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
 /* The page title's style — Ovo display-2 in sentence case — so the overlay and
    the /search page it leads to carry the same heading. */
 .search-overlay__title {
@@ -203,6 +225,8 @@
   background: transparent;
   color: var(--color-neutral-black);
   font: var(--type-label);
+  /* Medium, like the site's other chips and tags. */
+  font-weight: 500;
   letter-spacing: var(--tracking-label);
   line-height: 1;
   cursor: pointer;
