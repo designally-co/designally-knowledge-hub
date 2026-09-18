@@ -664,7 +664,15 @@
   display: block;
   inline-size: clamp(56px, 11vw, 74px);
   aspect-ratio: 290 / 256;
-  margin: 0 0 var(--space-6);
+}
+
+/* Phone: centred over the tagline. From 48em: left, heading the masthead. */
+.site-footer__mark--top { margin: 0 auto var(--space-6); }
+.site-footer__mark--masthead { display: none; margin: 0 0 var(--space-6); }
+
+@media (min-width: 48em) {
+  .site-footer__mark--top { display: none; }
+  .site-footer__mark--masthead { display: block; }
 }
 
 .site-footer__mark i {
@@ -691,15 +699,21 @@
   clip-path: inset(0 0 0 73.79%);
 }
 
+/* THE FOOTER'S ORDER. The serif tagline leads; everything under it is set on
+   the 16px body line — the blurb regular, the links and the phone's group
+   toggles medium — and the labels and the fine print at 12px. Nothing under
+   the tagline is bold: at 20-24px bold the links and the blurb stood level
+   with it. */
 .site-footer__blurb {
-  font: var(--type-heading-5);
-  letter-spacing: var(--tracking-heading-5);
+  font: var(--type-body-large);
+  letter-spacing: var(--tracking-body-large);
   max-width: 24ch;
   margin: 0;
 }
 
 .site-footer__label {
   font: var(--type-tag);
+  font-weight: 500;
   letter-spacing: var(--tracking-tag);
   line-height: 1;
   text-transform: uppercase;
@@ -724,8 +738,9 @@
 }
 
 .site-footer__col-link {
-  font: var(--type-heading-5);
-  letter-spacing: var(--tracking-heading-5);
+  font: var(--type-body-large);
+  font-weight: 500;
+  letter-spacing: var(--tracking-body-large);
   color: var(--color-neutral-white);
   text-decoration: none;
   display: inline-block;
@@ -781,8 +796,9 @@
   border: 0;
   background: none;
   color: var(--color-neutral-white);
-  font: var(--type-heading-4);
-  letter-spacing: var(--tracking-heading-4);
+  font: var(--type-body-large);
+  font-weight: 500;
+  letter-spacing: var(--tracking-body-large);
   text-align: left;
   cursor: pointer;
 }
@@ -843,7 +859,8 @@
 }
 
 /* On a phone the collapsed lists come first and the identity closes the
-   footer, centred: wordmark, what the Hub is, then the accounts. */
+   footer, centred: what the Hub is, then the accounts (the mark opens the
+   footer above the tagline). */
 @media (max-width: 35.999em) {
   .site-footer__cols { gap: 0; }
 
@@ -878,8 +895,8 @@
 }
 
 .site-footer__fineprint {
-  font: var(--type-body);
-  letter-spacing: var(--tracking-body);
+  font: var(--type-body-small);
+  letter-spacing: var(--tracking-body-small);
   color: var(--color-neutral-white);
   margin: 0;
 }
@@ -893,6 +910,8 @@
 .site-footer__locale .locale-switcher__trigger {
   color: color-mix(in srgb, var(--color-neutral-white) 80%, transparent);
   font: var(--type-overline);
+  font-size: 12px;
+  font-weight: 500;
   letter-spacing: var(--tracking-overline);
 }
 
