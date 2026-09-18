@@ -345,8 +345,11 @@
   color: var(--color-neutral-black);
 }
 
+/* Section headings at 600, a step down from the style's bold: firm enough to
+   lead their text, in line with the site's lighter titles. */
 .article-body h2 {
   font: var(--type-heading-5);
+  font-weight: 600;
   letter-spacing: var(--tracking-heading-5);
   color: var(--color-neutral-black);
   margin: clamp(var(--space-8), 6vw, var(--space-10)) 0 var(--space-4);
@@ -355,9 +358,19 @@
 
 .article-body h3 {
   font: var(--type-heading-5);
+  font-weight: 600;
   letter-spacing: var(--tracking-heading-5);
   color: var(--color-neutral-black);
   margin: clamp(var(--space-6), 4vw, var(--space-8)) 0 var(--space-3);
+}
+
+/* Phone: headings by proximity. A heading sits 8px over the text it opens
+   and well clear of the section before it (40px over an h2, 32px over an h3,
+   against the paragraphs' 24px), so it reads as the start of what follows
+   rather than the end of what came before. */
+@media (max-width: 47.999em) {
+  .article-body h2 { margin: var(--space-10) 0 var(--space-2); }
+  .article-body h3 { margin: var(--space-8) 0 var(--space-2); }
 }
 
 .article-body ul,
@@ -421,6 +434,7 @@
 
 .article-share__label {
   font: var(--type-tag);
+  font-weight: 500;
   letter-spacing: var(--tracking-tag);
   line-height: 1;
   text-transform: uppercase;
@@ -505,6 +519,11 @@
   /* Cards follow their cover's natural ratio, so heights vary — top-align them
      rather than stretching to the tallest in the row. */
   align-items: start;
+}
+
+/* Phones: the site's list spacing — 24px between cards (8px inside them). */
+@media (max-width: 47.999em) {
+  .article__related-grid { row-gap: var(--space-6); }
 }
 
 @media (min-width: 40em) {
