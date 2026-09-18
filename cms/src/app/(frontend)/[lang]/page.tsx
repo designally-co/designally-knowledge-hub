@@ -6,6 +6,7 @@ import { CaseStudyCarousel } from '@/components/CaseStudyCarousel'
 import { InsightsGrid } from '@/components/InsightsGrid'
 import { InsightsVideoPromo } from '@/components/InsightsVideoPromo'
 import { WorkflowsGrid } from '@/components/WorkflowsGrid'
+import { FitPillRows } from '@/components/FitPillRows'
 import { TopicsSection } from '@/components/TopicsSection'
 import { ResourcesSection } from '@/components/ResourcesSection'
 import { HeroCarousel } from '@/components/HeroCarousel'
@@ -61,8 +62,10 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
           </div>
 
           <div className="home-topics__list">
-            <nav className="home-topics__links" aria-label={dict.home.topicsLabel}>
-              {TAXONOMY['Insights'].slice(0, 8).map((topic) => (
+            {/* Every topic; the row keeps as many as fit on its lines (two on a
+                desktop, three on a phone) and always ends on "all topics". */}
+            <FitPillRows className="home-topics__links" label={dict.home.topicsLabel}>
+              {TAXONOMY['Insights'].map((topic) => (
                 <TopicPill
                   className="home-topics__pill"
                   href={localeHref(locale, `/tag/${tagSlug(topic)}`)}
@@ -79,7 +82,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
               >
                 {dict.home.allTopics}
               </TopicPill>
-            </nav>
+            </FitPillRows>
           </div>
         </section>
       </div>
