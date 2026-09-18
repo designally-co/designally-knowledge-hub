@@ -370,6 +370,14 @@
 
 .article-card__plate .article-card__date { margin-top: var(--space-3); }
 
+/* Titles in a list of cards — article and resource, every size — at medium
+   weight over their styles' bold, so the list reads as calm rows, not a column
+   of shouting headlines. */
+.article-card .article-card__title,
+.resource-card .resource-card__title {
+  font-weight: 500;
+}
+
 /* On a phone every card title, article or resource, lead or paired, is set in
    the standard body line: 16px, at a medium 500 — the emphasis weight's 600
    read heavy stacked down a list. The 20-32px card sizes are for rows of

@@ -222,6 +222,7 @@
   border-bottom: 1px solid var(--border-label-32);
   color: var(--color-neutral-black);
   font: var(--type-heading-5);
+  font-weight: 500;
   letter-spacing: var(--tracking-heading-5);
   text-decoration: none;
 }

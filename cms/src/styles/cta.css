@@ -8,7 +8,7 @@
      illustration's sizing below. */
   --cta-title-size: clamp(34px, 4.444vw, 64px);
   --cta-title-lines: 3;
-  --cta-eyebrow-line: 14px;
+  --cta-eyebrow-line: 12px;
   background: var(--cta-bg) url('/newsletter-waves.svg') no-repeat center / cover;
   padding-block: clamp(var(--space-10), 7vw, var(--space-20));
 }
@@ -19,40 +19,53 @@
   gap: clamp(var(--space-8), 5vw, var(--space-16));
 }
 
-/* Desktop: on the 12-column grid. The illustration takes columns 1-2, the
-   headline 3-6 and the signup 7-12. The lead is a six-column grid of its own
-   with the same gutter, so its two parts land on the page's column lines. */
+/* Desktop: on the 12-column grid, centred with a column open either side. The
+   illustration takes columns 2-3 and stands beside everything else, column 4
+   open between them; the eyebrow and the headline — on one line — run 5-11,
+   and the field sits directly under the headline on 5-8. The lead
+   dissolves into the band's grid so its parts and the signup share one set of
+   rows. The headline is sized to its column: it runs ~15.4 times its size
+   wide, so 6.4% of the column holds it on one line, up to display-2's 64px. */
 @media (min-width: 64em) {
   .cta__inner {
     display: grid;
     grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
     column-gap: var(--grid-gap);
-    align-items: center;
+    row-gap: var(--space-6);
+    align-items: end;
   }
 
   /* Qualified by the band: the base .cta__lead and .cta__art rules come
      later in this file and would otherwise win. */
-  .cta__inner .cta__lead {
-    grid-column: 1 / span 6;
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    column-gap: var(--grid-gap);
-  }
+  .cta__inner .cta__lead { display: contents; }
 
   .cta__inner .cta__art {
-    grid-column: 1 / span 2;
+    grid-column: 2 / span 2;
+    grid-row: 1 / span 2;
+    align-self: center;
     width: 100%;
   }
 
   .cta__inner .cta__copy {
-    grid-column: 3 / span 4;
+    grid-column: 5 / span 7;
+    grid-row: 1;
     min-width: 0;
+    container-type: inline-size;
   }
 
   .cta__inner .cta__signup {
-    grid-column: 7 / span 6;
+    grid-column: 5 / span 4;
+    grid-row: 2;
+    align-self: start;
     width: auto;
     min-width: 0;
+  }
+
+  .cta { --cta-title-size: min(64px, 6.4cqi); }
+
+  .cta__inner .cta__title {
+    max-width: none;
+    white-space: nowrap;
   }
 }
 
@@ -114,30 +127,25 @@
   /* About half the sentence a line, so it breaks in two even where one would fit. */
   .cta .cta__title { max-width: 20ch; }
 
-
-  .cta .cta__note {
-    font: var(--type-body-small);
-    letter-spacing: var(--tracking-body-small);
-  }
 }
 
-/* Below the desktop the headline is 34-45px, and the lede at 20px bold stood
-   level with it. The body line, regular weight: it supports, it does not
-   lead. On the desktop's 64px headline the heading-5 lede keeps its place. */
-@media (max-width: 63.999em) {
-  .cta .cta__lede {
-    font: var(--type-body-large);
-    letter-spacing: var(--tracking-body-large);
-  }
+/* The lede is the regular body line at every width, so it supports the
+   headline rather than standing level with it (at 20px bold it did), and it
+   holds to the field's width below it — the two read as one block. */
+.cta .cta__lede {
+  font: var(--type-body-large);
+  letter-spacing: var(--tracking-body-large);
 }
 
-/* On a phone the headline says it; the field follows it directly. */
-@media (max-width: 47.999em) {
-  .cta .cta__lede { display: none; }
-}
+/* The headline says it; the field follows it directly, at every width. */
+.cta .cta__lede { display: none; }
 
+/* The band's order, largest to smallest: the headline, the lede and the field
+   at the 16px body line, the button at 14px, then the eyebrow and the note at
+   12px — labels, set small so they do not compete with what they label. */
 .cta__eyebrow {
   font: var(--type-label);
+  font-size: 12px;
   letter-spacing: var(--tracking-label);
   line-height: 1;
   text-transform: uppercase;
@@ -191,6 +199,19 @@
   box-shadow: 0 0 0 1px var(--color-neutral-black);
 }
 
+/* In the band the field is sized for an address, not the column: five of a
+   tablet's eight columns, four of a desktop's twelve (~430px either way).
+   Full width on a phone. */
+@media (min-width: 48em) {
+  .cta .cta__form,
+  .cta .cta__lede { max-width: calc(5 * var(--column-width) + 4 * var(--grid-gap)); }
+}
+
+@media (min-width: 64em) {
+  .cta .cta__form,
+  .cta .cta__lede { max-width: calc(4 * var(--column-width) + 3 * var(--grid-gap)); }
+}
+
 @media (max-width: 47.999em) {
   .cta__form { border-radius: var(--space-2); }
 }
@@ -218,6 +239,7 @@
   background: none;
   cursor: pointer;
   font: var(--type-overline);
+  font-weight: 600;
   letter-spacing: var(--tracking-overline);
   line-height: 1;
   text-transform: uppercase;
@@ -234,13 +256,13 @@
   }
 }
 
-/* INK-70, NOT INK-50. The note rides under the field on three different grounds
-   now — the mint band, the newsletter hero's #E4E4E4 and the paper — and at
-   ink-50 it measured 3.7:1 on the mint and 3.54 on the grey. It is 14px body
-   text; it owes 4.5. */
+/* INK-60, NOT INK-50. The note rides under the field on several grounds — the
+   band's grey, the newsletter hero's #E4E4E4 and the paper — and at ink-50 it
+   measured 3.7:1 and 3.54. It is 12px body text; it owes 4.5, and ink-60 gives
+   ~5.6:1 on the band and ~5:1 on the hero. */
 .cta__note {
-  font: var(--type-body);
-  letter-spacing: var(--tracking-body);
+  font: var(--type-body-small);
+  letter-spacing: var(--tracking-body-small);
   color: var(--color-neutral-black-60);
   margin: var(--space-3) 0 0;
 }
