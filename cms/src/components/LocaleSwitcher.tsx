@@ -14,17 +14,22 @@ import { LOCALES, getDictionary, switchLocalePath, type Locale } from '@/lib/i18
  * list of links. Client component because it reads the current pathname.
  *
  * `placement` points the menu away from the edge it sits against: down in the
- * header, up in the footer and at the foot of the drawer.
+ * header, up in the footer and at the foot of the drawer. `labels="full"`
+ * names the languages in full (English, Thai) where there is room for it.
  */
 export function LocaleSwitcher({
   locale,
   className,
   placement = 'down',
+  labels = 'short',
 }: {
   locale: Locale
   className?: string
   placement?: 'down' | 'up'
+  labels?: 'short' | 'full'
 }) {
+  const nameOf = (l: Locale) =>
+    labels === 'full' ? getDictionary(l).localeNameFull : getDictionary(l).localeName
   const pathname = usePathname() || '/'
   const [open, setOpen] = React.useState(false)
   // Which edge the menu hangs from. It defaults to the trigger's right edge and
@@ -87,7 +92,7 @@ export function LocaleSwitcher({
         onClick={() => setOpen((v) => !v)}
         ref={triggerRef}
       >
-        <span>{getDictionary(locale).localeName}</span>
+        <span>{nameOf(locale)}</span>
         <Icon name="chevron-down" size={14} className="locale-switcher__caret" />
       </button>
 
@@ -107,7 +112,7 @@ export function LocaleSwitcher({
               hrefLang={l}
               onClick={() => setOpen(false)}
             >
-              <span>{getDictionary(l).localeName}</span>
+              <span>{nameOf(l)}</span>
               {l === locale && <Icon name="check" size={14} />}
             </Link>
           ))}

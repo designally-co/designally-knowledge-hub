@@ -469,15 +469,19 @@
   animation: drawer-scrim-in 0.25s var(--ease-out-quart) both;
 }
 
+/* A full-screen sheet: the whole viewport, the links from the top, and the
+   Subscribe button and language switcher held to the foot, where a thumb
+   reaches them. Scrolls within itself if a short screen cannot hold it. */
 .drawer {
   position: fixed;
-  inset: 0 0 auto 0;
+  inset: 0;
   z-index: var(--z-drawer);
-  max-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
   overflow-y: auto;
   overscroll-behavior: contain;
   background: var(--color-brand-surface);
-  border-bottom: 1px solid var(--color-neutral-gray-200);
   padding: calc(env(safe-area-inset-top) + var(--space-4)) var(--page-gutter)
     calc(env(safe-area-inset-bottom) + var(--space-8));
   animation: drawer-in 0.28s var(--ease-out-quart) both;
@@ -510,46 +514,123 @@
 
 .drawer__list {
   list-style: none;
-  margin: 0 0 var(--space-8);
+  margin: 0 0 var(--space-10);
   padding: 0;
   display: flex;
   flex-direction: column;
 }
 
-.drawer__link {
-  display: block;
-  padding: var(--space-3) 0;
-  font: var(--type-heading-5);
-  letter-spacing: var(--tracking-heading-5);
-  color: var(--color-neutral-black);
-  text-decoration: none;
+.drawer__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+  min-height: var(--touch-target);
+  /* The chevron (20px) is inset so its centre falls on the close button's —
+     the ✕ is centred in a touch-target-wide button at the same right edge. */
+  padding: var(--space-3) calc((var(--touch-target) - 20px) / 2) var(--space-3) 0;
+  border: 0;
   border-bottom: 1px solid var(--color-neutral-gray-200);
-  transition: padding-left var(--hover-state-dur) var(--ease-out-quart);
+  background: none;
+  color: var(--color-neutral-black);
+  font: var(--type-heading-5);
+  /* Medium, as the footer's group toggles: the size leads, not the weight. */
+  font-weight: 500;
+  letter-spacing: var(--tracking-heading-5);
+  text-align: left;
+  cursor: pointer;
 }
 
-/* The drawer is a touch surface, but it is also what a narrow desktop window
-   gets, so pointer users still need an answer here. */
+.drawer__caret {
+  flex: none;
+  transition: transform var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.drawer__toggle[aria-expanded='true'] .drawer__caret { transform: rotate(180deg); }
+
+/* Open, the section's rule moves below its list (one rule per section). */
+.drawer__toggle[aria-expanded='true'] { border-bottom-color: transparent; }
+
+/* 0fr to 1fr, so a section opens to whatever height its list needs. */
+.drawer__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.28s var(--ease-out-quart);
+}
+
+.drawer__panel.is-open { grid-template-rows: 1fr; }
+
+.drawer__panel-inner { overflow: hidden; }
+
+/* A section's directions: the body line, each a full touch row, the list
+   closed off by the section's own rule below it. */
+.drawer__sublist {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-2) 0 var(--space-4);
+  border-bottom: 1px solid var(--color-neutral-gray-200);
+}
+
+.drawer__sublink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  padding: var(--space-2) 0;
+  color: var(--color-neutral-black-60);
+  font: var(--type-body-large);
+  letter-spacing: var(--tracking-body-large);
+  text-decoration: none;
+}
+
 @media (hover: hover) {
-  .drawer__link:hover {
-    opacity: 1;
-    padding-left: var(--space-2);
-  }
+  .drawer__sublink:hover { opacity: 1; color: var(--color-neutral-black); }
 }
 
-.drawer__cta { width: 100%; margin-top: var(--space-6); }
+@media (prefers-reduced-motion: reduce) {
+  .drawer__panel,
+  .drawer__caret { transition: none; }
+}
 
-/* Pulled left by the trigger's own padding, so the label lines up with the nav
-   above it. Which edge its menu hangs from is measured, not declared. */
+/* margin-top: auto takes the button (and the switcher under it) to the foot. */
+.drawer__cta { width: 100%; margin-top: auto; flex: none; }
+
+/* The language switcher as the Subscribe button's outline twin, under it: the
+   same full width, touch height, pill and type, drawn as an outline (the
+   label's ink at half) on the sheet. Which edge its menu hangs from is
+   measured, not declared. */
 .drawer__locale {
-  margin-top: var(--space-6);
-  margin-left: calc(var(--space-2) * -1);
+  display: flex;
+  width: 100%;
+  margin-top: var(--space-3);
 }
 
-/* Last thing in the drawer, and its menu opens down into space the drawer does
-   not otherwise have — so the drawer grows while the menu is open rather than
-   clipping it against its own scroll edge. */
-.drawer:has(.drawer__locale .locale-switcher__menu) {
-  padding-bottom: calc(env(safe-area-inset-bottom) + var(--space-36));
+.drawer__locale .locale-switcher__trigger {
+  width: 100%;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  padding: var(--space-3) var(--space-6);
+  border: 1px solid var(--border-outline);
+  border-radius: var(--radius-pill);
+  color: var(--color-neutral-black);
+  font: var(--type-body-large-emphasis);
+  letter-spacing: var(--tracking-body-large-emphasis);
+  line-height: 1;
+}
+
+@media (hover: hover) {
+  .drawer__locale .locale-switcher__trigger:hover { background: var(--color-neutral-white); }
+}
+
+/* Its menu is an overlay: it opens upward over the Subscribe button, the full
+   width of the trigger, and leaves the sheet's layout where it was. */
+.drawer__locale .locale-switcher__menu {
+  left: 0;
+  right: 0;
+  z-index: 2;
+  min-width: 0;
 }
 
 /* --- Footer ------------------------------------------------------------ */

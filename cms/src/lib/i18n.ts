@@ -54,6 +54,7 @@ export function switchLocalePath(pathname: string, target: Locale): string {
 
 export type Dictionary = {
   localeName: string // this locale's own name, for the switcher
+  localeNameFull: string // the language's full name, where there is room (the drawer)
   skipToContent: string
   nav: { resources: string; topics: string; subscribe: string; viewAll: string; menu: string; closeMenu: string }
   footer: {
@@ -258,6 +259,7 @@ export type Dictionary = {
 
 const en: Dictionary = {
   localeName: 'EN',
+  localeNameFull: 'English',
   skipToContent: 'Skip to content',
   nav: {
     resources: 'Resources',
@@ -510,6 +512,7 @@ const en: Dictionary = {
 
 const th: Dictionary = {
   localeName: 'ไทย',
+  localeNameFull: 'Thai',
   skipToContent: 'ข้ามไปยังเนื้อหา',
   nav: {
     resources: 'รีซอร์ส',

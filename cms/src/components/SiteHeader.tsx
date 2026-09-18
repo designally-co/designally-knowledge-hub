@@ -176,6 +176,13 @@ function InfoNavPanel({ locale, dict }: { locale: Locale; dict: Dictionary }) {
 /* Mobile drawer                                                               */
 /* -------------------------------------------------------------------------- */
 
+/** A drawer section: a category, the resources, or the information pages. */
+type DrawerGroup = {
+  key: string
+  label: string
+  items: { label: string; href: string }[]
+}
+
 type DrawerProps = {
   onClose: () => void
   returnFocusTo: React.RefObject<HTMLButtonElement | null>
@@ -186,8 +193,37 @@ type DrawerProps = {
 function Drawer({ onClose, returnFocusTo, locale, dict }: DrawerProps) {
   const panelRef = React.useRef<HTMLDivElement>(null)
   const closeRef = React.useRef<HTMLButtonElement>(null)
+  const [openGroup, setOpenGroup] = React.useState<string | null>(null)
 
   useLockBodyScroll()
+
+  const groups: DrawerGroup[] = [
+    ...CATEGORIES.map((category) => ({
+      key: tagSlug(category),
+      label: categoryLabel(category, locale),
+      items: TAXONOMY[category].map((tag) => ({
+        label: tagLabel(tag, locale),
+        href: localeHref(locale, `/tag/${tagSlug(tag)}`),
+      })),
+    })),
+    {
+      key: 'resources',
+      label: dict.nav.resources,
+      items: RESOURCE_CATEGORIES.map((category) => ({
+        label: category,
+        href: localeHref(locale, `/resources?cat=${resourceCategorySlug(category)}`),
+      })),
+    },
+    {
+      key: 'information',
+      label: dict.footer.information,
+      items: [
+        { label: dict.footer.about, href: localeHref(locale, '/about') },
+        { label: dict.footer.contact, href: localeHref(locale, '/contact') },
+        { label: dict.footer.newsletter, href: localeHref(locale, '/newsletter') },
+      ],
+    },
+  ]
 
   React.useEffect(() => {
     closeRef.current?.focus()
@@ -244,53 +280,43 @@ function Drawer({ onClose, returnFocusTo, locale, dict }: DrawerProps) {
             than in the bar. Search stays in the bar at every width and opens
             its own overlay. */}
         <>
+          {/* The desktop's five dropdowns, as one accordion: each section opens
+              to its directions — a category's topics, the resource types, the
+              information pages. One open at a time; a closed section is inert,
+              so Tab skips the links inside it. */}
           <nav aria-label={dict.nav.menu}>
             <ul className="drawer__list">
-              {CATEGORIES.map((item) => (
-                <li key={item}>
-                  <Link
-                    className="drawer__link"
-                    href={categoryAnchor(item, locale)}
-                    onClick={onClose}
-                  >
-                    {categoryLabel(item, locale)}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <Link
-                  className="drawer__link"
-                  href={localeHref(locale, '/resources')}
-                  onClick={onClose}
-                >
-                  {dict.nav.resources}
-                </Link>
-              </li>
-              {/* The drawer has no panels, so the three information pages are
-                  listed rather than grouped behind a disclosure. */}
-              <li>
-                <Link className="drawer__link" href={localeHref(locale, '/about')} onClick={onClose}>
-                  {dict.footer.about}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="drawer__link"
-                  href={localeHref(locale, '/contact')}
-                  onClick={onClose}
-                >
-                  {dict.footer.contact}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="drawer__link"
-                  href={localeHref(locale, '/newsletter')}
-                  onClick={onClose}
-                >
-                  {dict.footer.newsletter}
-                </Link>
-              </li>
+              {groups.map((group) => {
+                const open = openGroup === group.key
+                const panelId = `drawer-panel-${group.key}`
+                return (
+                  <li key={group.key} className="drawer__group">
+                    <button
+                      type="button"
+                      className="drawer__toggle"
+                      aria-expanded={open}
+                      aria-controls={panelId}
+                      onClick={() => setOpenGroup(open ? null : group.key)}
+                    >
+                      <span>{group.label}</span>
+                      <Icon name="chevron-down" size={20} className="drawer__caret" />
+                    </button>
+                    <div id={panelId} className={`drawer__panel${open ? ' is-open' : ''}`} inert={!open}>
+                      <div className="drawer__panel-inner">
+                        <ul className="drawer__sublist">
+                          {group.items.map((item) => (
+                            <li key={item.href}>
+                              <Link className="drawer__sublink" href={item.href} onClick={onClose}>
+                                {item.label}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </li>
+                )
+              })}
             </ul>
           </nav>
 
@@ -298,9 +324,9 @@ function Drawer({ onClose, returnFocusTo, locale, dict }: DrawerProps) {
             {dict.nav.subscribe}
           </Button>
 
-          {/* Opens downward, into room the drawer makes for it — upward it would
-              open straight across the Subscribe button above. */}
-          <LocaleSwitcher locale={locale} className="drawer__locale" />
+          {/* Opens upward as an overlay across the Subscribe button, so the
+              sheet never shifts; the languages are named in full here. */}
+          <LocaleSwitcher locale={locale} placement="up" labels="full" className="drawer__locale" />
         </>
       </div>
     </>
