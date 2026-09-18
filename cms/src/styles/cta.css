@@ -114,9 +114,6 @@
   /* About half the sentence a line, so it breaks in two even where one would fit. */
   .cta .cta__title { max-width: 20ch; }
 
-  .cta .cta__input { padding-block: var(--space-2); }
-
-  .cta .cta__submit { min-height: var(--touch-target); }
 
   .cta .cta__note {
     font: var(--type-body-small);
@@ -172,15 +169,26 @@
   text-wrap: pretty;
 }
 
+/* The site's field: a white well outlined like a tag at rest (ink at 32%), no
+   shadow, the input radius; it sharpens to full ink while the field has the
+   caret — the input itself draws no outline, so the box is the focus ring. */
 .cta__form {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   background: var(--color-neutral-white);
-  border: 1px solid var(--color-neutral-black-12);
-  border-radius: 12px;
-  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
-  box-shadow: 0 1px 2px var(--color-neutral-black-12);
+  border: 1px solid var(--color-neutral-black-32);
+  border-radius: var(--radius-input);
+  /* A 44px field at every width (a phone's other controls drop to 40px; the
+     signup keeps the full height), the field and the button 4px inside it. */
+  --cta-field-inner: calc(44px - 2 * var(--space-1) - 2px);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4);
+  transition: border-color var(--hover-state-dur) var(--ease-out-quart);
+}
+
+.cta__form:focus-within {
+  border-color: var(--color-neutral-black);
+  box-shadow: 0 0 0 1px var(--color-neutral-black);
 }
 
 @media (max-width: 47.999em) {
@@ -196,7 +204,8 @@
   font: var(--type-body-large);
   letter-spacing: var(--tracking-body-large);
   color: var(--color-neutral-black);
-  padding: var(--space-3) 0;
+  height: var(--cta-field-inner);
+  padding: 0;
 }
 
 .cta__input::placeholder {
@@ -213,8 +222,9 @@
   line-height: 1;
   text-transform: uppercase;
   color: var(--color-neutral-black);
-  padding: var(--space-3) var(--space-4);
-  border-radius: 8px;
+  height: var(--cta-field-inner);
+  padding: 0 var(--space-3);
+  border-radius: calc(var(--radius-input) - var(--space-1));
   transition: background-color 0.15s ease;
 }
 
