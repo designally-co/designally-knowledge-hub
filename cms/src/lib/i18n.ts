@@ -762,7 +762,57 @@ const th: Dictionary = {
   },
 }
 
-const DICTIONARIES: Record<Locale, Dictionary> = { en, th }
+/*
+ * THAI LOANWORDS DO NOT BREAK. Thai has no spaces between words, so the browser
+ * finds line breaks with a dictionary — and transliterated English is not in
+ * it. Left alone it split "อินเทอร์เฟซ" (interface) as "อินเท | อร์เฟซ" at
+ * the end of the footer blurb on every page, "สตูดิ | โอ" in the About
+ * heading, "เท | รนด์" on the newsletter page.
+ *
+ * The words below are the ones the dictionary splits (checked with the same
+ * segmenter the browser uses). Each gets an invisible WORD JOINER (U+2060) at
+ * exactly the points where the segmenter would cut it — "อิน⁠เท⁠อร์เฟซ" — which
+ * forbids a break there and renders as nothing. ONLY there: a joiner between
+ * every character also changed how the text BEFORE the word was read, and
+ * "รายงานเทรนด์" came out as "รา | ยงาน…". The cut points fall between
+ * syllables, never in front of a vowel or tone mark, so nothing is detached.
+ * Add a word here when a new one is seen breaking.
+ */
+const THAI_WHOLE_WORDS = [
+  'อินเทอร์เฟซ',
+  'โซเชียล',
+  'ไอเดีย',
+  'แบรนดิ้ง',
+  'อินไซต์',
+  'เทรนด์',
+  'สตูดิโอ',
+  'เอเจนซี',
+  'พรอมป์',
+  'อัปโหลด',
+  'ผู้ก่อตั้ง',
+]
+
+const THAI_SEGMENTER = new Intl.Segmenter('th', { granularity: 'word' })
+
+const THAI_JOINED = THAI_WHOLE_WORDS.map((word) => {
+  const joined = Array.from(THAI_SEGMENTER.segment(word), (s) => s.segment).join('⁠')
+  return [word, joined] as const
+})
+
+function keepThaiWordsWhole<T>(value: T): T {
+  if (typeof value === 'string') {
+    return THAI_JOINED.reduce<string>((s, [word, joined]) => s.replaceAll(word, joined), value) as T
+  }
+  if (Array.isArray(value)) return value.map(keepThaiWordsWhole) as T
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, v]) => [key, keepThaiWordsWhole(v)]),
+    ) as T
+  }
+  return value
+}
+
+const DICTIONARIES: Record<Locale, Dictionary> = { en, th: keepThaiWordsWhole(th) }
 
 export function getDictionary(locale: Locale): Dictionary {
   return DICTIONARIES[locale] ?? en
@@ -800,7 +850,7 @@ const CATEGORY_LABELS_TH: Record<string, string> = {
 /** Public display label for a category, per locale. */
 export function categoryLabel(category: string, locale: Locale): string {
   if (locale === 'en') return CATEGORY_LABELS_EN[category] ?? category
-  return CATEGORY_LABELS_TH[category] ?? category
+  return keepThaiWordsWhole(CATEGORY_LABELS_TH[category] ?? category)
 }
 
 /** Localised label for a tag (kept in English for both locales — see note above). */

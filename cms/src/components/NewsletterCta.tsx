@@ -3,6 +3,7 @@
 import React from 'react'
 
 import { NewsletterForm } from '@/components/NewsletterForm'
+import { Phrases } from '@/components/Phrases'
 import { DEFAULT_LOCALE, getDictionary, type Dictionary } from '@/lib/i18n'
 
 /*
@@ -44,7 +45,7 @@ export function NewsletterCta({
           <div className="cta__copy">
             <p className="cta__eyebrow">{eyebrow ?? c.eyebrow}</p>
             <h2 className="cta__title" id="cta-title">
-              {title ?? c.title}
+              <Phrases>{title ?? c.title}</Phrases>
             </h2>
           </div>
         </div>

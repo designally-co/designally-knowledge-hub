@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { Icon } from '@/components/ds'
+import { Phrases } from '@/components/Phrases'
 
 /**
  * Dark, full-bleed promo band that sits under the Insights section: a three-phone
@@ -49,7 +50,7 @@ export function InsightsVideoPromo({
 
         <p className="ivp__kicker">{kicker}</p>
         <h2 id="ivp-heading" className="ivp__heading">
-          {heading}
+          <Phrases>{heading}</Phrases>
         </h2>
         <p className="ivp__body">{body}</p>
 

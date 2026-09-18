@@ -139,6 +139,12 @@ body {
 
 .band--tight { padding-block: clamp(var(--space-10), 7vw, var(--space-16)); }
 
+/* One phrase of a Thai heading (components/Phrases.tsx): kept on one line
+   unless it is wider than the line by itself. */
+.phrase {
+  display: inline-block;
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;

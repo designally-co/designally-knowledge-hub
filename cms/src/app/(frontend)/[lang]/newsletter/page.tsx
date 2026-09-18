@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { NewsletterForm } from '@/components/NewsletterForm'
+import { Phrases } from '@/components/Phrases'
 import { CATEGORY_CHROME, RESOURCES_CHROME } from '@/lib/listingChrome'
 import { getDictionary, isLocale, type Locale } from '@/lib/i18n'
 
@@ -58,7 +59,7 @@ export default async function NewsletterPage({ params }: { params: Promise<{ lan
           <div className="news-hero__copy">
             <p className="about-eyebrow">{n.eyebrow}</p>
             <h1 className="news-hero__title" id="news-title">
-              {n.title}
+              <Phrases>{n.title}</Phrases>
             </h1>
             <p className="news-hero__lede">{n.lede}</p>
 
@@ -93,7 +94,7 @@ export default async function NewsletterPage({ params }: { params: Promise<{ lan
         <div className="shell news-why__inner">
           <p className="about-eyebrow news-why__label">{n.whyLabel}</p>
           <h2 className="news-why__statement" id="news-why-title">
-            {n.whyStatement}
+            <Phrases>{n.whyStatement}</Phrases>
           </h2>
 
           {/* THREE CARDS, EACH A PROBLEM AND ITS ANSWER. They lean and overlap
@@ -121,7 +122,9 @@ export default async function NewsletterPage({ params }: { params: Promise<{ lan
                   <span>{reason.label}</span>
                 </p>
                 <p className="news-card__problem">{reason.problem}</p>
-                <h3 className="news-card__title">{reason.title}</h3>
+                <h3 className="news-card__title">
+                  <Phrases>{reason.title}</Phrases>
+                </h3>
                 <p className="news-card__answer">{reason.answer}</p>
               </li>
             ))}

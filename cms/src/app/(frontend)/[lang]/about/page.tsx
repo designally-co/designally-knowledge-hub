@@ -3,6 +3,7 @@ import Link from 'next/link'
 
 import { Icon, SectionHeading } from '@/components/ds'
 import { NewsletterCta } from '@/components/NewsletterCta'
+import { Phrases } from '@/components/Phrases'
 import { CATEGORY_CHROME, RESOURCES_CHROME } from '@/lib/listingChrome'
 import { categorySlug } from '@/lib/tags'
 import { getDictionary, isLocale, localeHref, type Locale } from '@/lib/i18n'
@@ -190,9 +191,9 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
           <div className="about-principles__lead">
             <p className="about-eyebrow">{a.principlesLabel}</p>
             <h2 className="about-principles__title" id="about-principles-title">
-              {a.principlesTitle[0]}
+              <Phrases>{a.principlesTitle[0]}</Phrases>
               <br />
-              {a.principlesTitle[1]}
+              <Phrases>{a.principlesTitle[1]}</Phrases>
             </h2>
           </div>
 

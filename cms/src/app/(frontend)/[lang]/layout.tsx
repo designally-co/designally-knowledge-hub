@@ -54,9 +54,12 @@ export default async function FrontendLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* English: Ovo + Geist. Thai: Athiti + IBM Plex Sans Thai, swapped in by
             `:root:lang(th)` in tokens/typography.css. Geist is the variable
-            400–700 axis because the carousel animates its title's weight. */}
+            400–700 axis because the carousel animates its title's weight.
+            IBM Plex Sans Thai is static, so every weight the site sets has to
+            be listed: 500 is the labels', tags', pills' and card titles'. Left
+            out, a Thai page drew all of them at 400. */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Ovo&family=Geist:wght@400..700&family=Athiti:wght@400;600&family=IBM+Plex+Sans+Thai:wght@400;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Ovo&family=Geist:wght@400..700&family=Athiti:wght@400;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
