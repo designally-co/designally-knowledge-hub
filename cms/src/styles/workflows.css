@@ -111,6 +111,25 @@
   padding-block: clamp(var(--space-4), 2.4vw, var(--space-8));
   text-decoration: none;
 }
+/* Below the desktop the list runs under the lead article, full width, and
+   each row sits on the page grid: the thumbnail a quarter of the row, as it is
+   of the desktop's list column — one column of a phone's four, two of a
+   tablet's eight — and the words on the rest. */
+@media (max-width: 63.999em) {
+  .workflows__row-link {
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+  }
+
+  .workflows__row-media { grid-column: 1 / span 2; }
+  .workflows__row-link > .workflows__body { grid-column: 3 / -1; }
+}
+
+@media (max-width: 47.999em) {
+  .workflows__row-media { grid-column: 1 / span 1; }
+  .workflows__row-link > .workflows__body { grid-column: 2 / -1; }
+}
+
 /* First row starts flush with the featured cover on the same top plane. */
 .workflows__row:first-child .workflows__row-link {
   padding-top: 0;

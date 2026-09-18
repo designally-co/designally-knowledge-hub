@@ -45,7 +45,9 @@
   --case-gap: var(--grid-gap);
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: calc((100% - 0.2 * var(--page-gutter)) / 1.18);
+  /* On the grid: two of a phone's four columns a card, so two fill the row
+     and the arrows or a swipe bring the next. */
+  grid-auto-columns: calc(2 * var(--column-width) + var(--grid-gap));
   column-gap: var(--case-gap);
   overflow-x: auto;
   overscroll-behavior-inline: contain;
@@ -62,6 +64,16 @@
 .case-studies__card {
   min-width: 0;
   scroll-snap-align: start;
+}
+
+/* Two to a phone screen, a card is ~150px wide: at the 20px card title a
+   headline ran five and six lines. The Resources cards step down the same
+   way there. */
+@media (max-width: 47.999em) {
+  .case-studies__card .article-card__title {
+    font: var(--type-body-large-emphasis);
+    letter-spacing: var(--tracking-body-large-emphasis);
+  }
 }
 
 /* The section only pads its left edge (the track bleeds right), so the row
@@ -125,22 +137,19 @@
   }
 }
 
-@media (min-width: 36em) {
+/* Tablet and desktop: three columns a card. Of a tablet's eight, two cards
+   hold 1-6 and the third shows in 7-8; of a desktop's twelve, four fill the
+   content width and line up with the grids below. The track runs on into the
+   right margin, where the next card shows. */
+@media (min-width: 48em) {
   .case-studies__track {
-    grid-auto-columns: calc((100% - var(--case-gap)) / 2.18);
+    grid-auto-columns: calc(3 * var(--column-width) + 2 * var(--grid-gap));
   }
 }
 
-/* Desktop: each card is exactly three of the twelve grid columns, so four
-   fill the content width and line up with the grids below. The track runs on
-   into the right margin, where the next card shows. */
 @media (min-width: 64em) {
   .case-studies__banner {
     grid-column: 3 / span 8;
-  }
-
-  .case-studies__track {
-    grid-auto-columns: calc(3 * var(--column-width) + 2 * var(--grid-gap));
   }
 }
 

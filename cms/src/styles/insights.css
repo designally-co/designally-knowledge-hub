@@ -38,10 +38,29 @@
   aspect-ratio: 3 / 4;
 }
 
-/* One column on a phone, where a full-width 3:4 tile runs ~460px tall for a
-   one-word heading. It takes the wide strip the Resources banner takes there
-   instead: heading on the left, art standing on the right. */
-@media (max-width: 35.999em) {
+/* Phone, on its four columns: the lead article across all four, the next two
+   side by side on 1-2 and 3-4, then the banner across the row. Three articles
+   and the banner are the section's whole phone view; the rest are a tap on
+   "see all" away. The banner takes the wide strip the Resources banner takes
+   here — a full-width 3:4 tile ran ~460px tall for a one-word heading. */
+@media (max-width: 47.999em) {
+  .insights__grid {
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    gap: var(--space-6) var(--grid-gap);
+  }
+
+  .insights__grid > * { grid-column: span 2; }
+  .insights__grid > .insights__card:first-child,
+  .insights__grid > .promo-cell { grid-column: 1 / -1; }
+  .insights__grid > .insights__card:nth-child(n + 4) { display: none; }
+
+  /* Two to a row, a card is ~165px wide: its title steps down to 16px, as
+     the Case Studies and Resources cards do there. */
+  .insights__card:not(:first-child) .article-card__title {
+    font: var(--type-body-large-emphasis);
+    letter-spacing: var(--tracking-body-large-emphasis);
+  }
+
   .insights__banner {
     aspect-ratio: auto;
     min-height: clamp(112px, 14vw, 176px);
@@ -61,7 +80,7 @@
   }
 }
 
-@media (min-width: 36em) {
+@media (min-width: 48em) {
   .insights__grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
