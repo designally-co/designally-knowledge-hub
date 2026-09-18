@@ -29,16 +29,6 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
   return (
     <footer className="site-footer">
       <div className="shell site-footer__inner">
-        {/* The mark, in one of two places: centred over the tagline on a
-            phone, where the footer opens on the identity; at the head of the
-            masthead column, left-aligned, from tablet up. CSS shows one; the
-            other is display:none, so it is read once. The two layers are
-            decoration — the label says the name. */}
-        <p aria-label="Designally" className="site-footer__mark site-footer__mark--top" role="img">
-          <i aria-hidden="true" className="site-footer__mark-d" />
-          <i aria-hidden="true" className="site-footer__mark-dot" />
-        </p>
-
         <p className="site-footer__tagline">
           {dict.footer.tagline[0]}
           <br />
@@ -49,7 +39,10 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
 
         <div className="site-footer__cols">
           <div className="site-footer__masthead">
-            <p aria-label="Designally" className="site-footer__mark site-footer__mark--masthead" role="img">
+            {/* The mark heads the masthead: left-aligned beside the lists, and
+                centred with the rest of the masthead on a phone. The two layers
+                are decoration — the label says the name. */}
+            <p aria-label="Designally" className="site-footer__mark" role="img">
               <i aria-hidden="true" className="site-footer__mark-d" />
               <i aria-hidden="true" className="site-footer__mark-dot" />
             </p>

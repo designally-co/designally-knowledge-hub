@@ -664,15 +664,7 @@
   display: block;
   inline-size: clamp(56px, 11vw, 74px);
   aspect-ratio: 290 / 256;
-}
-
-/* Phone: centred over the tagline. From 48em: left, heading the masthead. */
-.site-footer__mark--top { margin: 0 auto var(--space-6); }
-.site-footer__mark--masthead { display: none; margin: 0 0 var(--space-6); }
-
-@media (min-width: 48em) {
-  .site-footer__mark--top { display: none; }
-  .site-footer__mark--masthead { display: block; }
+  margin: 0 0 var(--space-6);
 }
 
 .site-footer__mark i {
@@ -859,8 +851,7 @@
 }
 
 /* On a phone the collapsed lists come first and the identity closes the
-   footer, centred: what the Hub is, then the accounts (the mark opens the
-   footer above the tagline). */
+   footer, centred: the mark, what the Hub is, then the accounts. */
 @media (max-width: 35.999em) {
   .site-footer__cols { gap: 0; }
 
@@ -870,6 +861,7 @@
     text-align: center;
   }
 
+  .site-footer__mark,
   .site-footer__blurb { margin-inline: auto; }
 
   .site-footer__label--social {
