@@ -109,7 +109,7 @@
 }
 
 .icon-btn--sm { width: 32px; height: 32px; }
-.icon-btn--md { width: 44px; height: 44px; }
+.icon-btn--md { width: var(--touch-target); height: var(--touch-target); }
 .icon-btn--lg { width: 56px; height: 56px; }
 
 .icon-btn--outline { color: var(--color-neutral-black); border: 1.5px solid var(--border-outline); }

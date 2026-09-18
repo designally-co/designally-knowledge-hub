@@ -144,7 +144,7 @@
 @media (max-width: 47.999em) {
   /* A 18/9 frame is too short for a half-height panel to stay readable, so the
      stage gets taller as the viewport narrows and the 50% cap still holds. The
-     min-height is the floor three title lines plus a 44px link need on phones. */
+     min-height is the floor three title lines plus the touch-size link need. */
   .recent-article__stage {
     aspect-ratio: 3 / 2;
     min-height: 340px;

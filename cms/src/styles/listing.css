@@ -359,7 +359,7 @@
 /* A phone holds the filters on one row that scrolls sideways, run out to the
    screen edges so the next chip shows it can scroll. Wrapped, a dozen filters
    stacked five rows deep ahead of the first result; in a row they cost one,
-   and keep their full 44px touch height. */
+   and keep their full touch height. */
 @media (max-width: 47.999em) {
   .listing-controls > .listing-filters {
     flex-wrap: nowrap;
@@ -422,10 +422,11 @@
   outline: none;
 }
 
-/* On touch the pill is a full 44px row, like the filter chips beside it, and
-   the 18px icon answers to a 44px square around it. */
+/* On touch the pill is a full touch-target row, like the filter chips beside
+   it, and the 18px icon answers to a touch-target square around it. */
 @media (pointer: coarse) {
-  .listing-search { min-height: var(--touch-target); }
+  /* The height is the target's, not the padding's, so it matches the chips. */
+  .listing-search { min-height: var(--touch-target); padding-block: var(--space-1); }
 
   /* 16px, or iOS Safari zooms the page in when the field takes focus. */
   .listing-search__input {
@@ -569,7 +570,7 @@
    number with the narrowest screen it shows on: three on phones (no first/last
    there, so the row fits a 320px screen), five from 36em, seven from 64em.
    Each item is the design system's 40×40 pagination item; on touch screens it
-   grows to the 44px touch target. */
+   grows to the touch target (44px; 40px on a phone). */
 .listing-pager {
   --pager-size: 40px;
   --pager-gap: var(--space-1);

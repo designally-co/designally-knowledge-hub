@@ -416,8 +416,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: var(--touch-target);
+  height: var(--touch-target);
   padding: 0;
   border-radius: var(--radius-pill);
   border: 1px solid var(--border-outline);
@@ -533,8 +533,8 @@
    that is open by default, so it is an affordance rather than a reveal. */
 .article-refs__toggle {
   flex-shrink: 0;
-  inline-size: 44px;
-  block-size: 44px;
+  inline-size: var(--touch-target);
+  block-size: var(--touch-target);
   border-radius: 999px;
   border: 1px solid var(--color-neutral-gray-200);
   background: transparent;

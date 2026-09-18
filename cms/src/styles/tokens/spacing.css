@@ -109,5 +109,8 @@
        343px block, so every card, banner and frame takes 8px here. */
     --radius-card: var(--space-2);
     --radius-hero: var(--space-2);
+    /* Touch targets: 40px on a phone, where 44px controls crowded the
+       smaller layout; still well over WCAG's 24px minimum. */
+    --touch-target: 40px;
   }
 }

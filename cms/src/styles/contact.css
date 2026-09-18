@@ -179,7 +179,7 @@
   padding-block-end: var(--space-2);
 }
 
-/* On touch, a 44px row, and 16px type: iOS Safari zooms the page into any
+/* On touch, a touch-target row, and 16px type: iOS Safari zooms the page into any
    field set smaller than that, and the zoom stays after the keyboard closes. */
 @media (pointer: coarse) {
   .contact-field__input {
