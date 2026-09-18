@@ -373,6 +373,10 @@
 /* Last results stay while the next are fetched, dimmed. */
 .search-grid.is-pending { opacity: 0.55; }
 
+@media (max-width: 47.999em) {
+  .search-grid { row-gap: var(--space-6); }
+}
+
 @media (min-width: 36em) {
   .search-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

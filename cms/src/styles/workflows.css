@@ -138,6 +138,12 @@
   .workflows__row-media { grid-column: 1 / span 1; }
   .workflows__row-link > .workflows__body { grid-column: 2 / -1; }
 
+  /* Proximity, as the cards: tag, title and date 8px apart, each row's
+     content 24px from the next (12px either side of the rule). */
+  .workflows__row-link { padding-block: var(--space-3); }
+  .workflows__row-link .workflows__tags { margin-bottom: var(--space-2); }
+  .workflows__row-link .workflows__date { margin-top: var(--space-2); }
+
   /* The standard 16px card title, as every card has on a phone. */
   .workflows__row-link .workflows__row-title {
     font: var(--type-body-large-emphasis);

@@ -270,10 +270,25 @@
   margin: clamp(var(--space-4), 2.2vw, var(--space-6)) 0 0;
   color: color-mix(in srgb, var(--color-neutral-black) 88%, transparent);
   font: var(--type-heading-4);
+  /* Medium, as the article standfirst is: an intro under the title, not a
+     second headline. */
+  font-weight: 500;
   letter-spacing: var(--tracking-heading-4);
   /* Fixed narrow measure (not `balance`) so every subtitle fills to the same
      width and wraps to ~3 lines, rather than short copy sitting wide on 2. */
   text-wrap: pretty;
+}
+
+/* Phone: at 24px under a 34px title the intro ran five and six lines and
+   stood level with it. The 16px body line, as the article standfirst takes
+   there. */
+@media (max-width: 47.999em) {
+  .listing-hero__desc {
+    margin-top: var(--space-3);
+    font: var(--type-body-large);
+    font-weight: 500;
+    letter-spacing: var(--tracking-body-large);
+  }
 }
 
 /* A heading in two sizes: a small first line (search's "Search results for")
@@ -525,6 +540,16 @@
   column-gap: var(--uniform-gap);
 }
 
+/* Phones: every list of cards steps 24px (space-6) from one row to the next
+   (catalog, search, and the home sections); the columns keep the grid's
+   gutter. */
+@media (max-width: 47.999em) {
+  .listing-grid:not(.listing-grid--uniform),
+  .listing-grid--uniform {
+    row-gap: var(--space-6);
+  }
+}
+
 /* Tiles are at least 232px, and never more than four to a row: the minimum
    grows to a quarter of the row once four would fit. */
 @media (min-width: 36em) {
@@ -540,7 +565,7 @@
    tile (components.css); only the card's own rhythm tightens here. */
 @media (max-width: 35.999em) {
   .listing-grid--uniform .resource-card {
-    gap: var(--space-3);
+    gap: var(--space-2);
   }
 }
 
