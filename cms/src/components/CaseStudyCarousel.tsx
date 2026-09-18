@@ -12,7 +12,6 @@ type CaseStudyCarouselProps = {
   previousLabel: string
   nextLabel: string
   bannerLabel: string
-  bannerCta?: string
   bannerHref: string
   className?: string
 }
@@ -23,7 +22,6 @@ export function CaseStudyCarousel({
   previousLabel,
   nextLabel,
   bannerLabel,
-  bannerCta,
   bannerHref,
   className = '',
 }: CaseStudyCarouselProps) {
@@ -114,8 +112,8 @@ export function CaseStudyCarousel({
         <PromoBanner
           className="case-studies__banner"
           label={bannerLabel}
-          ctaLabel={bannerCta}
           href={bannerHref}
+          arrow={false}
         />
       </div>
     </section>

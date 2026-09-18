@@ -132,17 +132,6 @@
   text-underline-offset: 5px;
 }
 
-@media (max-width: 35.999em) {
-  .promo-banner__content {
-    max-width: 68%;
-  }
-  .promo-banner__art {
-    right: 12px;
-    max-width: 46%;
-    height: 92%;
-  }
-}
-
 .promo-banner__art {
   transition: transform var(--hover-media-dur) var(--ease-out-quart);
 }
@@ -255,5 +244,58 @@
 
   .promo-see-all:hover .promo-see-all__icon {
     transform: rotate(calc(var(--arrow-bearing) - 90deg)) translateX(4px);
+  }
+}
+
+/* --- Phones: one simple banner ---------------------------------------------
+   Every section's banner takes the Workflows banner's form on a phone: the
+   scene on the left half, standing on the foot, the section's name centred in
+   the right half, and nothing else — no CTA line, no arrow, no "see all"
+   under it (the banner is itself the link). Scoped under #main so it outranks
+   the sections' own banner rules, which load after this file. */
+@media (max-width: 47.999em) {
+  #main {
+    /* Sized so the longest name, "RESOURCES" (~5.9em), fits a half. */
+    --promo-label-size: clamp(20px, 0.07 * var(--content-width), 34px);
+  }
+
+  #main .promo-banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    aspect-ratio: auto;
+    min-height: clamp(112px, 14vw, 176px);
+    padding: var(--space-4);
+  }
+
+  #main .promo-banner .promo-banner__content {
+    flex: 0 0 50%;
+    max-width: 50%;
+    align-items: center;
+    text-align: center;
+  }
+
+  #main .promo-banner .promo-banner__label {
+    font-size: var(--promo-label-size);
+    text-wrap: balance;
+  }
+
+  #main .promo-banner .promo-banner__art {
+    right: auto;
+    left: 0;
+    bottom: 0;
+    width: 50%;
+    max-width: none;
+    height: 92%;
+    max-height: none;
+    object-fit: contain;
+    object-position: center bottom;
+    transform-origin: center bottom;
+  }
+
+  #main .promo-banner .promo-banner__cta,
+  #main .promo-banner .promo-banner__icon,
+  #main .promo-see-all {
+    display: none;
   }
 }

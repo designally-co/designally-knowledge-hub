@@ -72,29 +72,10 @@
     display: none;
   }
 
-  /* A 165px square is too small for the heading and the art together, so the
-     banner and its "see all" line span the row and the banner takes the wide
-     shape it has in the other sections, art beside the heading. */
+  /* The banner spans the row under the cards; its phone form is shared
+     (promo-banner.css). */
   .resources__banner-cell {
     grid-column: 1 / -1;
-  }
-
-  .resources__banner {
-    aspect-ratio: auto;
-    min-height: clamp(112px, 14vw, 176px);
-  }
-
-  .resources__banner .promo-banner__content {
-    max-width: 68%;
-  }
-
-  .resources__banner .promo-banner__art {
-    right: 12px;
-    left: auto;
-    width: auto;
-    max-width: 46%;
-    height: 92%;
-    max-height: none;
   }
 }
 

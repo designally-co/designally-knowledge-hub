@@ -129,9 +129,8 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         title={dict.home.caseStudies}
         previousLabel={dict.home.previousArticles}
         nextLabel={dict.home.nextArticles}
-        bannerLabel={dict.home.exploreDesign}
-        bannerCta={dict.home.exploreDesignCta}
-        bannerHref={localeHref(locale, '/newsletter')}
+        bannerLabel={dict.home.caseStudies}
+        bannerHref={localeHref(locale, '/category/design')}
       />
 
       <InsightsGrid

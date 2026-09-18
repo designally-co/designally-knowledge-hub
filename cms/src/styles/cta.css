@@ -4,6 +4,8 @@
 
 .cta {
   --cta-bg: var(--color-neutral-gray-100);
+  /* The headline's size, shared with the illustration's sizing below. */
+  --cta-title-size: clamp(34px, 4.444vw, 64px);
   background: var(--cta-bg) url('/newsletter-waves.svg') no-repeat center / cover;
   padding-block: clamp(var(--space-10), 7vw, var(--space-20));
 }
@@ -66,24 +68,55 @@
   flex: none;
 }
 
-/* Below 36em the illustration and a 32px serif headline were splitting ~350px
-   between them, leaving the title about two words per line. Stack them: the
-   art keeps its presence at a smaller size and the headline gets the full
-   measure. */
-@media (max-width: 35.999em) {
+/* Below the desktop the illustration sits beside the copy, exactly as tall as
+   it. The copy's height is known from its type: the eyebrow's 14px line, the
+   gap under it, and the headline's three lines (12ch holds it to three) at
+   display-2's 1.125 leading. The drawing's width is that height at its own
+   235:280 proportion, so the two stay level however the headline scales. */
+@media (max-width: 63.999em) {
   .cta__lead {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-4);
+    --cta-copy-h: calc(
+      14px + clamp(var(--space-3), 2vw, var(--space-6)) + 3 * 1.125 * var(--cta-title-size)
+    );
+    display: grid;
+    grid-template-columns: calc(var(--cta-copy-h) * 235 / 280) minmax(0, 1fr);
+    column-gap: var(--grid-gap);
+    align-items: center;
   }
 
   .cta__art {
-    width: 108px;
+    width: 100%;
   }
 
-  .cta__title {
-    max-width: 16ch;
+  .cta__copy {
+    min-width: 0;
   }
+}
+
+/* Narrower than a 375px phone the copy column cannot hold three lines at 34px;
+   a size down (two on the smallest phones) keeps the headline on three, and
+   the drawing follows it. */
+@media (max-width: 23.4em) {
+  .cta { --cta-title-size: 30px; }
+}
+
+@media (max-width: 21.25em) {
+  .cta { --cta-title-size: 26px; }
+}
+
+/* Below the desktop the headline is 34-45px, and the lede at 20px bold stood
+   level with it. The body line, regular weight: it supports, it does not
+   lead. On the desktop's 64px headline the heading-5 lede keeps its place. */
+@media (max-width: 63.999em) {
+  .cta .cta__lede {
+    font: var(--type-body-large);
+    letter-spacing: var(--tracking-body-large);
+  }
+}
+
+/* On a phone the headline says it; the field follows it directly. */
+@media (max-width: 47.999em) {
+  .cta .cta__lede { display: none; }
 }
 
 .cta__eyebrow {
@@ -97,6 +130,7 @@
 
 .cta__title {
   font: var(--type-display-2);
+  font-size: var(--cta-title-size);
   letter-spacing: var(--tracking-display-2);
   color: var(--color-neutral-black);
   margin: 0;

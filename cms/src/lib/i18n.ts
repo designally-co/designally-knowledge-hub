@@ -90,8 +90,6 @@ export type Dictionary = {
     insights: string
     previousArticles: string
     nextArticles: string
-    exploreDesign: string
-    exploreDesignCta: string
     seeAllInsights: string
     workflows: string
     workflowsBanner: string
@@ -315,8 +313,6 @@ const en: Dictionary = {
     insights: 'Insights',
     previousArticles: 'Previous articles',
     nextArticles: 'Next articles',
-    exploreDesign: 'DESIGN IS BETTER WHEN IDEAS CONNECT.',
-    exploreDesignCta: 'Join Designally now!',
     seeAllInsights: 'See all insights',
     workflows: 'Workflows',
     workflowsBanner: 'Workflow',
@@ -567,8 +563,6 @@ const th: Dictionary = {
     insights: 'อินไซต์',
     previousArticles: 'บทความก่อนหน้า',
     nextArticles: 'บทความถัดไป',
-    exploreDesign: 'DESIGN IS BETTER WHEN IDEAS CONNECT.',
-    exploreDesignCta: 'เข้าร่วมกับ Designally เลย!',
     seeAllInsights: 'ดูอินไซต์ทั้งหมด',
     workflows: 'เวิร์กโฟลว์',
     workflowsBanner: 'เวิร์กโฟลว์',

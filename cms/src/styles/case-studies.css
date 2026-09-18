@@ -82,33 +82,10 @@
   grid-column: 1 / -1;
 }
 
-/* The headline holds to two lines at the shared banner size (promo-banner.css),
-   which is scaled so the longer balanced half, "WHEN IDEAS CONNECT.", fits the
-   text column; `balance` splits it evenly. The banner stays a size container
-   for its CTA line. */
-.case-studies__banner {
-  container-type: inline-size;
-}
-
+/* The section's name at the shared banner size (promo-banner.css), like the
+   other sections' banners. */
 .case-studies__banner .promo-banner__content {
   max-width: 100%;
-}
-
-.case-studies__banner .promo-banner__label {
-  max-width: 100%;
-  font-size: var(--promo-label-size);
-  text-wrap: balance;
-}
-
-.case-studies__banner .promo-banner__cta {
-  font-size: clamp(18px, 3cqi, 24px);
-}
-
-/* Phones: the headline takes the full width, so the art drops to the corner
-   beside the button instead of sitting under the words. */
-.case-studies__banner .promo-banner__art {
-  max-width: 40%;
-  height: 52%;
 }
 
 /* Tablet: the middle six of eight columns; desktop: the middle eight of 12. */

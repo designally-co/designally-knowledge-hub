@@ -41,8 +41,7 @@
 /* Phone, on its four columns: the lead article across all four, the next two
    side by side on 1-2 and 3-4, then the banner across the row. Three articles
    and the banner are the section's whole phone view; the rest are a tap on
-   "see all" away. The banner takes the wide strip the Resources banner takes
-   here — a full-width 3:4 tile ran ~460px tall for a one-word heading. */
+   the banner away (its phone form is in promo-banner.css). */
 @media (max-width: 47.999em) {
   .insights__grid {
     grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
@@ -53,24 +52,6 @@
   .insights__grid > .insights__card:first-child,
   .insights__grid > .promo-cell { grid-column: 1 / -1; }
   .insights__grid > .insights__card:nth-child(n + 4) { display: none; }
-
-  .insights__banner {
-    aspect-ratio: auto;
-    min-height: clamp(112px, 14vw, 176px);
-  }
-
-  .insights__banner .promo-banner__content {
-    max-width: 68%;
-  }
-
-  .insights__banner .promo-banner__art {
-    right: 12px;
-    left: auto;
-    width: auto;
-    max-width: 46%;
-    height: 92%;
-    max-height: none;
-  }
 }
 
 @media (min-width: 48em) {
