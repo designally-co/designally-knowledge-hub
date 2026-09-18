@@ -101,6 +101,7 @@ export default async function SearchPage({
                 </p>
               </div>
 
+              <h2 className="visually-hidden">{dict.listing.resultsHeading}</h2>
               <SearchHitGrid hits={listing.items} />
 
               <ListingPager

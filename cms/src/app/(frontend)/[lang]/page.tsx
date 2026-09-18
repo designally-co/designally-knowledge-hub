@@ -47,7 +47,11 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
       <SiteJsonLd />
     <div>
       <div className="home-hero">
-        <HeroCarousel items={items} />
+        <HeroCarousel
+          items={items}
+          label={dict.home.carouselLabel}
+          itemLabel={dict.home.carouselItem}
+        />
 
         <section className="home-topics" aria-labelledby="home-topics-heading">
           <div className="home-topics__intro">
@@ -102,7 +106,7 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
                     <Tag key={tag}>{tag}</Tag>
                   ))}
                 </div>
-                <h3 className="recent-article__title">{recentArticle.title}</h3>
+                <h2 className="recent-article__title">{recentArticle.title}</h2>
                 {recentArticle.date && <p className="recent-article__date">{recentArticle.date}</p>}
                 <a
                   className="recent-article__link"

@@ -47,12 +47,14 @@ function TickerCard({
   index,
   total,
   ratio,
+  itemLabel,
 }: {
   item: CarouselItem
   emph: boolean
   index: number
   total: number
   ratio: number
+  itemLabel: string
 }) {
   return (
     <a
@@ -81,7 +83,7 @@ function TickerCard({
         <span className="carousel__image" aria-hidden="true" />
       )}
       <span className="carousel__title">
-        {emph && <span className="visually-hidden">{`Item ${index} of ${total}: `}</span>}
+        {emph && <span className="visually-hidden">{itemLabel.replace('{index}', String(index)).replace('{total}', String(total))}</span>}
         {item.title}
       </span>
       <p className="carousel__date">{item.date}</p>
@@ -89,7 +91,17 @@ function TickerCard({
   )
 }
 
-export function HeroCarousel({ items }: { items: CarouselItem[] }) {
+export function HeroCarousel({
+  items,
+  label,
+  itemLabel,
+}: {
+  items: CarouselItem[]
+  /** The region's name and the emphasised card's "{index} of {total}" prefix,
+      both from the page's dictionary. */
+  label: string
+  itemLabel: string
+}) {
   const DWELL = 5200 // ms each card holds the emphasis slot
   const len = items.length
 
@@ -204,7 +216,7 @@ export function HeroCarousel({ items }: { items: CarouselItem[] }) {
   if (len === 0) return null
 
   return (
-    <section aria-roledescription="carousel" aria-label="Latest articles">
+    <section aria-roledescription="carousel" aria-label={label}>
       <div
         ref={containerRef}
         className="carousel"
@@ -257,6 +269,7 @@ export function HeroCarousel({ items }: { items: CarouselItem[] }) {
               emph={j === activePos}
               index={car.real + 1}
               total={len}
+              itemLabel={itemLabel}
             />
           ))}
         </div>

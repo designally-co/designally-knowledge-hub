@@ -31,7 +31,13 @@
 
 .notfound__inner {
   position: relative;
-  max-inline-size: 44rem;
+}
+
+/* On the page grid like the other heroes: the words hold to columns 1–7,
+   the lede to 1–6, flush with the page's left edge rather than centred in a
+   box of their own. */
+.notfound__inner > * {
+  max-inline-size: calc(7 * var(--column-width) + 6 * var(--grid-gap));
 }
 
 /* THE NUMBER IS A LABEL, NOT A HEADLINE. Rendering "404" at display size makes
@@ -54,9 +60,9 @@
   text-wrap: balance;
 }
 
-.notfound__lede {
+.notfound__inner > .notfound__lede {
   margin: 0 0 clamp(var(--space-6), 3.2vw, var(--space-8));
-  max-inline-size: 34rem;
+  max-inline-size: calc(6 * var(--column-width) + 5 * var(--grid-gap));
   font: var(--type-body-large);
   letter-spacing: var(--tracking-body-large);
   color: var(--color-neutral-black-60);
@@ -86,7 +92,7 @@
 .notfound__grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(var(--space-4), 2vw, var(--space-6));
+  gap: clamp(var(--space-3), 2.4vw, var(--space-8)) var(--grid-gap);
 }
 
 @media (max-width: 60rem) {

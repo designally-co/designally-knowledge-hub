@@ -95,6 +95,9 @@ export type Dictionary = {
     seeAllInsights: string
     workflows: string
     workflowsBanner: string
+    /** Screen-reader name of the hero carousel, and its "{index} of {total}" prefix. */
+    carouselLabel: string
+    carouselItem: string
     seeAllWorkflows: string
     topics: string
     resources: string
@@ -191,6 +194,8 @@ export type Dictionary = {
   }
   listing: {
     home: string
+    /** Screen-reader heading over a page's grid of cards, between its h1 and the cards' h3s. */
+    resultsHeading: string
     articles: string
     /** Unit noun for the resource count. */
     resourceUnit: string
@@ -315,6 +320,8 @@ const en: Dictionary = {
     seeAllInsights: 'See all insights',
     workflows: 'Workflows',
     workflowsBanner: 'Workflow',
+    carouselLabel: 'Latest articles',
+    carouselItem: 'Item {index} of {total}: ',
     seeAllWorkflows: 'See all workflows',
     topics: 'Topics',
     resources: 'Resources',
@@ -455,6 +462,7 @@ const en: Dictionary = {
   },
   listing: {
     home: 'Home',
+    resultsHeading: 'Results',
     articles: 'articles',
     resourceUnit: 'resources',
     emptyForTag: 'No articles with this tag yet.',
@@ -564,6 +572,8 @@ const th: Dictionary = {
     seeAllInsights: 'ดูอินไซต์ทั้งหมด',
     workflows: 'เวิร์กโฟลว์',
     workflowsBanner: 'เวิร์กโฟลว์',
+    carouselLabel: 'บทความล่าสุด',
+    carouselItem: 'รายการที่ {index} จาก {total}: ',
     seeAllWorkflows: 'ดูเวิร์กโฟลว์ทั้งหมด',
     topics: 'หัวข้อ',
     resources: 'รีซอร์ส',
@@ -704,6 +714,7 @@ const th: Dictionary = {
   },
   listing: {
     home: 'หน้าแรก',
+    resultsHeading: 'ผลลัพธ์',
     articles: 'บทความ',
     resourceUnit: 'รีซอร์ส',
     emptyForTag: 'ยังไม่มีบทความในแท็กนี้',

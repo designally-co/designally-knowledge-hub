@@ -104,6 +104,7 @@ export default async function TagPage({
 
         {listing.total > 0 ? (
           <>
+            <h2 className="visually-hidden">{dict.listing.resultsHeading}</h2>
             <div className={`listing-grid${showFeature ? ' listing-grid--lead' : ''}`}>
               {listing.items.map((it) => (
                 <ArticleCard

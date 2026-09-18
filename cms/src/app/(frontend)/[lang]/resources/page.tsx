@@ -103,6 +103,7 @@ export default async function ResourcesPage({
 
         {listing.total > 0 ? (
           <>
+            <h2 className="visually-hidden">{dict.listing.resultsHeading}</h2>
             <div className="listing-grid listing-grid--uniform">
               {listing.items.map((it) => (
                 <ResourceCard
