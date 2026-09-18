@@ -295,3 +295,47 @@
     margin-block-start: var(--space-3);
   }
 }
+
+/* ---- phones ------------------------------------------------------------- */
+
+/* The site's phone rules, as the About and Contact pages take them: reading
+   text at 16px, labels at 500, and weight kept for headings. Stacked, the
+   cards are a list rather than a hand, so they space as one — label, problem,
+   title and answer grouped, with the turn from problem to answer a step
+   rather than a gulf — and the room the fan's drop needed at the foot goes. */
+@media (max-width: 47.999em) {
+  /* The offer is the headline's; the line under it is a paragraph, at the
+     weight the band's lede took. */
+  .news-hero__lede {
+    font-weight: 500;
+  }
+
+  .news-why {
+    padding-block-end: clamp(var(--space-16), 9vw, var(--space-24));
+  }
+
+  .news-card__index {
+    margin-bottom: var(--space-2);
+    font: var(--type-body-small);
+    font-weight: 500;
+    letter-spacing: var(--tracking-body-small);
+  }
+
+  .news-card__problem {
+    margin-bottom: var(--space-6);
+    font: var(--type-body-large);
+    letter-spacing: var(--tracking-body-large);
+  }
+
+  /* A step under the section's 30px statement rather than level with it. */
+  .news-card__title {
+    margin-bottom: var(--space-2);
+    font: var(--font-serif-weight) 24px / 32px var(--font-serif);
+  }
+
+  .news-card__answer {
+    font: var(--type-body-large);
+    font-weight: 500;
+    letter-spacing: var(--tracking-body-large);
+  }
+}
