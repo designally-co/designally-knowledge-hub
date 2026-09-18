@@ -22,6 +22,8 @@
 .about-eyebrow {
   margin: 0 0 clamp(var(--space-4), 2.4vw, var(--space-6));
   font: var(--type-tag);
+  /* Medium, as the site's other labels. */
+  font-weight: 500;
   letter-spacing: var(--tracking-tag);
   line-height: 1;
   text-transform: uppercase;
@@ -395,6 +397,8 @@
   position: relative;
   z-index: 1;
   font: var(--type-heading-5);
+  /* 600, as the site's headings; the colour field carries the weight. */
+  font-weight: 600;
   letter-spacing: var(--tracking-heading-5);
   color: var(--color-neutral-white);
 }
@@ -534,6 +538,8 @@
 .about-principle__title {
   margin: 0;
   font: var(--type-heading-5);
+  /* 600, as the article's section headings. */
+  font-weight: 600;
   letter-spacing: var(--tracking-heading-5);
   color: var(--color-neutral-black);
 }
@@ -640,4 +646,16 @@
 .about-studio__link:focus-visible {
   outline: 3px solid var(--color-neutral-white);
   outline-offset: 4px;
+}
+
+/* Phones: the page's reading text at the site's 16px body line, as the article
+   body and the hero lede are there; the 14px step is kept for the desktop's
+   narrower columns. */
+@media (max-width: 47.999em) {
+  .about-why__body p,
+  .about-find__lede,
+  .about-principle__body {
+    font: var(--type-body-large);
+    letter-spacing: var(--tracking-body-large);
+  }
 }
