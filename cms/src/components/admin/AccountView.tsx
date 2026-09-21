@@ -2,7 +2,11 @@
 
 import React from 'react'
 import { createPortal } from 'react-dom'
-import { SaveButton } from '@payloadcms/ui'
+
+import { ChevronDown } from 'lucide-react'
+
+import { DocMeta } from './DocActions'
+import { SaveButton, useField } from '@payloadcms/ui'
 
 import './AccountView.css'
 
@@ -79,6 +83,130 @@ export function AccountView() {
 
     </>
   )
+}
+
+
+/**
+ * On or off, as Content Studio draws it.
+ *
+ * PAYLOAD'S CHECKBOX WAS DOING THIS JOB, and a checkbox reads as something you
+ * tick on the way to pressing Save. This one is a state — the key either works
+ * or it does not — which is the shape a switch has. Its own `role="switch"` so
+ * a screen reader hears on/off rather than "checked", and the whole control is
+ * a 44px target: the track is 40 by 24 and the thumb 20, which is a miss
+ * waiting to happen on a coarse pointer.
+ *
+ * It writes to Payload's field, so Save, the dirty state and validation carry
+ * on knowing nothing about it.
+ */
+function Switch({ checked, label, onChange }: { checked: boolean; label: string; onChange: (next: boolean) => void }) {
+  return (
+    <button
+      aria-checked={checked}
+      aria-label={label}
+      className={`da-switch${checked ? ' da-switch--on' : ''}`}
+      onClick={() => onChange(!checked)}
+      role="switch"
+      type="button"
+    >
+      <span aria-hidden="true" className="da-switch__track">
+        <span className="da-switch__thumb" />
+      </span>
+    </button>
+  )
+}
+
+/**
+ * The API key, folded away — the routine sheet's advanced-settings panel.
+ *
+ * IT IS THE LEAST TOUCHED THING ON THE SCREEN AND IT SAT OPEN ABOVE EVERYTHING:
+ * a checkbox, a masked string, a button that replaces it and a warning about
+ * what replacing it breaks, all of it in the way of the two lines anybody comes
+ * to this page for. Folded, it says what it is and stays shut until asked, the
+ * way Content Studio treats the settings you set once.
+ *
+ * THE FIELDS NEVER LEAVE THE DOM. Payload submits this form from the values it
+ * holds, and a closed panel whose inputs had gone would save an account with no
+ * key. Closed it is hidden and `inert` — still submitted, not reachable by Tab.
+ *
+ * NO DOM SURGERY: Payload owns the block, so this renders a trigger beside it
+ * and a switch inside it, and the stylesheet orders the three into one panel.
+ */
+export function ApiAccessPanel() {
+  const host = useHost('.auth-fields')
+  const body = useHost('.auth-fields__api-key')
+  const [open, setOpen] = React.useState(false)
+  const { setValue, value } = useField<boolean>({ path: 'enableAPIKey' })
+  const enabled = Boolean(value)
+
+  React.useEffect(() => {
+    if (!body) return
+    body.classList.add('da-api__body')
+    body.classList.toggle('da-api__body--open', open)
+    ;(body as HTMLElement).inert = !open
+    return () => {
+      body.classList.remove('da-api__body', 'da-api__body--open')
+      ;(body as HTMLElement).inert = false
+    }
+  }, [body, open])
+
+  return (
+    <>
+      {host
+        ? createPortal(
+            <button
+              aria-expanded={open}
+              className={`da-api__trigger${open ? ' da-api__trigger--open' : ''}`}
+              onClick={() => setOpen((was) => !was)}
+              type="button"
+            >
+              <span className="da-api__lead">
+                <span className="da-api__title">API access</span>
+                <span className="da-api__sub">
+                  {enabled ? 'A key is set. Content Studio publishes with it.' : 'No key. Content Studio cannot publish.'}
+                </span>
+              </span>
+              <ChevronDown aria-hidden="true" className="da-api__chevron" size={18} strokeWidth={1.75} />
+            </button>,
+            host,
+          )
+        : null}
+
+      {body
+        ? createPortal(
+            <>
+              <div className="da-api__switch">
+                <span className="da-api__switch-label">Enable API key</span>
+                <Switch checked={enabled} label="Enable API key" onChange={(next) => setValue(next)} />
+              </div>
+              {/* What regenerating costs, where the finger is already hovering:
+                  this key is the credential Content Studio publishes with. */}
+              <p className="da-account__note">
+                Content Studio posts articles with this key. Generating a new one stops it
+                publishing until the new key is set there.
+              </p>
+            </>,
+            body,
+          )
+        : null}
+    </>
+  )
+}
+
+/**
+ * When the account was made, inside the card rather than under it.
+ *
+ * Every other document ends with this block in its rail. The account has no
+ * rail — every field of a user is a sidebar field, so the column holds the
+ * whole document — and left where it was declared it drew a second card under
+ * the first, holding two lines. A subscriber is one card and so is this.
+ */
+export function AccountMeta() {
+  const host = useHost('.auth-fields')
+
+  if (!host) return null
+
+  return createPortal(<DocMeta />, host)
 }
 
 /**

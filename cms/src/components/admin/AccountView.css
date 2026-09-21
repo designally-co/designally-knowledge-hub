@@ -51,9 +51,23 @@ body.da-account .auth-fields {
      1.5rem below to leave 55 between the two panels. One source of spacing:
      the panel underneath owns it. */
   margin-block-end: 0;
-  padding: 2rem;
+  /* The subscriber's card, to the pixel: the two single-card documents in this
+     admin are one shape. */
+  padding: 20px 24px;
+  border: 1px solid var(--da-hairline);
   border-radius: var(--style-radius-sheet);
   background-color: #ffffff;
+}
+
+/* ONE SOURCE OF SPACING. The card is a flex column with a 23px gap of its own,
+   and stating a margin as well put 42px between blocks — twice the
+   subscriber's. The gap says it, the children say nothing. */
+body.da-account .auth-fields {
+  gap: 19px;
+}
+
+body.da-account .auth-fields > * {
+  margin-block: 0;
 }
 
 /* The email and its label sit in the sheet's own inset now, so Payload's inner
@@ -203,3 +217,172 @@ body.da-account .document-fields__sidebar {
  * on a wide screen, so this reads as a document that happens to have no rail.
  */
 
+
+/* --- the switch ----------------------------------------------------------
+   Content Studio's: a 40x24 track with a 20px thumb, the accent when on and
+   the strong hairline when off, inside a 44px target. The negative margin
+   pulls the box back to the track so the switch lines up with the label
+   beside it rather than with the slack around it. */
+.da-switch {
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  margin-block: -10px;
+  margin-inline-end: -2px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--style-radius-s);
+  background: none;
+  cursor: pointer;
+}
+
+.da-switch__track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  inline-size: 40px;
+  block-size: 24px;
+  border-radius: 999px;
+  background-color: var(--da-hairline-strong);
+  transition: background-color var(--da-dur-feedback) var(--da-ease);
+}
+
+.da-switch--on .da-switch__track {
+  background-color: var(--da-orange);
+}
+
+.da-switch__thumb {
+  position: absolute;
+  inset-inline-start: 2px;
+  inline-size: 20px;
+  block-size: 20px;
+  border-radius: 999px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px rgb(36 31 28 / 0.25);
+  transition: inset-inline-start var(--da-dur-feedback) var(--da-ease);
+}
+
+.da-switch--on .da-switch__thumb {
+  inset-inline-start: 18px;
+}
+
+.da-switch:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}
+
+/* --- API access, folded --------------------------------------------------
+   The trigger and Payload's block are siblings in the card, so the panel is
+   assembled by ordering them and passing the border between them: closed, the
+   trigger is the whole panel; open, it gives up its bottom corners and the
+   block takes the rest. */
+.da-account .auth-fields__api-key,
+.da-account .da-api__trigger {
+  order: 2;
+}
+
+.da-account .da-api__trigger {
+  order: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  inline-size: 100%;
+  margin-block-start: 4px;
+  padding: 16px;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-sheet);
+  background-color: #ffffff;
+  text-align: start;
+  cursor: pointer;
+}
+
+.da-account .da-api__trigger--open {
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+}
+
+@media (hover: hover) {
+  .da-account .da-api__trigger:hover { background-color: var(--da-warm-white); }
+}
+
+.da-account .da-api__trigger:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}
+
+.da-api__lead {
+  display: grid;
+  gap: 2px;
+  min-inline-size: 0;
+}
+
+.da-api__title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--da-ink);
+}
+
+.da-api__sub {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--da-ink-3);
+}
+
+.da-api__chevron {
+  flex: none;
+  margin-block-start: 2px;
+  color: var(--da-ink-3);
+  transition: transform var(--da-dur-feedback) var(--da-ease);
+}
+
+.da-api__trigger--open .da-api__chevron { transform: rotate(180deg); }
+
+/* Hidden, never unmounted: Payload submits the form from these inputs, and a
+   closed panel that had dropped them would save an account with no key. */
+.da-account .da-api__body {
+  display: none;
+}
+
+.da-account .da-api__body--open {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 16px;
+  border: 1px solid var(--da-hairline);
+  border-block-start: 0;
+  border-end-start-radius: var(--style-radius-sheet);
+  border-end-end-radius: var(--style-radius-sheet);
+  background-color: #ffffff;
+}
+
+/* The switch takes the checkbox's place at the head of the panel; Payload's
+   own control is left in the form and taken off the screen. */
+.da-account .da-api__body .field-type.checkbox { display: none; }
+
+.da-api__switch {
+  order: -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.da-api__switch-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--da-ink);
+}
+
+/* Provenance closes the card, under the panel rather than above it — and a
+   step further off, as on the subscriber: when the account was made is not
+   another setting on it. */
+.da-account .auth-fields .da-meta {
+  order: 3;
+  margin-block-start: 7px;
+}
+
+/* The note is the last word in the panel, under the key it warns about. */
+.da-account .da-api__body--open .da-account__note { order: 2; margin: 0; }

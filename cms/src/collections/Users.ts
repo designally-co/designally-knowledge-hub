@@ -84,7 +84,6 @@ export const Users: CollectionConfig = {
       type: 'ui',
       admin: {
         disableListColumn: true,
-        position: 'sidebar',
         components: { Field: '/components/admin/AccountView#AccountView' },
       },
     },
@@ -96,8 +95,7 @@ export const Users: CollectionConfig = {
       type: 'ui',
       admin: {
         disableListColumn: true,
-        position: 'sidebar',
-        components: { Field: '/components/admin/AccountView#ApiKeyNote' },
+        components: { Field: '/components/admin/AccountView#ApiAccessPanel' },
       },
     },
     {
@@ -108,8 +106,7 @@ export const Users: CollectionConfig = {
       type: 'ui',
       admin: {
         disableListColumn: true,
-        position: 'sidebar',
-        components: { Field: '/components/admin/DocActions#DocMeta' },
+        components: { Field: '/components/admin/AccountView#AccountMeta' },
       },
     },
   ],
