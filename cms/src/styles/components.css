@@ -473,10 +473,15 @@
    a query container, where `cqw` measured the whole page instead and the panel
    collapsed to the width of its own words (seen on an iPhone). */
 .resource-card__doc {
+  /* The plain share first: a browser that chokes on a percentage inside min()
+     keeps a working inset instead of dropping the declaration and letting the
+     panel fall back to the width of its own words. */
+  --doc-inset: 6%;
   --doc-inset: min(6%, var(--space-4));
   position: absolute;
   inset: var(--doc-inset) var(--doc-inset) auto var(--doc-inset);
   aspect-ratio: 1 / 1;
+  border-radius: 7%;
   border-radius: min(7%, 18px);
   background: var(--doc-color, var(--color-accent-orange));
   padding: clamp(var(--space-4), 6.5%, var(--space-6)) clamp(var(--space-4), 6%, var(--space-6)) 0;
@@ -513,10 +518,15 @@
     padding-top: var(--space-2);
   }
 
-  /* A phone's 2-up tile is ~172px: 7.5% of it, and 13% for the glyph. */
+  /* A phone's tile is two to a row of four columns, so its width is the
+     screen's: (100vw - 32px of page padding - 12px of gutter) / 2. The name is
+     7.5% of that and the glyph 13%, worked out from the screen rather than the
+     tile — the same figures the container units give, on a browser that does
+     not resolve them against this card. A 320px screen holds at 11px, a 430px
+     one reaches 14.5px. */
   .resource-card__doc-title,
   .resource-card__pocket-cover-title {
-    font-size: 13px;
+    font-size: clamp(11px, calc(3.75vw - 1.65px), 20px);
   }
 }
 
@@ -543,7 +553,10 @@
 
 /* The same two known tile widths as the title above, for the same reason. */
 @media (max-width: 47.999em) {
-  .resource-card__glyph { width: 24px; height: 24px; }
+  .resource-card__glyph {
+    width: clamp(22px, calc(6.5vw - 2.9px), 32px);
+    height: clamp(22px, calc(6.5vw - 2.9px), 32px);
+  }
 }
 
 @media (min-width: 48em) and (max-width: 63.999em) {
