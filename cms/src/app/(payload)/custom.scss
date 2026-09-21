@@ -2308,6 +2308,19 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   margin-block-start: 1.25rem;
 }
 
+/* THE FIRST FIELD IS NOT THE FIRST CHILD. The bar's anchor — the hidden span a
+   `ui` field leaves behind — is, so Email took a sibling's margin on top of the
+   card's own padding: 40px of air above it against 20 below the last line. */
+.collection-edit--subscribers .document-fields__main .document-fields__fields > span:first-child + * {
+  margin-block-start: 0;
+}
+
+/* When it was made is not another question about them, so it sits a step
+   further off — the same step the rail takes before its timestamps. */
+.collection-edit--subscribers .document-fields__main .document-fields__fields > .da-meta {
+  margin-block-start: 26px;
+}
+
 /* Sibling spacing on `*`, not on `.field-type` — a `.field-type + .rel` pair
    would otherwise fall through the gap.
 
