@@ -454,6 +454,12 @@
 
 .resource-card__figure {
   position: relative;
+  /* How far the cover sits inside the folder, shared by the document and the
+     blurred copy of it behind the folder's front so the two stay in register.
+     The plain share comes first, for a browser that chokes on a percentage
+     inside min(). */
+  --doc-inset: 6%;
+  --doc-inset: min(6%, var(--space-4));
   container-type: inline-size;
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -473,13 +479,16 @@
    a query container, where `cqw` measured the whole page instead and the panel
    collapsed to the width of its own words (seen on an iPhone). */
 .resource-card__doc {
-  /* The plain share first: a browser that chokes on a percentage inside min()
-     keeps a working inset instead of dropping the declaration and letting the
-     panel fall back to the width of its own words. */
-  --doc-inset: 6%;
-  --doc-inset: min(6%, var(--space-4));
   position: absolute;
-  inset: var(--doc-inset) var(--doc-inset) auto var(--doc-inset);
+  /* WIDTH, NOT TWO EDGES. Pinned left AND right, with a square aspect-ratio
+     and no height, WebKit sizes this box from its own text and leaves the
+     right edge short — the panel sat two thirds of the way across the folder
+     on an iPhone (iOS 27, Safari and Chrome alike) while Chromium stretched it
+     correctly. Given its width outright, both engines agree, and the ratio
+     only has the height left to work out. */
+  top: var(--doc-inset);
+  left: var(--doc-inset);
+  width: calc(100% - 2 * var(--doc-inset));
   aspect-ratio: 1 / 1;
   border-radius: 7%;
   border-radius: min(7%, 18px);
@@ -575,11 +584,13 @@
   mask: var(--folder-mask) no-repeat 0 0 / 100% 100%;
 }
 
+/* The same box as the document above, so it blurs in register with it — and
+   sized the same way, for the same reason. */
 .resource-card__pocket-cover {
   position: absolute;
-  right: 16px;
-  bottom: 16px;
-  left: 16px;
+  bottom: var(--doc-inset);
+  left: var(--doc-inset);
+  width: calc(100% - 2 * var(--doc-inset));
   aspect-ratio: 1 / 1;
   border-radius: 18px;
   background: var(--doc-color, var(--color-accent-orange));
