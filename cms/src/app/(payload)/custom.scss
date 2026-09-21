@@ -3042,6 +3042,18 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   inline-size: min(100%, calc(var(--da-content-max) + var(--gutter-h)));
 }
 
+/* A DOCUMENT WITH NO RAIL STOPS AT THE SAME TRACK. Payload gives the whole row
+   to the one column, so a subscriber — five short fields — drew a 1080px card
+   on a 1440 screen. The content's width is the content's width whether or not
+   something sits beside it. */
+.document-fields:not(.document-fields--has-sidebar) .document-fields__main {
+  /* `flex: 1 1 auto` was stretching it past the width set below — a grow
+     factor beats a stated size. */
+  flex: 0 1 auto;
+  inline-size: min(100%, calc(var(--da-content-max) + var(--gutter-h)));
+  margin-inline: auto;
+}
+
 /* The gap belongs to one side, not two. */
 .document-fields--has-sidebar .document-fields__edit {
   padding-inline-end: 0;

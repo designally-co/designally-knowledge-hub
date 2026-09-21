@@ -40,16 +40,21 @@ export const Subscribers: CollectionConfig = {
   },
   fields: [
     {
-      // RENDERS NOTHING HERE. As on the other collections, it is mounted in the
-      // rail because a `ui` field is the only slot inside the document's form,
-      // and it portals itself into the header band. Without it this screen kept
-      // Payload's own chrome — the Edit/API tabs, a strip of dates and a second
-      // Save — because the theme hides those only where this bar is present.
+      /* RENDERS NOTHING HERE. A `ui` field is the only slot inside the
+         document's form, and this one portals itself into the header band.
+         Without it the screen kept Payload's own chrome — the Edit/API tabs, a
+         strip of dates and a second Save — because the theme hides those only
+         where this bar is present.
+
+         NOT IN THE RAIL, BECAUSE THERE IS NO RAIL. A subscriber is one short
+         record: an address, the language they read in, the page they signed up
+         from, whether they are confirmed, and when. Split across a sheet and a
+         rail it read as two documents — an email over here, everything true of
+         that email over there. Five facts belong on one card. */
       name: 'subscriberActions',
       type: 'ui',
       admin: {
         disableListColumn: true,
-        position: 'sidebar',
         components: { Field: '/components/admin/DocActions#SubscriberActions' },
       },
     },
@@ -70,7 +75,6 @@ export const Subscribers: CollectionConfig = {
         { label: 'ไทย (Thai)', value: 'th' },
       ],
       admin: {
-        position: 'sidebar',
         description: 'The language they were reading when they signed up.',
       },
     },
@@ -78,7 +82,6 @@ export const Subscribers: CollectionConfig = {
       name: 'source',
       type: 'text',
       admin: {
-        position: 'sidebar',
         description: 'The page the form was on. Says which writing earns sign-ups.',
       },
     },
@@ -99,16 +102,14 @@ export const Subscribers: CollectionConfig = {
         { label: 'Subscribed', value: 'subscribed' },
         { label: 'Unsubscribed', value: 'unsubscribed' },
       ],
-      admin: { position: 'sidebar' },
     },
     {
       // When they signed up and when the record last changed, at the foot of
-      // the rail — the same component every other document ends with.
+      // the card — the same component every other document ends with.
       name: 'documentMeta',
       type: 'ui',
       admin: {
         disableListColumn: true,
-        position: 'sidebar',
         components: { Field: '/components/admin/DocActions#DocMeta' },
       },
     },
