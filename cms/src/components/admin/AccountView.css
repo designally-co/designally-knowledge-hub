@@ -299,6 +299,7 @@ body.da-account .document-fields__sidebar {
 }
 
 .da-account .da-api__trigger--open {
+  border-block-end: 0;
   border-end-start-radius: 0;
   border-end-end-radius: 0;
 }
@@ -347,15 +348,79 @@ body.da-account .document-fields__sidebar {
 }
 
 .da-account .da-api__body--open {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  /* THE CARD'S GAP IS NOT THE PANEL'S SEAM. The trigger and this block are
+     siblings in a flex column with a 19px gap, so opening the panel opened a
+     19px band of nothing between its two halves — a border that stopped, a
+     white stripe, then a border that started again. Pulled back up, the two
+     meet on one line. */
+  /* The key and the button that replaces it are one row; the switch and the
+     warning span it. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: end;
   padding: 16px;
+  /* The hairline between the heading and what it opens, as Studio's panel
+     draws it — the trigger gives up its own bottom edge so the two do not
+     stack into one heavy line. */
   border: 1px solid var(--da-hairline);
-  border-block-start: 0;
   border-end-start-radius: var(--style-radius-sheet);
   border-end-end-radius: var(--style-radius-sheet);
   background-color: #ffffff;
+}
+
+/* Stated against the card's own reset, which zeroes every child's margin. */
+body.da-account .auth-fields > .da-api__body--open {
+  margin-block-start: -19px;
+}
+
+.da-account .da-api__body--open > .field-type.api-key { grid-column: 1; }
+
+/* "Generate new API key", beside the key rather than under it. */
+.da-account .da-api__body--open > button.btn {
+  grid-column: 2;
+  min-block-size: 40px;
+  margin: 0;
+}
+
+.da-account .da-api__body--open .da-api__switch,
+.da-account .da-api__body--open .da-account__note {
+  grid-column: 1 / -1;
+}
+
+/* THE EYE GOES IN THE FIELD. It sat outside it as a 47px button in the row,
+   which read as a second control rather than as a way to look at the one
+   beside it. The wrap becomes the field's box and the button sits in its
+   trailing edge, over the input's own padding. */
+.da-account .api-key__input-wrap {
+  position: relative;
+}
+
+.da-account .api-key__input-wrap > input {
+  inline-size: 100%;
+  padding-inline-end: 44px;
+}
+
+.da-account .api-key__toggle-button-wrap {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  display: flex;
+  align-items: center;
+  inline-size: 40px;
+}
+
+.da-account .api-key__toggle-button {
+  inline-size: 40px;
+  min-block-size: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--da-ink-3);
+}
+
+@media (hover: hover) {
+  .da-account .api-key__toggle-button:hover { color: var(--da-ink); background: none; }
 }
 
 /* The switch takes the checkbox's place at the head of the panel; Payload's
