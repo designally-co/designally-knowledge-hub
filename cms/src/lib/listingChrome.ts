@@ -24,19 +24,19 @@ export interface ListingChrome {
 export const CATEGORY_CHROME: Record<Category, ListingChrome> = {
   Design: {
     tint: 'var(--color-brand-light)',
-    strong: 'var(--color-accent-orange)',
+    strong: 'var(--color-accent-orange-ink)',
     icon: '/section-icons/case.svg',
     heroIcon: '/section-icons/case-white.svg',
   },
   Insights: {
     tint: 'var(--color-category-blue-light)',
-    strong: 'var(--color-category-blue-mid)',
+    strong: 'var(--color-category-blue-ink)',
     icon: '/section-icons/insights.svg',
     heroIcon: '/section-icons/insights-white.svg',
   },
   'Design with AI': {
     tint: 'var(--color-category-green-light)',
-    strong: 'var(--color-category-green-mid)',
+    strong: 'var(--color-category-green-ink)',
     icon: '/section-icons/workflows.svg',
     heroIcon: '/section-icons/workflows-white.svg',
   },
@@ -44,7 +44,7 @@ export const CATEGORY_CHROME: Record<Category, ListingChrome> = {
 
 export const RESOURCES_CHROME: ListingChrome = {
   tint: 'var(--color-category-purple-light)',
-  strong: 'var(--color-category-purple-mid)',
+  strong: 'var(--color-category-purple-ink)',
   icon: '/section-icons/resources.svg',
   heroIcon: '/section-icons/resources-white.svg',
 }
@@ -53,7 +53,7 @@ export const RESOURCES_CHROME: ListingChrome = {
 export function chromeForCategory(category: Category | undefined): ListingChrome {
   return (category && CATEGORY_CHROME[category]) || {
       tint: 'var(--color-category-blue-light)',
-      strong: 'var(--color-category-blue-mid)',
+      strong: 'var(--color-category-blue-ink)',
       icon: null,
     }
 }

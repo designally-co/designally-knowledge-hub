@@ -70,6 +70,29 @@
   }
 }
 
+/* This folder is the page's own, several times a card's: three phone columns
+   (~270px) or four tablet ones. The card's artwork sizes its name and glyph to
+   the tile it sits in; below the desktop those are set for a tile two to a row
+   (components.css), so the big folder says what it is instead. */
+@media (max-width: 63.999em) {
+  .resource-aside__art .resource-card__doc-title,
+  .resource-aside__art .resource-card__pocket-cover-title {
+    font-size: 20px;
+  }
+
+  .resource-aside__art .resource-card__glyph {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 47.999em) {
+  .resource-aside__art .resource-card__glyph {
+    width: 36px;
+    height: 36px;
+  }
+}
+
 .resource-main {
   min-width: 0;
 }

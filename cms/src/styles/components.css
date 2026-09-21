@@ -190,7 +190,8 @@
 /* The outline is the label colour two steps lighter: neutral-black-32 on the
    default tag. */
 .tag--ink { color: var(--color-neutral-black); }
-.tag--warm { color: var(--color-accent-orange); }
+/* The deeper orange: as 12px text this one has to carry itself. */
+.tag--warm { color: var(--color-accent-orange-ink); }
 .tag--on-dark { color: var(--color-neutral-white); }
 
 /* --- TopicPill --------------------------------------------------------- */
@@ -441,17 +442,21 @@
   border: 2px solid var(--color-neutral-white-60);
 }
 
-/* The panel is inset from the folder in container units, so the cover keeps its
-   share of the tile at any size. A flat 16px was ~5% of the detail page's hero
+/* The panel is inset from the folder as a SHARE OF IT, so the cover keeps its
+   place in the tile at any size. A flat 16px was ~5% of the detail page's hero
    but ~10% of a 161px card, which is why the folder looked right on a phone
    while the cover inside it looked shrunken. `min()` holds the old value at the
-   sizes where it was already correct and only steps down on small tiles. */
+   sizes where it was already correct and only steps down on small tiles.
+   PER CENT, NOT CONTAINER UNITS: the figure is square, so a percentage of it is
+   the same number — and it is right in browsers that do not size this figure as
+   a query container, where `cqw` measured the whole page instead and the panel
+   collapsed to the width of its own words (seen on an iPhone). */
 .resource-card__doc {
-  --doc-inset: min(6cqw, var(--space-4));
+  --doc-inset: min(6%, var(--space-4));
   position: absolute;
   inset: var(--doc-inset) var(--doc-inset) auto var(--doc-inset);
   aspect-ratio: 1 / 1;
-  border-radius: min(7cqw, 18px);
+  border-radius: min(7%, 18px);
   background: var(--doc-color, var(--color-accent-orange));
   padding: clamp(var(--space-4), 6.5%, var(--space-6)) clamp(var(--space-4), 6%, var(--space-6)) 0;
 }
@@ -460,7 +465,12 @@
    and set tight, so it stays on the part of the document that shows above the
    pocket: three lines at most, which on a phone's 2-up tile (the pocket ~40px
    down) needs the document's top padding cut to 8px. The pocket's blurred
-   copy matches it. */
+   copy matches it.
+   Text cannot take a percentage of its box, so this one keeps container units —
+   with a plain size below the desktop, where the tile's width is known from the
+   grid (two to a row on a phone, and no wider than a tablet's half). A browser
+   that does not size the figure as a query container then still gets the right
+   size there, instead of the 20px ceiling in a 172px tile. */
 .resource-card__doc-title,
 .resource-card__pocket-cover-title {
   display: -webkit-box;
@@ -481,6 +491,20 @@
   .resource-card__pocket-cover {
     padding-top: var(--space-2);
   }
+
+  /* A phone's 2-up tile is ~172px: 7.5% of it, and 13% for the glyph. */
+  .resource-card__doc-title,
+  .resource-card__pocket-cover-title {
+    font-size: 13px;
+  }
+}
+
+/* Tablet: two to a row of eight columns, ~200px a tile. */
+@media (min-width: 48em) and (max-width: 63.999em) {
+  .resource-card__doc-title,
+  .resource-card__pocket-cover-title {
+    font-size: 15px;
+  }
 }
 
 /* Category glyph, sitting bottom-right of the document panel. Resources carry
@@ -494,6 +518,15 @@
   height: clamp(26px, 13cqw, 44px);
   color: var(--color-neutral-white);
   opacity: 0.42;
+}
+
+/* The same two known tile widths as the title above, for the same reason. */
+@media (max-width: 47.999em) {
+  .resource-card__glyph { width: 24px; height: 24px; }
+}
+
+@media (min-width: 48em) and (max-width: 63.999em) {
+  .resource-card__glyph { width: 28px; height: 28px; }
 }
 
 /* The folder front blurs a duplicate of the resource cover directly. Unlike

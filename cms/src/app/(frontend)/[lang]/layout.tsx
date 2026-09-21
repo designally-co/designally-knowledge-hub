@@ -18,11 +18,38 @@ import { siteURL } from '@/lib/siteURL'
  */
 import { Analytics } from '@vercel/analytics/next'
 
+const DESCRIPTION =
+  'A free library of design templates, articles and resources from Designally — your creative design ally.'
+
+/*
+ * THE PICTURE A LINK CARRIES. An article and a resource each hand over their
+ * own artwork (see their `generateMetadata`); everything else — the homepage,
+ * the catalogs, About, Contact, the newsletter — had none, and a link to any of
+ * them arrived in a message or a post as a bare grey box.
+ *
+ * `public/og.png` is the house card: the wordmark on the site's own paper and
+ * watermark, the name, the line under it and the address. It is drawn from
+ * `scripts/og-source.html`, which says there how to redraw it. One card for
+ * both languages: it carries the brand rather than a sentence, so there is
+ * nothing on it to translate.
+ */
 export const metadata = {
   metadataBase: new URL(siteURL),
   title: 'Designally Knowledge Hub',
-  description:
-    'A free library of design templates, articles and resources from Designally — your creative design ally.',
+  description: DESCRIPTION,
+  openGraph: {
+    type: 'website',
+    siteName: 'Designally Knowledge Hub',
+    title: 'Designally Knowledge Hub',
+    description: DESCRIPTION,
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'Designally Knowledge Hub' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Designally Knowledge Hub',
+    description: DESCRIPTION,
+    images: ['/og.png'],
+  },
 }
 
 // Prerender both locales.

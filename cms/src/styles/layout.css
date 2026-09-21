@@ -986,8 +986,10 @@
   flex: none;
 }
 
+/* Full white, like the links beside it: at 80% on the ochre this 12px label
+   sat at 3.97:1, under the line for text its size. */
 .site-footer__locale .locale-switcher__trigger {
-  color: color-mix(in srgb, var(--color-neutral-white) 80%, transparent);
+  color: var(--color-neutral-white);
   font: var(--type-overline);
   font-size: 12px;
   font-weight: 500;

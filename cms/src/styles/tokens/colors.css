@@ -39,11 +39,25 @@
   --color-category-purple-light: #e7d8ef;
   --color-category-purple-mid: #a55ac7;
 
+  /* THE SAME COLOURS, DARK ENOUGH TO CARRY WHITE TEXT (4.5:1, WCAG AA). The
+     `mid` values are the palette as drawn: as a fill under a white label —
+     the About cards, the folder covers, the studio band — they read between
+     2.8:1 (orange) and 4.3:1 (purple), which is under the line for body text.
+     Each of these is its own hue taken down until it clears 4.65:1 — a little
+     past the line, so rounding never puts it back under — and the page keeps
+     its colour while the words on it stay legible. Use these wherever white text
+     sits on the colour, and the `mid` values everywhere else. */
+  --color-category-blue-ink: #5d6fbf;
+  --color-category-green-ink: #497f63;
+  --color-category-purple-ink: #9d56bd;
+  --color-accent-orange-ink: #af5f32;
+
   /* ---- Footer ----
      The footer's ochre wash, taken from its Figma frame: the darker stop
      fades in over the mural, the lighter one is the flat band below it. */
   --color-footer-ochre-dark-60: rgba(108, 69, 0, 0.6);  /* #6C4500 at 60% */
-  --color-footer-ochre: #a76a00;
+  /* Taken down a shade from #a76a00, where white body text sat at 4.46:1. */
+  --color-footer-ochre: #a36700;
 
   /* Outline = the element's own label colour at 50% opacity. currentColor
      resolves per element, so a button or pill gets an outline that matches

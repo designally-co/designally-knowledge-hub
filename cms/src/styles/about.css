@@ -557,7 +557,7 @@
    own voice rather than about the work. */
 .about-studio {
   padding-block: clamp(var(--space-16), 9vw, var(--space-24));
-  background-color: var(--color-accent-orange);
+  background-color: var(--color-accent-orange-ink);
   color: var(--color-neutral-white);
 }
 

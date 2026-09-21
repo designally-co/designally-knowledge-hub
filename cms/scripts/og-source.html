@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<!--
+  SOURCE OF public/og.png — the picture every page shares with when it has no
+  cover of its own (the layout's openGraph metadata).
+
+  To change it: copy this file into public/ (it must be served for the mark and
+  the pattern beside it to load), open http://localhost:3001/<name>.html at
+  1200x630, screenshot the viewport to public/og.png, and take the copy back
+  out of public/ so it is not deployed.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Ovo&family=Geist:wght@400..700&display=swap" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; }
+  body {
+    position: relative;
+    overflow: hidden;
+    background: #fbf5f3;
+    font-family: 'Geist', Arial, sans-serif;
+    color: #000;
+  }
+  /* The site's own watermark, as the heroes wear it. */
+  .pattern {
+    position: absolute; inset: 0;
+    background: url('http://localhost:3001/hero-bg-pattern.svg') no-repeat center / cover;
+    opacity: 0.5;
+  }
+  /* A warm wash out of the bottom-right corner, the brand's ochre. */
+  .wash {
+    position: absolute; right: -180px; bottom: -260px;
+    width: 760px; height: 760px; border-radius: 50%;
+    background: radial-gradient(circle at 50% 50%, rgba(232, 126, 66, 0.30), rgba(232, 126, 66, 0) 68%);
+  }
+  .inner {
+    position: relative;
+    height: 100%;
+    padding: 84px 96px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  /* The wordmark, drawn the way the header draws it: the mark as a mask, and
+     the stop in the accent. */
+  .wordmark { position: relative; width: 104px; height: 92px; }
+  .wordmark i {
+    position: absolute; inset: 0;
+    -webkit-mask: url('http://localhost:3001/designally-mark.png') no-repeat center / contain;
+    mask: url('http://localhost:3001/designally-mark.png') no-repeat center / contain;
+  }
+  .wordmark .d { background-color: #000; }
+  .wordmark .dot { background-color: #e87e42; clip-path: inset(0 0 0 73.79%); }
+
+  h1 {
+    font-family: 'Ovo', Georgia, serif;
+    font-weight: 400;
+    font-size: 104px;
+    line-height: 1.06;
+    letter-spacing: -0.03125em;
+    max-width: 15ch;
+  }
+  .lede {
+    margin-top: 28px;
+    font-size: 30px;
+    line-height: 1.4;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.6);
+    max-width: 30ch;
+  }
+  .foot {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 24px; font-weight: 500; letter-spacing: 0.02em;
+  }
+  .foot .rule { flex: none; width: 56px; height: 2px; background: #e87e42; }
+</style>
+</head>
+<body>
+  <div class="pattern"></div>
+  <div class="wash"></div>
+  <div class="inner">
+    <div class="wordmark"><i class="d"></i><i class="dot"></i></div>
+    <div>
+      <h1>Knowledge Hub</h1>
+      <p class="lede">A free library of templates, articles and resources for building better brands.</p>
+    </div>
+    <div class="foot"><span class="rule"></span> hub.designally.co</div>
+  </div>
+</body>
+</html>
