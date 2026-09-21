@@ -96,7 +96,18 @@ export const Users: CollectionConfig = {
     ],
   },
   fields: [
-    // Email added by default
+    /* DECLARED ONLY FOR ITS CELL. Payload adds `email` to every auth collection
+       and links the first column of a list to the document; this collection's
+       document is a redirect back to the list, so that link went nowhere. The
+       field keeps Payload's own type and validation — this adds the cell that
+       prints it as text. */
+    {
+      name: 'email',
+      type: 'email',
+      admin: {
+        components: { Cell: '/components/admin/UserApiCell#UserEmailCell' },
+      },
+    },
     {
       // RENDERS NOTHING IN THE RAIL. It portals Save into the header band and a
       // heading into Payload's settings block, and marks the body so

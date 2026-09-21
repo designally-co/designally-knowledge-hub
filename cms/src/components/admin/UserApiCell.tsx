@@ -230,3 +230,15 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
     </div>
   )
 }
+
+/**
+ * The account's address, as text.
+ *
+ * Payload links the first column of a list to the document, and this
+ * collection's document is a redirect back to the list — so the email looked
+ * clickable, lit up under the pointer and went nowhere. A link that returns you
+ * to where you already are is worse than no link: it reads as a way in.
+ */
+export const UserEmailCell: React.FC<{ cellData?: unknown }> = ({ cellData }) => (
+  <span className="da-user-email">{typeof cellData === 'string' ? cellData : ''}</span>
+)
