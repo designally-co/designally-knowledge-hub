@@ -7042,3 +7042,67 @@ $list: '.template-default__wrap > .collection-list';
     display: none;
   }
 }
+
+/* -----------------------------------------------------------------------------
+   Toasts
+
+   WHAT THE PRODUCT SAYS AFTER THE FACT. Payload's come from Sonner with its own
+   look: a pale red panel for an error, a green one for a success, square-ish
+   corners, its own type. Content Studio has no coloured panels — a notice there
+   is the same white plate as everything else, with the hairline, and the words
+   carry the state: the critical red for what went wrong, the ink for what went
+   right. That is what these take.
+
+   They float, so they get the studio's pop shadow — the one elevation reserved
+   for a thing that is over the page rather than on it.
+   ========================================================================== */
+
+.payload-toast-container [data-sonner-toast] {
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-s);
+  background: #ffffff;
+  box-shadow: var(--da-shadow-pop);
+  color: var(--da-ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.payload-toast-container [data-sonner-toast] [data-title] {
+  font-weight: 500;
+}
+
+.payload-toast-container [data-sonner-toast] [data-description] {
+  margin-block-start: 0.125rem;
+  color: var(--da-ink-3);
+  font-size: 13px;
+}
+
+/* The state is in the words and the mark, never in the surface. */
+.payload-toast-container [data-sonner-toast][data-type='error'] {
+  color: var(--da-critical);
+}
+
+.payload-toast-container [data-sonner-toast][data-type='error'] [data-icon] svg {
+  color: var(--da-critical);
+}
+
+.payload-toast-container [data-sonner-toast][data-type='success'] [data-icon] svg {
+  color: var(--da-ink-2);
+}
+
+/* Sonner's own close control, as the studio draws a quiet icon button. */
+.payload-toast-container [data-sonner-toast] [data-close-button] {
+  border: 1px solid var(--da-hairline);
+  background: #ffffff;
+  color: var(--da-ink-3);
+}
+
+@media (hover: hover) {
+  .payload-toast-container [data-sonner-toast] [data-close-button]:hover {
+    background: var(--da-deep);
+    color: var(--da-ink);
+  }
+}
