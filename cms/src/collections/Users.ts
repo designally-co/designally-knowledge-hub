@@ -32,6 +32,28 @@ export const Users: CollectionConfig = {
     // /api/articles/:id/translate-to-thai, and the public site still reads
     // through Payload as before. Only the admin's viewer for it is gone.
     hideAPIURL: true,
+    /*
+     * THE LIST IS THE WHOLE SCREEN. A user here is not a profile: the account
+     * arrives through Google sign-in, its email is the Google account's and
+     * editing it changes nothing anyone can sign in with, and a password can
+     * never be used (see `beforeLogin` below). One thing is actually decided
+     * about a user — whether they hold a key Content Studio publishes with —
+     * and that is a switch, not a document.
+     *
+     * The table keeps the columns it had; only the last one changes. It printed
+     * `enableAPIKey` as "true" — the raw value, and not the question anybody
+     * asks of a row — and it is the switch now, which opens onto the key.
+     */
+    defaultColumns: ['email', 'updatedAt', 'createdAt', 'apiAccess'],
+    components: {
+      views: {
+        // The document view is gone; the route returns to the list. See
+        // UsersRedirect.
+        edit: {
+          default: { Component: '/components/admin/UsersRedirect#UsersRedirect' },
+        },
+      },
+    },
     // Ungrouped, like every collection: the nav is one list, ordered by the
     // `collections` array in payload.config, which puts Users last.
   },
@@ -107,6 +129,23 @@ export const Users: CollectionConfig = {
       admin: {
         disableListColumn: true,
         components: { Field: '/components/admin/AccountView#AccountMeta' },
+      },
+    },
+    {
+      /* API access, as a switch in the row. It stores nothing: `enableAPIKey`
+         and `apiKey` are the auth fields Payload already keeps, and the cell
+         writes to them through the REST API. Declared as a `ui` field because
+         a column has to be a field, and this one is a control rather than a
+         value.
+
+         LAST IN THE ARRAY BECAUSE THAT IS LAST IN THE TABLE. `defaultColumns`
+         chooses which columns appear; their ORDER follows the fields, and
+         declared beside the email this one sat second. */
+      name: 'apiAccess',
+      type: 'ui',
+      label: 'API access',
+      admin: {
+        components: { Cell: '/components/admin/UserApiCell#UserApiCell' },
       },
     },
   ],

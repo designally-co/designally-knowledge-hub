@@ -1,0 +1,53 @@
+/* --- the switch ----------------------------------------------------------
+   Content Studio's: a 40x24 track with a 20px thumb, the accent when on and
+   the strong hairline when off, inside a 44px target. The negative margin
+   pulls the box back to the track so the switch lines up with the label
+   beside it rather than with the slack around it. */
+.da-switch {
+  display: inline-grid;
+  place-items: center;
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  margin-block: -10px;
+  margin-inline-end: -2px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--style-radius-s);
+  background: none;
+  cursor: pointer;
+}
+
+.da-switch__track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  inline-size: 40px;
+  block-size: 24px;
+  border-radius: 999px;
+  background-color: var(--da-hairline-strong);
+  transition: background-color var(--da-dur-feedback) var(--da-ease);
+}
+
+.da-switch--on .da-switch__track {
+  background-color: var(--da-orange);
+}
+
+.da-switch__thumb {
+  position: absolute;
+  inset-inline-start: 2px;
+  inline-size: 20px;
+  block-size: 20px;
+  border-radius: 999px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px rgb(36 31 28 / 0.25);
+  transition: inset-inline-start var(--da-dur-feedback) var(--da-ease);
+}
+
+.da-switch--on .da-switch__thumb {
+  inset-inline-start: 18px;
+}
+
+.da-switch:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}

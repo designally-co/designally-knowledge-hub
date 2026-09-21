@@ -1,0 +1,111 @@
+/* --- API access, in the row -----------------------------------------------
+   The switch sits in its column. The key, when access is on, is drawn across
+   the whole row underneath the cells: positioned against the `<tr>`, with the
+   row's own cells padded to make the room. Growing the cell instead would push
+   one column down and leave the email and the dates floating at the top of a
+   tall row. */
+
+/* Stated against the theme's own cell rules, which set the padding as a
+   shorthand and make every cell a positioned box — the second of which would
+   otherwise anchor the key to its column instead of to the row. */
+.template-default__wrap > .collection-list .table tbody tr.da-row--api {
+  position: relative;
+}
+
+.template-default__wrap > .collection-list .table tbody tr.da-row--api > td {
+  position: static;
+  padding-block-end: 56px;
+}
+
+.da-api-cell {
+  display: grid;
+  gap: 10px;
+  padding-block: 4px;
+}
+
+.da-api-cell__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.da-api-cell__state {
+  font-size: 13px;
+  color: var(--da-ink-3);
+}
+
+.da-row--api .da-api-cell__key {
+  position: absolute;
+  inset-inline: 16px;
+  inset-block-end: 12px;
+}
+
+.da-api-cell__key {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px 4px 12px;
+  border-radius: var(--style-radius-s);
+  background-color: var(--da-deep);
+}
+
+.da-api-cell__value {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--da-ink);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.da-api-cell__icon {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 32px;
+  block-size: 32px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: var(--style-radius-s);
+  background: none;
+  color: var(--da-ink-3);
+  cursor: pointer;
+}
+
+.da-api-cell__icon:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+@media (hover: hover) {
+  .da-api-cell__icon:not(:disabled):hover {
+    background-color: #ffffff;
+    color: var(--da-ink);
+  }
+}
+
+.da-api-cell__regen {
+  flex: none;
+  min-block-size: 32px;
+  padding-inline: 12px;
+  border: 1px solid var(--da-hairline-strong);
+  border-radius: var(--style-radius-s);
+  background-color: #ffffff;
+  color: var(--da-ink);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .da-api-cell__regen:not(:disabled):hover { background-color: var(--da-warm-white); }
+}
+
+.da-api-cell__error {
+  margin: 0;
+  font-size: 12px;
+  color: var(--da-critical);
+}
