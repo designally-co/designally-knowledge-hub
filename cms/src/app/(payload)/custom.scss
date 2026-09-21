@@ -4220,6 +4220,76 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   margin: 0;
   line-height: 1.15;
 }
+/* ---- when the list is empty ---------------------------------------------
+ * WHAT A LIST SAYS WHEN THERE IS NOTHING IN IT. Content Studio gives this a
+ * plate of its own — the white surface and hairline the rows would have had —
+ * so an emptied page keeps its shape instead of losing it to a sentence
+ * floating in the middle of nothing. Here the card around the table already IS
+ * that plate, so what is ported is the composition inside it: the message
+ * centred in the space the rows would have filled, its two lines a pair, and
+ * the way in under them.
+ *
+ * Payload prints an h3 and a paragraph at the top-left of the card, hard up
+ * under the controls, with the create button loose beneath — measured, 21px of
+ * card under a three-line message and 400px of white below that.
+ */
+.collection-list .no-results {
+  display: grid;
+  justify-items: center;
+  gap: 0.375rem;
+  /* THE PLATE THE ROWS WOULD HAVE BEEN. The list's white card was dismantled
+     when the table became a closed box of its own, so with no table there is
+     no surface at all and the message floats on the parchment. This takes the
+     table's own box — white, the hairline, the sheet's corner — so the page
+     keeps its shape whether it holds ten articles or none. */
+  border: 1px solid var(--da-hairline);
+  border-radius: 16px;
+  background-color: #ffffff;
+  /* The room a short list would have taken, so the plate does not collapse to
+     the height of one sentence. */
+  padding-block: clamp(3rem, 10vh, 5.5rem);
+  padding-inline: 1.5rem;
+  text-align: center;
+}
+
+.collection-list .no-results h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--da-ink);
+}
+
+.collection-list .no-results p {
+  max-inline-size: 44ch;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--da-ink-3);
+}
+
+.collection-list .no-results__actions {
+  margin-block-start: 1.25rem;
+}
+
+/* The way out of an empty list is the same action as the way into a full one,
+   drawn the same: the accent, 44 tall, the label semibold. */
+.collection-list .no-results__actions .btn {
+  --bg-color: var(--da-orange);
+  --color: #ffffff;
+  --hover-bg: var(--da-orange-deep);
+  --hover-color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 44px;
+  margin: 0;
+  padding-inline: 20px;
+  border-radius: var(--style-radius-s);
+  font-size: 14px;
+  font-weight: 600;
+}
+
 /* THE PAGE'S ONE ACTION, AS THE STUDIO DRAWS IT. "Create New" was Payload's
    grey chip beside the heading; the studio puts a page's forward action in the
    accent — "New routine" on Routines: 44 tall, twenty pixels either side, an
@@ -4674,6 +4744,9 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
 /* Where the filter button used to sit — the far end of the control row. */
 .collection-list .da-locale { order: 2; }
 .collection-list__tables { order: 3; }
+/* The empty state stands where the table would have: unsequenced it took the
+   header's 0 and printed itself above the search it tells you to use. */
+.collection-list .no-results { order: 3; }
 .collection-list .page-controls { order: 4; }
 
 /* ---- the checkbox -------------------------------------------------------- */

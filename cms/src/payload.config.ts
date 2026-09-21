@@ -169,6 +169,25 @@ export default buildConfig({
     // document stayed light and the text disappeared into it.
     theme: 'light',
   },
+  /*
+   * PAYLOAD'S OWN COPY, IN THIS ADMIN'S VOICE. An empty list said "No Results."
+   * over "Either none exist or none match the filters you've specified above."
+   * — a sentence about filters, pointing at a control that is above the list on
+   * a desk and below it on a phone, in a product whose every
+   * other line is plain ("Drafts are hidden from the site.", "One per article.
+   * Sets the category."). Only the strings named here change; everything else
+   * stays Payload's.
+   */
+  i18n: {
+    translations: {
+      en: {
+        general: {
+          noResultsFound: 'Nothing to show.',
+          noResultsDescription: 'Either nothing has been added yet, or nothing matches your search.',
+        },
+      },
+    },
+  },
   collections: [Articles, Resources, Media, Subscribers, Users],
   editor: lexicalEditor(),
   // Bilingual content: English is the source (authored/generated); Thai is a
