@@ -2291,6 +2291,23 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   padding: 0.875rem 1rem 1rem;
 }
 
+/* EXCEPT WHERE THE CARD IS THE FORM. A panel earns its place where blocks are
+   long and have to be told apart — an article's references, its related row,
+   its SEO pair. A subscriber's card is five short questions in a row, and a
+   grey panel behind each one made five boxes inside the box, each holding a
+   label, a filled input and a line of help: three surfaces deep for "which
+   language?". The fields sit on the card. */
+.collection-edit--subscribers .document-fields__main .document-fields__fields > .field-type {
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Which leaves the rhythm to do the separating: a field's worth of air between
+   questions, rather than the 12px that sat between panels. */
+.collection-edit--subscribers .document-fields__main .document-fields__fields > * + * {
+  margin-block-start: 1.25rem;
+}
+
 /* Sibling spacing on `*`, not on `.field-type` — a `.field-type + .rel` pair
    would otherwise fall through the gap.
 
