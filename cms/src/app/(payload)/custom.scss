@@ -5919,6 +5919,18 @@ html {
     visibility: hidden;
   }
 
+}
+
+/* ---- the phone's bar ------------------------------------------------------
+ * THE NAME IN THE BAR AND THE ACTION AS A DISC ARE A PHONE'S ANSWER, not a
+ * tablet's. The shell hands the rail to a drawer from 1024 down, and everything
+ * below this line used to come with it: between 769 and 1024 the page lost its
+ * heading to a 16px line centred in the bar, lost its sentence altogether, and
+ * kept a desk-width table under a 224px search floating in an empty row.
+ * A tablet has the width for the heading, so it keeps the desk composition and
+ * only the navigation folds away.
+ */
+@media (max-width: 48rem) {
   /*
    * THE PAGE'S NAME, ON THE MENU BUTTON'S LINE, IN THE MIDDLE OF THE SCREEN.
    *
