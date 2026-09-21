@@ -670,6 +670,48 @@ export function ResourceActions() {
   return <DocBar collection="resources" noun="resource" rows={rows} />
 }
 
+/* ---- subscribers --------------------------------------------------------- */
+
+/**
+ * The same bar on a subscriber.
+ *
+ * WITHOUT ONE, THIS SCREEN WAS PAYLOAD'S. The chrome hides itself when this bar
+ * is on the page (`body:has(.app-header__actions .da-bar)` in custom.scss), so
+ * the one collection that never got a bar kept the Edit/API tabs, the strip of
+ * dates and a second Save — three pieces of another product on a screen holding
+ * one field.
+ *
+ * NO LINK ROWS: a subscriber has no page and no file. What there is to do with
+ * an address is copy it — into a mail client, or to find the person in Resend —
+ * and the delete question is the serious one, so it says what deleting means
+ * rather than that it cannot be undone.
+ */
+export function SubscriberActions() {
+  const email = useFormFields(([fields]) => fields?.email?.value)
+  const address = typeof email === 'string' && email ? email : null
+  const { copied, copy } = useCopy(address)
+
+  const rows: MenuRow[] = []
+
+  if (address) {
+    rows.push({
+      icon: copied ? <Check aria-hidden="true" {...ICON} /> : <Link2 aria-hidden="true" {...ICON} />,
+      key: 'copy',
+      label: copied ? 'Address copied' : 'Copy address',
+      onClick: copy,
+    })
+  }
+
+  return (
+    <DocBar
+      collection="subscribers"
+      deleteWarning="They stop receiving the newsletter and their record goes. Someone removed here can sign up again."
+      noun="subscriber"
+      rows={rows}
+    />
+  )
+}
+
 /* ---- media --------------------------------------------------------------- */
 
 /**

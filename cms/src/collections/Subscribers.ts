@@ -40,6 +40,20 @@ export const Subscribers: CollectionConfig = {
   },
   fields: [
     {
+      // RENDERS NOTHING HERE. As on the other collections, it is mounted in the
+      // rail because a `ui` field is the only slot inside the document's form,
+      // and it portals itself into the header band. Without it this screen kept
+      // Payload's own chrome — the Edit/API tabs, a strip of dates and a second
+      // Save — because the theme hides those only where this bar is present.
+      name: 'subscriberActions',
+      type: 'ui',
+      admin: {
+        disableListColumn: true,
+        position: 'sidebar',
+        components: { Field: '/components/admin/DocActions#SubscriberActions' },
+      },
+    },
+    {
       name: 'email',
       type: 'email',
       required: true,
@@ -86,6 +100,17 @@ export const Subscribers: CollectionConfig = {
         { label: 'Unsubscribed', value: 'unsubscribed' },
       ],
       admin: { position: 'sidebar' },
+    },
+    {
+      // When they signed up and when the record last changed, at the foot of
+      // the rail — the same component every other document ends with.
+      name: 'documentMeta',
+      type: 'ui',
+      admin: {
+        disableListColumn: true,
+        position: 'sidebar',
+        components: { Field: '/components/admin/DocActions#DocMeta' },
+      },
     },
   ],
   timestamps: true,
