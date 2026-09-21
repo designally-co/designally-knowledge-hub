@@ -3074,6 +3074,15 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   inline-size: var(--da-rail-w);
 }
 
+/* EXCEPT ON THE ACCOUNT, WHERE THERE IS NO RAIL. Every field of a user is a
+   sidebar field, so the column holds the whole document: the login card, and
+   the provenance under it. Sized as a rail, that provenance came out 320 under
+   a 779 card with the same left edge — one column of two widths. It takes the
+   width of what it follows. */
+.collection-edit--users .document-fields__sidebar-fields > .render-fields {
+  inline-size: auto;
+}
+
 @media (min-width: 1280px) {
   .document-fields--has-sidebar .document-fields__sidebar-fields {
     --da-rail-w: 320px;
