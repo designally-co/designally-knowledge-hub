@@ -63,6 +63,28 @@
   }
 }
 
+/* Tablet: the same arrangement as the desktop on eight columns — the offer on
+   1-5, the drawing on 6-8 — because stacked, the copy held to 48vw and left the
+   right half of the row empty beside it. */
+@media (min-width: 48em) and (max-width: 63.999em) {
+  .news-hero__inner {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+    align-items: center;
+  }
+
+  .news-hero__inner > .news-hero__copy {
+    grid-column: 1 / span 5;
+    max-width: none;
+  }
+
+  .news-hero__inner > .news-hero__art {
+    grid-column: 6 / span 3;
+    width: 100%;
+  }
+}
+
 /* THE COLUMN IS THE MEASURE FOR BOTH, AND IT GROWS WITH THE TYPE. A fixed 36rem
    held the headline to two lines up to about 1200px and then broke: the display
    size is `4.4vw`, so at 1440 it reaches 63px and "Better design thinking," on

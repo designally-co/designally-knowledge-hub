@@ -242,6 +242,27 @@
   .topics__cloud .topic-pill { min-height: var(--touch-target); }
 }
 
+/* A FINGER'S WORTH OF ROOM AROUND A COMPACT PILL. The pills and chips are 32px
+   by design, which is a small thing to hit on a phone or a tablet. Rather than
+   grow them, each takes an invisible 40px band centred on it — the phone's
+   touch target, and exactly the row's 32px plus its 8px gap, so two rows of
+   them never overlap. The icon buttons have had this since they shrank. */
+@media (pointer: coarse) {
+  .topic-pill,
+  .filter-chip {
+    position: relative;
+  }
+
+  .topic-pill::after,
+  .filter-chip::after {
+    content: "";
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: 40px;
+    transform: translateY(-50%);
+  }
+}
+
 /* The scattered-sticker rotation is decorative. It costs horizontal room,
    so it only applies once there's room to spare. */
 .topic-pill { transform: none; }

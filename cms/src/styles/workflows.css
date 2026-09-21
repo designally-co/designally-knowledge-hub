@@ -157,6 +157,15 @@
   padding-top: 0;
 }
 
+/* Tablet: the lead story runs the full width of the row (the two columns only
+   part at 64em), and at 4:3 that is a 578px picture before a word of the list.
+   Widescreen instead: the same lead, a third of the height. */
+@media (min-width: 48em) and (max-width: 63.999em) {
+  .workflows__feature-media {
+    aspect-ratio: 16 / 9;
+  }
+}
+
 /* Phone: the list is the whole section, the lead article its first row. From
    tablet up the lead is the large story again and its row stands down. */
 @media (max-width: 47.999em) {
