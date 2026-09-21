@@ -253,6 +253,11 @@
      on the body, measured before it was replaced, so the column that was right
      stays exactly where it was. */
   --da-measure: 46.35rem;
+  /* Content Studio's content track: `--rail-content`, 52rem of its 16px rem.
+     The document's sheet stops there however wide the window is, and the rail
+     beside it steps with the screen. Written in pixels because this admin's rem
+     is 15px, where 52rem would come out 52 short. */
+  --da-content-max: 832px;
 
   /* The gap between the document and the rail, stated once. It was the sum of
      two unrelated paddings — 22.5px on the editor's right and 46.2px on the
@@ -1185,22 +1190,33 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    document sheet — the main column sits inside a `.gutter` wrapper, so
    `.document-fields__main > …` matches nothing. The whole editor lost its white
    ground, its Edge and its padding, and the fields sat on the bare page. */
-/* The document sheets, on the same rule as the list panel: the white surface is
-   the boundary, and the Edge is spent on inputs rather than on the things
-   holding them. */
+/* THE TWO BOXES, AS CONTENT STUDIO BUILDS THEM. The document's sheet is its
+   `.cs-card` and the rail's panel is its `.cs-bezel`: the same white surface,
+   the same hairline, the same 16px corner, and no shadow on either.
+
+   These sheets used to be borderless — the white on the parchment was the whole
+   boundary — which is a defensible reading of the system and not the one the
+   studio ships. Matched to it here, edge for edge.
+
+   PIXELS, AS THE STUDIO'S ARE: this admin's rem is 15px, so `1.25rem` lands on
+   18.75 and a panel comes out a pixel and a half under the 20 being copied. */
 .document-fields__main .render-fields.document-fields__fields,
 .document-fields__sidebar-fields > .render-fields {
   background-color: #ffffff;
-  border: 0;
+  border: 1px solid var(--da-hairline);
   border-radius: var(--style-radius-sheet);
 }
 
+/* The content container's body: 24 either side, 20 top and bottom. No shadow —
+   both of Studio's containers here are the hairline and nothing more; the
+   shadow it keeps for a thing that floats over the page. */
 .document-fields__main .render-fields.document-fields__fields {
-  padding: 1.75rem 2rem 2rem;
+  padding: 20px 24px;
 }
 
+/* `cs-bezel-core`'s `p-5`: 20 all round. */
 .document-fields__sidebar-fields > .render-fields {
-  padding: 1.25rem 1.25rem 1.5rem;
+  padding: 20px;
 }
 
 /* -----------------------------------------------------------------------------
@@ -2592,9 +2608,14 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
  * old margin goes with it — it marked a margin inside the text column, and there
  * is no longer one.
  */
+/* ONE PADDING, THE STUDIO'S, ON EVERY DOCUMENT. This sheet used to take 3.75rem
+   either side so Lexical's add-block and drag handles had a gutter to hang in.
+   That put the article's container 32px out of step with every other container
+   in the two products, which is the more visible fact: the handles live in the
+   sheet's own edge now instead of being given a margin of their own. */
 @media (min-width: 48.0625rem) {
   .collection-edit--articles .render-fields.document-fields__fields {
-    padding-inline: 3.75rem;
+    padding-inline: 24px;
   }
 
   /* THE GUTTER STAYS AND THE BOX MOVES. Zeroing the padding was the obvious
@@ -3007,7 +3028,7 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   /* The gap is NOT in here: it belongs to the rail's side now, and counting it
      twice put 30px of slack back inside the sheet — the exact thing this rule
      exists to remove. */
-  inline-size: min(100%, calc(var(--da-measure) + 2rem + 4rem + var(--gutter-h)));
+  inline-size: min(100%, calc(var(--da-content-max) + var(--gutter-h)));
 }
 
 /* THE ARTICLE COLUMN IS THE MEASURE, WITH NOTHING ADDED. The 2rem above buys
@@ -3018,7 +3039,7 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
    the headline and the cover finished 29px to the right of where the body
    stopped. Dropping it lands all three on the same right edge. */
 .collection-edit--articles .document-fields--has-sidebar .document-fields__main {
-  inline-size: min(100%, calc(var(--da-measure) + 4rem + var(--gutter-h)));
+  inline-size: min(100%, calc(var(--da-content-max) + var(--gutter-h)));
 }
 
 /* The gap belongs to one side, not two. */
@@ -3026,8 +3047,45 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   padding-inline-end: 0;
 }
 
+/* THE RAIL'S WIDTH, STEPPED AS CONTENT STUDIO STEPS IT. A fixed rail beside a
+   fixed gap takes the difference out of the content: Studio shrinks both
+   together instead, and the document keeps what is left. Measured here before:
+   290px of rail at 1440 against Studio's 320, and 295 at 1600 against its 360 —
+   the rail barely grew while the window did.
+
+     1025-1279   288 rail, 20 gap
+     1280-1535   320 rail, 24 gap
+     1536 and up 360 rail, 32 gap
+
+   The column is the rail plus the gap, and carries the gap as its own padding,
+   so the space between the two boxes belongs to one of them rather than both. */
 .document-fields--has-sidebar .document-fields__sidebar-fields {
-  padding-inline-start: var(--da-column-gap);
+  --da-rail-w: 288px;
+  --da-rail-gap: 20px;
+  flex: 0 0 auto;
+  padding-inline-start: var(--da-rail-gap);
+}
+
+/* THE PANEL IS THE RAIL. Sizing the column instead left the panel 60px short of
+   its number: the column also carries the page's trailing gutter, which is
+   space to the window rather than rail. The width goes on the box being
+   measured. */
+.document-fields--has-sidebar .document-fields__sidebar-fields > .render-fields {
+  inline-size: var(--da-rail-w);
+}
+
+@media (min-width: 1280px) {
+  .document-fields--has-sidebar .document-fields__sidebar-fields {
+    --da-rail-w: 320px;
+    --da-rail-gap: 24px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .document-fields--has-sidebar .document-fields__sidebar-fields {
+    --da-rail-w: 360px;
+    --da-rail-gap: 32px;
+  }
 }
 
 /* The pair reads as one composition rather than as a document with something
@@ -4557,8 +4615,12 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
    is a `div`, a document is a `main` and the account adds a `.gutter` of its
    own — naming them caught the documents and missed the lists, which went
    straight back to 1310. */
+/* 1280, WHICH IS CONTENT STUDIO'S `max-w-7xl`: the page container every one of
+   its screens is built in. At 1200 the document's own pair — a 52rem content
+   track beside a 360px rail — had nowhere to finish, and the sheet stopped
+   ~90px short of its width on a wide monitor. */
 .template-default__wrap > *:not(.app-header) {
-  max-inline-size: 1200px;
+  max-inline-size: 1280px;
   margin-inline: auto;
 }
 
@@ -7187,4 +7249,56 @@ $list: '.template-default__wrap > .collection-list';
   padding: 0.75rem;
   color: var(--da-ink-3);
   font-size: 13px;
+}
+
+/* -----------------------------------------------------------------------------
+   The article's rail, in the resource's order
+
+   A RESOURCE ASKS: is it live, when was the list told, where is it filed, what
+   is its address. An article asked the filing question first, so the two rails
+   answered the same four questions in different orders and neither looked like
+   the other.
+
+   IT IS DONE HERE, NOT IN THE SCHEMA. The tag's place in the fields array is
+   also the list's column order — Payload rewrites a saved column preference
+   back to schema order, which is why the tag is declared before the status in
+   the first place (see collections/Articles). Moving the field would have put
+   Status ahead of Tag in every list to fix one column in one rail. The rail is
+   laid out instead: the order of the questions is a layout fact here, and the
+   schema keeps the list.
+   ========================================================================== */
+
+.collection-edit--articles .document-fields__sidebar-fields > .render-fields {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The actions (a `ui` field that renders nothing here) stay first at 0. */
+.collection-edit--articles .document-fields__sidebar-fields > .render-fields > .field-type.row {
+  order: 1;
+}
+
+.collection-edit--articles
+  .document-fields__sidebar-fields
+  > .render-fields
+  > .field-type:has(#field-newsletterSentAt) {
+  order: 2;
+}
+
+/* The tag: the only select standing on its own in this rail — Status is inside
+   the row above. */
+.collection-edit--articles .document-fields__sidebar-fields > .render-fields > .field-type.select {
+  order: 3;
+}
+
+.collection-edit--articles .document-fields__sidebar-fields > .render-fields > .field-type:has(#field-slug) {
+  order: 4;
+}
+
+.collection-edit--articles .document-fields__sidebar-fields > .render-fields > .da-thai {
+  order: 5;
+}
+
+.collection-edit--articles .document-fields__sidebar-fields > .render-fields > .da-meta {
+  order: 6;
 }

@@ -143,7 +143,9 @@
   block-size: 36px;
   padding: 0;
   border: 1px solid var(--da-hairline);
-  border-radius: 999px;
+  /* Square, like the studio's icon buttons and the controls it sits beside:
+     Save is an 8px corner, and a disc next to it read as a different family. */
+  border-radius: var(--style-radius-s);
   background-color: #ffffff;
   color: var(--da-ink-3);
   cursor: pointer;
@@ -154,9 +156,8 @@
     transform 0.12s var(--da-ease);
 }
 
-/* The disc deepens under the pointer: the glyph goes to ink and the Edge
-   darkens with it, which is what gives a borderless-looking control something
-   to aim at. */
+/* It deepens under the pointer: the glyph goes to ink and the Edge darkens with
+   it, which is what gives a borderless-looking control something to aim at. */
 @media (hover: hover) {
   .da-bar__more:hover {
     border-color: var(--da-ink-3);
