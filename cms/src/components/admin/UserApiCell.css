@@ -29,14 +29,36 @@
   gap: 10px;
 }
 
-.da-api-cell__state {
-  font-size: 13px;
+/* The chevron that asks for the key of this one row. */
+.da-api-cell__disclose {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--style-radius-s);
+  background: none;
   color: var(--da-ink-3);
+  cursor: pointer;
 }
 
+.da-api-cell__disclose svg {
+  transition: transform var(--da-dur-feedback) var(--da-ease);
+}
+
+.da-api-cell__disclose--on svg { transform: rotate(180deg); }
+
+@media (hover: hover) {
+  .da-api-cell__disclose:hover { background-color: var(--da-deep); color: var(--da-ink); }
+}
+
+/* Starting at the email, which is where the row starts being read: the row's
+   own edge is the checkbox's gutter. The inset is measured by the cell. */
 .da-row--api .da-api-cell__key {
   position: absolute;
-  inset-inline: 16px;
+  inset-inline-start: var(--da-api-inset, 16px);
+  inset-inline-end: 16px;
   inset-block-end: 12px;
 }
 

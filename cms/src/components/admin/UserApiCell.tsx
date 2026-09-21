@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import { Check, Copy, Eye, EyeOff } from 'lucide-react'
+import { Check, ChevronDown, Copy, Eye, EyeOff } from 'lucide-react'
 
 import { ConfirmDialog } from './ConfirmDialog'
 import { Switch } from './Switch'
@@ -45,6 +45,7 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
   const cell = React.useRef<HTMLDivElement>(null)
   const [enabled, setEnabled] = React.useState(Boolean(rowData?.enableAPIKey))
   const [apiKey, setApiKey] = React.useState<null | string>(null)
+  const [open, setOpen] = React.useState(false)
   const [shown, setShown] = React.useState(false)
   const [copied, setCopied] = React.useState(false)
   const [busy, setBusy] = React.useState(false)
@@ -55,7 +56,7 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
      not be one: forty rows of credentials on a screen anyone can leave open. It
      is fetched for the row that is open, and only that row. */
   React.useEffect(() => {
-    if (!enabled || !id || apiKey) return
+    if (!open || !enabled || !id || apiKey) return
     let live = true
     void (async () => {
       try {
@@ -71,7 +72,7 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
     return () => {
       live = false
     }
-  }, [apiKey, enabled, id])
+  }, [apiKey, enabled, id, open])
 
   const save = React.useCallback(
     async (patch: Record<string, unknown>) => {
@@ -106,6 +107,7 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
     if (key) setApiKey(key)
     setEnabled(next)
     setShown(false)
+    setOpen(next ? open : false)
   }
 
   const regenerate = async () => {
@@ -120,13 +122,24 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
      down and leave the email and the dates floating at the top of a tall row.
      The key is drawn across the whole row instead — absolutely, against the
      `<tr>` — and the row is told to make room for it, so every other cell stays
-     exactly where it was. */
+     exactly where it was.
+     It starts where the reading starts: the email's column, not the row's edge,
+     which is the checkbox's gutter. The offset is measured rather than guessed,
+     because the selection column is not always there. */
   React.useEffect(() => {
     const row = cell.current?.closest('tr')
     if (!row) return
-    row.classList.toggle('da-row--api', enabled)
-    return () => row.classList.remove('da-row--api')
-  }, [enabled])
+    row.classList.toggle('da-row--api', open)
+    if (open) {
+      const first = row.querySelector('td:nth-child(2)') ?? row.firstElementChild
+      const inset = first ? first.getBoundingClientRect().left - row.getBoundingClientRect().left : 16
+      ;(row as HTMLElement).style.setProperty('--da-api-inset', `${Math.round(inset)}px`)
+    }
+    return () => {
+      row.classList.remove('da-row--api')
+      ;(row as HTMLElement).style.removeProperty('--da-api-inset')
+    }
+  }, [open])
 
   const copy = async () => {
     if (!apiKey) return
@@ -143,10 +156,25 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
     <div className="da-api-cell" ref={cell}>
       <div className="da-api-cell__head">
         <Switch checked={enabled} label="API access" onChange={toggle} />
-        <span className="da-api-cell__state">{enabled ? 'On' : 'Off'}</span>
+
+        {/* THE KEY IS NOT THE POINT OF THE TABLE. With every enabled account
+            opened at once, a list of seven is seven key boxes and no list. The
+            switch says whether there is access; this asks to see the key for
+            one row. */}
+        {enabled ? (
+          <button
+            aria-expanded={open}
+            aria-label={open ? 'Hide key' : 'Show key'}
+            className={`da-api-cell__disclose${open ? ' da-api-cell__disclose--on' : ''}`}
+            onClick={() => setOpen((was) => !was)}
+            type="button"
+          >
+            <ChevronDown aria-hidden="true" {...ICON} />
+          </button>
+        ) : null}
       </div>
 
-      {enabled ? (
+      {enabled && open ? (
         <div className="da-api-cell__key">
           <span className="da-api-cell__value">
             {/* Dots until asked, and a monospace face when shown: a key is read
