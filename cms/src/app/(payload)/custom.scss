@@ -7106,3 +7106,73 @@ $list: '.template-default__wrap > .collection-list';
     color: var(--da-ink);
   }
 }
+
+/* -----------------------------------------------------------------------------
+   The menu a select opens
+
+   THE CONTROL WAS PORTED; THE MENU UNDER IT WAS NOT. Closed, a select is the
+   studio's filled field. Open, it dropped Payload's own panel: square corners,
+   a 15px list, the chosen row filled grey like a highlight in a spreadsheet,
+   and `0 -2px 16px -2px rgba(0,0,0,.2)` — a shadow cast upward, from nothing.
+
+   Content Studio's menu is the plate it uses everywhere something floats: white,
+   the hairline, the sheet's smaller corner, the pop shadow. Rows are 14px, and
+   the row you are on takes the recess a quiet button takes on hover. The chosen
+   row is marked with ink and weight rather than a block of grey, because it is
+   a statement about the value, not a highlight.
+   ========================================================================== */
+
+.rs__menu {
+  margin-block-start: 0.375rem;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-m);
+  background-color: #ffffff;
+  box-shadow: var(--da-shadow-pop);
+  overflow: hidden;
+}
+
+/* Pixels, as the studio's are: this admin's rem is 15px, so 0.5rem lands on
+   7.5 and a row comes out a size bigger than the one being copied. The menu is
+   named in each selector because Payload's own are two classes deep. */
+.rs__menu .rs__menu-list {
+  padding-block: 4px;
+}
+
+.rs__menu .rs__option {
+  padding: 8px 12px;
+  background-color: transparent;
+  color: var(--da-ink);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Where the pointer is, and where the keyboard is: the same recess. */
+.rs__menu .rs__option--is-focused,
+.rs__menu .rs__option:active {
+  background-color: var(--da-deep);
+}
+
+@media (hover: hover) {
+  .rs__menu .rs__option:hover {
+    background-color: var(--da-deep);
+  }
+}
+
+/* The value the field already holds. */
+.rs__menu .rs__option--is-selected {
+  background-color: transparent;
+  color: var(--da-ink);
+  font-weight: 500;
+}
+
+.rs__menu .rs__option--is-selected.rs__option--is-focused {
+  background-color: var(--da-deep);
+}
+
+/* "No options" — a note, not a row you can choose. */
+.rs__menu .rs__menu-notice {
+  padding: 0.75rem;
+  color: var(--da-ink-3);
+  font-size: 13px;
+}
