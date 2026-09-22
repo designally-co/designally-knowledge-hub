@@ -180,10 +180,18 @@ tr:hover .da-sub-email__copy,
   color: var(--da-ink-3);
 }
 
+/* ONE LINE, CUT WHERE IT RUNS OUT. A sign-up path is as long as the headline
+   it was taken from — `/articles/why-refillable-packaging-design-is-harder-
+   than-it-looks` — and wrapping it pushed this row into the two beside it, so
+   the language read through the middle of the path. It is a fact you check,
+   not one you read to the end: the ellipsis says there is more, and the whole
+   of it is in the title on hover. */
 .da-sub-facts dd {
   margin: 0;
   min-inline-size: 0;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 13px;
   line-height: 1.45;
   color: var(--da-ink);

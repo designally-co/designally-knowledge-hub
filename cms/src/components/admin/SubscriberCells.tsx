@@ -185,7 +185,12 @@ export const SubscriberStatusCell: React.FC<CellProps> = ({ cellData, rowData })
           <dl className="da-sub-facts">
             <div className="da-sub-facts__row">
               <dt>Signed up from</dt>
-              <dd className={source ? 'da-sub-facts__path' : 'da-sub-facts__empty'}>
+              {/* The title carries the whole path, because the cell shows as
+                  much of it as fits and an ellipsis for the rest. */}
+              <dd
+                className={source ? 'da-sub-facts__path' : 'da-sub-facts__empty'}
+                title={source ?? undefined}
+              >
                 {source ?? 'Not recorded'}
               </dd>
             </div>
