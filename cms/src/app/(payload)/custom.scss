@@ -5354,6 +5354,22 @@ html {
     padding: 16px;
   }
 
+  /*
+   * AND THE TILE'S OWN FRAME GOES, because on a phone it is the third inset in
+   * a row. The sheet is a shell holding a panel — 6px of white around the
+   * document, which is what makes the two surfaces read as nested rather than
+   * as one box with a line drawn on it. That is a desk idea: measured here, the
+   * modal's 16 plus the shell's 6 plus the panel's 16 put a 13px filename 39px
+   * from the edge of a 375 screen, against the 32 every card on the phone
+   * keeps, and took 12px off a line that has none to give.
+   *
+   * The shell keeps its border and its radius — it is still the sheet's edge —
+   * and gives up only the gap, so the sheet lands where the cards land.
+   */
+  #{$sheet} .drawer__content {
+    --sheet-pad: 0px;
+  }
+
   /* AND ONLY ONE OF THEM. The list carries a 16px page inset of its own — right
      on a screen, and a second frame inside a sheet that already has one: it put
      the picker's heading 39px from the tile's edge against the 16 everything
@@ -8352,31 +8368,32 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
 }
 
 /*
- * AND THE ⋯ LOSES ITS DISC.
+ * AND THE ⋯ KEEPS ITS EDGE AFTER ALL.
  *
- * A bordered white button beside a 13px filename is a second object on that
- * line, competing with the name for it. The glyph alone is enough — it sits in
- * the caption's own weight and only firms up under the pointer, which is where
- * a quiet control should spend its ink.
+ * It was stripped to a bare glyph here, on the reasoning that a bordered white
+ * button beside a 13px filename is a second object on that line competing with
+ * the name for it. On the screen it reads the other way round: a glyph with
+ * nothing around it is the one thing on this sheet that does not look pressable
+ * — every other control in the admin is a shape — and the four dots of a ⋯ are
+ * too little ink to carry a hit area by themselves.
  *
- * The ring stays: a control with no edge still has to show a keyboard where it
- * is.
+ * The hairline, which is what the discs on the header's line use: enough to
+ * close the shape and not enough to compete with anything. Hover and the open
+ * state still fill with the chrome grey.
  */
 #{$mediaDoc} .da-filename .da-bar__more {
-  border-color: transparent;
-  background-color: transparent;
+  border-color: var(--da-hairline);
+  background-color: #ffffff;
 }
 
 @media (hover: hover) {
   #{$mediaDoc} .da-filename .da-bar__more:hover {
-    border-color: transparent;
     background-color: var(--da-chrome);
     color: var(--da-ink);
   }
 }
 
 #{$mediaDoc} .da-filename .da-bar__more--on {
-  border-color: transparent;
   background-color: var(--da-chrome);
   color: var(--da-ink);
 }
@@ -8627,6 +8644,58 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
     .document-fields__sidebar-fields
     > .render-fields {
     inline-size: auto;
+  }
+}
+
+/* ---- the file's name, on a phone ----------------------------------------- */
+
+/*
+ * THE ⋯ NEEDS AIR UNDER IT.
+ *
+ * The name's row is pulled down onto the picture by half a rem, because the
+ * grid's row gap is sized for the band of date and size UNDER the picture and a
+ * caption sitting on its own line above it wanted less. That was written when
+ * this row was a line of type. On a phone it is a 44px button: measured, the ⋯
+ * ended 1.8px above the top of the image — a control resting on the picture
+ * rather than standing above it, and 1.8px is not a gap, it is a rendering
+ * accident.
+ *
+ * The pull goes, and the gap the row already had becomes 12 — the same on both
+ * sides of the picture, which is what the frame deserves now that it is the one
+ * thing on this sheet you came to look at.
+ *
+ * AFTER THE `max-height: 880px` BLOCK, which sets that row gap: a phone is a
+ * short window too, so it catches that query, and two rules of equal weight in
+ * two different queries resolve only by which comes last.
+ */
+@media (max-width: 48rem) {
+  #{$mediaDoc} .collection-edit--media .da-filename {
+    margin-block-end: 0;
+  }
+
+  #{$mediaDoc} .collection-edit--media .file-details > header {
+    row-gap: 12px;
+  }
+}
+
+/* ---- the sheet's bar, on a phone ----------------------------------------- */
+
+/*
+ * CANCEL AND SAVE STAND ON THE FIELDS' COLUMN.
+ *
+ * The bar's sides are 1.5rem, set in the `max-height: 880px` block above — a
+ * laptop lid's number, and a phone is a short window too, so it catches one.
+ * The panel above the bar does not use it down here: it takes the phone's 16,
+ * which left the two buttons six pixels inboard of the field they are the
+ * answer to.
+ *
+ * WRITTEN AFTER THAT BLOCK, not beside the panel's own rule, because the two
+ * selectors weigh the same and a height query and a width query do not resolve
+ * by how specific they are — only by which comes last.
+ */
+@media (max-width: 48rem) {
+  #{$doc} .da-bar--sheet {
+    padding: 12px 16px 16px;
   }
 }
 
