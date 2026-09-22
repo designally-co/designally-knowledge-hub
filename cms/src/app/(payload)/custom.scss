@@ -96,6 +96,9 @@
     --da-ink: #1a1a1a;   /* headings, labels, body */
   --da-ink-2: #4a4a4a; /* supporting copy */
   --da-ink-3: #737373; /* sublines and metadata: 4.6:1 on the ground */
+  /* The same voice one step down, for a subline standing on a field panel
+     rather than on the page: #737373 measures 4.46:1 on #f8f8f7 and this 4.72. */
+  --da-ink-3-deep: #6f6f6f;
   --da-ink-4: #a6a6a6; /* placeholders only — under AA, knowingly */
 
   /* The Edge. */
@@ -1330,15 +1333,18 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
      measured, that pushed the two image actions to the LEFT edge and left the
      free space between them and Remove. Fixed to their content, the `1fr`
      absorbs the row and the three discs sit together on the right. */
-  grid-template-columns: minmax(0, 1fr) max-content max-content max-content;
+  grid-template-columns: minmax(0, 1fr) repeat(4, max-content);
   /* THE ACTIONS ARE IN THE PICTURE'S OWN CELL, not in a strip above it. They
      are named by column and row below rather than by area, because three items
      cannot share one area without stacking on each other — placed explicitly,
      they overlap the media that spans beneath them. */
   grid-template-areas:
-    'media media media media'
-    'meta  meta  meta  meta';
-  column-gap: 0.5rem;
+    'name  name  name  name  name'
+    'media media media media media'
+    'meta  meta  meta  meta  meta';
+  /* 0.5rem put 7px between three 36px discs sitting on the picture, one of
+     which used to remove the file. */
+  column-gap: 0.75rem;
   row-gap: 1rem;
 }
 
@@ -1395,10 +1401,12 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   display: none;
 }
 
-/* THREE FACTS, SIDE BY SIDE, EACH UNDER ITS NAME. A column of label/value rows
-   is what the timestamps at the foot of this sheet do, and it is right for a
-   pair; three short values read faster as a row, and it keeps the block one
-   line deep instead of three. */
+/* THE FACTS, SIDE BY SIDE, EACH UNDER ITS NAME. Short values read faster as a
+   row than as a column, and it keeps the block one line deep instead of four.
+
+   The date joined them: it was a row of its own under the form, in another
+   type, saying a fourth thing of the same kind. `wrap` is what lets it drop to
+   a second line on a narrow sheet rather than squeezing the three it follows. */
 .da-facts {
   display: flex;
   flex-wrap: wrap;
@@ -1441,9 +1449,12 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
    `align-self: start` keeps them off the vertical centre of a 405px cell, and
    `z-index` puts them over an image that comes later in the DOM. */
 .collection-edit--media .da-expand,
+.collection-edit--media .da-file-action,
 .collection-edit--media .file-field__edit,
 .collection-edit--media .file-details__remove {
-  grid-row: 1;
+  /* Row 2 since the name took row 1 — the discs still sit in the picture's
+     own cell, at its top edge. */
+  grid-row: 2;
   align-self: start;
   z-index: 1;
   margin-block-start: 0.75rem;
@@ -1460,12 +1471,34 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   display: none;
 }
 
-.collection-edit--media .da-expand {
+/* THE CORNER READS IN THE ORDER IT IS TABBED. Payload's crop is in the markup
+   first and ours are portalled in after it, so the columns follow that order
+   rather than fighting it — the disc a keyboard reaches third is the third one
+   along. It was the other way round, and a screen reader walked ✎ 🗑 ⤢ across a
+   row drawn ⤢ ✎ 🗑.
+
+   Two pairs, left to right: what you do to the picture, then what you do to the
+   file. On anything that is not an image the first two are absent and the pair
+   that is left keeps the corner. */
+.collection-edit--media .file-field__edit {
   grid-column: 2;
 }
 
-.collection-edit--media .file-field__edit {
+.collection-edit--media .da-expand {
   grid-column: 3;
+}
+
+.collection-edit--media .da-file-action--download {
+  grid-column: 4;
+}
+
+.collection-edit--media .da-file-action--replace {
+  grid-column: 5;
+  /* THE GROUP'S RIGHT INSET LIVES ON WHATEVER IS LAST. It used to live on the
+     trash, which was the end of the row; hiding that took the inset with it and
+     left the group flush against the picture's edge — 11px down from the top
+     and 0 in from the side. */
+  margin-inline-end: 0.75rem;
 }
 
 /* Remove was `position: absolute; top: 23px; right: 23px` — floated over the
@@ -1491,10 +1524,12 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
      the tallest item is what sizes a grid row: 36 + 27.69 = the 63.69px row
      that pushed the action strip 24px down the sheet. Zeroing the top alone
      fixed the wrong half. */
-  /* The right-hand end of the row, so its own margin is what insets the group
-     from the picture's edge. */
+  /* The right-hand end of the row on a file that has never been saved — the
+     one case where this is still the trailing disc. Same column and same inset
+     as the replace that stands in for it everywhere else, so the group sits off
+     the picture's edge by the same 0.75rem whichever of the two is last. */
   margin: 0.75rem 0.75rem 0 0;
-  grid-column: 4;
+  grid-column: 5;
 }
 
 /* THE TRASH, NOT THE CROSS. Payload draws an `x` here, which in this admin
@@ -2087,6 +2122,7 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
  * through every state instead of being a second recoloured copy.
  */
 .da-expand,
+.da-file-action,
 .file-field__edit {
   position: relative;
   display: grid;
@@ -2139,6 +2175,7 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
 
 @media (hover: hover) {
   .da-expand:hover,
+  .da-file-action:hover,
   .file-field__edit:hover {
     border-color: var(--da-ink-3);
     background-color: #ffffff;
@@ -2147,6 +2184,7 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
 }
 
 .da-expand:active,
+.da-file-action:active,
 .file-field__edit:active {
   background-color: var(--da-warm-white);
   transform: scale(0.94);
@@ -3794,8 +3832,17 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
  * to the leading edge: this dialog is read left to right like everything else,
  * and its two buttons were the one thing sitting alone on the right.
  */
+/* CLIPPED, NOT DELETED. `display: none` took the heading out of the
+   accessibility tree as well as off the screen, and it is the only thing naming
+   this dialog — a screen reader met an unnamed one. */
 .edit-upload__header h2 {
-  display: none;
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 /* THE ANSWERS BELONG TO THE COLUMN THEY ANSWER. Crop and Focal Point are asked
@@ -6225,9 +6272,12 @@ $list: '.template-default__wrap > .collection-list';
  * left, which is most of the table, and carries 32px of its own on the right so
  * its ellipsis stops crowding the tag.
  *
- * The lists share the values, so the two still lay out alike. In pixels because
- * these are the widths of words, which do not scale with the window; the title
- * is the column that gives and takes as the window changes.
+ * Media is not here: a library of files is a grid of cards further down, not a
+ * table of rows.
+ *
+ * The lists share the values, so the two lay out alike. In pixels because these
+ * are the widths of words, which do not scale with the window; the title is the
+ * column that gives and takes as the window changes.
  */
 #{$list}:is(.collection-list--articles, .collection-list--resources) table {
   /* FIXED, OR THE WIDTHS BELOW ARE ONLY SUGGESTIONS. In an auto-layout table a
@@ -6242,7 +6292,7 @@ $list: '.template-default__wrap > .collection-list';
     inline-size: 32px;
   }
 
-  /* The title gives up the room the two columns beside it no longer waste, and
+  /* The title gives up the room the columns beside it no longer waste, and
      holds the last 32px of it as the gap before the tag. */
   :is(#heading-title, .cell-title) {
     padding-inline-end: 32px;
@@ -6923,6 +6973,198 @@ $list: '.template-default__wrap > .collection-list';
    two states apart without reading. The dot goes with the badge it sat in.
    ListCells.css draws them; nothing is overridden here. */
 
+/* ---- media is a grid of cards, not a list of rows ------------------------ */
+
+/*
+ * A LIBRARY OF PICTURES IS BROWSED BY LOOKING. The other two lists are reading
+ * surfaces — a headline, what it is filed under, its state — and this one is
+ * mostly images, screenshots and zips, which a 44px thumbnail beside a filename
+ * does not let you recognise. It is the same table underneath, so Payload's
+ * search, selection and paging are untouched and nothing here is reimplemented;
+ * the rows are simply laid out as cards.
+ *
+ * The picture leads at the size it is worth showing, the name sits under it,
+ * and the date is gone — nobody opens a media library looking for when a file
+ * was last touched. The heading row goes with the columns it labelled, which
+ * costs the sort controls; sorting a wall of pictures by name was not what this
+ * screen was for.
+ */
+#{$list}.collection-list--media {
+  /* NO PLATE UNDER A GRID OF PLATES. The list's white card is drawn for a table
+     — it holds the header row and the rules between rows inside one clipped
+     corner. Here the cards are the objects, and a second surface behind them
+     only boxes them in. */
+  .table {
+    border: 0;
+    border-radius: 0;
+    background: none;
+    overflow: visible;
+  }
+
+  .table table,
+  .table tbody,
+  .table tr,
+  .table td {
+    display: block;
+  }
+
+  .table thead {
+    display: none;
+  }
+
+  .table tbody {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 20px;
+  }
+
+  /* The card: the plate the rest of this admin draws, one hairline and no
+     shadow, and the picture clipped by its corners. The small radius, not the
+     large one the table card wore: at 16px the corner cut visibly into a
+     picture that now runs to the card's edge. */
+  .table tr {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--da-hairline);
+    border-radius: var(--style-radius-s);
+    background-color: #ffffff;
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  /* THE CARD TAKES THE HOVER, NOT ITS CELLS. The lists paint the row's hover on
+     the `td`s, which is the whole row when a row is a line of cells. Here the
+     cells are as tall as their own contents and the cards are stretched to the
+     tallest in the grid line, so a card with a one-line name was grey down to
+     the end of its text and white for the strip below it. */
+  @media (hover: hover) {
+    .table tbody tr:hover {
+      border-color: var(--da-hairline-strong);
+      background-color: var(--da-warm-white);
+    }
+
+    .table tbody tr:hover td {
+      background: none;
+    }
+  }
+
+  .table td {
+    padding: 0;
+    border: 0;
+  }
+
+  /* The row's own 12px, which the other lists want and a card does not: the
+     picture starts at the card's edge and is cut by its corners. */
+  .table tbody td.cell-alt {
+    padding: 0;
+  }
+
+  /* Whatever columns are on — the date, credit, anything added back — the card
+     shows the one that carries the picture and the name. */
+  .table td:not(.cell-alt):not(.cell-_select) {
+    display: none;
+  }
+
+  .table .da-row__id {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    inline-size: 100%;
+    text-align: start;
+  }
+
+  /* The picture fills the card's width in a 4:3 frame, whatever shape the file
+     is; Payload's own placeholder (a PDF, a zip) fills it the same way. The cap
+     is Payload's: its small thumbnail is 100px tall and says so in a
+     `max-height`, which a height of any kind loses to. */
+  .table .da-row__id .da-media-thumb {
+    inline-size: 100%;
+    block-size: auto;
+    max-block-size: none;
+    aspect-ratio: 4 / 3;
+    border-radius: 0;
+  }
+
+  .table .da-media-thumb :is(img, svg) {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  .table .da-row__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 14px 14px;
+    min-inline-size: 0;
+  }
+
+  /* TWO LINES, THEN AN ELLIPSIS. The lists hold the name to one line and to a
+     `nowrap` that cut it off mid-letter with nothing to show for it — a row is
+     a line, but a card has the width of a card and the name is most of what it
+     says. The clamp needs all three: the box display it works on, the wrapping
+     the row turned off, and `anywhere` to break filenames that carry no spaces
+     to break at. */
+  .table .da-row__name {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  /* The checkbox rides on the picture rather than taking a column of its own,
+     on a plate of its own so it is legible over whatever is under it. */
+  .table td.cell-_select {
+    position: absolute;
+    inset-block-start: 8px;
+    inset-inline-start: 8px;
+    z-index: 1;
+    /* Out of flow, so it has no column to take its width from. */
+    inline-size: 32px;
+    padding: 4px;
+    border-radius: 8px;
+    background-color: rgb(255 255 255 / 0.92);
+  }
+
+  /* A PHONE KEEPS THE GRID, TWO WIDE. The list screens turn every row into a
+     horizontal card at this width (the 48rem block further down) with the
+     picture cut to 48px beside the name — which is the row this collection just
+     stopped being. Pictures are the point here, so the cards stay cards and
+     simply get narrower. The checkbox stays gone, as it is on every list at this
+     width: a phone deletes by swiping a card, not by selecting several. */
+  @media (max-width: 48rem) {
+    .table tbody {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .table tbody tr {
+      display: block;
+      gap: 0;
+      margin-block-end: 0;
+      padding: 0;
+    }
+
+    .table tbody td:nth-child(2) {
+      flex: none;
+    }
+
+    .table .da-row__id .da-media-thumb {
+      inline-size: 100%;
+      block-size: auto;
+    }
+
+    .table .da-row__text {
+      padding: 10px 12px 12px;
+    }
+  }
+}
+
 /* ---- the pager: a count and two discs, on the ground --------------------- */
 
 /* Studio's Pagination: the range in a white pill on the left, previous and next
@@ -7434,7 +7676,12 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
  * is one press of the ⤢ in its corner.
  */
 #{$mediaDoc} .file-details__thumbnail {
-  max-block-size: 200px;
+  /* THE PICTURE GIVES WAY, BECAUSE THE FORM CANNOT. A fixed 200px fits a tall
+     window and overflows a short one by the difference, and what goes under the
+     fold is the field the sheet was opened for. Tied to the viewport, the image
+     is the thing that gets smaller — which is right: it is the one element on
+     the sheet that is still legible at half the size. */
+  max-block-size: clamp(88px, 22vh, 200px);
 }
 
 /* `svg` as well as `img`: a file with no preview — a zip, a PDF — is drawn as
@@ -7451,4 +7698,222 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
    short window, and anything longer than the sheet scrolls as before. */
 #{$mediaDoc} .drawer__content {
   max-block-size: min(56rem, 100%);
+}
+
+/* ---- the sheet, made to fit the window it opened in ---------------------- */
+
+/*
+ * A SHEET THAT SCROLLS IS A SHEET THAT HID SOMETHING.
+ *
+ * This one holds a picture, three facts, two fields and a pair of dates, and on
+ * a laptop it did not fit: 163px of it lived below the fold, and the first thing
+ * down there was Credit. A drawer is a glance — if you have to scroll it, the
+ * list behind it would have served you better.
+ *
+ * Three surfaces give the height back, in the order they can afford to. The
+ * picture shrinks with the window (above). The sheet's own 45px gutters, chosen
+ * for a full screen, come in. And the bar at the foot stops reserving 45px under
+ * a button that is 36 tall.
+ */
+@media (max-height: 880px) {
+  /* 1.5rem, WHICH IS THE PICKER'S OWN NUMBER — the inset its sides and foot
+     already keep. The two sheets share a shell (the 6px tile, the radius, the
+     dim), and they keep the same head on a laptop as they do on a desk: both
+     come down together rather than the document drawer alone. */
+  #{$doc} .collection-edit {
+    padding: 1.5rem;
+  }
+
+  #{$doc} .da-bar--sheet {
+    padding: 0.75rem 1.5rem 1.5rem;
+  }
+
+  #{$picker} .collection-list > .gutter {
+    padding-block-start: 1.5rem;
+  }
+
+  #{$mediaDoc} .collection-edit--media .file-details > header {
+    row-gap: 0.625rem;
+  }
+
+  #{$mediaDoc} .collection-edit--media .file-details .file-meta {
+    gap: 0.5rem;
+  }
+
+  /* And the picture again, harder. A laptop lid is where this sheet ran over,
+     and the image is still the only thing on it that reads at half the size. */
+  #{$mediaDoc} .file-details__thumbnail {
+    max-block-size: clamp(80px, 15vh, 150px);
+  }
+}
+
+/* ---- the hand, not the pointer ------------------------------------------ */
+
+/*
+ * 36px IS A MOUSE'S NUMBER. This admin is used from a phone as often as a desk,
+ * and every control in this sheet measured under the 44 a finger asks for — the
+ * discs at 36, the copy button at 24 — with nothing changing between 1440px and
+ * 375px. The discs are raised where there is no pointer to aim with; the desk
+ * keeps its composition, where 36px is comfortably over the 24 the standard
+ * asks of a cursor.
+ */
+@media (pointer: coarse) {
+  #{$sheet} :is(.close-modal-button, .doc-drawer__header-close),
+  #{$mediaDoc} :is(.da-expand, .da-file-action, .file-field__edit, .file-details__remove),
+  #{$mediaDoc} .copy-to-clipboard {
+    inline-size: 44px;
+    block-size: 44px;
+  }
+
+  #{$mediaDoc} .collection-edit--media .file-details > header {
+    column-gap: 1rem;
+  }
+}
+
+/* ---- the file this sheet was opened to describe -------------------------- */
+
+/*
+ * THE LIST SAYS IT IN RED; THE SHEET SAID NOTHING.
+ *
+ * A file with no description is marked "Needs description" in the row you click.
+ * Inside, Description was an empty box identical to the empty optional Credit
+ * box below it — the request did not survive the doorway. It is the same words
+ * and the same colour here, on the label of the field that answers it, and the
+ * sentence underneath becomes the ask rather than the explanation (see
+ * MediaActions). The caret lands in it, so most of the time nothing needs
+ * reading at all.
+ */
+.da-needs-alt .field-type:has(#field-alt) .field-label {
+  color: var(--da-critical-ink);
+}
+
+.da-needs-alt .field-type:has(#field-alt) .field-description {
+  color: var(--da-critical-ink);
+}
+
+.da-needs-alt .field-type:has(#field-alt) input {
+  border-color: var(--da-critical);
+}
+
+/* ---- leaving, asked once ------------------------------------------------- */
+
+/*
+ * THE SAME RED AS EVERY OTHER DESTRUCTIVE ANSWER. "Discard changes" arrived in
+ * `--da-orange` on white — the same fill, the same label colour and the same
+ * corner as Save, one dialog away from the button whose whole job is to keep
+ * the work. The accent is for making things.
+ */
+.payload__modal-item[class*='-discard'] .confirmation-modal__controls .btn--style-primary {
+  --bg-color: var(--da-critical);
+  --hover-bg: #b0202a;
+  --color: #ffffff;
+  --hover-color: #ffffff;
+  background-color: var(--da-critical);
+  color: #ffffff;
+}
+
+@media (hover: hover) {
+  .payload__modal-item[class*='-discard'] .confirmation-modal__controls .btn--style-primary:hover {
+    background-color: #b0202a;
+  }
+}
+
+/* ---- the subline, where it sits on a field panel ------------------------- */
+
+/*
+ * `--da-ink-3` is solved against the page — 4.6:1 on the ground. Inside the
+ * field panel the ground is `#f8f8f7`, which takes the same grey to 4.46:1: a
+ * miss by four hundredths, on the one sentence that says a description is
+ * needed to publish. One step deeper clears it at 4.72:1.
+ */
+#{$doc} .field-description {
+  color: var(--da-ink-3-deep);
+}
+
+/*
+ * THE TRASH LEAVES THE PICTURE. It sat outermost of three discs seven pixels
+ * apart, on the image, unconfirmed — the easiest of the three to catch with a
+ * thumb and the only one that took something away. It is a row in the ⋯ now,
+ * named for what it is actually for (see MediaActions), and it stands down only
+ * where that row exists: an unsaved upload still needs a way back to the
+ * chooser.
+ */
+.da-has-replace .file-details__remove {
+  display: none;
+}
+
+/* ---- the file's name, above the file ------------------------------------ */
+
+/*
+ * A TITLE READS FIRST.
+ *
+ * Payload prints the filename UNDER the picture with its own copy button beside
+ * it, and that button is an icon with two tooltip elements inside it and no
+ * label of its own — a screen reader announced it as "Copy URL Copy URL". Both
+ * stand down and ours takes the place, above the picture, where the name of a
+ * thing goes.
+ *
+ * The verb sits with the noun it acts on: the one thing anybody does with a
+ * file's address is copy it, and it used to be a row inside a menu two inches
+ * below the address itself.
+ */
+.collection-edit--media .file-meta__url,
+.collection-edit--media .copy-to-clipboard {
+  display: none;
+}
+
+.collection-edit--media .da-filename {
+  grid-area: name;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-inline-size: 0;
+  margin-block-end: 0.75rem;
+}
+
+.collection-edit--media .da-filename__text {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: var(--da-note-size);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--da-ink);
+}
+
+/* The disc the rest of this admin uses for a quiet verb, at the size the facts
+   beside it are set in. */
+.collection-edit--media .da-filename__copy {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 28px;
+  block-size: 28px;
+  padding: 0;
+  border: 1px solid var(--da-hairline);
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--da-glyph);
+  cursor: pointer;
+  transition: background-color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .collection-edit--media .da-filename__copy:hover {
+    background-color: var(--da-fill);
+  }
+}
+
+.collection-edit--media .da-filename__copy:active {
+  background-color: var(--da-fill-press);
+}
+
+@media (pointer: coarse) {
+  .collection-edit--media .da-filename__copy {
+    inline-size: 44px;
+    block-size: 44px;
+  }
 }

@@ -441,10 +441,6 @@
   gap: 1rem;
 }
 
-.da-meta__row + .da-meta__row {
-  margin-block-start: 0.25rem;
-}
-
 .da-meta__label,
 .da-meta__value {
   margin: 0;
@@ -470,5 +466,84 @@
 
   .da-bar__unsaved-short {
     display: inline;
+  }
+}
+
+/*
+ * THE HAND, NOT THE POINTER.
+ *
+ * 36px is a mouse's number, and this admin is worked from a phone as often as
+ * a desk: Save and the ⋯ measured 62×36 and 36×36 at every width, seven pixels
+ * apart in the corner a thumb reaches by feel. Raised only where there is no
+ * pointer to aim with — on a desk 36 is comfortably over the 24 the standard
+ * asks of a cursor, and the composition is the one that was drawn.
+ */
+@media (pointer: coarse) {
+  .da-bar__save .form-submit .btn--style-primary {
+    block-size: 44px;
+    min-block-size: 44px;
+    padding-inline: 20px;
+  }
+
+  .da-bar__more {
+    inline-size: 44px;
+    block-size: 44px;
+  }
+
+  .da-bar {
+    gap: 12px;
+  }
+}
+
+/* ---- the delete, when it is the only thing behind the ⋯ ------------------ */
+
+/*
+ * A MENU OF ONE IS A PRESS THAT REVEALS A WORD. The media sheet's other verbs
+ * moved onto the file itself, and what was left behind the dots was "Delete
+ * file" alone — so the control says that, and opens straight onto the same
+ * question the row used to ask.
+ *
+ * QUIET, THOUGH. It stands beside Save at the foot of a sheet and it is the one
+ * irreversible thing on it: hairline and ink at rest, red only under the hand,
+ * so the colour is a warning rather than an invitation. The filled red belongs
+ * on the answer inside the confirmation, which already has it.
+ */
+.da-bar__delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  block-size: 36px;
+  min-block-size: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--da-hairline);
+  border-radius: var(--style-radius-s);
+  background-color: #ffffff;
+  color: var(--da-ink-3);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    border-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .da-bar__delete:hover {
+    border-color: var(--da-critical);
+    color: var(--da-critical-ink);
+  }
+}
+
+.da-bar__delete--on {
+  border-color: var(--da-critical);
+  color: var(--da-critical-ink);
+}
+
+@media (pointer: coarse) {
+  .da-bar__delete {
+    block-size: 44px;
+    min-block-size: 44px;
   }
 }

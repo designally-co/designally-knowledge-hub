@@ -4,6 +4,7 @@ import React from 'react'
 import { useRouter } from 'next/navigation'
 import { Check, ChevronDown, Copy } from 'lucide-react'
 
+import { adminDate } from './adminDate'
 import { ConfirmDialog } from './ConfirmDialog'
 import './SubscriberCells.css'
 
@@ -54,13 +55,9 @@ const STATUS_NOTES: Record<string, string> = {
 
 const asText = (value: unknown) => (typeof value === 'string' && value ? value : null)
 
-const asDate = (value: unknown) => {
-  const text = asText(value)
-  if (!text) return null
-  const date = new Date(text)
-  if (Number.isNaN(date.getTime())) return null
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-}
+/* The admin's one date shape, shared so a September row does not read "Sept"
+   here and "Sep" in the table beside it. See adminDate. */
+const asDate = (value: unknown) => adminDate(value)
 
 /**
  * The address, and a way to copy it.

@@ -154,15 +154,11 @@ export const Media: CollectionConfig = {
         components: { Field: '/components/admin/DocActions#MediaFacts' },
       },
     },
-    {
-      // The pair that used to be a strip of type across the top of the screen.
-      name: 'documentMeta',
-      type: 'ui',
-      admin: {
-        disableListColumn: true,
-        components: { Field: '/components/admin/DocActions#DocMeta' },
-      },
-    },
+    /* NO META ROW AT THE FOOT. When it held a modified date and a created one
+       it was a block of its own; with only the date it arrived, it was a fourth
+       fact about the file standing apart from the other three in a different
+       type. It is the fourth pair in MediaFacts now. Articles and resources
+       keep theirs — a rail is where a document's provenance belongs. */
   ],
   upload: {
     staticDir: 'media',

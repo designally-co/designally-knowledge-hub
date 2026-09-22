@@ -8,10 +8,11 @@ import { usePathname, useRouter } from 'next/navigation'
    rather than paths copied out of it by hand. Same library the nav's glyphs
    come from — those are masked into Payload's markup because there is no
    component to render there; here the markup is mine, so the components are. */
-import { Check, Ellipsis, ExternalLink, Expand, Link2, Pencil, Trash2, X } from 'lucide-react'
+import { Check, Download, Ellipsis, ExternalLink, Expand, Link2, Pencil, Replace, Trash2, X } from 'lucide-react'
 import { SaveButton, useDocumentDrawerContext, useDocumentInfo, useFormFields, useFormModified, useLocale, useModal } from '@payloadcms/ui'
 
 import { DEFAULT_LOCALE, isLocale, localeHref } from '../../lib/i18n'
+import { adminDate } from './adminDate'
 import { DetailCloseGuard } from './DetailModals'
 
 import './DocActions.css'
@@ -351,20 +352,45 @@ function DocMenu({
     }
   }
 
+  /* A MENU OF ONE IS NOT A MENU. When everything else a document can do has
+     found a better home — on media, download and replace sit on the file and
+     the link is copied beside its name — the ⋯ is a press that reveals a single
+     row. It says the word instead, and opens straight onto the question the row
+     would have asked. Same panel, same confirmation, same keyboard landing on
+     "Keep". */
+  const onlyDelete = rows.length === 0 && id !== undefined
+
   return (
     <div className="da-bar__menu" ref={wrap}>
-      <button
-        aria-expanded={open}
-        aria-haspopup="menu"
-        aria-label="More actions"
-        className={`da-bar__more${open ? ' da-bar__more--on' : ''}`}
-        onClick={() => setOpen((was) => !was)}
-        ref={trigger}
-        title="More actions"
-        type="button"
-      >
-        <Ellipsis aria-hidden="true" size={18} strokeWidth={2} />
-      </button>
+      {onlyDelete ? (
+        <button
+          aria-expanded={open}
+          aria-haspopup="menu"
+          className={`da-bar__delete${open ? ' da-bar__delete--on' : ''}`}
+          onClick={() => {
+            setConfirming(true)
+            setOpen((was) => !was)
+          }}
+          ref={trigger}
+          type="button"
+        >
+          <Trash2 aria-hidden="true" size={16} strokeWidth={2} />
+          Delete {noun}
+        </button>
+      ) : (
+        <button
+          aria-expanded={open}
+          aria-haspopup="menu"
+          aria-label="More actions"
+          className={`da-bar__more${open ? ' da-bar__more--on' : ''}`}
+          onClick={() => setOpen((was) => !was)}
+          ref={trigger}
+          title="More actions"
+          type="button"
+        >
+          <Ellipsis aria-hidden="true" size={18} strokeWidth={2} />
+        </button>
+      )}
 
       {open ? (
         <div className="da-bar__panel" onKeyDown={move} ref={panel} role="menu">
@@ -387,7 +413,10 @@ function DocMenu({
                   className="da-bar__no"
                   data-item
                   disabled={deleting}
-                  onClick={() => setConfirming(false)}
+                  /* Where there is no menu behind the question, Keep closes the
+                     panel — stepping back from it would otherwise reveal a list
+                     holding the one row this replaced. */
+                  onClick={() => (onlyDelete ? setOpen(false) : setConfirming(false))}
                   type="button"
                 >
                   Keep
@@ -703,9 +732,34 @@ export function ResourceActions() {
  * and not the part worth reading twice.
  */
 export function MediaActions() {
-  const { savedDocumentData } = useDocumentInfo()
+  const { id, savedDocumentData } = useDocumentInfo()
 
   const url = typeof savedDocumentData?.url === 'string' ? savedDocumentData.url : null
+  const mimeType =
+    typeof savedDocumentData?.mimeType === 'string' ? savedDocumentData.mimeType : ''
+  const isImage = mimeType.startsWith('image/')
+
+  /* THE ERRAND THE SHEET WAS OPENED ON. The list marks a file without a
+     description in red and says "Needs description"; the drawer opened from
+     that row said nothing — an empty Description box identical to the empty
+     Credit box under it, on a form where neither is required. The request has
+     to survive the doorway, in the same words and the same colour. */
+  const alt = typeof savedDocumentData?.alt === 'string' ? savedDocumentData.alt : ''
+  const needsAlt = Boolean(id) && alt.trim() === ''
+
+  React.useEffect(() => {
+    const root = document.querySelector<HTMLElement>('.collection-edit--media')
+    if (!root) return
+    root.classList.toggle('da-needs-alt', needsAlt)
+    /* The corner's trash only stands down once there is a menu row doing its
+       job — on a file that has never been saved there is no row, and hiding it
+       would leave no way to choose a different file. */
+    root.classList.toggle('da-has-replace', Boolean(url))
+    return () => {
+      root.classList.remove('da-needs-alt')
+      root.classList.remove('da-has-replace')
+    }
+  }, [needsAlt, url])
 
   /* THE FILE, NOT THE THUMBNAIL OF IT. This screen draws the picture at the
      sheet's full width, and Payload was filling that with `adminThumbnail` —
@@ -749,7 +803,14 @@ export function MediaActions() {
          nothing at all. It has a name: the file's own. */
       if (filename) {
         for (const el of document.querySelectorAll<HTMLElement>('.render-title')) {
-          if (el.textContent === '[Untitled]') el.textContent = filename
+          const shown = el.textContent?.trim()
+          /* Two ways Payload names a file it cannot name. A document that has
+             never been saved is "[Untitled]"; a saved one with no description
+             falls back to the row's own id, which is how the drawer came to be
+             announced to a screen reader as "7". */
+          if (shown === '[Untitled]' || (needsAlt && shown !== filename)) {
+            el.textContent = filename
+          }
         }
       }
 
@@ -757,6 +818,20 @@ export function MediaActions() {
       // The guard is what keeps this from feeding itself: setting `src` is an
       // attribute mutation, which is one of the things being watched.
       if (img && img.getAttribute('src') !== url) img.setAttribute('src', url)
+
+      /* The sentence under Description, promoted from an explanation to the
+         request, for as long as the answer is missing. Written here rather
+         than in CSS because a screen reader has to hear it — the input's
+         `aria-describedby` points at this very element. */
+      const note = document.querySelector<HTMLElement>(
+        '.field-type:has(#field-alt) .field-description',
+      )
+      if (note) {
+        const wanted = needsAlt
+          ? 'This file still needs a description before it can go on a page.'
+          : "For readers who can't see it. Needed to publish."
+        if (note.textContent !== wanted) note.textContent = wanted
+      }
 
       for (const [selector, name] of NAMES) {
         const el = document.querySelector<HTMLElement>(selector)
@@ -779,7 +854,7 @@ export function MediaActions() {
       subtree: true,
     })
     return () => watch.disconnect()
-  }, [filename, url])
+  }, [filename, needsAlt, url])
   // Only a path needs the origin. A file in R2 already has its full address,
   // and prefixing it would copy "https://hub…https://img…" to the clipboard.
   const absolute =
@@ -788,25 +863,10 @@ export function MediaActions() {
 
   const rows: MenuRow[] = []
 
-  if (url) {
-    rows.push(
-      {
-        external: true,
-        href: url,
-        icon: <ExternalLink aria-hidden="true" {...ICON} />,
-        key: 'open',
-        label: 'Open file',
-      },
-      {
-        icon: copied ? <Check aria-hidden="true" {...ICON} /> : <Link2 aria-hidden="true" {...ICON} />,
-        key: 'copy',
-        label: copied ? 'Link copied' : 'Copy file link',
-        onClick: copy,
-      },
-    )
-  }
-
-  const alt = typeof savedDocumentData?.alt === 'string' ? savedDocumentData.alt : ''
+  /* WHAT IS LEFT FOR THE MENU: deleting the entry, which is the one verb here
+     that is neither about the file nor safe to put a thumb's width from the
+     picture. Download and replace are on the file; copying its link is beside
+     its name. See FileActions. */
 
   return (
     <>
@@ -816,7 +876,19 @@ export function MediaActions() {
         noun="file"
         rows={rows}
       />
-      {url ? <MediaLightbox alt={alt} url={url} /> : null}
+      {/* A LIGHTBOX NEEDS SOMETHING TO SHOW. It rendered for anything with a
+          url, so ⤢ on a zip built an `<img src="…/fonts.zip">` and opened a
+          full-screen black veil with a close button in it — which reads as the
+          app having broken.
+
+          RENDERED BEFORE THE OTHER TWO so the corner reads in the order it is
+          tabbed: crop, view, download, replace. Both portal into the same host,
+          so JSX order here is DOM order there, and the columns in custom.scss
+          follow it. */}
+      {url && isImage ? <MediaLightbox alt={alt} url={url} /> : null}
+      {url ? (
+        <FileActions copied={copied} copyLink={copy} filename={filename} url={url} />
+      ) : null}
     </>
   )
 }
@@ -863,6 +935,13 @@ export function MediaFacts() {
       : `${Math.max(1, Math.round(bytes / 1024))} KB`
     : null
 
+  /* WHEN IT ARRIVED IS A FACT ABOUT THE FILE, so it stands with the others
+     rather than alone at the foot of the sheet in a different type. Type,
+     dimensions, size and date are one answer to "what is this" — four labelled
+     pairs read in one pass, where a stray row under the form is a second stop
+     for a fourth fact of the same kind. */
+  const created = adminDate(savedDocumentData?.createdAt)
+
   const facts: [string, string][] = []
   if (type) facts.push(['Type', type])
   // A PDF and a font have no pixels. Nothing is drawn rather than "0 × 0".
@@ -870,6 +949,7 @@ export function MediaFacts() {
     facts.push(['Dimensions', `${width} × ${height}`])
   }
   if (size) facts.push(['Size', size])
+  if (created) facts.push(['Created', created])
 
   if (!facts.length) return null
 
@@ -905,6 +985,116 @@ export function MediaFacts() {
  * whatever they change next, and this way the disc in the corner and the thing
  * it opens are the same component's.
  */
+/**
+ * The two verbs that belong to the file, on the file.
+ *
+ * THE ⋯ IS THE DOCUMENT'S MENU. Copy link and Delete are things you do to the
+ * record; getting the file and swapping the file are things you do to the file,
+ * and the file is right there — the largest object on the sheet. They sit in
+ * its corner with the two that were already there, so the picture carries every
+ * verb about itself and the menu carries every verb about the entry.
+ *
+ * AND IT SAYS DOWNLOAD BECAUSE IT DOWNLOADS. "Open file" was an anchor at the
+ * stored URL, and what that does depends on the file: a browser shows a JPEG
+ * and saves a zip. One label could not be true of both. Fetching the bytes and
+ * handing them over as a blob makes the verb true for every type — with the
+ * plain link as the fallback, because a store on another origin can refuse the
+ * fetch, and a file that opens in a tab beats a button that does nothing.
+ */
+function FileActions({
+  copied,
+  copyLink,
+  filename,
+  url,
+}: {
+  copied: boolean
+  copyLink: () => void
+  filename: string
+  url: string
+}) {
+  const slot = useHost('.file-details > header')
+  const [busy, setBusy] = React.useState(false)
+
+  if (!slot) return null
+
+  const save = async () => {
+    setBusy(true)
+    try {
+      const res = await fetch(url, { credentials: 'include' })
+      if (!res.ok) throw new Error(String(res.status))
+      const blob = await res.blob()
+      const href = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = href
+      link.download = filename || 'file'
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      URL.revokeObjectURL(href)
+    } catch {
+      window.open(url, '_blank', 'noopener')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  /* Payload's own remove is hidden (custom.scss) and pressed from here, the
+     same way the lightbox stands in for its preview button: one disc, one
+     component, no race with a handler that is not ours. Nothing is written
+     until Save, which is what the title says. */
+  const replace = () => {
+    document.querySelector<HTMLButtonElement>('.doc-drawer .file-details__remove')?.click()
+  }
+
+  return createPortal(
+    <>
+      {/* THE NAME, ABOVE THE PICTURE IT BELONGS TO. Payload prints it under the
+          file with its own copy button beside it — a button with no label and
+          two tooltips inside it, which a screen reader read as "Copy URL Copy
+          URL". Both stand down (custom.scss) and this takes their place: the
+          name reads first, where a title reads, and the one thing you do with
+          a file's address is next to the address. */}
+      <div className="da-filename">
+        <span className="da-filename__text">{filename}</span>
+        <button
+          aria-label={copied ? 'Link copied' : 'Copy file link'}
+          className="da-filename__copy"
+          onClick={copyLink}
+          title={copied ? 'Link copied' : 'Copy file link'}
+          type="button"
+        >
+          {copied ? (
+            <Check aria-hidden="true" size={16} strokeWidth={2} />
+          ) : (
+            <Link2 aria-hidden="true" size={16} strokeWidth={2} />
+          )}
+        </button>
+      </div>
+
+      <button
+        aria-label="Download file"
+        className="da-file-action da-file-action--download"
+        disabled={busy}
+        onClick={save}
+        title="Download file"
+        type="button"
+      >
+        <Download aria-hidden="true" size={18} strokeWidth={2} />
+      </button>
+      <button
+        aria-label="Replace file"
+        className="da-file-action da-file-action--replace"
+        onClick={replace}
+        title="Replace file — nothing changes until you save"
+        type="button"
+      >
+        <Replace aria-hidden="true" size={18} strokeWidth={2} />
+      </button>
+    </>,
+    slot,
+  )
+}
+
 function MediaLightbox({ alt, url }: { alt: string; url: string }) {
   const [open, setOpen] = React.useState(false)
   const slot = useHost('.file-details > header')
@@ -1007,34 +1197,23 @@ function MediaLightbox({ alt, url }: { alt: string; url: string }) {
 export function DocMeta() {
   const { savedDocumentData } = useDocumentInfo()
 
-  const when = (value: unknown) => {
-    if (typeof value !== 'string') return null
-    const d = new Date(value)
-    if (Number.isNaN(d.getTime())) return null
-    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-  }
+  /* WHEN IT ARRIVED, AND NOT WHEN IT WAS LAST TOUCHED. "Last modified" was the
+     first of the pair and it answered nothing: on a library where almost
+     everything is saved the moment it is looked at, it says that somebody
+     opened this recently — which is you, a second ago. The date worth keeping
+     is the one that places the thing. */
+  const created = adminDate(savedDocumentData?.createdAt)
 
-  const updated = when(savedDocumentData?.updatedAt)
-  const created = when(savedDocumentData?.createdAt)
-
-  /* A document that has never been saved has neither, and an empty pair of
-     labels is worse than nothing at the end of the rail. */
-  if (!updated && !created) return null
+  /* A document that has never been saved has none, and a label with nothing
+     after it is worse than nothing at the end of the rail. */
+  if (!created) return null
 
   return (
     <dl className="da-meta">
-      {updated ? (
-        <div className="da-meta__row">
-          <dt className="da-meta__label">Last modified</dt>
-          <dd className="da-meta__value">{updated}</dd>
-        </div>
-      ) : null}
-      {created ? (
-        <div className="da-meta__row">
-          <dt className="da-meta__label">Created</dt>
-          <dd className="da-meta__value">{created}</dd>
-        </div>
-      ) : null}
+      <div className="da-meta__row">
+        <dt className="da-meta__label">Created</dt>
+        <dd className="da-meta__value">{created}</dd>
+      </div>
     </dl>
   )
 }
