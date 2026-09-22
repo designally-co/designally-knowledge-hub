@@ -1,6 +1,6 @@
-import type { CollectionAfterChangeHook, Field } from 'payload'
+import type { CollectionAfterChangeHook, Field, Payload, PayloadRequest } from 'payload'
 
-import { announce, type Announcement } from '../lib/newsletter'
+import { announce, type Announcement, type Localized } from '../lib/newsletter'
 
 /**
  * Tell the list, once, when something goes live.
@@ -46,69 +46,134 @@ export const newsletterSentField: Field = {
   },
 }
 
+/**
+ * The article in both languages, as far as it exists.
+ *
+ * `fallbackLocale: 'none'` is the load-bearing part. Payload's localization
+ * falls back to English by default, so a plain read in `th` answers with the
+ * English text and every document looks translated — the sentinel is the only
+ * way to tell "written in Thai" from "standing in for Thai". It is the same
+ * probe the Translate to Thai panel makes. A missing title means no Thai
+ * version, and `announce` sends those readers the English one.
+ */
+async function localized(
+  payload: Payload,
+  kind: Announcement['kind'],
+  doc: Record<string, unknown>,
+  toAnnouncement: (doc: Record<string, unknown>) => Announcement,
+): Promise<Localized> {
+  const en = toAnnouncement(doc)
+
+  try {
+    const thai = (await payload.findByID({
+      collection: kind === 'article' ? 'articles' : 'resources',
+      id: doc.id as number,
+      locale: 'th',
+      fallbackLocale: 'none',
+      depth: 1,
+      overrideAccess: true,
+    })) as unknown as Record<string, unknown>
+
+    /* The title is the test, because it is the one field that is always
+       written and always translated. Its absence is the absence of a Thai
+       version; a Thai title with an untranslated summary is still a Thai
+       article, and `toAnnouncement` will simply find no summary. */
+    return { en, th: thai?.title ? toAnnouncement(thai) : null }
+  } catch (error) {
+    /* A read that failed is not a translation that is missing, but it has to
+       be treated as one — and English is the safe half of that guess. */
+    console.error('[newsletter] could not read the Thai version; sending English', error)
+    return { en, th: null }
+  }
+}
+
+/**
+ * Tell the list about this document, if it has just crossed into published and
+ * has not been announced before. Both entry points come through here.
+ *
+ * `req` IS PASSED WHEN THIS RUNS INSIDE THE PUBLISH, and leaving it out cost a
+ * real send. The hook runs inside the publish's own transaction, which holds a
+ * lock on the row the stamp is about to write. Without `req`, Payload opens a
+ * SECOND transaction for that update — and it waits for a lock the first one
+ * will not release until the hook returns. It blocks until the database's
+ * statement timeout, throws, and the catch swallows it: the email goes out, the
+ * stamp does not, and the article is left armed to announce itself again. That
+ * is exactly what happened on the first real send, and it never showed up in
+ * testing because a `payload.update` run from a script has no outer transaction
+ * to deadlock against.
+ *
+ * Called from `after()` there is no such transaction — the response has already
+ * gone — so `req` is absent and the stamp is a write of its own.
+ */
+export async function announceOnce({
+  doc,
+  kind,
+  payload,
+  req,
+  toAnnouncement,
+  wasPublished,
+}: {
+  doc: Record<string, unknown>
+  kind: Announcement['kind']
+  payload: Payload
+  req?: PayloadRequest
+  toAnnouncement: (doc: Record<string, unknown>) => Announcement
+  wasPublished: boolean
+}): Promise<void> {
+  try {
+    /* Only the crossing, and only if it has not been announced before. A
+       create that arrives already published counts; an update that merely
+       touches a live document does not. */
+    if (doc.status !== 'published' || wasPublished) return
+    if (doc.newsletterSentAt) return
+
+    const result = await announce(payload, await localized(payload, kind, doc, toAnnouncement))
+
+    if (result.sent > 0) {
+      await payload.update({
+        collection: kind === 'article' ? 'articles' : 'resources',
+        id: doc.id as number,
+        data: { newsletterSentAt: new Date().toISOString() },
+        overrideAccess: true,
+        context: { skipNewsletter: true },
+        ...(req ? { req } : {}),
+      })
+    }
+
+    console.info(
+      `[newsletter] ${kind} "${doc.slug}" → sent ${result.sent}` +
+        (result.byLanguage ? ` (${result.byLanguage.en} en, ${result.byLanguage.th} th)` : '') +
+        (result.testMode ? ' (test mode)' : '') +
+        (result.skipped ? ` (${result.skipped})` : ''),
+    )
+  } catch (error) {
+    /* Never the writer's problem. */
+    console.error('[newsletter] announcement failed; the document is saved regardless', error)
+  }
+}
+
 export function newsletterOnPublish(
   kind: Announcement['kind'],
   toAnnouncement: (doc: Record<string, unknown>) => Announcement,
 ): CollectionAfterChangeHook {
-  return async ({ context, doc, previousDoc, req, operation }) => {
-    try {
-      /* The stamp write below re-enters this hook. The transition test would
-         catch it anyway — published to published is not a crossing — but
-         relying on that is relying on an accident. */
-      if (context?.skipNewsletter) return doc
+  return async ({ context, doc, previousDoc, req }) => {
+    /* The stamp write re-enters this hook. The transition test would catch it
+       anyway — published to published is not a crossing — but relying on that
+       is relying on an accident.
 
-      const wasPublished = previousDoc?.status === 'published'
-      const isPublished = doc?.status === 'published'
+       Content Studio sets the same flag for a different reason: it publishes
+       and translates in one request, and the announcement waits for the
+       translation. See endpoints/fromMarkdown. */
+    if (context?.skipNewsletter) return doc
 
-      /* Only the crossing, and only if it has not been announced before. */
-      if (!isPublished || wasPublished) return doc
-      if (doc.newsletterSentAt) return doc
-      /* A create that arrives already published counts; an update that merely
-         touches a live document does not, which the transition test above has
-         already settled. `operation` is read only to keep the log honest. */
-
-      const result = await announce(req.payload, toAnnouncement(doc))
-
-      if (result.sent > 0) {
-        /*
-         * `req` IS THE WHOLE POINT OF THIS CALL, and leaving it out cost a
-         * real send.
-         *
-         * This runs inside the publish's own transaction, which holds a lock on
-         * the row it is about to stamp. Without `req`, Payload opens a SECOND
-         * transaction for the update — and that one waits for a lock the first
-         * one will not release until this hook returns. It blocks until the
-         * database's statement timeout, throws, and the catch below swallows
-         * it: the email goes out, the stamp does not, and the article is left
-         * armed to announce itself again.
-         *
-         * Which is exactly what happened on the first real send. It did not
-         * show up in testing because a `payload.update` run from a script has
-         * no outer transaction to deadlock against — the bug only exists on the
-         * path that matters.
-         *
-         * Passing `req` joins the existing transaction instead of fighting it,
-         * so the stamp commits with the publish or not at all.
-         */
-        await req.payload.update({
-          collection: kind === 'article' ? 'articles' : 'resources',
-          id: doc.id,
-          data: { newsletterSentAt: new Date().toISOString() },
-          overrideAccess: true,
-          context: { skipNewsletter: true },
-          req,
-        })
-      }
-
-      console.info(
-        `[newsletter] ${operation} of ${kind} "${doc.slug}" → sent ${result.sent}` +
-          (result.testMode ? ' (test mode)' : '') +
-          (result.skipped ? ` (${result.skipped})` : ''),
-      )
-    } catch (error) {
-      /* Never the writer's problem. */
-      console.error('[newsletter] announcement failed; the document is saved regardless', error)
-    }
+    await announceOnce({
+      doc,
+      kind,
+      payload: req.payload,
+      req,
+      toAnnouncement,
+      wasPublished: previousDoc?.status === 'published',
+    })
 
     return doc
   }

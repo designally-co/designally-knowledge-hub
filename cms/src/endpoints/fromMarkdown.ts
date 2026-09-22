@@ -2,6 +2,8 @@ import { convertMarkdownToLexical, editorConfigFactory } from '@payloadcms/richt
 import { addDataAndFileToRequest, type PayloadHandler } from 'payload'
 
 import type { Article } from '../payload-types'
+import { articleAnnouncement } from '../collections/announcements'
+import { announceOnce } from '../collections/newsletterOnPublish'
 import { translateItemToThai, translationConfigured } from '../lib/translate'
 import type { RequiredDataFromCollectionSlug } from 'payload'
 import { after } from 'next/server'
@@ -106,6 +108,20 @@ export const fromMarkdownHandler: PayloadHandler = async (req) => {
     })
     const previous = existing.docs[0]
 
+    /*
+     * THE NEWSLETTER WAITS FOR THE TRANSLATION, which is why the hook is
+     * suppressed here and the announcement is made below instead.
+     *
+     * Publishing and translating happen in one request, but not at the same
+     * time: the Thai version is written in `after()`, once the response has
+     * gone. The publish hook sends the moment the row is written — which is
+     * before that — so every Thai subscriber got the English article, every
+     * time, and the fallback that exists for a failed translation became the
+     * only outcome. Suppressing the hook and announcing after the translation
+     * attempt puts the send where the answer is known.
+     */
+    const wasPublished = previous?.status === 'published'
+
     const doc = previous
       ? await req.payload.update({
           collection: 'articles',
@@ -113,12 +129,14 @@ export const fromMarkdownHandler: PayloadHandler = async (req) => {
           overrideAccess: false,
           user: req.user,
           data: fields as ArticleData,
+          context: { skipNewsletter: true },
         })
       : await req.payload.create({
           collection: 'articles',
           overrideAccess: false,
           user: req.user,
           data: fields as ArticleData,
+          context: { skipNewsletter: true },
         })
 
     /*
@@ -138,16 +156,28 @@ export const fromMarkdownHandler: PayloadHandler = async (req) => {
      * was STARTED, which is all the response can honestly claim now.
      */
     const willTranslate = translationConfigured()
-    if (willTranslate) {
-      after(async () => {
+    after(async () => {
+      if (willTranslate) {
         try {
           await translateItemToThai({ payload: req.payload, collection: 'articles', id: doc.id })
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err)
           req.payload.logger.error(`Thai auto-translation failed for article ${doc.id}: ${message}`)
         }
+      }
+
+      /* Now that the Thai version either exists or demonstrably does not, tell
+         the list — in whichever language each subscriber reads. A translation
+         that failed above is not an error here: those readers get the English
+         article, which is the point of the fallback. */
+      await announceOnce({
+        doc: doc as unknown as Record<string, unknown>,
+        kind: 'article',
+        payload: req.payload,
+        toAnnouncement: articleAnnouncement,
+        wasPublished,
       })
-    }
+    })
     const thaiTranslated = willTranslate
 
     return Response.json(

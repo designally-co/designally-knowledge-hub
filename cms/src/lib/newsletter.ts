@@ -2,6 +2,7 @@ import { Resend } from 'resend'
 import type { Payload } from 'payload'
 
 import { siteURL } from './siteURL'
+import type { Locale } from './i18n'
 import { confirmToken, unsubscribeToken } from './unsubscribeToken'
 
 /**
@@ -42,7 +43,52 @@ export type Announcement = {
   path: string
 }
 
-type Recipient = { email: string }
+/**
+ * The announcement in both languages — and `th` missing is a real answer.
+ *
+ * A Thai version is written by the auto-translation that follows a publish, and
+ * it can be absent for two ordinary reasons: the translation has not finished
+ * yet, or it failed and was logged. Either way a Thai reader is better served
+ * by the English article than by nothing, so `th` is optional and the English
+ * one is what everybody falls back to.
+ */
+export type Localized = {
+  en: Announcement
+  th?: Announcement | null
+}
+
+type Recipient = { email: string; locale: Locale }
+
+/**
+ * The email's own words, which are not the article's.
+ *
+ * The title and summary come from the document; these are the frame around
+ * them — the kicker, the button, the line explaining why this arrived. A Thai
+ * article inside English chrome is a half-translated email, which reads worse
+ * than either language on its own.
+ *
+ * Someone who gets the English article because there is no Thai one yet gets
+ * the English frame with it: the whole message is in one language, and the
+ * button does not promise Thai that the page will not deliver.
+ */
+const COPY = {
+  en: {
+    article: 'New article',
+    read: 'Read it on the Hub',
+    readText: 'Read it',
+    resource: 'New resource',
+    unsubscribe: 'Unsubscribe',
+    why: 'You are getting this because you subscribed to the Designally Knowledge Hub.',
+  },
+  th: {
+    article: 'บทความใหม่',
+    read: 'อ่านบน Knowledge Hub',
+    readText: 'อ่านได้ที่',
+    resource: 'แหล่งข้อมูลใหม่',
+    unsubscribe: 'ยกเลิกการรับข่าวสาร',
+    why: 'คุณได้รับอีเมลนี้เพราะคุณสมัครรับข่าวสารจาก Designally Knowledge Hub',
+  },
+} as const
 
 const absolute = (path?: string) =>
   !path ? undefined : path.startsWith('http') ? path : `${siteURL}${path}`
@@ -59,13 +105,14 @@ const escape = (value: string) =>
  * that matters still renders like it is 2005, and a stylesheet in the head is
  * the first thing most of them throw away.
  */
-export function render(item: Announcement, unsubscribeUrl: string): string {
+export function render(item: Announcement, unsubscribeUrl: string, locale: Locale = 'en'): string {
+  const words = COPY[locale]
   const url = `${siteURL}${item.path}`
   const image = absolute(item.image)
-  const label = item.kind === 'article' ? 'New article' : 'New resource'
+  const label = item.kind === 'article' ? words.article : words.resource
 
   return `<!doctype html>
-<html lang="en"><head><meta charset="utf-8"/>
+<html lang="${locale}"><head><meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>${escape(item.title)}</title></head>
 <body style="margin:0;padding:0;background:#fbf5f3;">
@@ -82,13 +129,13 @@ export function render(item: Announcement, unsubscribeUrl: string): string {
       <h1 style="margin:0 0 12px;font-size:26px;line-height:1.2;color:#000000;font-weight:700;">${escape(item.title)}</h1>
       ${item.summary ? `<p style="margin:0 0 24px;font-size:16px;line-height:1.55;color:#666666;">${escape(item.summary)}</p>` : ''}
       <p style="margin:0 0 32px;">
-        <a href="${escape(url)}" style="display:inline-block;padding:13px 22px;border-radius:999px;background:#000000;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;">Read it on the Hub</a>
+        <a href="${escape(url)}" style="display:inline-block;padding:13px 22px;border-radius:999px;background:#000000;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;">${escape(words.read)}</a>
       </p>
     </td></tr>
     <tr><td style="padding:0 32px 28px;">
       <p style="margin:0;font-size:13px;line-height:1.5;color:#666666;border-top:1px solid #e4e4e4;padding-top:20px;">
-        You are getting this because you subscribed to the Designally Knowledge Hub.
-        <a href="${escape(unsubscribeUrl)}" style="color:#666666;">Unsubscribe</a>.
+        ${escape(words.why)}
+        <a href="${escape(unsubscribeUrl)}" style="color:#666666;">${escape(words.unsubscribe)}</a>.
       </p>
     </td></tr>
   </table>
@@ -97,24 +144,25 @@ export function render(item: Announcement, unsubscribeUrl: string): string {
 }
 
 /** The plain-text half. A message with no text part is a message some clients score as spam. */
-function renderText(item: Announcement, unsubscribeUrl: string): string {
+function renderText(item: Announcement, unsubscribeUrl: string, locale: Locale = 'en'): string {
+  const words = COPY[locale]
   return [
-    item.kind === 'article' ? 'New article' : 'New resource',
+    item.kind === 'article' ? words.article : words.resource,
     '',
     item.title,
     item.summary ?? '',
     '',
-    `Read it: ${siteURL}${item.path}`,
+    `${words.readText}: ${siteURL}${item.path}`,
     '',
     '---',
-    'You are getting this because you subscribed to the Designally Knowledge Hub.',
-    `Unsubscribe: ${unsubscribeUrl}`,
+    words.why,
+    `${words.unsubscribe}: ${unsubscribeUrl}`,
   ]
     .filter((line) => line !== undefined)
     .join('\n')
 }
 
-/** Everyone who has not left. */
+/** Everyone who has not left, and which language each of them reads. */
 async function recipients(payload: Payload): Promise<Recipient[]> {
   const { docs } = await payload.find({
     collection: 'subscribers',
@@ -123,53 +171,76 @@ async function recipients(payload: Payload): Promise<Recipient[]> {
     depth: 0,
     pagination: false,
     overrideAccess: true,
-    select: { email: true },
+    select: { email: true, locale: true },
   })
-  return docs.map((d) => ({ email: d.email })).filter((d) => Boolean(d.email))
+  return docs
+    .filter((d) => Boolean(d.email))
+    .map((d) => ({ email: d.email, locale: d.locale === 'th' ? ('th' as const) : ('en' as const) }))
 }
 
 export type SendResult = {
   sent: number
+  /** How the send split by language. `th` counts only the ones that actually
+   *  went out in Thai — a Thai reader sent the English article counts as `en`,
+   *  because that is what landed in their inbox. */
+  byLanguage?: { en: number; th: number }
   skipped?: string
   testMode?: boolean
 }
 
-export async function announce(payload: Payload, item: Announcement): Promise<SendResult> {
+export async function announce(payload: Payload, item: Localized): Promise<SendResult> {
   const key = process.env.RESEND_API_KEY
   const from = process.env.NEWSLETTER_FROM
   const testTo = process.env.NEWSLETTER_TEST_TO
 
   if (!key || !from) {
     console.info(
-      `[newsletter] not configured — would have announced "${item.title}". ` +
+      `[newsletter] not configured — would have announced "${item.en.title}". ` +
         'Set RESEND_API_KEY and NEWSLETTER_FROM to send.',
     )
     return { sent: 0, skipped: 'not configured' }
   }
 
-  /* One address, chosen by you, standing in for the whole list. */
-  const list: Recipient[] = testTo ? [{ email: testTo }] : await recipients(payload)
+  /* One address, chosen by you, standing in for the whole list. English,
+     because the test address is yours and the point of it is the template. */
+  const list: Recipient[] = testTo
+    ? [{ email: testTo, locale: 'en' }]
+    : await recipients(payload)
 
   if (list.length === 0) {
-    console.info(`[newsletter] nobody to tell about "${item.title}".`)
+    console.info(`[newsletter] nobody to tell about "${item.en.title}".`)
     return { sent: 0, skipped: 'no subscribers' }
   }
 
+  /*
+   * WHAT EACH PERSON GETS. Thai if they signed up in Thai and a Thai version
+   * exists; English otherwise — including for a Thai reader when the
+   * translation has not landed, which is the common case for the minute after
+   * a publish. The `/th` prefix goes on only with the Thai text, so the button
+   * never sends someone to a page in a language the email promised.
+   */
+  const written = (locale: Locale): { content: Announcement; language: Locale } =>
+    locale === 'th' && item.th
+      ? { content: { ...item.th, path: `/th${item.th.path}` }, language: 'th' }
+      : { content: item.en, language: 'en' }
+
   const resend = new Resend(key)
-  const subject = item.title
   let sent = 0
+  const byLanguage = { en: 0, th: 0 }
 
   for (let i = 0; i < list.length; i += BATCH) {
     const slice = list.slice(i, i + BATCH)
 
     const messages = slice.map((person) => {
+      const { content, language } = written(person.locale)
       const unsubscribeUrl = `${siteURL}/api/unsubscribe?token=${unsubscribeToken(person.email)}`
       return {
         from,
         to: [person.email],
-        subject,
-        html: render(item, unsubscribeUrl),
-        text: renderText(item, unsubscribeUrl),
+        /* The subject is the headline, so it is the headline they can read. */
+        subject: content.title,
+        html: render(content, unsubscribeUrl, language),
+        text: renderText(content, unsubscribeUrl, language),
         /* The header Gmail and Apple Mail turn into their own one-click
            unsubscribe control, above the message. Honouring it is what keeps
            "report spam" from being the easier option. */
@@ -212,14 +283,20 @@ export async function announce(payload: Payload, item: Announcement): Promise<Se
       })
 
       sent += slice.length
+      slice.forEach((person) => {
+        byLanguage[written(person.locale).language] += 1
+      })
     } catch (error) {
       /* One failed batch is not a reason to abandon the rest of the list. */
       console.error('[newsletter] a batch threw', error)
     }
   }
 
-  console.info(`[newsletter] announced "${item.title}" to ${sent} of ${list.length}.`)
-  return { sent, ...(testTo ? { testMode: true } : {}) }
+  console.info(
+    `[newsletter] announced "${item.en.title}" to ${sent} of ${list.length}` +
+      ` (${byLanguage.en} English, ${byLanguage.th} Thai).`,
+  )
+  return { sent, byLanguage, ...(testTo ? { testMode: true } : {}) }
 }
 
 
