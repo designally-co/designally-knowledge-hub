@@ -246,7 +246,7 @@ export interface Media {
    */
   alt?: string | null;
   /**
-   * Optional.
+   * (optional)
    */
   credit?: string | null;
   prefix?: string | null;

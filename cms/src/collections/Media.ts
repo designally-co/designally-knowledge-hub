@@ -277,7 +277,13 @@ export const Media: CollectionConfig = {
           name: 'credit',
           type: 'text',
           admin: {
-            description: 'Optional.',
+            /* THE PARENTHESES ARE THE CONTENT, not a decoration added in CSS.
+               It reads beside the label rather than under the field — "Credit
+               (optional)" is one thing to read, where a label, a box and a
+               word underneath it was three — and the brackets have to be in the
+               string for a screen reader to hear them and a translator to keep
+               them. See the credit field's rule in custom.scss. */
+            description: '(optional)',
             components: {
               // Empty renders as an em dash rather than Payload's `<No Credit>`,
               // which is developer syntax shown to an editor.

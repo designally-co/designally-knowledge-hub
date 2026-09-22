@@ -141,12 +141,18 @@ type DocBarProps = {
   before?: React.ReactNode
   /** False on a screen where there is nothing behind the ⋯ worth showing. */
   menu?: boolean
+  /** A selector for somewhere other than the bar to put the ⋯. The media sheet
+   *  sends it into the card, onto the filename's line. */
+  menuHost?: string
 }
 
-function DocBar({ before, collection, deleteWarning, menu = true, noun, rows }: DocBarProps) {
+function DocBar({ before, collection, deleteWarning, menu = true, menuHost, noun, rows }: DocBarProps) {
   const { id } = useDocumentInfo()
   const { anchor, slots } = useBarSlots()
   const modified = useFormModified()
+  /* Hooks cannot be called conditionally, so this asks for the host whether or
+     not a caller wanted one; with no selector it looks for nothing. */
+  const elsewhere = useHost(menuHost ?? '\0none')
 
   // Existing documents keep their actions when opened over the list. A new
   // upload has no saved file to open, copy or delete yet.
@@ -187,7 +193,7 @@ function DocBar({ before, collection, deleteWarning, menu = true, noun, rows }: 
                   the thumb lands, with everything else leading up to it. Save
                   after the menu also puts it beside Cancel on the surfaces that
                   carry one, so the two answers to "am I done" are together. */}
-              {showMenu ? (
+              {showMenu && !menuHost ? (
                 <DocMenu
                   collection={collection}
                   deleteWarning={deleteWarning}
@@ -205,6 +211,23 @@ function DocBar({ before, collection, deleteWarning, menu = true, noun, rows }: 
               </div>
             </div>,
             slots.foot,
+          )
+        : null}
+
+      {/* THE ⋯ WHERE THE CALLER ASKED FOR IT. On the media sheet the verbs are
+          all about the file, so the menu belongs on the file's card rather than
+          in the row of answers at the foot — opposite the filename, the way the
+          date and the size sit at the two ends of the line below. */}
+      {showMenu && menuHost && elsewhere
+        ? createPortal(
+            <DocMenu
+              collection={collection}
+              deleteWarning={deleteWarning}
+              id={id}
+              noun={noun}
+              rows={rows}
+            />,
+            elsewhere,
           )
         : null}
 
@@ -863,15 +886,71 @@ export function MediaActions() {
 
   const rows: MenuRow[] = []
 
-  /* WHAT IS LEFT FOR THE MENU: deleting the entry, which is the one verb here
-     that is neither about the file nor safe to put a thumb's width from the
-     picture. Download and replace are on the file; copying its link is beside
-     its name. See FileActions. */
+  /*
+   * EVERY VERB ABOUT THE FILE, IN ONE SHORT LIST.
+   *
+   * They were spread across the sheet for a while — the link beside the name,
+   * download and replace as discs on the picture — and spread is what a menu
+   * exists to undo: four things done to one file, read in a column, in the
+   * corner the ✕ used to sit in. What stays on the picture is the pair that
+   * changes the picture itself.
+   *
+   * DOWNLOAD FETCHES THE BYTES rather than linking to them. A plain link does
+   * what the file's type decides — a browser shows a JPEG and saves a zip —
+   * so one label could not be true of both. The blob makes the verb true for
+   * every type, with the plain link as the fallback when a store on another
+   * origin refuses the fetch.
+   */
+  if (url) {
+    rows.push(
+      {
+        icon: copied ? <Check aria-hidden="true" {...ICON} /> : <Link2 aria-hidden="true" {...ICON} />,
+        key: 'copy',
+        label: copied ? 'Link copied' : 'Copy file link',
+        onClick: copy,
+      },
+      {
+        icon: <Download aria-hidden="true" {...ICON} />,
+        key: 'download',
+        label: 'Download file',
+        onClick: async () => {
+          try {
+            const res = await fetch(url, { credentials: 'include' })
+            if (!res.ok) throw new Error(String(res.status))
+            const blob = await res.blob()
+            const href = URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = href
+            link.download = filename || 'file'
+            document.body.appendChild(link)
+            link.click()
+            link.remove()
+            URL.revokeObjectURL(href)
+          } catch {
+            window.open(url, '_blank', 'noopener')
+          }
+        },
+      },
+      {
+        icon: <Replace aria-hidden="true" {...ICON} />,
+        key: 'replace',
+        label: 'Replace file',
+        note: 'Clears this file so you can choose another. Nothing changes until you save.',
+        /* Payload's own remove is hidden (custom.scss) and pressed from here,
+           the same way the lightbox stands in for its preview button. */
+        onClick: () => {
+          document.querySelector<HTMLButtonElement>('.doc-drawer .file-details__remove')?.click()
+        },
+      },
+    )
+  }
 
   return (
     <>
       <DocBar
+        before={<SheetCancel />}
         collection="media"
+        menuHost=".da-filename"
         deleteWarning="Anything using it — a cover, a card, a download — loses its file."
         noun="file"
         rows={rows}
@@ -886,9 +965,7 @@ export function MediaActions() {
           so JSX order here is DOM order there, and the columns in custom.scss
           follow it. */}
       {url && isImage ? <MediaLightbox alt={alt} url={url} /> : null}
-      {url ? (
-        <FileActions copied={copied} copyLink={copy} filename={filename} url={url} />
-      ) : null}
+      {url ? <FileName filename={filename} /> : null}
     </>
   )
 }
@@ -917,14 +994,7 @@ export function MediaFacts() {
 
   if (!host) return null
 
-  const width = Number(savedDocumentData?.width)
-  const height = Number(savedDocumentData?.height)
   const bytes = Number(savedDocumentData?.filesize)
-  const mime = typeof savedDocumentData?.mimeType === 'string' ? savedDocumentData.mimeType : ''
-
-  /* `image/svg+xml` → SVG, `application/pdf` → PDF. The subtype is the part
-     with the name in it; `+xml` is a serialisation note meant for parsers. */
-  const type = mime ? (mime.split('/')[1] ?? mime).split('+')[0].toUpperCase() : null
 
   /* Binary units, because that is what an operating system will show for the
      same file. One decimal past a megabyte and none below it: "1.4 MB" is worth
@@ -942,14 +1012,24 @@ export function MediaFacts() {
      for a fourth fact of the same kind. */
   const created = adminDate(savedDocumentData?.createdAt)
 
+  /*
+   * TWO FACTS, NOT FOUR.
+   *
+   * Type went because the filename under the picture already ends in it —
+   * `.jpg` said twice, once as a label and once as three letters of the name
+   * above it. Dimensions went because nothing on this screen acts on them: the
+   * site picks a derivative, the crop tool shows its own numbers, and a reader
+   * who wants the pixels is looking at the picture.
+   *
+   * What is left is what someone actually asks of a file they did not upload:
+   * how heavy it is, and when it arrived.
+   */
+  /* WHEN FIRST, HOW HEAVY SECOND. A library is scanned by age — what landed
+     this week, what has been here since August — and the weight is the thing
+     you check once, about one file, usually before sending it somewhere. */
   const facts: [string, string][] = []
-  if (type) facts.push(['Type', type])
-  // A PDF and a font have no pixels. Nothing is drawn rather than "0 × 0".
-  if (Number.isFinite(width) && Number.isFinite(height) && width > 0) {
-    facts.push(['Dimensions', `${width} × ${height}`])
-  }
-  if (size) facts.push(['Size', size])
   if (created) facts.push(['Created', created])
+  if (size) facts.push(['Size', size])
 
   if (!facts.length) return null
 
@@ -986,112 +1066,53 @@ export function MediaFacts() {
  * it opens are the same component's.
  */
 /**
- * The two verbs that belong to the file, on the file.
+ * The file's name, above the file.
  *
- * THE ⋯ IS THE DOCUMENT'S MENU. Copy link and Delete are things you do to the
- * record; getting the file and swapping the file are things you do to the file,
- * and the file is right there — the largest object on the sheet. They sit in
- * its corner with the two that were already there, so the picture carries every
- * verb about itself and the menu carries every verb about the entry.
+ * Payload prints it UNDER the picture with its own copy button beside it — a
+ * button with no label and two tooltips inside it, which a screen reader read
+ * as "Copy URL Copy URL". Both stand down (custom.scss) and this takes their
+ * place, above the picture, where the name of a thing goes.
  *
- * AND IT SAYS DOWNLOAD BECAUSE IT DOWNLOADS. "Open file" was an anchor at the
- * stored URL, and what that does depends on the file: a browser shows a JPEG
- * and saves a zip. One label could not be true of both. Fetching the bytes and
- * handing them over as a blob makes the verb true for every type — with the
- * plain link as the fallback, because a store on another origin can refuse the
- * fetch, and a file that opens in a tab beats a button that does nothing.
+ * THE VERBS ARE NOT HERE ANY MORE. Copying the link, downloading and replacing
+ * moved into the ⋯ in the sheet's corner: they are a short list of things done
+ * to one file, and a short list is what a menu is for. What stays on the
+ * picture is the pair that changes the picture — crop and full size.
  */
-function FileActions({
-  copied,
-  copyLink,
-  filename,
-  url,
-}: {
-  copied: boolean
-  copyLink: () => void
-  filename: string
-  url: string
-}) {
+function FileName({ filename }: { filename: string }) {
   const slot = useHost('.file-details > header')
-  const [busy, setBusy] = React.useState(false)
-
   if (!slot) return null
 
-  const save = async () => {
-    setBusy(true)
-    try {
-      const res = await fetch(url, { credentials: 'include' })
-      if (!res.ok) throw new Error(String(res.status))
-      const blob = await res.blob()
-      const href = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = href
-      link.download = filename || 'file'
-      document.body.appendChild(link)
-      link.click()
-      link.remove()
-      URL.revokeObjectURL(href)
-    } catch {
-      window.open(url, '_blank', 'noopener')
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  /* Payload's own remove is hidden (custom.scss) and pressed from here, the
-     same way the lightbox stands in for its preview button: one disc, one
-     component, no race with a handler that is not ours. Nothing is written
-     until Save, which is what the title says. */
-  const replace = () => {
-    document.querySelector<HTMLButtonElement>('.doc-drawer .file-details__remove')?.click()
-  }
-
   return createPortal(
-    <>
-      {/* THE NAME, ABOVE THE PICTURE IT BELONGS TO. Payload prints it under the
-          file with its own copy button beside it — a button with no label and
-          two tooltips inside it, which a screen reader read as "Copy URL Copy
-          URL". Both stand down (custom.scss) and this takes their place: the
-          name reads first, where a title reads, and the one thing you do with
-          a file's address is next to the address. */}
-      <div className="da-filename">
-        <span className="da-filename__text">{filename}</span>
-        <button
-          aria-label={copied ? 'Link copied' : 'Copy file link'}
-          className="da-filename__copy"
-          onClick={copyLink}
-          title={copied ? 'Link copied' : 'Copy file link'}
-          type="button"
-        >
-          {copied ? (
-            <Check aria-hidden="true" size={16} strokeWidth={2} />
-          ) : (
-            <Link2 aria-hidden="true" size={16} strokeWidth={2} />
-          )}
-        </button>
-      </div>
-
-      <button
-        aria-label="Download file"
-        className="da-file-action da-file-action--download"
-        disabled={busy}
-        onClick={save}
-        title="Download file"
-        type="button"
-      >
-        <Download aria-hidden="true" size={18} strokeWidth={2} />
-      </button>
-      <button
-        aria-label="Replace file"
-        className="da-file-action da-file-action--replace"
-        onClick={replace}
-        title="Replace file — nothing changes until you save"
-        type="button"
-      >
-        <Replace aria-hidden="true" size={18} strokeWidth={2} />
-      </button>
-    </>,
+    <div className="da-filename">
+      <span className="da-filename__text">{filename}</span>
+    </div>,
     slot,
+  )
+}
+
+/**
+ * Leaving without saving, said as a word.
+ *
+ * THE ✕ IN THE CORNER IS GONE and this is what replaced it. A disc in the
+ * corner is a way out that has to be recognised; a button beside Save is one
+ * that can be read, and it stands where the answer to "Save" belongs — the two
+ * halves of the same question, side by side, rather than at opposite corners of
+ * the sheet.
+ *
+ * It closes the modal by its own slug, and `DetailCloseGuard` intercepts the
+ * click first when the form is dirty, so Cancel asks the same question the
+ * backdrop and Escape ask.
+ */
+function SheetCancel() {
+  const { drawerSlug } = useDocumentDrawerContext()
+  const { closeModal } = useModal()
+
+  if (!drawerSlug) return null
+
+  return (
+    <button className="da-bar__cancel da-bar__cancel--sheet" onClick={() => closeModal(drawerSlug)} type="button">
+      Cancel
+    </button>
   )
 }
 

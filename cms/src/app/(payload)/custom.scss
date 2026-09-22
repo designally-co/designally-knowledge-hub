@@ -1333,15 +1333,17 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
      measured, that pushed the two image actions to the LEFT edge and left the
      free space between them and Remove. Fixed to their content, the `1fr`
      absorbs the row and the three discs sit together on the right. */
-  grid-template-columns: minmax(0, 1fr) repeat(4, max-content);
+  grid-template-columns: minmax(0, 1fr) repeat(2, max-content);
   /* THE ACTIONS ARE IN THE PICTURE'S OWN CELL, not in a strip above it. They
      are named by column and row below rather than by area, because three items
      cannot share one area without stacking on each other — placed explicitly,
      they overlap the media that spans beneath them. */
+  /* THE CARD READS LIKE A LABEL ON A PRINT: what it is called along the top,
+     the picture, and its measurements along the foot. */
   grid-template-areas:
-    'name  name  name  name  name'
-    'media media media media media'
-    'meta  meta  meta  meta  meta';
+    'name  name  name'
+    'media media media'
+    'meta  meta  meta';
   /* 0.5rem put 7px between three 36px discs sitting on the picture, one of
      which used to remove the file. */
   column-gap: 0.75rem;
@@ -1452,8 +1454,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
 .collection-edit--media .da-file-action,
 .collection-edit--media .file-field__edit,
 .collection-edit--media .file-details__remove {
-  /* Row 2 since the name took row 1 — the discs still sit in the picture's
-     own cell, at its top edge. */
+  /* The picture's own cell — row 2, since the name has the first line. */
   grid-row: 2;
   align-self: start;
   z-index: 1;
@@ -1488,16 +1489,10 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
   grid-column: 3;
 }
 
-.collection-edit--media .da-file-action--download {
-  grid-column: 4;
-}
-
-.collection-edit--media .da-file-action--replace {
-  grid-column: 5;
-  /* THE GROUP'S RIGHT INSET LIVES ON WHATEVER IS LAST. It used to live on the
-     trash, which was the end of the row; hiding that took the inset with it and
-     left the group flush against the picture's edge — 11px down from the top
-     and 0 in from the side. */
+/* THE GROUP'S RIGHT INSET LIVES ON WHATEVER IS LAST. It used to live on the
+   trash, which was the end of the row; hiding that took the inset with it and
+   left the group flush against the picture's edge. */
+.collection-edit--media .da-expand {
   margin-inline-end: 0.75rem;
 }
 
@@ -1529,7 +1524,7 @@ body:has(.app-header__actions .da-bar) .doc-controls__divider {
      as the replace that stands in for it everywhere else, so the group sits off
      the picture's edge by the same 0.75rem whichever of the two is last. */
   margin: 0.75rem 0.75rem 0 0;
-  grid-column: 5;
+  grid-column: 3;
 }
 
 /* THE TRASH, NOT THE CROSS. Payload draws an `x` here, which in this admin
@@ -1889,8 +1884,13 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
 }
 
 #{$doc} .collection-edit {
-  /* 45 + the tile's 6 and its hairline = the 52 the picker keeps. */
-  padding: 45px;
+  /* EVEN ON EVERY SIDE. It was 45 all round — a full-screen document's margin
+     worn by a sheet 44rem wide — then 45 at the head and 1.5rem elsewhere,
+     because the head was where the corner's ⋯ hung and the content had to clear
+     it. The ⋯ moved onto the card beside the filename, so the clearance is
+     paying for a control that is not there, and the sheet's corner is empty:
+     the first line of it can start where the sides start. */
+  padding: 1.5rem;
 }
 
 /* Payload's own inset on the field column, 60px of it on each side, inside the
@@ -1962,7 +1962,9 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
 #{$doc} .da-bar--sheet {
   flex: 0 0 auto;
   justify-content: flex-end;
-  padding: 20px 45px 45px;
+  /* The same sides as the form above it, so Cancel and Save stand on the
+     column the fields stand on. */
+  padding: 20px 1.5rem 1.5rem;
 }
 
 /* 15, WHERE THE PICKER USES 9. Same 16px gap, different box to count from: the
@@ -2340,7 +2342,14 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
    its SEO pair. A subscriber's card is five short questions in a row, and a
    grey panel behind each one made five boxes inside the box, each holding a
    label, a filled input and a line of help: three surfaces deep for "which
-   language?". The fields sit on the card. */
+   language?". The fields sit on the card.
+
+   NOT THE MEDIA SHEET, THOUGH — it was, for a while, on the same reasoning,
+   and the reasoning stopped applying underneath it: the picture's card lost its
+   border, so the only box left on the sheet was that panel, and without it the
+   two fields were loose text under a photograph with nothing saying where the
+   form began. A subscriber's card has five questions and no picture; this one
+   has a picture and needs the answer to it fenced off. */
 .collection-edit--subscribers .document-fields__main .document-fields__fields > .field-type {
   background-color: transparent;
   padding: 0;
@@ -7676,12 +7685,24 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
  * is one press of the ⤢ in its corner.
  */
 #{$mediaDoc} .file-details__thumbnail {
-  /* THE PICTURE GIVES WAY, BECAUSE THE FORM CANNOT. A fixed 200px fits a tall
-     window and overflows a short one by the difference, and what goes under the
-     fold is the field the sheet was opened for. Tied to the viewport, the image
-     is the thing that gets smaller — which is right: it is the one element on
-     the sheet that is still legible at half the size. */
-  max-block-size: clamp(88px, 22vh, 200px);
+  /*
+   * A FRAME WITH A SHAPE, RATHER THAN A BAND THE WIDTH OF THE SHEET.
+   *
+   * The well was full width and capped in height, so it drew a long shallow
+   * letterbox and every picture that was not that shape floated in the middle
+   * of it with a hand's width of grey on either side. 16:9 is the widest ratio
+   * most of these arrive in, so at that shape a wide one fills the frame and a
+   * 4:3 gives back a modest margin instead of a field of it.
+   *
+   * FULL WIDTH, AND THE HEIGHT FOLLOWS. Driving it from the height instead
+   * keeps the shape on any window but leaves the frame floating in the middle
+   * of the card — and then a 4:3 picture has grey inside the frame AND white
+   * beside it, which is two margins to explain instead of none. The card is the
+   * width; the frame fills it.
+   */
+  aspect-ratio: 16 / 9;
+  inline-size: 100%;
+  block-size: auto;
 }
 
 /* `svg` as well as `img`: a file with no preview — a zip, a PDF — is drawn as
@@ -7740,10 +7761,22 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
     gap: 0.5rem;
   }
 
-  /* And the picture again, harder. A laptop lid is where this sheet ran over,
-     and the image is still the only thing on it that reads at half the size. */
-  #{$mediaDoc} .file-details__thumbnail {
-    max-block-size: clamp(80px, 15vh, 150px);
+  /* A LAPTOP LID CANNOT HOLD A FULL-WIDTH 16:9 AND THE FORM UNDER IT. On a
+     short window the frame keeps its shape and gives up width instead — a
+     smaller picture centred in the card, rather than a letterbox band or a
+     sheet that scrolls.
+
+     A PHONE IS NOT A SHORT WINDOW, though it matches on height. The card there
+     is 279px wide, so a full-width 16:9 is only 157 tall — narrower than the
+     height this rule would ask for, which means the width cap bites first and
+     the ratio breaks. Measured at 375×812: 1.64, not 1.78. Wide screens only. */
+  @media (min-width: 48rem) {
+    #{$mediaDoc} .file-details__thumbnail {
+      block-size: clamp(110px, 21vh, 200px);
+      inline-size: auto;
+      max-inline-size: 100%;
+      margin-inline: auto;
+    }
   }
 }
 
@@ -7867,8 +7900,13 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  /* The name at one end and the ⋯ at the other, on the line above the picture,
+     answering the date and the size on the line below it. */
+  justify-content: space-between;
   min-inline-size: 0;
-  margin-block-end: 0.75rem;
+  /* Close to the picture it names; the grid's row gap is sized for the band
+     under it, not for a caption sitting on its own line. */
+  margin-block-end: -0.5rem;
 }
 
 .collection-edit--media .da-filename__text {
@@ -7916,4 +7954,395 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
     inline-size: 44px;
     block-size: 44px;
   }
+}
+
+/* ==========================================================================
+   The media sheet, as an object
+   ========================================================================== */
+
+/*
+ * THREE SURFACES THAT WERE ONE.
+ *
+ * The sheet was white, the picture's well was `#f8f8f7`, and the form's panel
+ * was `#f8f8f7` — the same fill on a tray holding an artefact and on a box
+ * taking input, both floating a hundredth of a step off the paper behind them.
+ * Nothing on the sheet was made of anything.
+ *
+ * So the two are given different jobs to be made of. The well recesses: a
+ * deeper ground and a hairline, the way a mount sits below its frame. The panel
+ * rises: the sheet's own white with an edge, the way every other card in this
+ * admin is drawn. The picture then reads as the one object on a surface rather
+ * than as a lighter patch of it.
+ *
+ * CONCENTRIC, WITH THE SYSTEM'S OWN NUMBERS. A 16px tray padded by 8 leaves 8
+ * for the plate inside it — `--style-radius-l`, `--style-radius-s`, and the
+ * subtraction between them is exact rather than eyeballed. Curves that are not
+ * concentric are the detail that reads as "nearly" from across a room.
+ */
+/*
+ * THE CONTAINER HOLDS THE WHOLE OF THE FILE, not just its picture.
+ *
+ * The name, the size and the date used to sit under the tray as three loose
+ * lines on the sheet — facts about the thing, standing outside the thing. They
+ * are in it now, and the tray became a card: white with the Edge, the way every
+ * other card in this admin is drawn, so the caption reads on the ground its
+ * text was solved against.
+ *
+ * The picture keeps its own recess inside that card. A letterboxed image needs
+ * something to sit ON, and a step below the card is what makes the difference
+ * between a picture and a gap.
+ */
+/* NO CARD AROUND IT AFTER ALL.
+ *
+ * The white card with a hairline was drawn to hold the caption, and it did —
+ * but a bordered box on a white sheet, holding a bordered frame, holding a
+ * picture, is three edges deep for one file. The picture's own ground is enough
+ * to say where it begins.
+ *
+ * AND THE INSET GOES WITH IT. The card's 12px was pushing the name, the picture
+ * and the measurements in from the sheet's own column, so they sat a dozen
+ * pixels right of Description and Credit below. With no box to be inside, they
+ * stand on the same line as everything else. */
+#{$mediaDoc} .collection-edit--media .file-details > header {
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+}
+
+#{$mediaDoc} .collection-edit--media .file-details .thumbnail {
+  border-radius: var(--style-radius-s);
+  background-color: var(--da-chrome-hover);
+}
+
+/* Flush with the form below: there is no box to be inset from any more. */
+#{$mediaDoc} .collection-edit--media .da-filename,
+#{$mediaDoc} .collection-edit--media .file-meta {
+  padding-inline: 0;
+}
+
+#{$mediaDoc} .collection-edit--media .file-details .thumbnail :is(img, svg) {
+  border-radius: var(--style-radius-s);
+}
+
+/* THE PANEL IS LEFT ALONE, and that is a correction rather than an omission. It
+   was briefly made white with an edge, which reads well until you notice what
+   it costs: this system fills its inputs instead of outlining them — "the fill
+   is what says type here" — and a white ground takes that fill from 1.07:1 to
+   1.19:1 against its own panel, which is to say the boundary the rule depends
+   on gets fainter. The recession that was wanted belongs to the picture's tray,
+   so only the tray takes it, and the form keeps the three steps it always had:
+   sheet, panel, field. */
+
+/* ---- the sheet arrives in three parts ----------------------------------- */
+
+/*
+ * IT USED TO APPEAR ALL AT ONCE, at 97% and 0.18s — a box that was simply
+ * there. The three bands now arrive in the order you read them: the name, the
+ * picture, then the form. 40ms apart, which is under the threshold where a
+ * stagger becomes a queue you wait through; it reads as one movement with a
+ * direction rather than as three animations.
+ *
+ * `translate` and `opacity` only, so it runs on the compositor and never
+ * reflows the sheet it is inside.
+ */
+@keyframes da-sheet-band {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+}
+
+#{$mediaDoc} .collection-edit--media .file-details,
+#{$mediaDoc} .collection-edit--media .da-intro {
+  animation: da-sheet-band var(--da-dur-state) var(--da-ease) both;
+}
+
+#{$mediaDoc} .collection-edit--media .da-intro {
+  animation-delay: 40ms;
+}
+
+/* A sheet that opens instantly still has to be readable, so the bands keep
+   their end state and lose only the travel. */
+@media (prefers-reduced-motion: reduce) {
+  #{$mediaDoc} .collection-edit--media .file-details,
+  #{$mediaDoc} .collection-edit--media .da-intro {
+    animation: none;
+  }
+}
+
+/* ---- the discs answer the hand ------------------------------------------ */
+
+/*
+ * A CONTROL THAT DOES NOT MOVE WHEN PRESSED IS A PICTURE OF A CONTROL. The ⋯
+ * already dipped 6% under the finger and the four on the picture did not; they
+ * do now, on the same curve and the same duration as every other press in this
+ * admin, so the whole sheet answers with one hand.
+ */
+#{$mediaDoc} :is(.da-expand, .da-file-action, .file-field__edit) {
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    border-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease),
+    transform 0.12s var(--da-ease);
+}
+
+#{$mediaDoc} :is(.da-expand, .da-file-action, .file-field__edit):active {
+  transform: scale(0.94);
+}
+
+.collection-edit--media .da-filename__copy:active {
+  transform: scale(0.94);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #{$mediaDoc} :is(.da-expand, .da-file-action, .file-field__edit):active,
+  .collection-edit--media .da-filename__copy:active {
+    transform: none;
+  }
+}
+
+/* ---- the corner holds the menu, and the foot holds the answers ---------- */
+
+/*
+ * THE ✕ IS GONE AND THE ⋯ HAS ITS CORNER.
+ *
+ * A disc in the top-right of a sheet is the most valuable spot on it, and it was
+ * spent on the one action every other exit already offers: the backdrop closes,
+ * Escape closes, and now a Cancel beside Save closes and says so in a word. What
+ * belongs there instead is the thing with no other door — every verb about this
+ * file, in a list.
+ *
+ * It is lifted out of the bar's flow rather than portalled somewhere else: the
+ * sheet is the positioned ancestor, so one rule moves the trigger to the corner
+ * and takes it out of the row at the foot, and the panel it opens hangs
+ * downward from it the way a menu in a corner should.
+ */
+/* IT LIVES ON THE CARD NOW, not pinned to the sheet's corner — opposite the
+   filename, the way the date and the size sit at the two ends of the line under
+   the picture. The panel hangs downward from it, over the picture it belongs
+   to. See `menuHost` in DocActions. */
+#{$mediaDoc} .da-filename .da-bar__panel {
+  inset-block-start: calc(100% + 8px);
+  inset-block-end: auto;
+  transform-origin: top right;
+}
+
+/* Payload's own way out stands down: there is one now, and it has a word on it. */
+#{$mediaDoc} .doc-drawer__header-close {
+  display: none;
+}
+
+/*
+ * CANCEL AND SAVE, AS A PAIR. The same height and the same corner radius, one
+ * filled and one outlined — the two answers to a form, side by side, instead of
+ * a word at one end of the sheet and a disc at the other.
+ */
+.da-bar__cancel--sheet {
+  font-family: var(--font-display);
+  cursor: pointer;
+}
+
+/* Cancel matches Save on a touch pointer too — a pair of answers at two
+   different heights reads as two unrelated controls. */
+@media (pointer: coarse) {
+  .da-bar__cancel--sheet {
+    block-size: 44px;
+    min-block-size: 44px;
+  }
+}
+
+/*
+ * THE MEASUREMENTS SPAN THE FOOT. Two facts left-packed under a 600px picture
+ * left a third of the card empty and read as the start of a list that was cut
+ * off. Pushed to the ends they read as what they are: the two corners of a
+ * caption, and the card's own width is what sets them apart.
+ */
+.collection-edit--media .da-facts {
+  justify-content: space-between;
+}
+
+.collection-edit--media .da-facts__row:last-child {
+  text-align: end;
+}
+
+/*
+ * THE LABELS COME OFF, because the values say what they are: nothing reads
+ * "205 KB" and wonders which measurement it is, and "26 Aug 2026" is a date on
+ * sight. Two words of 10px uppercase above two short values was a table header
+ * for a table of one row.
+ *
+ * CLIPPED, NOT DELETED. A `<dl>` without its terms is a list of answers to
+ * questions nobody asked, and to a screen reader "26 Aug 2026" alone does not
+ * say whether the file was made then or changed then. The words stay in the
+ * accessibility tree and leave the sheet.
+ */
+.collection-edit--media .da-facts__label {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/*
+ * AND LIGHTER, NOW THAT THEY STAND ALONE. 600 was the weight of a value under
+ * a label — it had a 10px uppercase word above it to be heavier than. With the
+ * labels gone the pair became the boldest line in the card, heavier than the
+ * filename above them, which is not the order anyone reads this in. They are a
+ * caption: the quiet ink, the body weight, and the tabular figures kept so the
+ * two ends of the line stay on the same baseline grid.
+ */
+.collection-edit--media .da-facts__value {
+  font-weight: 400;
+  color: var(--da-ink-3);
+}
+
+/*
+ * "OPTIONAL" BELONGS TO THE LABEL, NOT TO THE FIELD.
+ *
+ * It sat under the input as a line of help, which is where a sentence of
+ * guidance goes — and it is not a sentence, it is one word qualifying the word
+ * above it. Read in order it said: Credit, [a box], optional. Beside the label
+ * it is one phrase, answered before the box rather than after it.
+ *
+ * `display: contents` promotes Payload's wrapper so the input and its note
+ * become grid items of the field itself; without it the note is a grandchild
+ * and cannot sit on the label's line.
+ */
+.collection-edit--media .field-type.text:has(#field-credit) {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  grid-template-areas:
+    'label note'
+    'input input';
+  align-items: baseline;
+  column-gap: 0.375rem;
+}
+
+.collection-edit--media .field-type:has(#field-credit) .field-type__wrap {
+  display: contents;
+}
+
+.collection-edit--media .field-type:has(#field-credit) .field-label {
+  grid-area: label;
+}
+
+/* NOT `> input`. `display: contents` promotes the input into the grid's layout
+   but leaves it a grandchild in the DOM, and a child combinator reads the DOM —
+   so the rule missed, the input was auto-placed into the label's column, and
+   that column grew to 185px to hold it. */
+.collection-edit--media .field-type:has(#field-credit) input {
+  grid-area: input;
+}
+
+/* Smaller than the label it qualifies, and in the metadata ink — a note about
+   the question rather than part of it. */
+.collection-edit--media .field-type:has(#field-credit) .field-description {
+  grid-area: note;
+  margin: 0;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: var(--da-ink-3);
+}
+
+/* The sentence under Description is a note ABOUT the field, not a second line
+   of it — it was sitting tight enough to the input to read as part of the same
+   block. A field's own breathing room between them says which it is. */
+.collection-edit--media .field-type:has(#field-alt) .field-description {
+  margin-block-start: 0.5rem;
+}
+
+/*
+ * NO TRACK DOWN THE SIDE OF A SHEET THAT DOES NOT SCROLL.
+ *
+ * The sheet is built to fit — measured at 0 overflow on every size it opens at
+ * — and yet 15px of scrollbar gutter was being reserved anyway, drawing a grey
+ * strip beside the form for a scroll that never happens. Taken away, the
+ * content still fits exactly: 710 of content in 710 of box.
+ *
+ * SCROLLABLE STILL, JUST NOT DRAWN. `overflow: hidden` would clip rather than
+ * scroll, and the one case this cannot rule out is somebody at 200% text zoom,
+ * where Save would end up below the fold and unreachable. A zero-width
+ * scrollbar keeps the wheel and the keyboard working for that case while giving
+ * the other 99% their 15px back.
+ */
+#{$mediaDoc} .drawer__content > .gutter {
+  scrollbar-width: none;
+}
+
+#{$mediaDoc} .drawer__content > .gutter::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * AND 34.6px OF SOMEBODY ELSE'S ON TOP OF IT.
+ *
+ * The sheet's padding was evened to 1.5rem on all four sides and the head still
+ * measured 64 against 30. The rest is `margin-block-start: 2.3077rem` from the
+ * media document's own rule further up this file — written for the full-page
+ * version of this screen, where it drops the sheet clear of the app header.
+ * Inside a drawer there is no header to clear: the first line is the file's
+ * name, and it starts where the sides start.
+ */
+#{$mediaDoc} .collection-edit--media .document-fields__main > .gutter {
+  margin-block-start: 0;
+}
+
+/*
+ * SMALLER CONTROLS ON A SHEET THIS SIZE.
+ *
+ * 36px is the admin's number and it is right on a document screen, where the
+ * bar spans a 1280px header and Save has a whole band to sit in. In a 44rem
+ * sheet the same controls are the heaviest things on it — two discs on the
+ * picture, a ⋯ beside a 13px filename, and a pair of answers under two short
+ * fields. 32 keeps them unmistakably controls and stops them competing with the
+ * one thing the sheet is for.
+ *
+ * FINE POINTERS ONLY. A finger still gets 44 (see the coarse rules above): this
+ * is about visual weight where there is a cursor to aim with, not about how big
+ * a target has to be.
+ */
+@media (pointer: fine) {
+  #{$mediaDoc} :is(.da-expand, .file-field__edit, .da-bar__more) {
+    inline-size: 32px;
+    block-size: 32px;
+  }
+
+  #{$mediaDoc} .da-bar__save .form-submit .btn--style-primary,
+  #{$mediaDoc} .da-bar__cancel--sheet {
+    block-size: 32px;
+    min-block-size: 32px;
+  }
+}
+
+/*
+ * AND THE ⋯ LOSES ITS DISC.
+ *
+ * A bordered white button beside a 13px filename is a second object on that
+ * line, competing with the name for it. The glyph alone is enough — it sits in
+ * the caption's own weight and only firms up under the pointer, which is where
+ * a quiet control should spend its ink.
+ *
+ * The ring stays: a control with no edge still has to show a keyboard where it
+ * is.
+ */
+#{$mediaDoc} .da-filename .da-bar__more {
+  border-color: transparent;
+  background-color: transparent;
+}
+
+@media (hover: hover) {
+  #{$mediaDoc} .da-filename .da-bar__more:hover {
+    border-color: transparent;
+    background-color: var(--da-chrome);
+    color: var(--da-ink);
+  }
+}
+
+#{$mediaDoc} .da-filename .da-bar__more--on {
+  border-color: transparent;
+  background-color: var(--da-chrome);
+  color: var(--da-ink);
 }

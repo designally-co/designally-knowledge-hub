@@ -111,13 +111,20 @@ function useDialogContract(open: boolean, closeDrawer: () => void) {
         undo.push(() => control.removeAttribute('aria-describedby'))
       }
 
-      /* INTO THE FIELD THE SHEET EXISTS FOR. Not the close button: nine times in
-         ten this drawer is open because a description is missing, and the caret
-         belongs where the answer goes. */
-      const target =
-        dialog.querySelector<HTMLElement>('#field-alt') ??
-        dialog.querySelector<HTMLElement>('input, textarea, button')
-      target?.focus({ preventScroll: true })
+      /* INTO THE DIALOG, AND NO FURTHER.
+       *
+       * Something has to take focus or none of the rest of this works: Payload's
+       * trap only holds focus that is already inside, Escape has nothing to fire
+       * on, and Tab walks the list behind the sheet. But it must not be the
+       * Description field. A caret blinking in a text box is an instruction —
+       * it says the sheet was opened to type, when most of the time it was
+       * opened to look at the picture — and on a phone it summons the keyboard
+       * over the thing you came to see.
+       *
+       * So the dialog itself takes it. A screen reader announces the sheet by
+       * name, the trap engages, Escape closes, and the first Tab goes to the
+       * first control rather than into the middle of a form. */
+      dialog.focus({ preventScroll: true })
     }
 
     /* ESCAPE, WHICH IS WHAT PEOPLE PRESS. A `<dialog open>` is not modal, so
@@ -255,9 +262,10 @@ export function DetailCloseGuard() {
       const target = event.target instanceof Element ? event.target : null
       const button = target?.closest('button')
       if (!button) return
-      /* Both ways out by pointer: the backdrop, which Payload gives an id, and
-         the ✕ in the corner, which it does not. */
-      if (button.id === `close-drawer__${drawerSlug}` || button.closest('.doc-drawer__header-close')) {
+      /* Every way out by pointer: the backdrop, which Payload gives an id, and
+         Cancel at the foot, which replaced the ✕ that used to sit in the
+         corner. Both ask the same question. */
+      if (button.id === `close-drawer__${drawerSlug}` || button.closest('.da-bar__cancel--sheet')) {
         ask(event)
       }
     }
