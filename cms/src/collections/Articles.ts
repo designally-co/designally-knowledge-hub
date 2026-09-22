@@ -96,7 +96,11 @@ export const Articles: CollectionConfig = {
        "Last edited" was here and is gone: on a library where almost everything
        is published, it repeated the publish date a column to its left and paid
        a column's width to do it. */
-    defaultColumns: ['title', 'tag', 'status', 'publishedDate'],
+    // One column for the state and the date it was taken (see StatusCell), and
+    // it is the date's, so the header sorts by date: status has two values, and
+    // sorting by those only groups the drafts. Status is still in the column
+    // picker for anyone who wants it.
+    defaultColumns: ['title', 'tag', 'publishedDate'],
     // About articles and nothing else. It used to close with "Downloadable files
     // belong in Resources" — a signpost to another collection, printed under the
     // heading of the one you already chose from the nav.

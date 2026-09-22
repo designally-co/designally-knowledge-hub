@@ -80,6 +80,12 @@
     --da-orange-tint: #fff0ec;
   --da-orange-tint-deep: #ffd4ca;
 
+  /* The settled green, and only ever a chip: "Published" in the content lists.
+     Built like the orange above — a tint to sit on, a mark to be read on it —
+     and the mark carries 12px text at 5.3:1 on its own tint. */
+  --da-green-mark: #157347;
+  --da-green-tint: #eaf6ef;
+
   /* Focus is steel, never orange. An orange ring reads as the Cut. */
     /* THE STUDIO'S RING: two pixels of the orange itself. The platform
      document argues for steel; the studio, which this admin is matched to,
@@ -6195,6 +6201,64 @@ $list: '.template-default__wrap > .collection-list';
   overflow: visible;
 }
 
+/*
+ * THE TWO CONTENT LISTS KEEP THE SAME PROPORTIONS.
+ *
+ * Articles and Resources are the same table — what the row is, what it is filed
+ * under, its state, its date — and every width was being drawn from content.
+ * Article titles run long and their tag cell is two lines, so Title took 55%
+ * there; on Resources the same four columns left the title 41% and paid the
+ * difference to Category and Status, which say "Templates" and "Published" and
+ * were 231px wide to do it. Two lists of one shape disagreeing about their
+ * proportions read as two different screens.
+ *
+ * WIDTHS FROM WHAT THE COLUMNS HOLD, NOT A SPLIT OF THE TABLE. 30/20 was
+ * arithmetic: it gave Tag 345px to say "Case Study" and Published 230px to say
+ * "Published, 6 Jul 2026" in 71, which left a canyon between those two columns
+ * while the title — the one column with more to say than it has room for — was
+ * cut off a few pixels from the tag beside it.
+ *
+ * Each short column is now as wide as the widest thing it can ever hold, plus
+ * its padding: 169px for the longest tag in the taxonomy ("Campaign
+ * Breakdown"), and 106px for Published's own heading and its sort arrows, which
+ * are wider than the chip and the date under it. The title takes everything
+ * left, which is most of the table, and carries 32px of its own on the right so
+ * its ellipsis stops crowding the tag.
+ *
+ * The lists share the values, so the two still lay out alike. In pixels because
+ * these are the widths of words, which do not scale with the window; the title
+ * is the column that gives and takes as the window changes.
+ */
+#{$list}:is(.collection-list--articles, .collection-list--resources) table {
+  /* FIXED, OR THE WIDTHS BELOW ARE ONLY SUGGESTIONS. In an auto-layout table a
+     percentage loses to a column's own content: Articles' long titles and
+     two-line tag cells pulled Status back to 13% while Resources' shorter text
+     let it have its 18%, which is the disagreement this block exists to end.
+     Titles already end in an ellipsis rather than wrapping, so nothing here
+     asks for a width it was relying on getting. */
+  table-layout: fixed;
+
+  :is(#heading-_select, .cell-_select) {
+    inline-size: 32px;
+  }
+
+  /* The title gives up the room the two columns beside it no longer waste, and
+     holds the last 32px of it as the gap before the tag. */
+  :is(#heading-title, .cell-title) {
+    padding-inline-end: 32px;
+  }
+
+  :is(#heading-tag, .cell-tag),
+  :is(#heading-category, .cell-category) {
+    inline-size: 200px;
+  }
+
+  :is(#heading-publishedDate, .cell-publishedDate),
+  :is(#heading-status, .cell-status) {
+    inline-size: 150px;
+  }
+}
+
 /* ---- the heading line ---------------------------------------------------- */
 
 @media (min-width: 48.0625rem) {
@@ -6851,42 +6915,13 @@ $list: '.template-default__wrap > .collection-list';
   font-size: 12px;
 }
 
-/* STATUS IS A WORD, NOT A BADGE. Studio: Published is a green dot and the word
-   in the second ink; Draft is the word alone in the faint ink, since a draft is
-   the state that needs no marking to be told apart. */
-#{$list} .table .da-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0;
-  border-radius: 0;
-  background: none;
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.43;
-  letter-spacing: 0;
-}
-
-#{$list} .table .da-chip--settled {
-  color: var(--da-ink-2);
-}
-
-#{$list} .table .da-chip--act {
-  color: var(--da-ink-3);
-}
-
-#{$list} .table .da-chip__dot {
-  display: none;
-}
-
-#{$list} .table .da-chip--settled .da-chip__dot {
-  display: block;
-  inline-size: 6px;
-  block-size: 6px;
-  border-radius: 999px;
-  background-color: #107f54;
-}
+/* STATUS IS A CHIP AGAIN, ONE COLOUR EACH. This used to strip the chip back to
+   a word — Published in the second ink behind a green dot, Draft in the faint
+   one — on the reasoning that a badge per row was loud. The column has since
+   swallowed the publish date, so it carries two things at once: the tint is
+   what separates the state from the date under it, and a colour each tells the
+   two states apart without reading. The dot goes with the badge it sat in.
+   ListCells.css draws them; nothing is overridden here. */
 
 /* ---- the pager: a count and two discs, on the ground --------------------- */
 

@@ -3,7 +3,6 @@
 import React from 'react'
 import Link from 'next/link'
 
-import { CATEGORY_CHROME } from '../../lib/listingChrome'
 import { coverImageId, useCoverThumb } from './useCoverThumb'
 import { categoryForTag } from '../../lib/tags'
 import './ListCells.css'
@@ -31,16 +30,47 @@ type CellProps = {
 /* Status                                                                      */
 /* -------------------------------------------------------------------------- */
 
-export const StatusCell: React.FC<CellProps> = ({ cellData }) => {
-  const value = typeof cellData === 'string' ? cellData : ''
-  const isDraft = value !== 'published'
+/**
+ * The state, and — when there is one — the date it took.
+ *
+ * ONE COLUMN, BECAUSE THEY ARE ONE FACT. Status and Published Date were
+ * neighbours saying the same thing twice: every published row read "Published"
+ * beside a date, and every draft read "Draft" beside a blank, because the date
+ * does not exist until publishing stamps it. Two columns of chrome for one
+ * piece of information. Published rows now carry the date under the chip, the
+ * way the tag carries its category, and a draft is simply a draft.
+ *
+ * IT SITS ON `publishedDate`, NOT ON `status`, AND READS THE ROW FOR BOTH.
+ * A column sorts by the field it belongs to, and status has two values: sorting
+ * by it groups the drafts and leaves twenty published rows in whatever order
+ * they arrived. The date is what anyone actually sorts a library by, so the
+ * date's column is the one that carries this cell — which is why neither half
+ * comes from `cellData`.
+ *
+ * The date is formatted here rather than by Payload's date cell, which this
+ * replaces: `d MMM yyyy`, the format the field's own picker displays.
+ */
+const publishedOn = (value: unknown): string => {
+  if (typeof value !== 'string' || !value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(date)
+}
+
+export const StatusCell: React.FC<CellProps> = ({ rowData }) => {
+  const isDraft = rowData?.status !== 'published'
+  const date = isDraft ? '' : publishedOn(rowData?.publishedDate)
+
   return (
-    <span className={`da-chip ${isDraft ? 'da-chip--act' : 'da-chip--settled'}`}>
-      {/* The dot is decoration and is hidden from assistive tech: the word
-          beside it already carries the state, and a second announcement of the
-          same fact is noise in a table read row by row. */}
-      <span aria-hidden="true" className="da-chip__dot" />
-      {isDraft ? 'Draft' : 'Published'}
+    <span className="da-status">
+      <span className={`da-chip ${isDraft ? 'da-chip--draft' : 'da-chip--published'}`}>
+        {isDraft ? 'Draft' : 'Published'}
+      </span>
+      {date ? <span className="da-status__date">{date}</span> : null}
     </span>
   )
 }
@@ -50,28 +80,23 @@ export const StatusCell: React.FC<CellProps> = ({ cellData }) => {
 /* -------------------------------------------------------------------------- */
 
 /**
- * The tag, with its category's own band colour as a dot.
+ * The tag, over the category it belongs to.
  *
- * The colours are the ones the public site already wears — the background of
- * each section's graphic, from listingChrome — so a row here is coloured the
- * same way the page it becomes is. They are pale by design (they are made to
- * sit behind a headline), which is precisely why the category is also spelled
- * out in text: the dot is recognition, never the only carrier of the meaning.
+ * It used to carry the category's band colour as a dot as well. Those tints are
+ * pale by design — they are made to sit behind a headline — so at 8px the dot
+ * was a grey speck in front of every row, indenting the column to say what the
+ * line under the tag already says in words.
  */
 export const TagCell: React.FC<CellProps> = ({ cellData }) => {
   const tag = typeof cellData === 'string' ? cellData : ''
   if (!tag) return <span className="da-cell-empty">—</span>
 
   const category = categoryForTag(tag)
-  const tint = category ? CATEGORY_CHROME[category].tint : 'transparent'
 
   return (
     <span className="da-tag">
-      <span aria-hidden="true" className="da-tag__dot" style={{ backgroundColor: tint }} />
-      <span className="da-tag__text">
-        {tag}
-        {category ? <span className="da-tag__cat">{category}</span> : null}
-      </span>
+      {tag}
+      {category ? <span className="da-tag__cat">{category}</span> : null}
     </span>
   )
 }

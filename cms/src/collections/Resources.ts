@@ -53,7 +53,11 @@ export const Resources: CollectionConfig = {
     // through Payload as before. Only the admin's viewer for it is gone.
     hideAPIURL: true,
     useAsTitle: 'title',
-    defaultColumns: ['title', 'category', 'status', 'publishedDate'],
+    // One column for the state and the date it was taken (see StatusCell), and
+    // it is the date's, so the header sorts by date: status has two values, and
+    // sorting by those only groups the drafts. Status is still in the column
+    // picker for anyone who wants it.
+    defaultColumns: ['title', 'category', 'publishedDate'],
     // About resources and nothing else — the mirror of the line removed from
     // Articles. It closed with "Written articles belong in Articles", pointing
     // at another collection from under the heading of the one already chosen.

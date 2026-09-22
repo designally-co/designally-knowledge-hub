@@ -55,6 +55,11 @@ export const statusField: Field = {
 export const publishedDateField: Field = {
   name: 'publishedDate',
   type: 'date',
+  // "Published Date" said the same word twice once the column below started
+  // carrying the state as well: the chip says Draft or Published, and the line
+  // under it is the date that state was taken. The sidebar reads better for it
+  // too — "Published: 12 Jul 2026".
+  label: 'Published',
   admin: {
     position: 'sidebar',
     date: { pickerAppearance: 'dayOnly', displayFormat: 'd MMM yyyy' },
@@ -70,6 +75,12 @@ export const publishedDateField: Field = {
     // that to serve — the hook respects a date already set, so pre-dating is
     // still possible by publishing and then editing.
     condition: (data) => data?.status === 'published',
+    components: {
+      // The state and its date in one column, sorted by the date — see
+      // StatusCell. The status field keeps the same cell for anyone who adds
+      // its column back; both read the row rather than their own value.
+      Cell: '/components/admin/ListCells#StatusCell',
+    },
   },
 }
 
