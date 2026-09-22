@@ -169,6 +169,15 @@ export function ReturnToPlace() {
  * presence in the page is the same fact, already published. `window.confirm` as
  * Cancel used: one line, impossible to miss, and nothing here owns a panel to
  * put a nicer one in.
+ *
+ * THE BUTTON ASKS; THE CRUMB BESIDE IT DOES NOT. The crumb briefly did — it is
+ * the desk's way out, and Payload's own `LeaveWithoutSaving` never reaches this
+ * admin because that guard is rendered by Payload's Edit view and every
+ * document here replaces that view. It was taken out again: a confirmation on
+ * the crumb is a dialog in the way of the most-used control in the header, and
+ * the writing surface's Cancel already asks on the desk, which is the screen
+ * with something to lose. So the question is on the one control that exists to
+ * leave a document, and the crumb stays a link.
  */
 export function BackToList({ children }: { children?: React.ReactNode }) {
   const router = useRouter()
@@ -183,39 +192,6 @@ export function BackToList({ children }: { children?: React.ReactNode }) {
     if (!slug) return
     document.body.classList.add('da-doc')
     return () => document.body.classList.remove('da-doc')
-  }, [slug])
-
-  /*
-   * AND THE CRUMB ASKS IT TOO, because on a desk the crumb IS the way out —
-   * there is no disc up there, the rail is a sidebar and the corner belongs to
-   * the brand. Payload guards this itself with `LeaveWithoutSaving`, and the
-   * Hub does not get it: that guard is rendered by Payload's own Edit view, and
-   * every document here replaces that view with its own component.
-   *
-   * ON `window`, IN THE CAPTURE PHASE, and both halves of that are load-bearing.
-   * `ReturnToPlace` listens for the same click on `document` to restore the
-   * page you left, and capture runs window before document — so this is asked
-   * before anything acts on the click, whichever mounted first. Stopping
-   * propagation then leaves the crumb where it stands.
-   */
-  React.useEffect(() => {
-    if (!slug) return
-
-    const onClick = (event: MouseEvent) => {
-      if (event.defaultPrevented || event.button !== 0) return
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-
-      const target = event.target as HTMLElement | null
-      if (!target?.closest?.('.step-nav a')) return
-      if (!document.querySelector('.da-bar__unsaved')) return
-      if (window.confirm(LEAVING)) return
-
-      event.preventDefault()
-      event.stopPropagation()
-    }
-
-    window.addEventListener('click', onClick, true)
-    return () => window.removeEventListener('click', onClick, true)
   }, [slug])
 
   if (!slug) return <>{children}</>
