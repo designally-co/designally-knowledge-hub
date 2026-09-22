@@ -2575,7 +2575,13 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
    so the head matter reads as the opening of the article rather than as a
    caption sitting above it. */
 .collection-edit--articles #field-summary {
-  padding: 0;
+  /* THE ONE THING IT KEEPS OF A FIELD IS ITS INSET. Stripped to nothing, the
+     deck's text sat hard against the fill behind it — `.textarea-outer` still
+     draws the admin's `--da-deep` box, and a line of type flush to the edge of
+     a filled box reads as a rendering fault rather than as a field. 8 and 15
+     are the numbers every other filled input in this admin uses, so the box
+     that holds the deck is inset like the box that holds the slug. */
+  padding: 8px 15px;
   border: 0;
   background: none;
   min-block-size: 0;
@@ -8546,9 +8552,12 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
     }
   }
 
+  /* Offset 0 — see the note on the focus ring at the foot of this file: the
+     disc is 2px from the top of the screen and a ring drawn 2px outside it
+     starts above the display. */
   body.da-doc .da-back:focus-visible {
     outline: 2px solid var(--da-focus);
-    outline-offset: 2px;
+    outline-offset: 0;
   }
 
   /* AND THE MENU GOES WITH IT. Not merely hidden: `visibility` takes it out of
@@ -8582,6 +8591,23 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
   .app-header .da-bar__save .form-submit .btn--style-primary {
     border-radius: 999px;
   }
+
+  /*
+   * AND CANCEL IS NOT ON THIS LINE AT ALL.
+   *
+   * On a desk it is the pair Save needs — the crumb is the only other way off
+   * the writing surface, and "the crumb" is not an answer a screen should make
+   * you work out. A phone has the back disc in the corner, and that disc asks
+   * the same question Cancel does, so the word beside Save was a second way out
+   * in a 375px band: two controls meaning one thing, one of them 36 tall in a
+   * line of 44s.
+   *
+   * SCOPED TO THE HEADER, because the media sheet's Cancel wears the same class
+   * and is the only way out of a drawer that has no corner of its own.
+   */
+  .app-header .da-bar__cancel {
+    display: none;
+  }
 }
 
 /* ---- the rail, stacked --------------------------------------------------- */
@@ -8601,5 +8627,31 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
     .document-fields__sidebar-fields
     > .render-fields {
     inline-size: auto;
+  }
+}
+
+/* ---- the focus ring on the phone's own line ------------------------------ */
+
+/*
+ * A RING NEEDS ROOM ABOVE IT, AND THIS LINE HAS TWO PIXELS.
+ *
+ * Every control pinned into the band — the menu, the language, search, the ⋯
+ * and Save, and the back disc in its own rule above — is 44 tall in a 48px
+ * band, which puts it 2px from the top of the screen. The ring is 2px drawn
+ * 2px outside the
+ * border, so its outer edge lands at -2: the top of every one of these rings
+ * was off the top of the display, and a ring with one side missing reads as a
+ * misdrawn border rather than as focus.
+ *
+ * Against the border, it fits exactly — 2 minus 2 is the screen's first row of
+ * pixels. Nothing else moves: the offset is what the ring gives up, not the
+ * ring. Elsewhere in the admin the 2px stands, because elsewhere there is room.
+ */
+@media (max-width: 48rem) {
+  .app-header__mobile-nav-toggler:focus-visible,
+  #{$list} .da-locale:focus-visible,
+  .app-header .da-bar__more:focus-visible,
+  .app-header .da-bar__save .form-submit .btn--style-primary:focus-visible {
+    outline-offset: 0;
   }
 }

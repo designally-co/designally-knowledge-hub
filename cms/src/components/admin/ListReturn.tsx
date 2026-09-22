@@ -36,6 +36,9 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 const key = (slug: string) => `da:list:${slug}`
 
+/** What the writing surface's Cancel asked, now asked by every way out. */
+const LEAVING = 'Leave without saving? This edit will be lost.'
+
 /** `/admin/collections/<slug>` and `/admin/collections/<slug>/<id>` both. */
 function collectionFrom(pathname: null | string): null | string {
   const match = /^\/admin\/collections\/([^/]+)/.exec(pathname || '')
@@ -152,6 +155,20 @@ export function ReturnToPlace() {
  * pathname decides, which means a collection added later gets this without
  * anyone remembering to mount it. `da-doc` on the body is how SideNav.css takes
  * the hamburger off this screen — one owner for the corner at a time.
+ *
+ * IT ASKS WHEN THERE IS SOMETHING TO LOSE, which is the writing surface's
+ * Cancel, inherited. That button stood beside Save saying how to leave without
+ * saving, and it is gone now that the corner says it — but its guard is the
+ * part that mattered: a way out that silently discards a paragraph is worse
+ * than no way out. With a clean form there is nothing to confirm and it just
+ * goes.
+ *
+ * THE FORM'S STATE IS READ OFF THE BAR rather than through a hook, because this
+ * is mounted at the root of the admin, outside any form. `DocBar` renders the
+ * "Unsaved changes" line exactly when the form is modified (DocActions), so its
+ * presence in the page is the same fact, already published. `window.confirm` as
+ * Cancel used: one line, impossible to miss, and nothing here owns a panel to
+ * put a nicer one in.
  */
 export function BackToList({ children }: { children?: React.ReactNode }) {
   const router = useRouter()
@@ -168,9 +185,44 @@ export function BackToList({ children }: { children?: React.ReactNode }) {
     return () => document.body.classList.remove('da-doc')
   }, [slug])
 
+  /*
+   * AND THE CRUMB ASKS IT TOO, because on a desk the crumb IS the way out —
+   * there is no disc up there, the rail is a sidebar and the corner belongs to
+   * the brand. Payload guards this itself with `LeaveWithoutSaving`, and the
+   * Hub does not get it: that guard is rendered by Payload's own Edit view, and
+   * every document here replaces that view with its own component.
+   *
+   * ON `window`, IN THE CAPTURE PHASE, and both halves of that are load-bearing.
+   * `ReturnToPlace` listens for the same click on `document` to restore the
+   * page you left, and capture runs window before document — so this is asked
+   * before anything acts on the click, whichever mounted first. Stopping
+   * propagation then leaves the crumb where it stands.
+   */
+  React.useEffect(() => {
+    if (!slug) return
+
+    const onClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0) return
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+
+      const target = event.target as HTMLElement | null
+      if (!target?.closest?.('.step-nav a')) return
+      if (!document.querySelector('.da-bar__unsaved')) return
+      if (window.confirm(LEAVING)) return
+
+      event.preventDefault()
+      event.stopPropagation()
+    }
+
+    window.addEventListener('click', onClick, true)
+    return () => window.removeEventListener('click', onClick, true)
+  }, [slug])
+
   if (!slug) return <>{children}</>
 
   const back = () => {
+    if (document.querySelector('.da-bar__unsaved') && !window.confirm(LEAVING)) return
+
     let saved = ''
     try {
       saved = sessionStorage.getItem(key(slug)) || ''

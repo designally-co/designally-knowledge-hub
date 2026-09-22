@@ -96,9 +96,14 @@
     border-color: #e0e0e0;
   }
 
+  /* NO OFFSET ON THIS LINE, AND THAT IS THE BAND'S FAULT, NOT THE RING'S.
+     The control is 44 tall in a 48px band, so it sits 2px from the top of the
+     screen — and a ring offset by 2 and drawn at 2 starts two pixels ABOVE the
+     viewport, which is where its top edge went. Against the border it fits
+     exactly: 2 minus 2 is the first row of pixels on the screen. */
   .da-search .da-search__input:focus-visible {
     outline: 2px solid var(--da-focus);
-    outline-offset: 2px;
+    outline-offset: 0;
   }
 
   .da-search .da-search__glass {
@@ -138,9 +143,11 @@
     }
   }
 
+  /* The disc is on the same line, and the close button is inside the field —
+     its ring at an offset would sit on the field's own edge. */
   .da-search .da-search__disc:focus-visible,
   .da-search .da-search__close:focus-visible {
     outline: 2px solid var(--da-focus);
-    outline-offset: 2px;
+    outline-offset: 0;
   }
 }

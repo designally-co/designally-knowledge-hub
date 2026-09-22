@@ -640,13 +640,14 @@ export function ArticleActions() {
    *
    * Its ⋯ held View on site, Copy link and Delete — three things to do to an
    * article, none of them a thing to do mid-sentence, and all three are one
-   * click away on the overview the breadcrumb above already returns to. The
-   * back disc went with it for the same reason: the crumb is a way out, and two
-   * ways out on a screen with two controls is one too many.
+   * click away on the overview the crumb above already returns to.
    *
-   * CANCEL IS THE PAIR SAVE NEEDED. A screen that can be saved should say how
-   * to leave it without saving, and "the browser's back button" is not an
-   * answer. It goes to the overview — one layer up, where you came from.
+   * CANCEL IS THE PAIR SAVE NEEDED, on a desk. A screen that can be saved
+   * should say how to leave it without saving, and there the only other answer
+   * is the crumb. It is rendered on every width and hidden below 48rem
+   * (custom.scss), because a phone has the back disc in the corner and that
+   * disc asks the same question this one does — two ways out in one 375px band,
+   * one of them a word and one a glyph, was the pair being read as a choice.
    */
   if (writing) {
     return (
@@ -664,14 +665,15 @@ export function ArticleActions() {
 }
 
 /**
- * Leave the writing surface without saving.
+ * Leave the writing surface without saving — the desk's way out.
  *
  * IT ASKS WHEN THERE IS SOMETHING TO LOSE. A Cancel that silently discards a
  * paragraph is worse than no Cancel; with a clean form there is nothing to
  * confirm and it just goes. `window.confirm` rather than a panel of my own: it
  * is one line, it cannot be missed, and the platform's in-place confirmation —
  * the one the ⋯ menu uses for Delete — needs a panel to live in, which this bar
- * does not have.
+ * does not have. `BackToList` asks the same question, in the same words, for
+ * the phone's back disc.
  */
 function CancelWriting({ id, modified }: { id: number | string | undefined; modified: boolean }) {
   if (!id) return null
