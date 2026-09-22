@@ -107,20 +107,6 @@ export const SubscriberEmailCell: React.FC<CellProps> = ({ cellData }) => {
   )
 }
 
-/**
- * When they signed up.
- *
- * The date a row was written is the moment someone submitted the form, so the
- * column says "Signed up" rather than "Created at".
- *
- * IT READS THE ROW, NOT THE CELL. The column is a `ui` field, and Payload hands
- * a cell `doc[field.name]` — here `doc.signedUp`, which no subscriber has. The
- * date has to come from the document itself.
- */
-export const SubscriberSignedUpCell: React.FC<CellProps> = ({ rowData }) => (
-  <span className="da-sub-date">{asDate(rowData?.createdAt) ?? '—'}</span>
-)
-
 export const SubscriberStatusCell: React.FC<CellProps> = ({ cellData, rowData }) => {
   const id = rowData?.id
   const router = useRouter()
@@ -128,33 +114,18 @@ export const SubscriberStatusCell: React.FC<CellProps> = ({ cellData, rowData })
 
   const [status, setStatus] = React.useState(asText(cellData) ?? 'pending')
   const [open, setOpen] = React.useState(false)
-  const [source, setSource] = React.useState<string | null | undefined>(undefined)
   const [busy, setBusy] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
   const [confirming, setConfirming] = React.useState(false)
 
-  const locale = rowData?.locale === 'th' ? 'ไทย (Thai)' : 'English'
+  /* ALL THREE COME FROM THE ROW. `rowData` is the whole document — Payload
+     hands a cell the record, not the one value its column shows — so the
+     language, the sign-up path and the date are already here. None of them is
+     a column any more; a subscriber's detail is short enough that fetching it
+     again per row would be a request to learn what the page already knows. */
+  const language = rowData?.locale === 'th' ? 'ไทย (Thai)' : 'English'
+  const source = asText(rowData?.source)
   const signedUp = asDate(rowData?.createdAt)
-
-  /* `source` is not a column — a path per row would crowd out the four facts
-     that matter — so it is fetched for the row that is open, and only that. */
-  React.useEffect(() => {
-    if (!open || !id || source !== undefined) return
-    let live = true
-    void (async () => {
-      try {
-        const res = await fetch(`/api/subscribers/${id}?depth=0`, { credentials: 'include' })
-        if (!res.ok) return
-        const doc = (await res.json()) as { source?: unknown }
-        if (live) setSource(asText(doc.source))
-      } catch {
-        if (live) setSource(null)
-      }
-    })()
-    return () => {
-      live = false
-    }
-  }, [id, open, source])
 
   /* The panel is positioned against the row, and the row padded to hold it. */
   React.useEffect(() => {
@@ -215,12 +186,12 @@ export const SubscriberStatusCell: React.FC<CellProps> = ({ cellData, rowData })
             <div className="da-sub-facts__row">
               <dt>Signed up from</dt>
               <dd className={source ? 'da-sub-facts__path' : 'da-sub-facts__empty'}>
-                {source === undefined ? 'Loading…' : source ?? 'Not recorded'}
+                {source ?? 'Not recorded'}
               </dd>
             </div>
             <div className="da-sub-facts__row">
               <dt>Language</dt>
-              <dd>{locale}</dd>
+              <dd>{language}</dd>
             </div>
             {signedUp ? (
               <div className="da-sub-facts__row">

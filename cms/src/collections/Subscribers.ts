@@ -34,11 +34,13 @@ export const Subscribers: CollectionConfig = {
      * moment, and the status moves only when they confirm or leave. The one
      * exception — unsubscribing on their behalf — is a button, not a form.
      *
-     * So the four facts worth scanning are columns, and the two that are not —
-     * the sign-up path, and that button — open into the row. See
-     * SubscriberCells.
+     * TWO COLUMNS, NOT FOUR. Who, and whether they are being sent to — that is
+     * what a list of addresses is read for, and what a fifty-row page has to
+     * stay scannable at. The language and the date said the same thing twice
+     * once the row could open, so they live where the rest of the detail is:
+     * inside the row. See SubscriberCells.
      */
-    defaultColumns: ['email', 'status', 'locale', 'signedUp'],
+    defaultColumns: ['email', 'status'],
     hideAPIURL: true,
     // No `group`. It was "Audience", which put a second heading in the nav over
     // a group of one; the rail is a single list, as Content Studio's is, and
@@ -85,29 +87,19 @@ export const Subscribers: CollectionConfig = {
         { label: 'English', value: 'en' },
         { label: 'ไทย (Thai)', value: 'th' },
       ],
-      admin: { readOnly: true },
+      /* WHICH LANGUAGE THEY READ IN — the page's own, at the moment they
+         signed up, which is the closest thing to an answer they ever gave.
+         Read in the row rather than scanned down a column. */
+      admin: { readOnly: true, disableListColumn: true },
     },
     {
-      /* NOT A COLUMN. A path per row crowds out the four facts the table is
-         read for, and it is the one thing you look up about a single
-         subscriber rather than scan down — so it is fetched by the row that
-         opens. */
+      /* THE PAGE THAT EARNED THE SIGN-UP. Says which writing brings people in,
+         and is the one thing you look up about a single subscriber rather than
+         scan down a list — so it opens with the row. */
       name: 'source',
       type: 'text',
       access: { update: () => false },
       admin: { readOnly: true, disableListColumn: true },
-    },
-    {
-      /* THE DATE, UNDER ITS OWN NAME. `createdAt` is when the row was written,
-         which here is the moment the form was submitted — so the column says
-         so. A `ui` field carries no value of its own; the cell reads
-         `createdAt` off the row. See SubscriberCells. */
-      name: 'signedUp',
-      type: 'ui',
-      label: 'Signed up',
-      admin: {
-        components: { Cell: '/components/admin/SubscriberCells#SubscriberSignedUpCell' },
-      },
     },
     {
       /* WHY A STATUS AND NOT A DELETE. Someone who unsubscribes has told you

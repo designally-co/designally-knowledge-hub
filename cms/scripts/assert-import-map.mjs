@@ -33,10 +33,6 @@ const REQUIRED = [
     why: 'subscriber status expands the row with details and an unsubscribe action',
   },
   {
-    key: '/components/admin/SubscriberCells#SubscriberSignedUpCell',
-    why: 'subscriber createdAt is shown as the sign-up date',
-  },
-  {
     key: '/components/admin/SubscribersRedirect#SubscribersRedirect',
     why: 'subscriber document routes return to the list instead of opening a modal',
   },

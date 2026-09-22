@@ -71,11 +71,6 @@ tr:hover .da-sub-email__copy,
   .da-sub-email__copy { opacity: 1; }
 }
 
-.da-sub-date {
-  color: var(--da-ink-2);
-  white-space: nowrap;
-}
-
 /* ---- the state, and what opens it ----------------------------------------- */
 
 .da-sub-cell {
