@@ -46,6 +46,11 @@ export const Users: CollectionConfig = {
      */
     defaultColumns: ['email', 'updatedAt', 'createdAt', 'apiAccess'],
     components: {
+      beforeListTable: [
+        // The phone's search: a disc on the header's line that opens into the
+        // line. See SearchBar.tsx.
+        '/components/admin/SearchBar#SearchBar',
+      ],
       views: {
         // The document view is gone; the route returns to the list. See
         // UsersRedirect.

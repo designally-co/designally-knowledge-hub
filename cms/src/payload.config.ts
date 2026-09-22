@@ -124,6 +124,9 @@ export default buildConfig({
         // Press and hold a row to choose several of them, on a phone where the
         // checkbox column is not worth its width. See RowSelect.
         '/components/admin/RowSelect#RowSelect',
+        // On a phone, a document's top-left corner is a way back to its list
+        // rather than the whole app's menu. See BackToList.
+        '/components/admin/ListReturn#BackToList',
       ],
       // The whole navigation: Content Studio's side nav — the rail, its fold,
       // the phone drawer and its motion, the account menu — with the Hub's

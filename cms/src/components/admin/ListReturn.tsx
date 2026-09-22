@@ -128,3 +128,76 @@ export function ReturnToPlace() {
 
   return null
 }
+
+/**
+ * The corner of a document goes back, not to the menu.
+ *
+ * A PHONE'S TOP-LEFT IS ONE BUTTON, AND ON A DOCUMENT IT IS THE WRONG ONE.
+ * Payload puts its hamburger there on every screen, and on a document that is
+ * the whole app's navigation offered to someone who is in the middle of one
+ * article — while the only thing they actually want from that corner, the way
+ * out, is a breadcrumb in 13px type beside it. Content Studio answers this the
+ * same way: inside an article the corner's disc becomes a back chevron, because
+ * a place you came into from somewhere is a place you leave the way you came.
+ *
+ * TO THE LIST, NOT THROUGH HISTORY. Studio's goes back through the stack; this
+ * one cannot, because a Hub document has TABS — Overview and Edit are two
+ * routes — so `history.back()` from the writing surface lands on the other tab
+ * and the button that means "leave" would sometimes not leave. It goes to the
+ * collection, restoring the page and filter `RememberList` recorded above, so
+ * it does exactly what the crumb beside it does and always ends up outside the
+ * document.
+ *
+ * A PROVIDER, SO EVERY COLLECTION HAS IT. It renders nothing anywhere else: the
+ * pathname decides, which means a collection added later gets this without
+ * anyone remembering to mount it. `da-doc` on the body is how SideNav.css takes
+ * the hamburger off this screen — one owner for the corner at a time.
+ */
+export function BackToList({ children }: { children?: React.ReactNode }) {
+  const router = useRouter()
+  const pathname = usePathname()
+
+  /* `/admin/collections/<slug>/<id>` and anything under it — the document's
+     tabs, its versions. The bare list is not a document and keeps its menu. */
+  const match = /^\/admin\/collections\/([^/]+)\/.+/.exec(pathname || '')
+  const slug = match ? match[1] : null
+
+  React.useEffect(() => {
+    if (!slug) return
+    document.body.classList.add('da-doc')
+    return () => document.body.classList.remove('da-doc')
+  }, [slug])
+
+  if (!slug) return <>{children}</>
+
+  const back = () => {
+    let saved = ''
+    try {
+      saved = sessionStorage.getItem(key(slug)) || ''
+    } catch {
+      saved = ''
+    }
+    router.push(`/admin/collections/${slug}${saved}`)
+  }
+
+  return (
+    <>
+      <button aria-label="Back" className="da-back" onClick={back} type="button">
+        <svg
+          aria-hidden
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+          width="24"
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+      </button>
+      {children}
+    </>
+  )
+}

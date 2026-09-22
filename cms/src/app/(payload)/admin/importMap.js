@@ -34,6 +34,7 @@ import { TranslateToThaiButton as TranslateToThaiButton_c8d0b70ea2b3169c421567a6
 import { DocMeta as DocMeta_786ca5ea86bf3b6eb17e3ea797a584ce } from '../../../components/admin/DocActions'
 import { RememberList as RememberList_bc9981d873c7bdb9b0e730495859686c } from '../../../components/admin/ListReturn'
 import { LocaleSwitch as LocaleSwitch_4ef13d4fc6ce28dbd550419ec8c51c88 } from '../../../components/admin/LocaleSwitch'
+import { SearchBar as SearchBar_f65dda665642ae2177ecb5e3ca42b5a4 } from '../../../components/admin/SearchBar'
 import { ArticleOverview as ArticleOverview_2189bbbf21ed1de1d6d01c49729884c2 } from '../../../components/admin/ArticleViews'
 import { ReturnToPlace as ReturnToPlace_bc9981d873c7bdb9b0e730495859686c } from '../../../components/admin/ListReturn'
 import { ArticleWrite as ArticleWrite_2189bbbf21ed1de1d6d01c49729884c2 } from '../../../components/admin/ArticleViews'
@@ -59,6 +60,7 @@ import { UploadNew as UploadNew_9ea8c7b6df2174f003e9de60d1f1b21d } from '../../.
 import { DetailModals as DetailModals_4359a3edd7b28358aaabd2c9745aaa95 } from '../../../components/admin/DetailModals'
 import { A11yNames as A11yNames_8a3d7fd2a0d2427d29a01a1084d70db8 } from '../../../components/admin/A11yNames'
 import { RowSelect as RowSelect_c0122c16be51b77923cf0f341ce22b3e } from '../../../components/admin/RowSelect'
+import { BackToList as BackToList_bc9981d873c7bdb9b0e730495859686c } from '../../../components/admin/ListReturn'
 import { DashboardRedirect as DashboardRedirect_ece04e350fec6f57c4af84d53a7af84d } from '../../../components/admin/DashboardRedirect'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -100,6 +102,7 @@ export const importMap = {
   "/components/admin/DocActions#DocMeta": DocMeta_786ca5ea86bf3b6eb17e3ea797a584ce,
   "/components/admin/ListReturn#RememberList": RememberList_bc9981d873c7bdb9b0e730495859686c,
   "/components/admin/LocaleSwitch#LocaleSwitch": LocaleSwitch_4ef13d4fc6ce28dbd550419ec8c51c88,
+  "/components/admin/SearchBar#SearchBar": SearchBar_f65dda665642ae2177ecb5e3ca42b5a4,
   "/components/admin/ArticleViews#ArticleOverview": ArticleOverview_2189bbbf21ed1de1d6d01c49729884c2,
   "/components/admin/ListReturn#ReturnToPlace": ReturnToPlace_bc9981d873c7bdb9b0e730495859686c,
   "/components/admin/ArticleViews#ArticleWrite": ArticleWrite_2189bbbf21ed1de1d6d01c49729884c2,
@@ -125,6 +128,7 @@ export const importMap = {
   "/components/admin/DetailModals#DetailModals": DetailModals_4359a3edd7b28358aaabd2c9745aaa95,
   "/components/admin/A11yNames#A11yNames": A11yNames_8a3d7fd2a0d2427d29a01a1084d70db8,
   "/components/admin/RowSelect#RowSelect": RowSelect_c0122c16be51b77923cf0f341ce22b3e,
+  "/components/admin/ListReturn#BackToList": BackToList_bc9981d873c7bdb9b0e730495859686c,
   "/components/admin/DashboardRedirect#DashboardRedirect": DashboardRedirect_ece04e350fec6f57c4af84d53a7af84d,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

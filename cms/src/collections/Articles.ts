@@ -65,6 +65,9 @@ export const Articles: CollectionConfig = {
         // The language pair, on a collection that actually has localized
         // fields. It used to be one global control in the nav.
         '/components/admin/LocaleSwitch#LocaleSwitch',
+        // The phone's search: a disc on the header's line that opens into the
+        // line. See SearchBar.tsx.
+        '/components/admin/SearchBar#SearchBar',
       ],
       views: {
         edit: {

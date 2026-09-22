@@ -1,49 +1,35 @@
 /*
- * The language pair, in the list's control row.
+ * The language, as one round button.
  *
- * Same object as the segmented control that used to sit in the nav's foot: a
- * tinted track with the chosen option lifted to white. Two languages, both
- * shown — a select would hide half the answer behind a click and give no sense
- * of which one you are in without opening it.
+ * It was a segmented pair — EN and TH on a tinted track, the chosen one lifted
+ * to white — which is the right shape for a choice you make by comparing the
+ * options. With two that never change, and the one you are not in being the one
+ * you want, it is a toggle: half the width, and nothing to read before pressing.
+ *
+ * THE SAME DISC AS THE MENU AND SEARCH, because it sits between them in the
+ * header's line and three quiet controls on one line should be one shape. White
+ * with the hairline, ink under the pointer; the accent belongs to the thing that
+ * makes something.
  */
 
 .da-locale {
-  display: flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 0.25rem;
-  /* The 0.5rem the filter button used to keep from the search pill: the pair
-     sits together at the trailing edge, not welded. The push to that edge is
-     the search group's job now — it leads the pair. */
-  margin-inline-start: 0.5rem;
-  margin-block-end: 1.25rem;
-  padding: 0.25rem;
-  border-radius: 999px;
-  background-color: var(--da-warm-white);
-}
-
-/*
- * TWO CIRCLES, NOT TWO CHIPS. A language is two letters, and a 44x36 pill around
- * two letters is a shape sized by the padding rather than by what is in it — on
- * a phone that pair took 99px of a row the search field needed. A circle is the
- * smallest honest container for a two-letter label, and the two of them together
- * are narrower than one of the pills was.
- */
-.da-locale__opt {
   display: grid;
+  flex: 0 0 auto;
   place-items: center;
-  inline-size: 36px;
-  block-size: 36px;
-  min-block-size: 36px;
-  min-inline-size: 36px;
+  inline-size: 44px;
+  block-size: 44px;
+  min-inline-size: 44px;
+  min-block-size: 44px;
   padding: 0;
-  border: 0;
+  border: 1px solid var(--da-hairline);
   border-radius: 999px;
-  background: none;
+  background-color: #ffffff;
   font-family: var(--font-display);
+  /* Two letters at the label size the other discs draw their glyphs at. */
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--da-ink-3);
+  letter-spacing: 0.02em;
+  color: var(--da-ink-2);
   cursor: pointer;
   transition:
     background-color var(--da-dur-feedback) var(--da-ease),
@@ -51,19 +37,17 @@
 }
 
 @media (hover: hover) {
-  .da-locale__opt:hover {
+  .da-locale:hover {
+    background-color: var(--da-chrome);
     color: var(--da-ink);
   }
 }
 
-/* On a tinted track, white IS the selected state — the same inversion the
-   content uses against the page. */
-.da-locale__opt--on {
-  background-color: #ffffff;
-  color: var(--da-ink);
+.da-locale:active {
+  background-color: var(--da-chrome-active);
 }
 
-.da-locale__opt:focus-visible {
+.da-locale:focus-visible {
   outline: 2px solid var(--da-focus);
   outline-offset: 2px;
 }

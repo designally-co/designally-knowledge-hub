@@ -5541,33 +5541,45 @@ html {
  * that opens a thing and closes it should say which it is about to do.
  */
 @media (max-width: 48rem) {
-  /* NO BOX AROUND IT. The glyph is the control — a rectangle drawn around three
-     lines in the corner of a band that has no other framed thing in it reads as
-     a button someone forgot to finish. The 44px target stays; it is simply not
-     drawn. */
+  /*
+   * A DISC, AS ARTICLE STUDIO DRAWS IT — and this reverses what stood here.
+   *
+   * It was a bare glyph, on the reasoning that a box around three lines in a
+   * band with no other framed thing reads as a button someone forgot to
+   * finish. That held while it was the only control on the line. It is not:
+   * search sits at the other end of the same line now, as its own disc, and a
+   * glyph opposite a disc reads as one control and one decoration.
+   *
+   * Studio's own note for the same button: both are quiet controls sitting over
+   * content that scrolls underneath them, and both need an edge to be a shape
+   * rather than a gap. `--da-hairline` rather than the strong one — the edge
+   * only has to close the shape.
+   */
   .app-header__mobile-nav-toggler {
     display: inline-grid;
     place-items: center;
     inline-size: 44px;
     block-size: 44px;
     padding: 0;
-    border: 0;
-    background: none;
+    border: 1px solid var(--da-hairline);
+    border-radius: 999px;
+    background-color: #ffffff;
     color: var(--da-ink-2);
-    transition: color var(--da-dur-feedback) var(--da-ease);
+    transition:
+      background-color var(--da-dur-feedback) var(--da-ease),
+      color var(--da-dur-feedback) var(--da-ease);
   }
 
   @media (hover: hover) {
     .app-header__mobile-nav-toggler:hover {
+      background-color: var(--da-chrome);
       color: var(--da-ink);
     }
   }
 
-  /* The ring has to be drawn on something, and there is no box any more. */
   .app-header__mobile-nav-toggler:focus-visible {
     outline: 2px solid var(--da-focus);
-    outline-offset: -2px;
-    border-radius: var(--style-radius-s);
+    outline-offset: 2px;
   }
 
   /* Payload's three lines go; the glyph below replaces them. */
@@ -5929,21 +5941,21 @@ html {
     flex: 0 0 auto;
   }
 
-  .collection-list .search-bar,
-  .collection-list .search-filter,
-  .collection-list .search-filter__input {
-    inline-size: 100%;
-    max-inline-size: none;
-  }
-
   /*
-   * ONE FILL IN THE SEARCH FIELD, NOT TWO. Payload tints the wrapper `#fafaf9`
-   * and the input inside it `#f3f3f3` — two greys a shade apart, stacked, so the
-   * field had a faint second edge inside its own rounded corner. The wrapper
-   * carries the shape; the input carries the colour.
+   * PAYLOAD'S SEARCH IS NOT SEEN ON THIS SCREEN — and it is very much still on
+   * it. The phone's search is the disc in the header's line, `SearchBar`, a
+   * component rather than a stylesheet because a close button is markup and a
+   * field unrolling out of a disc is a tween. What used to be here was that
+   * shape drawn over Payload's own field with `:focus-within` for a state: it
+   * could open, and it could not be closed, cleared or animated.
+   *
+   * HIDDEN, NOT UNMOUNTED, AND SearchBar DEPENDS ON THAT. This field is still
+   * the one that owns the term: SearchBar types into it and Payload does the
+   * rest. `display: none` on the bar is what takes it off the screen without
+   * taking it out of the page. See SearchBar.tsx.
    */
-  .search-filter {
-    background-color: transparent;
+  .collection-list .list-controls .search-bar {
+    display: none;
   }
 
   /*
@@ -6158,30 +6170,53 @@ html {
    * The label stays in the button, clipped rather than removed, so "Create New"
    * — or "Upload" on Media — is still the control's accessible name.
    */
+  /*
+   * A PILL AT THE FOOT THAT SAYS WHAT IT MAKES — Article Studio's, and this
+   * replaces a plus in the top corner.
+   *
+   * Two things were wrong with the corner. A bare + is one glyph for two
+   * different things, and this admin has both: "Create New" on an article and
+   * "Upload" on the library. And the top-right of a phone is the furthest
+   * point on the screen from a thumb, for the one control a list exists to
+   * offer. At the foot it is where the hand already is, and it carries its own
+   * label, which is also its accessible name.
+   *
+   * The safe-area term is for a phone with a home indicator, where 16px from
+   * the bottom edge is under the bar the system draws there.
+   */
   .template-default__wrap > .collection-list .list-create-new-doc__create-new-button {
     position: fixed;
-    inset-block-start: calc((var(--app-header-height) - 40px) / 2);
+    inset-block-start: auto;
+    inset-block-end: max(16px, calc(env(safe-area-inset-bottom) + 8px));
     inset-inline-end: 16px;
     z-index: 31;
-    display: grid;
-    place-items: center;
-    inline-size: 40px;
-    block-size: 40px;
-    min-block-size: 40px;
-    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    inline-size: auto;
+    block-size: 44px;
+    min-block-size: 44px;
+    padding: 0 16px 0 12px;
     border-radius: 999px;
     box-shadow:
       0 1px 2px rgb(36 31 28 / 0.05),
-      0 4px 12px rgb(36 31 28 / 0.06);
+      0 8px 24px rgb(36 31 28 / 0.12);
   }
 
   .template-default__wrap > .collection-list .list-create-new-doc__create-new-button .btn__content {
-    position: absolute;
-    inline-size: 1px;
-    block-size: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
+    position: static;
+    inline-size: auto;
+    block-size: auto;
+    overflow: visible;
+    clip-path: none;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 600;
     white-space: nowrap;
+  }
+
+  .template-default__wrap > .collection-list .list-create-new-doc__create-new-button:active {
+    transform: scale(0.96);
   }
 
   .template-default__wrap > .collection-list .list-create-new-doc__create-new-button::before {
@@ -6411,33 +6446,32 @@ $list: '.template-default__wrap > .collection-list';
   color: #a6a6a6;
 }
 
-/* THE LANGUAGE PAIR, IN THE CONTROLS' OWN SHAPE. Studio has no language on its
-   Library, but its filters beside the search are 36-tall outlined boxes with an
-   eight-pixel corner, so the pair becomes one of those holding two segments —
-   the chosen one filled with the chrome grey. */
+/* THE LANGUAGE, AT THE HEIGHT OF THE LINE IT IS ON.
+ *
+ * This described a segmented pair — a 36-tall outlined box holding two
+ * segments, the chosen one filled with the chrome grey — which is what the
+ * control was. It is one round button now, and the rules for the segments were
+ * styling elements the component had stopped rendering. What survives is the
+ * one thing this block is for: the DESK row is 36 tall, and a 44px control in
+ * it sat eight pixels above the search field and Create beside it (measured, y
+ * 82 against 90). It takes the row's height, and it stays a circle doing it.
+ *
+ * The phone's bar sets its own 44 further down, where the disc is beside the
+ * menu button rather than beside a field. */
 #{$list} .da-locale {
   box-sizing: border-box;
-  block-size: 36px;
-  margin: 0;
-  padding: 2px;
-  gap: 2px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background: none;
-}
-
-#{$list} .da-locale__opt {
   inline-size: 36px;
   min-inline-size: 36px;
-  block-size: 30px;
-  min-block-size: 30px;
-  border-radius: 6px;
-  font-family: var(--font-body);
-  font-size: 13px;
-}
-
-#{$list} .da-locale__opt--on {
-  background-color: var(--da-chrome);
+  block-size: 36px;
+  min-block-size: 36px;
+  margin: 0;
+  padding: 0;
+  /* #e0e0e0, not the hairline: on this line it is one of the outlined controls
+     and takes their edge. On the phone's bar it is one of the discs and takes
+     theirs. */
+  border: 1px solid #e0e0e0;
+  border-radius: 999px;
+  background-color: #ffffff;
 }
 
 /* Create, at the controls' height so the line is one row: 36 tall, 16 either
@@ -7402,12 +7436,6 @@ $list: '.template-default__wrap > .collection-list';
     display: none;
   }
 
-  /* The search takes what the row has left beside the language pair; Studio's
-     224 is a desk width. */
-  #{$list} .list-controls .search-filter {
-    inline-size: 100%;
-  }
-
   #{$list} .table tbody td:nth-child(2) {
     flex: 1 1 auto;
     min-inline-size: 0;
@@ -8345,4 +8373,233 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
   border-color: transparent;
   background-color: var(--da-chrome);
   color: var(--da-ink);
+}
+
+/* ---- the phone's header line: menu, title, language, search -------------- */
+
+/*
+ * THE TWO CONTROLS JOIN THE MENU ON THE TOP LINE.
+ *
+ * They were in the list's own control row, a second band under the header
+ * holding a search disc and a language button with nothing else in it — 44px of
+ * screen spent on two controls, above a list that is the reason for the screen.
+ * Article Studio puts search in the bar beside the menu for exactly this
+ * reason; the Hub has one more control than Studio does, so the corner holds
+ * two.
+ *
+ * FIXED RATHER THAN PORTALLED. The header is Payload's own tree and the list's
+ * controls are the view's; moving one into the other needs a component that
+ * exists to relocate two buttons. They are pinned to the same line instead, in
+ * the band's own coordinates — the header is fixed at the top of the phone, so
+ * the line is at a known place.
+ *
+ * SEARCH PLACES ITSELF (SearchBar.css); this places the language button beside
+ * it and gets out of the row they both left.
+ */
+@media (max-width: 48rem) {
+  #{$list} .list-controls {
+    position: static;
+    min-block-size: 0;
+    margin: 0;
+  }
+
+  #{$list} .collection-list > .gutter > .da-locale,
+  #{$list} .da-locale {
+    position: fixed;
+    inset-block-start: 2px;
+    /* Inboard of search: 16 + its 44, and the 8 between them. */
+    inset-inline-end: 68px;
+    z-index: 32;
+    margin: 0;
+    /* STUDIO'S QUIET ICON BUTTON, EXACTLY: `size-11`, `rounded-full`,
+       `border-line`, `bg-surface`. Off the controls' row and onto the bar, it
+       stops being one of the outlined boxes and becomes one of the discs — the
+       same 44 and the same near-invisible #f0f0f0 edge as the menu button at
+       the other end of the line and the search beside it. */
+    inline-size: 44px;
+    min-inline-size: 44px;
+    block-size: 44px;
+    min-block-size: 44px;
+    border-color: var(--da-hairline);
+  }
+
+  /* And it goes under while the field is open — the line is the field's.
+     `visibility`, not opacity alone: the field is opaque and covers the spot
+     either way, and a button nobody can see but the Tab key can still reach is
+     a control in a place that no longer exists. This takes it out of the tab
+     order and the accessibility tree with it. */
+  #{$list}:has(.da-search--open) .da-locale {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+}
+
+/*
+ * THE TITLE SITS BESIDE THE MENU, NOT BETWEEN THE CONTROLS.
+ *
+ * Centred was right while the line held one button; with two at the other end
+ * the middle is not the middle any more, and a centred word between a menu on
+ * the left and a pair on the right reads as off-centre rather than as centred.
+ * Against the menu it has a thing to be beside, and the space it gives up goes
+ * to the two controls that need it.
+ *
+ * THE BREADCRUMB IS NOT THE TITLE HERE, which is the thing to know before
+ * moving anything: on a list `.app-header__step-nav-wrapper` is
+ * `visibility: hidden` and the word on the bar is the list's own `h1`, pinned
+ * over the band. So this moves the `h1`: hard against the menu button's 16 + 44
+ * on one side, clear of the search and language discs' 16 + 44 + 8 + 44 on the
+ * other, and reading from its own edge rather than from a middle that no longer
+ * exists.
+ */
+@media (max-width: 48rem) {
+  .template-default__wrap > .collection-list .list-header__title {
+    inset-inline: 68px 120px;
+    text-align: start;
+  }
+}
+
+/*
+ * AND A CARD'S TITLE TAKES THE CARD'S WIDTH.
+ *
+ * The name was laid out in a column sized for a table cell — 171px of a 351px
+ * card — so every headline wrapped twice and ended in an ellipsis with a third
+ * of the row empty beside it. A card is not a column; the picture takes what it
+ * needs and the words take the rest.
+ *
+ * INCLUDING THE 32 AT ITS END. That padding is the gap between the title column
+ * and the tag column in the table this used to be; stacked into a card, the tag
+ * is on its own line and the gap is just 32px of nothing at the card's right
+ * edge, holding the words off it.
+ */
+@media (max-width: 48rem) {
+  #{$list} .table tbody .cell-title,
+  #{$list} .table tbody .cell-title .da-row__id {
+    inline-size: 100%;
+    max-inline-size: none;
+  }
+
+  /* Written with the same `:is(#heading-title, …)` the column width is written
+     with, because `:is()` takes the weight of its heaviest argument: an id
+     beats any selector made of classes, however far down the file it is. */
+  #{$list}:is(.collection-list--articles, .collection-list--resources)
+    table
+    tbody
+    :is(#heading-title, .cell-title) {
+    padding-inline-end: 0;
+  }
+
+  #{$list} .table tbody .da-row__name {
+    flex: 1 1 auto;
+    inline-size: auto;
+    min-inline-size: 0;
+    max-inline-size: none;
+  }
+}
+
+/* ---- a document's corner: back, not the menu ----------------------------- */
+
+/*
+ * THE BACK DISC, AND THE HAMBURGER IT REPLACES.
+ *
+ * `BackToList` renders the button and puts `da-doc` on the body while a
+ * document is open; everything about WHERE it sits is here, because it is
+ * standing in the corner Payload's own toggler occupies and only one of them
+ * can have it. See ListReturn.tsx for why it goes to the list rather than
+ * through history.
+ *
+ * FIXED, LIKE SEARCH AT THE OTHER END. The button is rendered by a provider at
+ * the root of the admin, nowhere near the header's tree; the band is fixed at
+ * the top of the phone, so the corner is at a known place and the button is
+ * put there directly rather than portalled into markup that is not ours.
+ */
+.da-back {
+  display: none;
+}
+
+@media (max-width: 48rem) {
+  body.da-doc .da-back {
+    position: fixed;
+    inset-block-start: 2px;
+    inset-inline-start: 16px;
+    z-index: 34;
+    display: grid;
+    place-items: center;
+    inline-size: 44px;
+    block-size: 44px;
+    padding: 0;
+    border: 1px solid var(--da-hairline);
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: var(--da-ink-2);
+    cursor: pointer;
+    transition:
+      background-color var(--da-dur-feedback) var(--da-ease),
+      color var(--da-dur-feedback) var(--da-ease);
+  }
+
+  @media (hover: hover) {
+    body.da-doc .da-back:hover {
+      background-color: var(--da-chrome);
+      color: var(--da-ink);
+    }
+  }
+
+  body.da-doc .da-back:focus-visible {
+    outline: 2px solid var(--da-focus);
+    outline-offset: 2px;
+  }
+
+  /* AND THE MENU GOES WITH IT. Not merely hidden: `visibility` takes it out of
+     the tab order too, or the corner would hold one button you can see and a
+     second one the keyboard finds underneath it. The drawer is still reachable
+     from the list, which is one press away. */
+  body.da-doc .app-header__mobile-nav-toggler {
+    visibility: hidden;
+  }
+}
+
+/* ---- the document's two actions, on a phone ------------------------------ */
+
+/*
+ * THE SAME FAMILY AS EVERY OTHER CONTROL ON THIS LINE.
+ *
+ * The ⋯ and Save are drawn as an 8px-cornered pair, which is right on a desk:
+ * they sit together at the end of the document's own bar, among square-cornered
+ * fields and selects, and a disc beside a square Save read as two families.
+ *
+ * On a phone that bar IS the header's line — the back disc at one end, these
+ * two at the other — and there the square corners are the thing that does not
+ * match. So the ⋯ becomes the quiet disc the menu and search already are, and
+ * Save becomes a pill. The desk composition is untouched.
+ */
+@media (max-width: 48rem) {
+  .app-header .da-bar__more {
+    border-radius: 999px;
+  }
+
+  .app-header .da-bar__save .form-submit .btn--style-primary {
+    border-radius: 999px;
+  }
+}
+
+/* ---- the rail, stacked --------------------------------------------------- */
+
+/*
+ * IT IS NOT A RAIL DOWN HERE, SO IT DOES NOT KEEP A RAIL'S WIDTH.
+ *
+ * The panel is sized `--da-rail-w` — 288px, the width of a column standing
+ * BESIDE the document. Stacked underneath it, that number stops being a width
+ * and becomes a short line: measured, a 288px panel inside a 343px column, its
+ * fields ending at 287 on a 375 screen with 55px of nothing down the right of
+ * every one of them, against a document above that runs the full width.
+ */
+@media (max-width: 48rem) {
+  .collection-edit
+    .document-fields--has-sidebar
+    .document-fields__sidebar-fields
+    > .render-fields {
+    inline-size: auto;
+  }
 }

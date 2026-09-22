@@ -1,0 +1,146 @@
+/*
+ * The phone's search: a disc on the header's line, and the line itself once it
+ * is open. See SearchBar.tsx for why it is a component rather than a stylesheet
+ * over Payload's field.
+ *
+ * FIXED, NOT PORTALLED. The header is Payload's own tree and this is rendered
+ * from the list's `beforeListTable`; moving one into the other needs a
+ * component that exists to relocate a button. It is pinned to the band's line
+ * in the viewport's coordinates instead — the header is fixed at the top of the
+ * phone, so the line is at a known place. The language button beside it is
+ * placed the same way (custom.scss).
+ */
+
+.da-search {
+  display: none;
+}
+
+@media (max-width: 48rem) {
+  .da-search {
+    position: fixed;
+    inset-block-start: 2px;
+    /* THE OUTERMOST OF THE TWO CONTROLS, because it is the one that grows:
+       opening sweeps the field leftward across the line, and from the corner
+       that sweep passes over the language button on its way. */
+    inset-inline-end: 16px;
+    z-index: 34;
+    display: block;
+    inline-size: 44px;
+    block-size: 44px;
+  }
+
+  /* Open, it is the line. A field sharing a 375px line with a hamburger, a
+     title and a language button is a field the width of none of them. */
+  .da-search--open {
+    inset-inline-start: 16px;
+    inline-size: auto;
+  }
+
+  /* ---- the disc ---------------------------------------------------------- */
+
+  /* Studio's quiet icon button exactly: `size-11`, `rounded-full`,
+     `border-line`, `bg-surface`, `text-ink-2` — the same shape, size and
+     near-invisible edge as the menu button at the other end of the line. */
+  .da-search .da-search__disc {
+    display: grid;
+    place-items: center;
+    inline-size: 44px;
+    block-size: 44px;
+    padding: 0;
+    border: 1px solid var(--da-hairline);
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: var(--da-ink-2);
+    cursor: pointer;
+    transition:
+      background-color var(--da-dur-feedback) var(--da-ease),
+      color var(--da-dur-feedback) var(--da-ease);
+  }
+
+  /* ---- the field --------------------------------------------------------- */
+
+  /* EVERY RULE BELOW IS WRITTEN TWICE OVER. `.da-search__input` alone is one
+     class, and the admin's own input styling is `input[type='text']` — a type
+     and an attribute, which outranks it. So the open field came out in the
+     form fill: `--da-deep` grey, a 12px corner and no edge, which is right for
+     a field in a document and is not what a pill on the header's line is. The
+     parent class in front of each selector settles it. */
+
+  .da-search .da-search__field {
+    position: relative;
+    display: flex;
+    align-items: center;
+    block-size: 44px;
+  }
+
+  .da-search .da-search__input {
+    inline-size: 100%;
+    block-size: 44px;
+    /* Room for the magnifier at one end and the close button at the other, both
+       of which are placed against this box rather than laid out beside it. */
+    padding: 0 44px 0 40px;
+    border: 1px solid var(--da-hairline);
+    border-radius: 999px;
+    background-color: #ffffff;
+    font-family: var(--font-body);
+    font-size: 16px; /* Under 16 and iOS zooms the page on focus. */
+    color: var(--da-ink);
+  }
+
+  .da-search .da-search__input::placeholder {
+    color: #a6a6a6;
+  }
+
+  .da-search .da-search__input:focus {
+    outline: none;
+    border-color: #e0e0e0;
+  }
+
+  .da-search .da-search__input:focus-visible {
+    outline: 2px solid var(--da-focus);
+    outline-offset: 2px;
+  }
+
+  .da-search .da-search__glass {
+    position: absolute;
+    inset-inline-start: 16px;
+    color: var(--da-ink-3);
+    pointer-events: none;
+  }
+
+  /* Inside the pill's trailing end, in the padding reserved for it — the way a
+     field's own clear button sits, rather than as a second control after the
+     box. 32, not 44: it lives INSIDE a 44px field, and the 44 rule is for
+     controls standing beside other controls. */
+  .da-search .da-search__close {
+    position: absolute;
+    inset-inline-end: 6px;
+    display: grid;
+    place-items: center;
+    inline-size: 32px;
+    block-size: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: var(--da-ink-3);
+    cursor: pointer;
+    transition:
+      background-color var(--da-dur-feedback) var(--da-ease),
+      color var(--da-dur-feedback) var(--da-ease);
+  }
+
+  @media (hover: hover) {
+    .da-search .da-search__disc:hover,
+    .da-search .da-search__close:hover {
+      background-color: var(--da-chrome);
+      color: var(--da-ink);
+    }
+  }
+
+  .da-search .da-search__disc:focus-visible,
+  .da-search .da-search__close:focus-visible {
+    outline: 2px solid var(--da-focus);
+    outline-offset: 2px;
+  }
+}

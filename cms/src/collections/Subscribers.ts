@@ -47,6 +47,11 @@ export const Subscribers: CollectionConfig = {
     // its order is the `collections` array in payload.config.
     description: 'Newsletter sign-ups and their subscription status.',
     components: {
+      beforeListTable: [
+        // The phone's search: a disc on the header's line that opens into the
+        // line. See SearchBar.tsx.
+        '/components/admin/SearchBar#SearchBar',
+      ],
       views: {
         // No document view: the route returns to the list. See
         // SubscribersRedirect.

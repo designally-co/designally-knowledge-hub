@@ -9,6 +9,9 @@ import './LocaleSwitch.css'
 /**
  * Which language you are editing, on the screens where that is a real question.
  *
+ * A SINGLE ROUND BUTTON since 22 September 2026, in the header's top corner
+ * beside search — see the note on the markup below.
+ *
  * IT MOVED OUT OF THE NAV, 27 August 2026. Payload puts the locale control in
  * the app header and it was moved to the foot of the nav with the account — one
  * global switch, present on every screen. But localization only touches fields
@@ -46,35 +49,44 @@ export function LocaleSwitch() {
     router.refresh()
   }
 
+  /* THE NEXT ONE, ROUND THE RING. Two locales make this a toggle; three would
+     make it a cycle, and both read the same way from a button that says what it
+     is showing rather than what it will do. */
+  const codes = locales.map((option) => (typeof option === 'string' ? option : option.code))
+  const names = locales.map((option) =>
+    typeof option === 'string'
+      ? option
+      : typeof option.label === 'string'
+        ? option.label
+        : option.code,
+  )
+  const at = Math.max(0, codes.indexOf(current ?? codes[0]))
+  const next = (at + 1) % codes.length
+
   return (
-    <div aria-label="Language" className="da-locale" role="group">
-      {locales.map((option) => {
-        const code = typeof option === 'string' ? option : option.code
-        /* The full name — "English", "ไทย (Thai)" — is what the config calls it
-           and what a screen reader should hear. The button shows the code, so
-           the pair stays two short, equal-width chips instead of one word and
-           one word-plus-parenthetical. */
-        const name =
-          typeof option === 'string'
-            ? option
-            : typeof option.label === 'string'
-              ? option.label
-              : option.code
-        const active = code === current
-        return (
-          <button
-            aria-label={name}
-            aria-pressed={active}
-            className={`da-locale__opt${active ? ' da-locale__opt--on' : ''}`}
-            key={code}
-            onClick={() => switchTo(code)}
-            title={name}
-            type="button"
-          >
-            {code.toUpperCase()}
-          </button>
-        )
-      })}
-    </div>
+    /* ONE BUTTON, NOT A PAIR OF CHIPS.
+     *
+     * It was EN and TH side by side with the active one filled — a segmented
+     * control, which is the right shape for a choice you make by looking at the
+     * options. There are two, they never change, and the one you are not in is
+     * the one you want: that is a toggle, and a toggle costs half the width and
+     * none of the reading. Which matters here because it now sits in the
+     * header's top corner beside search, where the line is 44px tall and every
+     * pixel of it is spoken for.
+     *
+     * THE FACE IS THE STATE, AND THE LABEL IS THE ACTION. It shows where you
+     * are — the language you are editing — and says where pressing takes you,
+     * because a control that shows its own destination leaves you guessing
+     * which of the two you are looking at.
+     */
+    <button
+      aria-label={`Language: ${names[at]}. Switch to ${names[next]}`}
+      className="da-locale"
+      onClick={() => switchTo(codes[next])}
+      title={`Switch to ${names[next]}`}
+      type="button"
+    >
+      {(codes[at] ?? '').toUpperCase()}
+    </button>
   )
 }

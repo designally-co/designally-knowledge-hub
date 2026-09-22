@@ -166,6 +166,13 @@ export const Media: CollectionConfig = {
     // on every row, and the date is not what anyone opens this screen to find;
     // both are still on the document and in the column picker.
     defaultColumns: ['alt'],
+    components: {
+      beforeListTable: [
+        // The phone's search: a disc on the header's line that opens into the
+        // line. See SearchBar.tsx.
+        '/components/admin/SearchBar#SearchBar',
+      ],
+    },
   },
   fields: [
     {
