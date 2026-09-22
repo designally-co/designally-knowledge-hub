@@ -39,6 +39,30 @@ function formatDate(value: string | null | undefined, locale: Locale): string {
   }).format(d)
 }
 
+/**
+ * What the cover is OF, for the one place a description is read aloud with
+ * nothing beside it: a share card.
+ *
+ * NOT FOR THE PAGE ITSELF. The cover renders with an empty `alt` everywhere it
+ * appears, and that is the correct call rather than an omission — a hero sits
+ * under the headline it illustrates, and a card's picture is inside a link
+ * whose text is already the title. Describing them would have a screen reader
+ * announce the same sentence twice. A share card has no such neighbour: the
+ * platform shows the image alone, so `og:image:alt` is the one consumer with
+ * something to gain and nothing to repeat.
+ *
+ * Only an uploaded file has a description. A pasted `coverUrl` is a string with
+ * no record behind it, so there is nothing to say about it.
+ */
+function coverAltOf(r: ArticleDoc): string | undefined {
+  const img = r.coverImage
+  if (img && typeof img === 'object') {
+    const media = img as Media
+    if (media.url && typeof media.alt === 'string' && media.alt.trim()) return media.alt
+  }
+  return undefined
+}
+
 /** Resolve a cover image URL: uploaded Media takes precedence over an external coverUrl. */
 function coverOf(r: ArticleDoc): string | undefined {
   const img = r.coverImage
@@ -61,6 +85,11 @@ function coverOf(r: ArticleDoc): string | undefined {
  */
 function shareImageOf(r: ArticleDoc): string | undefined {
   return coverOf(r)
+}
+
+/** What that picture shows, when the file carries a description. */
+function shareImageAltOf(r: ArticleDoc): string | undefined {
+  return coverAltOf(r)
 }
 
 /**
@@ -671,6 +700,8 @@ export interface Article {
   references: { label: string; url: string }[]
   /** For the social share card. Falls back to `image`. */
   shareImage?: string
+  /** What that picture shows — `og:image:alt`, and only there. See coverAltOf. */
+  shareImageAlt?: string
   /* THE MACHINE-READABLE DATE, beside the human one. `date` is "6 July 2026" —
      written for a reader and localised, which is exactly what a crawler cannot
      parse. Structured data needs ISO 8601, so the raw value is carried through
@@ -709,6 +740,7 @@ export async function getArticleBySlug(
         tags: r.tag ? [r.tag] : [],
         image: coverOf(r),
         shareImage: shareImageOf(r),
+        shareImageAlt: shareImageAltOf(r),
         ratio: ratioOf(r),
         readTime: readingMinutes(r.body),
         body: r.body ?? null,

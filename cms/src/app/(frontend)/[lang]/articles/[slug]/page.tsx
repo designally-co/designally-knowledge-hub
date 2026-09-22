@@ -48,6 +48,9 @@ export async function generateMetadata({
      set, so the cover is now the whole answer. `metadataBase` in the layout
      makes its relative path absolute, which a crawler needs. */
   const image = article.shareImage
+  /* WHAT THE PICTURE SHOWS, for the card that shows it alone. Every cover on
+     the page itself keeps an empty `alt` deliberately — see coverAltOf. */
+  const imageAlt = article.shareImageAlt
   return {
     title: article.title,
     description: article.dek,
@@ -55,7 +58,7 @@ export async function generateMetadata({
       type: 'article',
       title: article.title,
       description: article.dek,
-      ...(image ? { images: [{ url: image }] } : {}),
+      ...(image ? { images: [{ url: image, ...(imageAlt ? { alt: imageAlt } : {}) }] } : {}),
     },
     twitter: {
       // The wide card, since there is a real image to fill it. Without this the

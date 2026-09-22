@@ -1,7 +1,67 @@
 import type { CollectionConfig } from 'payload'
 
 import { mediaFromUrlHandler } from '../endpoints/mediaFromUrl'
+import { toSlug } from '../fields/slug'
 import { mediaFileRedirect } from '../lib/storage'
+
+
+/**
+ * The extension a file should carry, from what it actually is.
+ *
+ * `image/jpeg` is `.jpg` rather than `.jpeg` because that is what the rest of
+ * this library is called, and a mixed shelf is a shelf you cannot pattern-match
+ * by eye. Anything not on the list keeps whatever the incoming name ended in,
+ * and a file that arrives with neither — the Article Studio case — simply has
+ * none, which is better than inventing one that lies about the bytes.
+ */
+const EXTENSIONS: Record<string, string> = {
+  'application/pdf': '.pdf',
+  'application/zip': '.zip',
+  'application/x-zip-compressed': '.zip',
+  'image/avif': '.avif',
+  'image/gif': '.gif',
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/svg+xml': '.svg',
+  'image/webp': '.webp',
+}
+
+function extensionFor(mimetype: string | undefined, name: string): string {
+  const known = mimetype ? EXTENSIONS[mimetype.split(';')[0].trim().toLowerCase()] : undefined
+  if (known) return known
+
+  const dot = name.lastIndexOf('.')
+  return dot > 0 ? name.slice(dot).toLowerCase() : ''
+}
+
+/**
+ * The stem of the name, from the description — in ASCII, whatever it was
+ * written in.
+ *
+ * THE FILENAME IS A PUBLIC ADDRESS, which is the fact that decides this. It was
+ * briefly allowed to carry Thai, on the reasoning that a Thai description should
+ * leave a Thai filename; measured, "ภาพหน้าปกบทความ.jpg" became
+ * `%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%AB…` in `url` — a hundred and twenty
+ * characters of percent-encoding in every link an editor copies, every `<img
+ * src>` in a sent newsletter and every share card. It loaded; it was unreadable.
+ *
+ * Nothing is lost by dropping it. The library lists the DESCRIPTION, not the
+ * filename, so a Thai file still reads as Thai everywhere a person looks at it.
+ * The name is what machines and URLs use, and there ASCII is the whole point.
+ *
+ * So: the slug when the description has any ASCII in it — "โลโก้ Designally"
+ * still gives `designally` — and a dated name when it has none. That name says
+ * less, but it is short, legible and unique (Payload increments a collision),
+ * which is everything a filename owes.
+ */
+function stemFor(alt: string, mimetype: string | undefined): string {
+  const ascii = toSlug(alt).slice(0, 80)
+  if (ascii) return ascii
+
+  const today = new Date().toISOString().slice(0, 10)
+  return `${mimetype?.startsWith('image/') ? 'image' : 'file'}-${today}`
+}
+
 
 /**
  * Uploaded assets: cover images, preview images, tool logos, and downloadable
@@ -12,6 +72,62 @@ export const Media: CollectionConfig = {
   slug: 'media',
   access: {
     read: () => true,
+  },
+  hooks: {
+    /*
+     * THE FILE TAKES THE NAME OF THE THING IT IS.
+     *
+     * Files arrived called whatever their source called them — `cover-5.jpg`
+     * from the last segment of a Content Studio URL, `IMG_4821.HEIC` from a
+     * phone — and the library read as a list of serial numbers with the real
+     * answer typed underneath. The description is that answer, and Content
+     * Studio already sends one with every cover: `/api/media/from-url` refuses
+     * a request without `alt`.
+     *
+     * ON CREATE ONLY, AND THAT IS THE WHOLE DESIGN. This is the one moment a
+     * name is free: the object has not been written to R2, no derivative has
+     * been cut, and nothing in the world points at it yet. A rename afterwards
+     * is a different thing entirely — the adapter has no copy, the three
+     * derivatives carry their own keys, and a newsletter that has already gone
+     * out holds the old address in an `<img>` nobody can edit. So the name is
+     * made right once rather than corrected later.
+     *
+     * THE EXTENSION COMES FROM THE FORMAT, NOT FROM THE OLD NAME — because
+     * quite often there is no old name to take it from. An Article Studio cover
+     * arrives as `/api/images/e5be14ed-a705-49b4-8aa3-5d827a2ef0bc`: a UUID with
+     * no extension at all, which is what the Hub was calling the file. The
+     * mimetype is the fact that survives every doorway — `from-url` reads it off
+     * the response, an upload carries it from the picker — so it decides, and
+     * the incoming name is only consulted when it happens to agree.
+     */
+    beforeOperation: [
+      ({ args, operation }) => {
+        if (operation !== 'create') return args
+
+        const file = args.req?.file
+        if (!file?.name) return args
+
+        const extension = extensionFor(file.mimetype, file.name)
+        const alt = typeof args.data?.alt === 'string' ? args.data.alt.trim() : ''
+
+        if (alt) {
+          file.name = `${stemFor(alt, file.mimetype)}${extension}`
+          return args
+        }
+
+        /* NO DESCRIPTION, BUT STILL NOT A BARE ID. Nothing here can invent what
+           the picture shows, so the name it came with stands — except that a
+           name with no extension on it is not a filename, and that is exactly
+           what arrives from Article Studio. Two files called
+           `e5be14ed-…` and `a7f3c9e1-…` at least become openable ones. */
+        if (extension && !file.name.toLowerCase().endsWith(extension)) {
+          const dot = file.name.lastIndexOf('.')
+          if (dot <= 0) file.name = `${file.name}${extension}`
+        }
+
+        return args
+      },
+    ],
   },
   endpoints: [
     /* Upload by URL, because a multipart upload cannot exceed Vercel's 4.5MB
