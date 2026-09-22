@@ -359,24 +359,15 @@ export interface Resource {
   createdAt: string;
 }
 /**
- * People who signed up for the newsletter. Export before a send.
+ * Newsletter sign-ups and their subscription status.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "subscribers".
  */
 export interface Subscriber {
   id: number;
-  /**
-   * Where the newsletter goes. One row per address.
-   */
   email: string;
-  /**
-   * The language they were reading when they signed up.
-   */
   locale?: ('en' | 'th') | null;
-  /**
-   * The page the form was on. Says which writing earns sign-ups.
-   */
   source?: string | null;
   status?: ('pending' | 'subscribed' | 'unsubscribed') | null;
   updatedAt: string;

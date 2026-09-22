@@ -7353,3 +7353,107 @@ $list: '.template-default__wrap > .collection-list';
 .collection-edit--articles .document-fields__sidebar-fields > .render-fields > .da-meta {
   order: 6;
 }
+
+/* Subscriber details are one form inside the popup, without the full-page
+   heading, collection introduction, or a second bordered container. */
+$subscriberDoc: '#{$doc}:has(.collection-edit--subscribers)';
+
+#{$subscriberDoc} .drawer__content {
+  padding: 0;
+}
+
+#{$subscriberDoc} .collection-edit {
+  padding: 56px 24px 0;
+}
+
+#{$subscriberDoc} .doc-drawer__header {
+  margin: 0;
+  gap: 0;
+}
+
+/* Keep the heading available to assistive technology; the visible email
+   belongs in its editable field. The close button stays in the corner. */
+#{$subscriberDoc} .doc-drawer__header-text {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+#{$subscriberDoc} :is(.doc-drawer__header .id-label, .doc-drawer__after-header) {
+  display: none;
+}
+
+#{$subscriberDoc} .document-fields__main,
+#{$subscriberDoc} .document-fields__main > .gutter {
+  inline-size: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#{$subscriberDoc} .render-fields.document-fields__fields {
+  display: grid;
+  /* Three sign-up facts across the sheet's 44rem, wrapping to two and then one
+     as it narrows. `auto-fit` rather than a fixed three, so the row closes up
+     instead of leaving a gap when `source` is the long one. */
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  column-gap: 20px;
+  row-gap: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+#{$subscriberDoc} .document-fields__fields > * {
+  grid-column: 1 / -1;
+  min-inline-size: 0;
+  margin-block-start: 16px;
+}
+
+#{$subscriberDoc} .document-fields__fields > :has(.da-subscriber-field) {
+  margin-block-start: 0;
+}
+
+/* THREE GROUPS, SPACED BY WHAT THEY ARE. The address names the person; language
+   and source sit under it as one pair, because both answer "where did this come
+   from"; the subscription is the only decision, so the widest gap falls above
+   it. Proximity does the separating — the hairlines between every fact were
+   what made five short facts read as a page of text. */
+#{$subscriberDoc} .document-fields__fields > :has(.da-subscriber-field--identity) {
+  margin-block-end: 16px;
+}
+
+#{$subscriberDoc} .document-fields__fields > :has(.da-subscriber-field--context) {
+  grid-column: span 1;
+}
+
+#{$subscriberDoc} .document-fields__fields > :has(.da-subscriber-field--status) {
+  margin-block-start: 28px;
+  padding-block-start: 20px;
+  border-block-start: 1px solid var(--da-divider);
+}
+
+#{$subscriberDoc} .da-bar--sheet {
+  padding: 20px 24px 24px;
+}
+
+/* Scroll only when the viewport cannot hold the form; keep its footer visible. */
+#{$subscriberDoc} .drawer__content > .gutter {
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 48rem) {
+  #{$subscriberDoc} .collection-edit {
+    padding-inline: 16px;
+  }
+
+  #{$subscriberDoc} .da-bar--sheet {
+    padding: 16px;
+  }
+}

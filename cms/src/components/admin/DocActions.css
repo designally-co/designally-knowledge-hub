@@ -220,6 +220,13 @@
   }
 }
 
+/* Detail modals keep actions at the foot; their menu opens into the panel. */
+.da-bar--sheet .da-bar__panel {
+  inset-block-start: auto;
+  inset-block-end: calc(100% + 8px);
+  transform-origin: bottom right;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .da-bar__panel {
     animation: none;

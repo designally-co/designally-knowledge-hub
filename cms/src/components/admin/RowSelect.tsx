@@ -49,7 +49,7 @@ const SNAP = OPEN / 2
 /** A drag that travels this far has declared which way it is going. */
 const SLOP = 10
 
-const NOT_SWIPEABLE = new Set(['users'])
+const NOT_SWIPEABLE = new Set(['users', 'subscribers'])
 
 const NOUNS: Record<string, string> = {
   articles: 'article',

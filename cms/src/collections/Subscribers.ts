@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { protectSubscriberConsent } from '../lib/subscriberConsent'
 
 /**
  * People who asked to hear from us.
@@ -16,73 +17,96 @@ import type { CollectionConfig } from 'payload'
  *
  * READ ACCESS IS ADMINS ONLY. This is the one collection in the Hub holding
  * personal data of people who are not us, and the site itself never needs to
- * read it back — it only ever appends. `create` is open because the endpoint
- * that writes here is public by nature; everything else is closed.
+ * read it back. Sign-up and confirmation use trusted Local API calls; the
+ * generic REST/GraphQL create route must not bypass email confirmation.
  */
 export const Subscribers: CollectionConfig = {
   slug: 'subscribers',
+  disableBulkEdit: true,
+  disableBulkDelete: true,
+  disableDuplicate: true,
   admin: {
     useAsTitle: 'email',
-    defaultColumns: ['email', 'locale', 'source', 'createdAt'],
+    /*
+     * THE LIST IS THE WHOLE SCREEN, as it is for Users. Nothing about a
+     * subscriber can be edited: the address is the one they typed and
+     * confirmed, the language and the page they signed up from record that
+     * moment, and the status moves only when they confirm or leave. The one
+     * exception — unsubscribing on their behalf — is a button, not a form.
+     *
+     * So the four facts worth scanning are columns, and the two that are not —
+     * the sign-up path, and that button — open into the row. See
+     * SubscriberCells.
+     */
+    defaultColumns: ['email', 'status', 'locale', 'signedUp'],
+    hideAPIURL: true,
     // No `group`. It was "Audience", which put a second heading in the nav over
     // a group of one; the rail is a single list, as Content Studio's is, and
     // its order is the `collections` array in payload.config.
-    description: 'People who signed up for the newsletter. Export before a send.',
-  },
-  access: {
-    /* The public form posts here through `/api/subscribe`, which validates
-       first. Payload's own create is left open for that path rather than
-       widened case by case. */
-    create: () => true,
-    read: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
-  },
-  fields: [
-    {
-      /* RENDERS NOTHING HERE. A `ui` field is the only slot inside the
-         document's form, and this one portals itself into the header band.
-         Without it the screen kept Payload's own chrome — the Edit/API tabs, a
-         strip of dates and a second Save — because the theme hides those only
-         where this bar is present.
-
-         NOT IN THE RAIL, BECAUSE THERE IS NO RAIL. A subscriber is one short
-         record: an address, the language they read in, the page they signed up
-         from, whether they are confirmed, and when. Split across a sheet and a
-         rail it read as two documents — an email over here, everything true of
-         that email over there. Five facts belong on one card. */
-      name: 'subscriberActions',
-      type: 'ui',
-      admin: {
-        disableListColumn: true,
-        components: { Field: '/components/admin/DocActions#SubscriberActions' },
+    description: 'Newsletter sign-ups and their subscription status.',
+    components: {
+      views: {
+        // No document view: the route returns to the list. See
+        // SubscribersRedirect.
+        edit: {
+          default: { Component: '/components/admin/SubscribersRedirect#SubscribersRedirect' },
+        },
       },
     },
+  },
+  access: {
+    create: () => false,
+    read: ({ req }) => Boolean(req.user),
+    update: ({ req }) => Boolean(req.user),
+    // An unsubscribe must retain the record that prevents future sending.
+    // Erasure requests need a separate, deliberate privacy workflow.
+    delete: () => false,
+  },
+  hooks: { beforeChange: [protectSubscriberConsent] },
+  fields: [
     {
       name: 'email',
       type: 'email',
       required: true,
       unique: true,
       index: true,
-      admin: { description: 'Where the newsletter goes. One row per address.' },
+      access: { update: () => false },
+      admin: {
+        readOnly: true,
+        components: { Cell: '/components/admin/SubscriberCells#SubscriberEmailCell' },
+      },
     },
     {
       name: 'locale',
       type: 'select',
       defaultValue: 'en',
+      access: { update: () => false },
       options: [
         { label: 'English', value: 'en' },
         { label: 'ไทย (Thai)', value: 'th' },
       ],
-      admin: {
-        description: 'The language they were reading when they signed up.',
-      },
+      admin: { readOnly: true },
     },
     {
+      /* NOT A COLUMN. A path per row crowds out the four facts the table is
+         read for, and it is the one thing you look up about a single
+         subscriber rather than scan down — so it is fetched by the row that
+         opens. */
       name: 'source',
       type: 'text',
+      access: { update: () => false },
+      admin: { readOnly: true, disableListColumn: true },
+    },
+    {
+      /* THE DATE, UNDER ITS OWN NAME. `createdAt` is when the row was written,
+         which here is the moment the form was submitted — so the column says
+         so. A `ui` field carries no value of its own; the cell reads
+         `createdAt` off the row. See SubscriberCells. */
+      name: 'signedUp',
+      type: 'ui',
+      label: 'Signed up',
       admin: {
-        description: 'The page the form was on. Says which writing earns sign-ups.',
+        components: { Cell: '/components/admin/SubscriberCells#SubscriberSignedUpCell' },
       },
     },
     {
@@ -91,7 +115,11 @@ export const Subscribers: CollectionConfig = {
          next import would mail them again. */
       name: 'status',
       type: 'select',
-      defaultValue: 'subscribed',
+      defaultValue: 'pending',
+      admin: {
+        readOnly: true,
+        components: { Cell: '/components/admin/SubscriberCells#SubscriberStatusCell' },
+      },
       options: [
         /* ASKED, BUT NOT YET PROVEN. The sign-up form records that someone
            typed this address; only the link in the confirmation email proves
@@ -102,16 +130,6 @@ export const Subscribers: CollectionConfig = {
         { label: 'Subscribed', value: 'subscribed' },
         { label: 'Unsubscribed', value: 'unsubscribed' },
       ],
-    },
-    {
-      // When they signed up and when the record last changed, at the foot of
-      // the card — the same component every other document ends with.
-      name: 'documentMeta',
-      type: 'ui',
-      admin: {
-        disableListColumn: true,
-        components: { Field: '/components/admin/DocActions#DocMeta' },
-      },
     },
   ],
   timestamps: true,

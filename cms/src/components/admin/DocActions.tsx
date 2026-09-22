@@ -9,9 +9,10 @@ import { usePathname, useRouter } from 'next/navigation'
    come from — those are masked into Payload's markup because there is no
    component to render there; here the markup is mine, so the components are. */
 import { Check, Ellipsis, ExternalLink, Expand, Link2, Pencil, Trash2, X } from 'lucide-react'
-import { SaveButton, useDocumentInfo, useFormFields, useFormModified, useLocale } from '@payloadcms/ui'
+import { SaveButton, useDocumentDrawerContext, useDocumentInfo, useFormFields, useFormModified, useLocale, useModal } from '@payloadcms/ui'
 
 import { DEFAULT_LOCALE, isLocale, localeHref } from '../../lib/i18n'
+import { DetailCloseGuard } from './DetailModals'
 
 import './DocActions.css'
 
@@ -146,17 +147,19 @@ function DocBar({ before, collection, deleteWarning, menu = true, noun, rows }: 
   const { anchor, slots } = useBarSlots()
   const modified = useFormModified()
 
-  /* NOT IN A SHEET. Open file, Copy link and Delete all speak about a document
-     that exists somewhere to be opened, linked or removed; in a drawer you are
-     making one, and the ⋯ would be three rows that cannot be used yet. The X in
-     the corner is the other way out. */
-  const showMenu = menu && !slots?.sheet
+  // Existing documents keep their actions when opened over the list. A new
+  // upload has no saved file to open, copy or delete yet.
+  const showMenu = menu && (!slots?.sheet || id !== undefined)
 
   return (
     <>
       {/* Not rendered — read. `closest` off this tells the bar which of the two
           places it is in; a `ui` field has no other way to know. */}
       <span hidden ref={anchor} />
+      {/* Media is the one collection whose documents open in a drawer over the
+          list, and a drawer's X and Escape bypass Payload's own unsaved-changes
+          guard. See DetailModals. */}
+      {collection === 'media' ? <DetailCloseGuard /> : null}
 
       {slots
         ? createPortal(
@@ -245,6 +248,7 @@ function DocMenu({
   rows,
 }: DocBarProps & { id: number | string | undefined }) {
   const router = useRouter()
+  const drawer = useDocumentDrawerContext()
 
   const [open, setOpen] = React.useState(false)
   const [confirming, setConfirming] = React.useState(false)
@@ -265,15 +269,17 @@ function DocMenu({
     }
     const onKey = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return
+      event.preventDefault()
+      event.stopPropagation()
       setOpen(false)
       trigger.current?.focus()
     }
 
     document.addEventListener('mousedown', onPointer)
-    document.addEventListener('keydown', onKey)
+    window.addEventListener('keydown', onKey, true)
     return () => {
       document.removeEventListener('mousedown', onPointer)
-      document.removeEventListener('keydown', onKey)
+      window.removeEventListener('keydown', onKey, true)
     }
   }, [open])
 
@@ -333,8 +339,12 @@ function DocMenu({
       if (!res.ok) throw new Error(String(res.status))
       /* Back to the list, and `refresh()` so it re-fetches rather than showing
          the deleted document out of the router cache. */
-      router.push(`/admin/collections/${collection}`)
-      router.refresh()
+      if (drawer.drawerSlug && drawer.onDelete) {
+        await drawer.onDelete({ id: String(id) })
+      } else {
+        router.push(`/admin/collections/${collection}`)
+        router.refresh()
+      }
     } catch {
       setDeleting(false)
       setError(`That did not delete. The ${noun} is unchanged.`)
@@ -672,45 +682,9 @@ export function ResourceActions() {
 
 /* ---- subscribers --------------------------------------------------------- */
 
-/**
- * The same bar on a subscriber.
- *
- * WITHOUT ONE, THIS SCREEN WAS PAYLOAD'S. The chrome hides itself when this bar
- * is on the page (`body:has(.app-header__actions .da-bar)` in custom.scss), so
- * the one collection that never got a bar kept the Edit/API tabs, the strip of
- * dates and a second Save — three pieces of another product on a screen holding
- * one field.
- *
- * NO LINK ROWS: a subscriber has no page and no file. What there is to do with
- * an address is copy it — into a mail client, or to find the person in Resend —
- * and the delete question is the serious one, so it says what deleting means
- * rather than that it cannot be undone.
- */
-export function SubscriberActions() {
-  const email = useFormFields(([fields]) => fields?.email?.value)
-  const address = typeof email === 'string' && email ? email : null
-  const { copied, copy } = useCopy(address)
-
-  const rows: MenuRow[] = []
-
-  if (address) {
-    rows.push({
-      icon: copied ? <Check aria-hidden="true" {...ICON} /> : <Link2 aria-hidden="true" {...ICON} />,
-      key: 'copy',
-      label: copied ? 'Address copied' : 'Copy address',
-      onClick: copy,
-    })
-  }
-
-  return (
-    <DocBar
-      collection="subscribers"
-      deleteWarning="They stop receiving the newsletter and their record goes. Someone removed here can sign up again."
-      noun="subscriber"
-      rows={rows}
-    />
-  )
-}
+/* THERE IS NO BAR HERE. A subscriber has no document view to put one on: the
+   route returns to the list, and the two things there are to do with an address
+   — copy it, stop sending to it — are in the row. See SubscriberCells. */
 
 /* ---- media --------------------------------------------------------------- */
 

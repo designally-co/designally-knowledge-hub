@@ -1,0 +1,253 @@
+/* --- a subscriber, in the row ---------------------------------------------
+   The state sits in its column. The rest — where they signed up from, in which
+   language, and the unsubscribe — is drawn across the whole row underneath the
+   cells: positioned against the `<tr>`, with the row's own cells padded to make
+   the room. Growing the cell instead would push one column down and leave the
+   address and the date floating at the top of a tall row.
+
+   The same mechanism as UserApiCell, stated separately because the two panels
+   hold different things and are sized by their own content. */
+
+/* Against the theme's own cell rules, which make every cell a positioned box —
+   that would otherwise anchor the panel to its column instead of to the row. */
+.template-default__wrap > .collection-list .table tbody tr.da-row--sub {
+  position: relative;
+}
+
+.template-default__wrap > .collection-list .table tbody tr.da-row--sub > td {
+  position: static;
+  padding-block-end: 132px;
+}
+
+/* ---- the address ---------------------------------------------------------- */
+
+.da-sub-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-inline-size: 0;
+}
+
+.da-sub-email__value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Quiet until the row is under the pointer: forty rows each showing a copy
+   glyph is forty verbs competing with the addresses they belong to. */
+.da-sub-email__copy {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: var(--style-radius-s);
+  background: none;
+  color: var(--da-ink-4);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+tr:hover .da-sub-email__copy,
+.da-sub-email__copy:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .da-sub-email__copy:hover {
+    background-color: var(--da-deep);
+    color: var(--da-ink);
+  }
+}
+
+/* A touch pointer has no hover to reveal it with. */
+@media (hover: none) {
+  .da-sub-email__copy { opacity: 1; }
+}
+
+.da-sub-date {
+  color: var(--da-ink-2);
+  white-space: nowrap;
+}
+
+/* ---- the state, and what opens it ----------------------------------------- */
+
+.da-sub-cell {
+  display: grid;
+  gap: 10px;
+  padding-block: 4px;
+}
+
+.da-sub-cell__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.da-sub-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background-color: var(--da-deep);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  white-space: nowrap;
+  color: var(--da-ink-2);
+}
+
+.da-sub-state::before {
+  content: '';
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: 999px;
+  background-color: currentColor;
+}
+
+.da-sub-state--subscribed {
+  background-color: #eaf5f0;
+  color: var(--da-affirm);
+}
+
+.da-sub-state--pending {
+  background-color: #fdf3e3;
+  color: var(--da-caution);
+}
+
+.da-sub-cell__disclose {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: var(--style-radius-s);
+  background: none;
+  color: var(--da-ink-3);
+  cursor: pointer;
+}
+
+.da-sub-cell__disclose svg {
+  transition: transform var(--da-dur-feedback) var(--da-ease);
+}
+
+.da-sub-cell__disclose--on svg { transform: rotate(180deg); }
+
+@media (hover: hover) {
+  .da-sub-cell__disclose:hover { background-color: var(--da-deep); color: var(--da-ink); }
+}
+
+/* ---- the panel ------------------------------------------------------------ */
+
+/* Starting at the email, which is where the row starts being read. */
+.da-row--sub .da-sub-cell__detail {
+  position: absolute;
+  inset-inline-start: var(--da-sub-inset, 16px);
+  inset-inline-end: 16px;
+  inset-block-end: 14px;
+}
+
+.da-sub-cell__detail {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--style-radius-m);
+  background-color: var(--da-deep);
+}
+
+/* Three facts across the row, wrapping as it narrows. */
+.da-sub-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 10px 24px;
+  margin: 0;
+}
+
+.da-sub-facts__row {
+  display: grid;
+  gap: 2px;
+  min-inline-size: 0;
+}
+
+.da-sub-facts dt {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--da-ink-3);
+}
+
+.da-sub-facts dd {
+  margin: 0;
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--da-ink);
+}
+
+.da-sub-facts__path {
+  font-family: var(--font-mono, monospace);
+  font-size: 12px;
+}
+
+.da-sub-facts__empty { color: var(--da-ink-4); }
+
+.da-sub-cell__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding-block-start: 10px;
+  border-block-start: 1px solid var(--da-hairline-strong);
+}
+
+.da-sub-cell__note {
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--da-ink-3);
+}
+
+.da-sub-cell__stop {
+  flex: none;
+  min-block-size: 32px;
+  padding-inline: 12px;
+  border: 1px solid var(--da-hairline-strong);
+  border-radius: var(--style-radius-s);
+  background-color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--da-critical-ink);
+  cursor: pointer;
+  transition: border-color var(--da-dur-feedback) var(--da-ease);
+}
+
+.da-sub-cell__stop:disabled { cursor: default; opacity: 0.45; }
+
+@media (hover: hover) {
+  .da-sub-cell__stop:not(:disabled):hover { border-color: var(--da-critical); }
+}
+
+.da-sub-cell__error {
+  margin: 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--da-critical);
+}
+
+.da-sub-email__copy:focus-visible,
+.da-sub-cell__disclose:focus-visible,
+.da-sub-cell__stop:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}

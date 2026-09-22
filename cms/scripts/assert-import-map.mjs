@@ -25,6 +25,26 @@ const mapPath = resolve(here, '../src/app/(payload)/admin/importMap.js')
 // admin to work, it belongs in this list.
 const REQUIRED = [
   {
+    key: '/components/admin/SubscriberCells#SubscriberEmailCell',
+    why: 'subscriber email is a list cell with an adjacent copy action',
+  },
+  {
+    key: '/components/admin/SubscriberCells#SubscriberStatusCell',
+    why: 'subscriber status expands the row with details and an unsubscribe action',
+  },
+  {
+    key: '/components/admin/SubscriberCells#SubscriberSignedUpCell',
+    why: 'subscriber createdAt is shown as the sign-up date',
+  },
+  {
+    key: '/components/admin/SubscribersRedirect#SubscribersRedirect',
+    why: 'subscriber document routes return to the list instead of opening a modal',
+  },
+  {
+    key: '/components/admin/DetailModals#DetailModals',
+    why: 'media documents open over the list through this provider',
+  },
+  {
     key: '@payloadcms/richtext-lexical/rsc#RscEntryLexicalField',
     why: 'the article body is a richText field and cannot render without the Lexical editor',
   },

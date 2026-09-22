@@ -117,6 +117,7 @@ export default buildConfig({
         // the root as CSS variables. See AdminFonts.
         '/components/admin/AdminFonts#AdminFonts',
         '/components/admin/UploadNew#UploadNew',
+        '/components/admin/DetailModals#DetailModals',
         // Accessible names for the controls Payload draws as bare glyphs — the
         // pager's arrows, a panel's ⋯, a select's × and ⌄. See A11yNames.
         '/components/admin/A11yNames#A11yNames',
