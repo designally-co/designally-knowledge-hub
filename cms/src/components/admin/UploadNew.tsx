@@ -119,7 +119,7 @@ export function UploadNew({ children }: { children?: React.ReactNode }) {
     const input = document.createElement('input')
     input.type = 'file'
     input.hidden = true
-    input.accept = 'image/*,application/pdf,image/svg+xml'
+    input.accept = 'image/*,application/pdf,image/svg+xml,application/zip,application/x-zip-compressed,.zip'
     document.body.appendChild(input)
 
     /* ONE FILE, INTO THE DRAWER PAYLOAD WAS GOING TO OPEN — whichever button

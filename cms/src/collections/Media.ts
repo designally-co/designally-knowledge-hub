@@ -170,7 +170,13 @@ export const Media: CollectionConfig = {
        still in sent newsletters and link previews. It redirects to R2; files
        are served by Cloudflare and never come through here. See lib/storage. */
     handlers: [mediaFileRedirect],
-    mimeTypes: ['image/*', 'application/pdf', 'image/svg+xml'],
+    mimeTypes: [
+      'image/*',
+      'application/pdf',
+      'image/svg+xml',
+      'application/zip',
+      'application/x-zip-compressed',
+    ],
     /* Point the admin at the 400px derivative it already generates, rather
        than the original. Unset, Payload falls back to the full-size file for
        every thumbnail it draws — so picking a cover from the library meant
