@@ -161,7 +161,11 @@ export const Media: CollectionConfig = {
     /* The picture is IN the name's column now (see MediaRowTitle), so the
        separate preview column goes: a thumbnail and the words about it, read
        in one move, the way an article's row works. */
-    defaultColumns: ['alt', 'credit', 'updatedAt'],
+    // A library of files is browsed as cards, not read as rows (custom.scss),
+    // so there is one column: the picture and what it is called. Credit said "—"
+    // on every row, and the date is not what anyone opens this screen to find;
+    // both are still on the document and in the column picker.
+    defaultColumns: ['alt'],
   },
   fields: [
     {
@@ -201,10 +205,8 @@ export const Media: CollectionConfig = {
            * twenty forms.
            *
            * What actually matters is that nothing PUBLISHED carries an
-           * undescribed image, and that is now checked where it can be checked
-           * properly: `coverImage` on an article refuses to save without one
-           * (see Articles), and this list says which files are still waiting.
-           * A file can arrive undescribed; it cannot go on a page that way. */
+           * undescribed image, and that is checked on the article: `coverImage`
+           * refuses to save without one (see Articles). */
           name: 'alt',
           /* THE FIELD IS `alt` AND THE WORD IS "Description". The name stays —
              every article cover reads it through the media relation, and
@@ -215,13 +217,55 @@ export const Media: CollectionConfig = {
              search, which Payload builds from the label: "Search by Alt". */
           label: 'Description',
           type: 'text',
+          /*
+           * THE FILENAME IS THE DEFAULT DESCRIPTION.
+           *
+           * The library used to mark every undescribed file in red and wait for
+           * someone to come back and write something. Most never got one, so the
+           * mark was permanent decoration on a shelf of files whose names —
+           * `studio-desk-with-type-specimens.jpg` — already said what they were.
+           *
+           * WITHOUT THE EXTENSION. `Google_Sans,Roboto.zip` describes itself as
+           * "Google_Sans,Roboto"; `.zip` is how the file is packed, which the
+           * picture on the card already says and no description should have to.
+           *
+           * Read, not written: the stored value stays empty until an editor
+           * writes one, so this covers the files already here as well as the
+           * next upload, and nothing has to be migrated. Anything that asks for
+           * the description gets an answer — the card, the cover well, and the
+           * article's own check.
+           *
+           * IT DOES SOFTEN THE ARTICLE'S CHECK. A cover with no description is
+           * refused there, and now no file has none, so the refusal cannot fire.
+           *
+           * WHICH MATTERS IN ONE PLACE. On the page itself every image is
+           * `alt=""` on purpose — a hero sits under its own headline, a card's
+           * picture inside a link that already says the title — but the share
+           * card reads this field into `og:image:alt`. So an undescribed file
+           * now shares as its own name, which is a weak alternative text where a
+           * written one would be a good one. It is the better of the two answers
+           * available (the field was empty before), and the moment that is worth
+           * more than the convenience, this fallback should give way to asking
+           * the editor again.
+           */
+          hooks: {
+            afterRead: [
+              ({ data, value }) => {
+                if (typeof value === 'string' && value.trim()) return value
+                const filename = typeof data?.filename === 'string' ? data.filename : ''
+                // Only a real extension: a trailing `.zip`, never the dot in a
+                // name that simply has one.
+                return filename.replace(/\.[A-Za-z0-9]{1,8}$/, '') || filename || value
+              },
+            ],
+          },
           admin: {
             /* SHORT ENOUGH TO READ IN THE GLANCE IT GETS. It ran to two full
                sentences under a one-line field — "What the picture shows, for
                someone who cannot see it. Needed before it can go on a page." —
                which is a paragraph explaining a box you have already understood.
                Both facts survive: who it is for, and that it gates publishing. */
-            description: 'For readers who can\'t see it. Needed to publish.',
+            description: 'For readers who can\'t see it. Defaults to the filename.',
             components: {
               /* The picture in front of the name, and the row's link or — in a
                  drawer — its select button. See MediaRowTitle. */

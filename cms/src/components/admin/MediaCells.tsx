@@ -79,17 +79,12 @@ export const MediaRowTitle: React.FC<CellProps & { link?: boolean }> = ({ cellDa
      full list, where the row is a link. See the note above. */
   const { isInDrawer, onSelect } = useListDrawerContext()
 
-  /* THE ROW SAYS WHAT IS MISSING. A file can now arrive without a description —
-     dropped on an article, or one of twenty landed here at once — and the
-     description is the one thing about it that no upload can supply. So the name
-     column carries the state: what it is called, or, when nobody has said yet,
-     the filename and the fact that it is still waiting.
-
-     This is the other half of the bargain the Media collection makes: alt is not
-     required at the door, and an article will not save with an undescribed cover
-     — so the list has to be the place you can find them. */
-  const described = typeof cellData === 'string' && cellData.trim()
-  const name = described || rowData?.filename || 'Untitled'
+  /* THE DESCRIPTION, AND ONLY THAT. This used to fall back to the filename
+     here, and carry a second line in red on every file that had no description
+     — a permanent mark on a shelf of files whose names already said what they
+     were. The field itself falls back now, to the filename without its
+     extension (see Media.ts), so the card has one thing to say and says it. */
+  const name = (typeof cellData === 'string' && cellData.trim()) || 'Untitled'
   const src = rowData?.sizes?.thumbnail?.url || rowData?.url || undefined
 
   const inner = (
@@ -102,7 +97,6 @@ export const MediaRowTitle: React.FC<CellProps & { link?: boolean }> = ({ cellDa
       />
       <span className="da-row__text">
         <span className="da-row__name">{name}</span>
-        {described ? null : <span className="da-row__todo">Needs description</span>}
       </span>
     </>
   )

@@ -242,7 +242,7 @@ export interface Article {
 export interface Media {
   id: number;
   /**
-   * For readers who can't see it. Needed to publish.
+   * For readers who can't see it. Defaults to the filename.
    */
   alt?: string | null;
   /**
