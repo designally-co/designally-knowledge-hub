@@ -127,6 +127,18 @@ body.da-writing .document-fields__main > .gutter {
   padding-inline: 60px;
 }
 
+/* ON A TABLET, THE PAGE'S COLUMN. Between the phone's 16 and the desk's 60
+   there is the band from 769 to 1024, where the rail is under the document and
+   everything else on the screen — the band, the overview's card, the settings,
+   every list — stands on a 32px column. The writing surface kept the desk's 60
+   and measured 60 to 745 at 820 against an overview of the same article at 32
+   to 773: switching tabs moved the page 28px in from both sides. */
+@media (min-width: 48.0625rem) and (max-width: 1024px) {
+  body.da-writing .document-fields__main > .gutter {
+    padding-inline: 32px;
+  }
+}
+
 /*
  * AND ON A PHONE IT IS THE WHOLE SCREEN.
  *

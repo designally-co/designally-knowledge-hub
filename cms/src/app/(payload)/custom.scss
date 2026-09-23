@@ -4755,6 +4755,141 @@ $doc: '.payload__modal-container .payload__modal-item.doc-drawer';
   }
 }
 
+/*
+ * THE TABLET'S MENU BUTTON IS THE PHONE'S, AT THE DESK BAR'S HEIGHT.
+ *
+ * Between 769 and 1024 the rail is gone — the drawer holds the navigation — and
+ * what opened it was Payload's own toggler: a 27px bare glyph in the corner of
+ * the band, unstyled, because the admin's disc was drawn for phones only. On an
+ * iPad in portrait that glyph was the only way to reach another collection.
+ *
+ * So the band shows the same button a phone does — Payload's
+ * `.app-header__mobile-nav-toggler`, in the band's own flow, so the breadcrumb
+ * after it moves over rather than being covered — and Payload's corner glyph
+ * goes. It is 36 here, not the phone's 44: a tablet keeps the desk's band, and
+ * the ⋯ and Save beside it are 36 on a mouse and 44 under a finger (DocActions'
+ * `pointer: coarse`), so this follows the same rule and stays their height.
+ */
+@media (min-width: 48.0625rem) and (max-width: 1024px) {
+  .template-default__nav-toggler-wrapper {
+    display: none;
+  }
+
+  /* The band on the page's own column. Payload insets it by its 40px gutter;
+     the page under it is inset 32, so the menu button — the first thing on the
+     band — sat 8px to the right of the heading it heads. */
+  .app-header__content {
+    padding-inline: 32px;
+  }
+
+  /*
+   * A DOCUMENT STACKS HERE, SO IT STOPS BEING TWO COLUMNS.
+   *
+   * Below 1024 the rail goes under the document instead of beside it — and the
+   * desk's arithmetic for the pair came with it: the document's gutter gives up
+   * its right side ("the gap belongs to one side" — the rail's), and the rail
+   * keeps a rail's 288px behind its own 20px gap. Stacked, that measured the
+   * article's card at 40 to 805, flush against the right edge of an 805px page,
+   * and the settings under it 288px wide at x20: two boxes, neither on the
+   * page's column. The phone was given its own version of this; the tablet
+   * band was not.
+   *
+   * Both go on the page's 32px column, full width.
+   */
+  .document-fields--has-sidebar .document-fields__edit {
+    padding-inline: 32px;
+  }
+
+  /* Full width including the document itself. On a desk its column stops at
+     the body's measure so the rail can sit beside it; stacked, nothing sits
+     beside it, and at 1024 the capped card ended at 840 over settings that ran
+     to 977 — two widths, one above the other. The list tables on these screens
+     span the column too. */
+  .document-fields--has-sidebar .document-fields__main,
+  .collection-edit--articles .document-fields--has-sidebar .document-fields__main {
+    inline-size: 100%;
+  }
+
+  .document-fields--has-sidebar .document-fields__sidebar-fields {
+    padding-inline: 32px;
+  }
+
+  .document-fields--has-sidebar .document-fields__sidebar-fields > .render-fields {
+    inline-size: auto;
+  }
+
+  /* AND ITS LAST CONTROL REACHES THAT EDGE. Payload keeps a trailing margin on
+     the band's action slot — measured at 820, Save ending at 727 in a band whose
+     content edge is 773. The phone lost that margin long ago; the tablet band
+     kept it. */
+  .app-header__actions-wrapper,
+  .app-header__actions {
+    padding-inline-end: 0;
+    margin-inline-end: 0;
+  }
+
+  .app-header__mobile-nav-toggler {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    inline-size: 36px;
+    block-size: 36px;
+    margin-inline-end: 12px;
+    padding: 0;
+    border: 1px solid var(--da-hairline);
+    border-radius: 999px;
+    background-color: #ffffff;
+    color: var(--da-ink-2);
+    cursor: pointer;
+    transition:
+      background-color var(--da-dur-feedback) var(--da-ease),
+      color var(--da-dur-feedback) var(--da-ease);
+  }
+
+  @media (pointer: coarse) {
+    .app-header__mobile-nav-toggler {
+      inline-size: 44px;
+      block-size: 44px;
+    }
+  }
+
+  @media (hover: hover) {
+    .app-header__mobile-nav-toggler:hover {
+      background-color: var(--da-chrome);
+      color: var(--da-ink);
+    }
+  }
+
+  .app-header__mobile-nav-toggler:focus-visible {
+    outline: 2px solid var(--da-focus);
+    outline-offset: 2px;
+  }
+
+  .app-header__mobile-nav-toggler > * {
+    display: none;
+  }
+
+  .app-header__mobile-nav-toggler::before {
+    content: '';
+    inline-size: 18px;
+    block-size: 18px;
+    background-color: currentColor;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    -webkit-mask-size: contain;
+    mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>');
+    -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></svg>');
+  }
+
+  .template-default--nav-open .app-header__mobile-nav-toggler::before {
+    mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+    -webkit-mask-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>');
+  }
+}
+
 /* ---- the columns are the table, not a preference ------------------------- */
 
 /* THE PICKER IS GONE. It offered nineteen options over a five-column table,
@@ -5992,23 +6127,31 @@ html {
     margin-inline-end: 0;
   }
 
-  /*
-   * AND THE TABLE STOPS AT THE CARD'S PADDING. It is shifted out of it on
-   * purpose — `position: relative; left: -16px` with 16px of padding putting the
-   * content back, which is Payload's way of letting a table bleed to a page's
-   * edge while its cells stay on the grid. Inside a card it only makes one side
-   * ragged: measured, the table's box at x16 against a heading and a search
-   * field at x32, and its own right edge at 327 against the card's 359.
-   *
-   * The shift goes and the padding that compensated for it goes with it.
-   */
+}
+
+/*
+ * THE TABLE STOPS AT THE PAGE'S PADDING — BELOW THE RAIL, NOT ONLY ON A PHONE.
+ *
+ * Payload shifts it out of it on purpose, at its own `mid-break` (1024 and
+ * down): `width: calc(100% + 2 × gutter)`, `left: -gutter`, and the gutter put
+ * back as padding — "extend the table all the way to the viewport edges", its
+ * comment says, so a scrolling table shows it scrolls. This admin's tables do
+ * not scroll sideways; they fit. So the shift only made the page ragged:
+ * measured on a phone, the table's box at x16 against a heading at x32; and on
+ * a tablet at 820, the box at x-8 running to 828 — the whole list 8px wider
+ * than the window, with a sideways scroll under every screen that has a list.
+ * The undo was scoped to phones, which is how the tablet kept it.
+ *
+ * The shift goes, and the padding that compensated for it goes with it.
+ */
+@media (max-width: 1024px) {
   .collection-list__tables .table {
     position: static;
     inset-inline-start: 0;
     left: 0;
     /* The width carries the bleed as well as the offset — take the shift away on
-       its own and the box lines up on the left and runs 16px off the screen on
-       the right. */
+       its own and the box lines up on the left and runs off the screen on the
+       right by a gutter. */
     inline-size: 100%;
     padding-inline-start: 0;
     margin-inline: 0;
@@ -8615,6 +8758,22 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
 
   .app-header .da-bar__save .form-submit .btn--style-primary {
     border-radius: 999px;
+  }
+
+  /* AND 44 WHATEVER IS DOING THE POINTING. Their 44 came from DocActions'
+     `pointer: coarse` rule — right on a desk, where the bar is a desk bar — so
+     in the phone layout they were 44 under a finger and 36 under a mouse:
+     measured at 768 with a pointer, back and menu 44 beside ⋯ and Save at 36.
+     On this line every button is the height of the others. */
+  .app-header .da-bar__more {
+    inline-size: 44px;
+    block-size: 44px;
+  }
+
+  .app-header .da-bar__save .form-submit .btn--style-primary {
+    block-size: 44px;
+    min-block-size: 44px;
+    padding-inline: 20px;
   }
 
   /*
