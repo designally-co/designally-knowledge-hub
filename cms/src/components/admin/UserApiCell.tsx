@@ -81,16 +81,9 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
   const [open, setOpen] = React.useState(false)
   const phone = useIsPhone()
   const [sheet, setSheet] = React.useState(false)
-  /* THE SHEET'S SWITCH IS A DRAFT. In the table the switch writes the moment it
-     moves, because the row is the whole screen and there is nothing else to
-     commit. The sheet ends in Save and Cancel, and a switch that had already
-     written would make Cancel a lie — so it moves this, and Save writes it. */
-  const [draft, setDraft] = React.useState(false)
-  /* In the sheet the key is there whenever access is — and stays on, in the
-     draft: switching it off previews the sheet without the key, and switching
-     on an account with no key yet shows none until Save has made one. In the
-     table it waits to be asked for. */
-  const showKey = Boolean(enabled) && (phone ? sheet && draft : open)
+  /* In the sheet the key is there whenever access is — it is the reason the
+     sheet opened. In the table it waits to be asked for. */
+  const showKey = Boolean(enabled) && (phone ? sheet : open)
   const [shown, setShown] = React.useState(false)
   const [copied, setCopied] = React.useState(false)
   const [busy, setBusy] = React.useState(false)
@@ -293,26 +286,21 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
    * it is a `button`, so Tab reaches it and Enter opens it, which a click
    * handler on a `<tr>` never would.
    */
-  /* Opening starts the draft where the account is. Cancel puts it back and
-     writes nothing. Save writes only if the draft moved, and closes only once
-     the write has landed — a sheet that closed on a failed save would take its
-     error message with it. */
+  /*
+   * DONE, NOT SAVE AND CANCEL. With one button there is nothing to cancel
+   * TO, so the switch does what it does in the table: it writes the moment it
+   * moves, and the sheet shows the result — turn access on and the key it just
+   * made is there under it. Done, Escape and the overlay all do the same thing,
+   * which is close, because there is nothing left unsaved for any of them to
+   * decide about.
+   */
   const openSheet = () => {
-    setDraft(Boolean(enabled))
     setShown(false)
     setError(null)
     setSheet(true)
   }
 
-  const cancelSheet = () => {
-    setDraft(Boolean(enabled))
-    setSheet(false)
-  }
-
-  const saveSheet = async () => {
-    if (draft !== Boolean(enabled) && !(await toggle(draft))) return
-    setSheet(false)
-  }
+  const closeSheet = () => setSheet(false)
 
   if (phone) {
     return (
@@ -331,15 +319,15 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
         </button>
 
         {/*
-         * THE SWITCH IS WHERE THE CLOSE WAS. The sheet ends in its own Cancel,
+         * THE SWITCH IS WHERE THE CLOSE WAS. The sheet ends in its own Done,
          * so a second way to say it in the corner was one control too many —
          * and the corner beside the title is where the one decision in the
          * sheet reads as the sheet's subject rather than its first field.
-         * Escape and the overlay still cancel.
+         * Escape and the overlay still close it.
          */}
         <Dialog
-          aside={<Switch checked={draft} label="API access" onChange={setDraft} />}
-          onClose={cancelSheet}
+          aside={<Switch checked={Boolean(enabled)} label="API access" onChange={(next) => void toggle(next)} />}
+          onClose={closeSheet}
           open={sheet}
           title="API access"
         >
@@ -392,19 +380,11 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
 
             <div className="da-confirm__actions">
               <button
-                className="da-confirm__button da-confirm__button--outline"
-                onClick={cancelSheet}
-                type="button"
-              >
-                Cancel
-              </button>
-              <button
                 className="da-confirm__button da-confirm__button--primary"
-                disabled={busy || draft === Boolean(enabled)}
-                onClick={saveSheet}
+                onClick={closeSheet}
                 type="button"
               >
-                Save
+                Done
               </button>
             </div>
           </div>
