@@ -7421,6 +7421,14 @@ $list: '.template-default__wrap > .collection-list';
   #{$list} .table :is(table, tbody) {
     display: block;
     inline-size: 100%;
+    /* AND A CARD LIST NEVER WIDENS THE PAGE. `.table` is a flex container down
+       here and the `<table>` is its item, so `min-width: auto` let the table
+       grow to the widest thing inside it — measured, a user's 40-character API
+       key opened in a card and took the document to 476px inside a 375px
+       window, with every list row and the header's own line dragged out with
+       it. Zero lets the 100% hold and leaves the overflow to the cell that has
+       it, which is where the ellipsis already lives. */
+    min-inline-size: 0;
   }
 
   #{$list} .table thead {
@@ -8722,5 +8730,154 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
   .app-header .da-bar__more:focus-visible,
   .app-header .da-bar__save .form-submit .btn--style-primary:focus-visible {
     outline-offset: 0;
+  }
+}
+
+/* ---- the two lists whose row has a second half --------------------------- */
+
+/*
+ * A SUBSCRIBER'S STATE AND A USER'S KEY ARE NOT COLUMNS TO DROP.
+ *
+ * A phone shows one cell per card — the name — because everything else on an
+ * article's row is provenance, and a tag, a date and a status are things you
+ * read on a desk when you are comparing rows. These two lists are not that
+ * shape: a subscriber IS an address and a state, and a user IS an address and
+ * whether it holds an API key. Dropping the second half of the row left a card
+ * with an email on it and no way to reach the state, the language, the page
+ * they signed up from, the unsubscribe, the switch or the key — all of it
+ * behind a disclosure button that was `display: none`.
+ *
+ * THE CELL TAKES ITS OWN LINE, rather than squeezing in beside the address. It
+ * holds a chip and a caret today and a panel of four facts when it is open, and
+ * a 24-character email leaves neither of those anywhere to go on a 343px card.
+ * So the card wraps: the address, then the state and the way into the rest.
+ */
+@media (max-width: 48rem) {
+  #{$list}:is(.collection-list--subscribers, .collection-list--users) .table tbody tr {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+
+  #{$list}:is(.collection-list--subscribers, .collection-list--users)
+    .table
+    tbody
+    td:last-child {
+    display: block;
+    inline-size: 100%;
+    /* THE KEY IS ONE UNBREAKABLE WORD. A flex item does not shrink below its
+       content unless it is told it may, and a user's API key is 40 monospace
+       characters with nowhere to break: the card grew to 476px inside a 375px
+       window and took the list sideways with it. Zero lets the cell hold its
+       100%, and the value inside it ellipsises as it was written to. */
+    min-inline-size: 0;
+  }
+
+  /* AND PAYLOAD'S 70vw COMES OFF BOTH OF THEM. Its own table styling caps every
+     cell below its breakpoint — `max-width: 70vw`, which on a 375 screen is
+     262.5px inside a card whose content box is 327. The address ran out at 288
+     and the state's line ended there with it, leaving 39px of white down the
+     right of every card. A cell in a card is not a column in a table: there is
+     nothing beside it to keep out of. */
+  #{$list}:is(.collection-list--subscribers, .collection-list--users) .table tbody td {
+    max-inline-size: none;
+  }
+
+  /* The caret to the card's far edge, opposite the thing it discloses — the
+     same line the address above it runs the width of. */
+  #{$list} .table tbody :is(.da-sub-cell__head, .da-api-cell__head) {
+    justify-content: space-between;
+  }
+
+  /*
+   * AND WHAT OPENS, OPENS UNDER IT.
+   *
+   * Both panels are drawn across the whole ROW rather than inside their cell —
+   * absolutely positioned against the `<tr>`, with every cell carrying a
+   * reserved strip of bottom padding to make the room. On a desk that is the
+   * right answer: growing the cell would push one column down and leave the
+   * address and the dates floating at the top of a tall row.
+   *
+   * A card has no columns to keep level, and the reservation is measured for a
+   * row that is one line tall. Stacked, it put 132px of white between the
+   * address and a panel that had been positioned into it — the chip and the
+   * caret ended up behind the panel, and the card was 364px tall for 218px of
+   * facts. In the flow, the panel is simply the next thing in the cell.
+   */
+  #{$list}:is(.collection-list--subscribers, .collection-list--users)
+    .table
+    tbody
+    tr:is(.da-row--sub, .da-row--api)
+    > td {
+    padding-block-end: 0;
+  }
+
+  #{$list}:is(.collection-list--subscribers, .collection-list--users)
+    .table
+    tbody
+    :is(.da-sub-cell__detail, .da-api-cell__key) {
+    position: static;
+    inset: auto;
+  }
+
+  /*
+   * AND THE KEY TAKES A LINE OF ITS OWN.
+   *
+   * It is forty monospace characters with nowhere to break, and on a desk it
+   * shares a line with copy, reveal and Regenerate — 182px of controls, which
+   * leaves it a third of a card. Ellipsised to that it is not a key any more,
+   * it is a prefix; and its min-content still drove the whole list sideways
+   * regardless, because a string that cannot break contributes its full width
+   * to every box above it however hard the box is told to clip.
+   *
+   * Wrapped, the key gets the card's width and fits whole — measured, 309px of
+   * value in a 309px line — and the three things you do to it take the line
+   * below, which is the order they are used in anyway.
+   */
+  #{$list} .table tbody .da-api-cell__key {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  #{$list} .table tbody .da-api-cell__value {
+    flex: 0 0 100%;
+  }
+
+  /*
+   * A USER'S CARD IS ONE LINE THAT OPENS.
+   *
+   * The switch, the masked key and the two buttons that act on it are a
+   * screen's worth of decision, and for a while they were all on the card: an
+   * account in a list carrying its own credential, and a card three times the
+   * height of the one beside it. They are in a sheet now (UserApiCell), and
+   * what is left on the card is the address, the state and a chevron.
+   *
+   * THE OPENER IS THE CARD. It is a transparent button stretched over the whole
+   * row, so a thumb lands anywhere and the address underneath is still what you
+   * read — and being a button rather than a handler on the `<tr>`, Tab reaches
+   * it and Enter opens it.
+   */
+  #{$list}.collection-list--users .table tbody td.cell-email {
+    display: flex;
+    align-items: center;
+    min-block-size: 44px;
+    /* Clear of the state and the chevron at the other end. */
+    padding-inline-end: 64px;
+  }
+
+  #{$list}.collection-list--users .table tbody .da-api-cell {
+    padding-block: 0;
+  }
+
+  /* THE CARD IS THE BOX IT STRETCHES OVER. Payload makes every cell a
+     positioned box, so without this the opener would cover its own cell — a
+     zero-height box on the line below the address — instead of the row. */
+  #{$list}.collection-list--users .table tbody td {
+    position: static;
+  }
+
+  /* Nothing is in the flow of the cell any more, so the card keeps no line
+     for it. */
+  #{$list}.collection-list--users .table tbody tr {
+    row-gap: 0;
   }
 }

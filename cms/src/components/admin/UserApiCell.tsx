@@ -1,9 +1,9 @@
 'use client'
 
 import React from 'react'
-import { Check, ChevronDown, Copy, Eye, EyeOff } from 'lucide-react'
+import { Check, ChevronDown, ChevronRight, Copy, Eye, EyeOff } from 'lucide-react'
 
-import { ConfirmDialog } from './ConfirmDialog'
+import { ConfirmDialog, Dialog } from './ConfirmDialog'
 import { Switch } from './Switch'
 import './UserApiCell.css'
 
@@ -40,12 +40,50 @@ const ICON = { size: 16, strokeWidth: 1.75 } as const
    own generator rather than a package this app does not depend on directly. */
 const newKey = () => crypto.randomUUID()
 
+/** Below this the row is a card, and a card holds one account. */
+const PHONE = '(max-width: 48rem)'
+
+/**
+ * Whether this is the phone's layout — where the row opens onto a sheet.
+ *
+ * ON A DESK THE KEY OPENS IN THE ROW, behind a caret, because the table is a
+ * list of accounts and every enabled one opened at once is seven key boxes and
+ * no list. A card is not a row in a table: it is one account with a switch, a
+ * masked credential and two buttons on it, which is a screen's worth of
+ * decision sitting in a list. So on a phone the card says the state and opens,
+ * and the deciding happens somewhere that has room for it.
+ *
+ * `false` until the browser answers, because this renders on the server too and
+ * a desk is the safe guess: it shows a caret for a frame on a phone rather than
+ * the row's own controls for a frame on a desk.
+ */
+function useIsPhone(): boolean {
+  const [phone, setPhone] = React.useState(false)
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return
+    const query = window.matchMedia(PHONE)
+    const read = () => setPhone(query.matches)
+    read()
+    query.addEventListener('change', read)
+    return () => query.removeEventListener('change', read)
+  }, [])
+
+  return phone
+}
+
 export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
   const id = rowData?.id
+  const email = typeof rowData?.email === 'string' ? rowData.email : ''
   const cell = React.useRef<HTMLDivElement>(null)
   const [enabled, setEnabled] = React.useState(Boolean(rowData?.enableAPIKey))
   const [apiKey, setApiKey] = React.useState<null | string>(null)
   const [open, setOpen] = React.useState(false)
+  const phone = useIsPhone()
+  const [sheet, setSheet] = React.useState(false)
+  /* In the sheet the key is simply there — it is the reason the sheet opened.
+     In the table it waits to be asked for. */
+  const showKey = Boolean(enabled) && (phone ? sheet : open)
   const [shown, setShown] = React.useState(false)
   const [copied, setCopied] = React.useState(false)
   const [busy, setBusy] = React.useState(false)
@@ -56,7 +94,7 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
      not be one: forty rows of credentials on a screen anyone can leave open. It
      is fetched for the row that is open, and only that row. */
   React.useEffect(() => {
-    if (!open || !enabled || !id || apiKey) return
+    if (!showKey || !id || apiKey) return
     let live = true
     void (async () => {
       try {
@@ -72,7 +110,7 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
     return () => {
       live = false
     }
-  }, [apiKey, enabled, id, open])
+  }, [apiKey, id, showKey])
 
   const save = React.useCallback(
     async (patch: Record<string, unknown>) => {
@@ -129,8 +167,9 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
   React.useEffect(() => {
     const row = cell.current?.closest('tr')
     if (!row) return
-    row.classList.toggle('da-row--api', open)
-    if (open) {
+    const across = showKey && !phone
+    row.classList.toggle('da-row--api', across)
+    if (across) {
       const first = row.querySelector('td:nth-child(2)') ?? row.firstElementChild
       const inset = first ? first.getBoundingClientRect().left - row.getBoundingClientRect().left : 16
       ;(row as HTMLElement).style.setProperty('--da-api-inset', `${Math.round(inset)}px`)
@@ -139,7 +178,7 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
       row.classList.remove('da-row--api')
       ;(row as HTMLElement).style.removeProperty('--da-api-inset')
     }
-  }, [open])
+  }, [showKey, phone])
 
   const copy = async () => {
     if (!apiKey) return
@@ -152,8 +191,11 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
     }
   }
 
-  return (
-    <div className="da-api-cell" ref={cell}>
+  /* The switch, the key and the way to replace it — the whole of what is
+     decided about an account. In the table this is the row; in a sheet it is
+     the sheet's body, which is why it is written once. */
+  const controls = (
+    <>
       <div className="da-api-cell__head">
         <Switch checked={enabled} label="API access" onChange={toggle} />
 
@@ -161,7 +203,7 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
             opened at once, a list of seven is seven key boxes and no list. The
             switch says whether there is access; this asks to see the key for
             one row. */}
-        {enabled ? (
+        {enabled && !phone ? (
           <button
             aria-expanded={open}
             aria-label={open ? 'Hide key' : 'Show key'}
@@ -174,7 +216,7 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
         ) : null}
       </div>
 
-      {enabled && open ? (
+      {showKey ? (
         <div className="da-api-cell__key">
           <span className="da-api-cell__value">
             {/* Dots until asked, and a monospace face when shown: a key is read
@@ -215,18 +257,63 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
       ) : null}
 
       {error ? <p className="da-api-cell__error">{error}</p> : null}
+    </>
+  )
 
-      {/* The question worth asking twice: the key in Content Studio stops
-          working the moment this one is written, and nothing on either screen
-          would say why publishing had stopped. */}
-      <ConfirmDialog
-        confirmLabel="Generate new key"
-        description="Content Studio publishes with the current key. It stops working the moment a new one is made, until the new key is pasted into Content Studio."
-        onCancel={() => setConfirming(false)}
-        onConfirm={regenerate}
-        open={confirming}
-        title="Replace this key?"
-      />
+  /* The question worth asking twice: the key in Content Studio stops working
+     the moment this one is written, and nothing on either screen would say why
+     publishing had stopped. It is rendered beside whichever surface is in use,
+     and portals over it either way. */
+  const confirmation = (
+    <ConfirmDialog
+      confirmLabel="Generate new key"
+      description="Content Studio publishes with the current key. It stops working the moment a new one is made, until the new key is pasted into Content Studio."
+      onCancel={() => setConfirming(false)}
+      onConfirm={regenerate}
+      open={confirming}
+      title="Replace this key?"
+    />
+  )
+
+  /*
+   * THE CARD SAYS THE STATE AND OPENS.
+   *
+   * A button the size of the card rather than a control at the end of it: the
+   * whole row is the tap target, which is what a list of cards teaches a thumb
+   * to expect, and the state and the chevron ride at its end where the eye
+   * already is. It is transparent, so the address underneath is what you read;
+   * it is a `button`, so Tab reaches it and Enter opens it, which a click
+   * handler on a `<tr>` never would.
+   */
+  if (phone) {
+    return (
+      <div className="da-api-cell da-api-cell--card" ref={cell}>
+        <button
+          aria-haspopup="dialog"
+          aria-label={`API access for ${email || 'this account'}: ${enabled ? 'on' : 'off'}`}
+          className="da-api-cell__open"
+          onClick={() => setSheet(true)}
+          type="button"
+        >
+          <span className={`da-api-state${enabled ? ' da-api-state--on' : ''}`}>
+            {enabled ? 'On' : 'Off'}
+          </span>
+          <ChevronRight aria-hidden="true" className="da-api-cell__chevron" size={18} />
+        </button>
+
+        <Dialog onClose={() => setSheet(false)} open={sheet} title="API access">
+          <div className="da-api-sheet">{controls}</div>
+        </Dialog>
+
+        {confirmation}
+      </div>
+    )
+  }
+
+  return (
+    <div className="da-api-cell" ref={cell}>
+      {controls}
+      {confirmation}
     </div>
   )
 }

@@ -9,15 +9,12 @@ import { MOTION, duration } from './motion'
 import './ConfirmDialog.css'
 
 /**
- * An irreversible thing, asked properly — Content Studio's ConfirmDialog.
+ * The admin's dialog — Content Studio's ConfirmDialog, and the shell under it.
  *
- * It takes the screen: focus moves into it, Escape and the overlay cancel,
- * and the destructive button is somewhere the pointer has to travel to. A
- * confirmation that appears where the pointer already is confirms nothing.
- *
- * THE BODY NAMES THE CONSEQUENCE, not the action. "Are you sure" asks the
- * reader to supply the stakes themselves, so each caller passes the one thing
- * worth knowing — what survives this and what does not.
+ * It takes the screen: focus moves into it, Escape and the overlay close it,
+ * and in a confirmation the destructive button is somewhere the pointer has to
+ * travel to. A confirmation that appears where the pointer already is confirms
+ * nothing.
  *
  * THE STUDIO'S MOTION: a centred 28rem box with no edge to have come from, so
  * it resolves in place — a fade and a small scale over a fading overlay — and
@@ -31,23 +28,31 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffec
 const focusables = (root: HTMLElement) =>
   [...root.querySelectorAll<HTMLElement>('button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])')]
 
-export function ConfirmDialog({
-  confirmLabel = 'Delete',
-  description,
-  onCancel,
-  onConfirm,
+/**
+ * The shell: a dialog that takes the screen, and whatever is put inside it.
+ *
+ * EXTRACTED, NOT WRITTEN TWICE. Everything below the markup — the portal, the
+ * overlay, focus in and held, Escape, the page held still, the motion that the
+ * unmount rides — is what makes a dialog a dialog rather than a box with a
+ * shadow, and it was all inside `ConfirmDialog` because a confirmation was the
+ * only thing that needed it. The user list's API sheet is the second, so the
+ * duties move out and the confirmation becomes the first caller of them.
+ */
+export function Dialog({
+  children,
+  describedBy,
+  onClose,
   open,
   title,
 }: {
-  /* Named for the act, not for the dialog. "Confirm" makes the reader look back
-     up at the title to find out what they are confirming. */
-  confirmLabel?: string
-  description: React.ReactNode
-  onCancel: () => void
-  onConfirm: () => void
+  children: React.ReactNode
+  /** The id of the element inside that says what this is about, if any. */
+  describedBy?: string
+  onClose: () => void
   open: boolean
   title: string
 }) {
+  const onCancel = onClose
   const [mounted, setMounted] = useState(open)
   // Adjusted during render — React's answer for state derived from other state.
   if (open && !mounted) setMounted(true)
@@ -59,7 +64,6 @@ export function ConfirmDialog({
   const [overlay, setOverlay] = useState<HTMLDivElement | null>(null)
   const returnTo = useRef<HTMLElement | null>(null)
   const titleId = useId()
-  const descriptionId = useId()
 
   useEffect(() => {
     if (open) returnTo.current = document.activeElement as HTMLElement | null
@@ -105,10 +109,31 @@ export function ConfirmDialog({
     }
   }, [open, mounted, panel, overlay])
 
+  /*
+   * THE PAGE HELD STILL — ON ITS OWN EFFECT, and that is the point of it.
+   *
+   * This was one effect with the key handler, which lists `onCancel` among its
+   * dependencies because it calls it; `onCancel` is a new closure on every
+   * render of the caller, so the effect tore down and set up again on each one.
+   * Every setup read `document.body.style.overflow` afresh to remember what to
+   * put back — and by the second render that reading was `hidden`, its own
+   * doing. Closing then restored `hidden`, and the page behind could not be
+   * scrolled again until it was reloaded. Found with two of these open at once,
+   * where the re-renders are frequent enough to be certain of hitting it.
+   *
+   * Keyed on `open` alone, it locks once and restores what was actually there.
+   */
   useEffect(() => {
-    if (!open || !panel) return
+    if (!open) return
     const previous = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = previous
+    }
+  }, [open])
+
+  useEffect(() => {
+    if (!open || !panel) return
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -132,10 +157,7 @@ export function ConfirmDialog({
     }
 
     document.addEventListener('keydown', onKey)
-    return () => {
-      document.body.style.overflow = previous
-      document.removeEventListener('keydown', onKey)
-    }
+    return () => document.removeEventListener('keydown', onKey)
   }, [open, panel, onCancel])
 
   if (!mounted) return null
@@ -147,7 +169,7 @@ export function ConfirmDialog({
           transform, and would fold a CSS translate into it. */}
       <div className="da-confirm__frame">
         <div
-          aria-describedby={descriptionId}
+          aria-describedby={describedBy}
           aria-labelledby={titleId}
           aria-modal="true"
           className="da-confirm"
@@ -164,21 +186,55 @@ export function ConfirmDialog({
             </button>
           </div>
 
-          <p className="da-confirm__description" id={descriptionId}>
-            {description}
-          </p>
-
-          <div className="da-confirm__actions">
-            <button className="da-confirm__button da-confirm__button--outline" onClick={onCancel} type="button">
-              Cancel
-            </button>
-            <button className="da-confirm__button da-confirm__button--destructive" onClick={onConfirm} type="button">
-              {confirmLabel}
-            </button>
-          </div>
+          {children}
         </div>
       </div>
     </>,
     document.body,
+  )
+}
+
+/**
+ * An irreversible thing, asked properly — the shell above with the one shape
+ * that question takes.
+ *
+ * THE BODY NAMES THE CONSEQUENCE, not the action. "Are you sure" asks the
+ * reader to supply the stakes themselves, so each caller passes the one thing
+ * worth knowing — what survives this and what does not.
+ */
+export function ConfirmDialog({
+  confirmLabel = 'Delete',
+  description,
+  onCancel,
+  onConfirm,
+  open,
+  title,
+}: {
+  /* Named for the act, not for the dialog. "Confirm" makes the reader look back
+     up at the title to find out what they are confirming. */
+  confirmLabel?: string
+  description: React.ReactNode
+  onCancel: () => void
+  onConfirm: () => void
+  open: boolean
+  title: string
+}) {
+  const descriptionId = useId()
+
+  return (
+    <Dialog describedBy={descriptionId} onClose={onCancel} open={open} title={title}>
+      <p className="da-confirm__description" id={descriptionId}>
+        {description}
+      </p>
+
+      <div className="da-confirm__actions">
+        <button className="da-confirm__button da-confirm__button--outline" onClick={onCancel} type="button">
+          Cancel
+        </button>
+        <button className="da-confirm__button da-confirm__button--destructive" onClick={onConfirm} type="button">
+          {confirmLabel}
+        </button>
+      </div>
+    </Dialog>
   )
 }
