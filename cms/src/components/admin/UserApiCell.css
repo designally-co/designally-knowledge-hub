@@ -197,22 +197,92 @@
 .da-api-sheet {
   display: grid;
   gap: 16px;
+  margin-block-start: 16px;
 }
 
-/* The switch stands at the start of its own line here, not opposite a caret:
-   there is no caret in a sheet, and the thing it governs is underneath it. */
-.da-api-sheet .da-api-cell__head {
-  justify-content: flex-start;
+/* The actions keep the confirmation's own spacing above them when there is a
+   key box; with the switch off there is nothing between the head and them, and
+   the sheet's 16 is gap enough. */
+.da-api-sheet .da-confirm__actions {
+  margin-block-start: 8px;
 }
 
-/* THE KEY TAKES A LINE OF ITS OWN, as it does on the card list: forty
-   monospace characters with nowhere to break, beside 182px of controls, is a
-   key ellipsised to a prefix. */
-.da-api-sheet .da-api-cell__key {
-  flex-wrap: wrap;
-  row-gap: 8px;
+/* The switch in the head's corner, centred on the title's line: the title is
+   28 tall and the switch's track 24, so they share a middle. */
+.da-confirm__head .da-switch {
+  flex: none;
+  align-self: center;
 }
 
-.da-api-sheet .da-api-cell__value {
-  flex: 0 0 100%;
+/* ONE GREY BOX, THE KEY'S. Its line on top and the two things done with it
+   underneath, inside the same fill — they are about this key, not about the
+   sheet. */
+.da-api-sheet__key {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  border-radius: var(--style-radius-m);
+  background-color: var(--da-deep);
+}
+
+/* The key and its eye. The value takes what is left and ellipsises. */
+.da-api-sheet__line {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-inline-start: 8px;
+  min-inline-size: 0;
+}
+
+/* 11, NOT THE ROW'S 12, SO THE KEY FITS WHOLE. With the eye sharing its line
+   the value has 243px at 375; a 36-character key measures 259 at 12px and
+   would lose its last two characters — a key you cannot check against the one
+   pasted into Content Studio. At 11px it is 238. The ellipsis stays for a
+   phone narrower than this one. */
+.da-api-sheet__line .da-api-cell__value {
+  font-size: 11px;
+}
+
+/* EQUAL, AND EACH A WORD. Two columns of the same width, so neither reads as
+   the primary — copying the key and replacing it are both deliberate, and one
+   of them is guarded by its own confirmation. */
+.da-api-sheet__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.da-api-sheet__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-inline-size: 0;
+  block-size: 44px;
+  padding-inline: 12px;
+  border: 1px solid var(--da-hairline-strong);
+  border-radius: var(--style-radius-s);
+  background-color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--da-ink);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.da-api-sheet__button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+@media (hover: hover) {
+  .da-api-sheet__button:not(:disabled):hover {
+    background-color: var(--da-warm-white);
+  }
+}
+
+.da-api-sheet__button:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
 }

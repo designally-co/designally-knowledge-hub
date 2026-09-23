@@ -39,12 +39,20 @@ const focusables = (root: HTMLElement) =>
  * duties move out and the confirmation becomes the first caller of them.
  */
 export function Dialog({
+  aside,
   children,
   describedBy,
   onClose,
   open,
   title,
 }: {
+  /**
+   * What stands opposite the title in place of the close disc. A dialog that
+   * ends in its own Cancel does not need a second way to say it in the corner,
+   * and the corner is the one spot on the sheet the eye goes to after the
+   * title. Escape and the overlay still close it either way.
+   */
+  aside?: React.ReactNode
   children: React.ReactNode
   /** The id of the element inside that says what this is about, if any. */
   describedBy?: string
@@ -180,10 +188,13 @@ export function Dialog({
             <h2 className="da-confirm__title" id={titleId}>
               {title}
             </h2>
-            {/* The sheet's close, the same disc as every close in the studio. */}
-            <button aria-label="Close" className="da-confirm__close" onClick={onCancel} type="button">
-              <X aria-hidden="true" size={20} />
-            </button>
+            {/* The sheet's close, the same disc as every close in the studio —
+                unless the caller has something that belongs there instead. */}
+            {aside ?? (
+              <button aria-label="Close" className="da-confirm__close" onClick={onCancel} type="button">
+                <X aria-hidden="true" size={20} />
+              </button>
+            )}
           </div>
 
           {children}

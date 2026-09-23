@@ -81,9 +81,16 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
   const [open, setOpen] = React.useState(false)
   const phone = useIsPhone()
   const [sheet, setSheet] = React.useState(false)
-  /* In the sheet the key is simply there — it is the reason the sheet opened.
-     In the table it waits to be asked for. */
-  const showKey = Boolean(enabled) && (phone ? sheet : open)
+  /* THE SHEET'S SWITCH IS A DRAFT. In the table the switch writes the moment it
+     moves, because the row is the whole screen and there is nothing else to
+     commit. The sheet ends in Save and Cancel, and a switch that had already
+     written would make Cancel a lie — so it moves this, and Save writes it. */
+  const [draft, setDraft] = React.useState(false)
+  /* In the sheet the key is there whenever access is — and stays on, in the
+     draft: switching it off previews the sheet without the key, and switching
+     on an account with no key yet shows none until Save has made one. In the
+     table it waits to be asked for. */
+  const showKey = Boolean(enabled) && (phone ? sheet && draft : open)
   const [shown, setShown] = React.useState(false)
   const [copied, setCopied] = React.useState(false)
   const [busy, setBusy] = React.useState(false)
@@ -136,16 +143,17 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
     [id],
   )
 
-  const toggle = async (next: boolean) => {
+  const toggle = async (next: boolean): Promise<boolean> => {
     /* Turning it on with no key would leave access enabled and nothing to
        authenticate with, which reads as working and is not. */
     const key = next && !apiKey ? newKey() : undefined
     const ok = await save(key ? { apiKey: key, enableAPIKey: true } : { enableAPIKey: next })
-    if (!ok) return
+    if (!ok) return false
     if (key) setApiKey(key)
     setEnabled(next)
     setShown(false)
     setOpen(next ? open : false)
+    return true
   }
 
   const regenerate = async () => {
@@ -285,6 +293,27 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
    * it is a `button`, so Tab reaches it and Enter opens it, which a click
    * handler on a `<tr>` never would.
    */
+  /* Opening starts the draft where the account is. Cancel puts it back and
+     writes nothing. Save writes only if the draft moved, and closes only once
+     the write has landed — a sheet that closed on a failed save would take its
+     error message with it. */
+  const openSheet = () => {
+    setDraft(Boolean(enabled))
+    setShown(false)
+    setError(null)
+    setSheet(true)
+  }
+
+  const cancelSheet = () => {
+    setDraft(Boolean(enabled))
+    setSheet(false)
+  }
+
+  const saveSheet = async () => {
+    if (draft !== Boolean(enabled) && !(await toggle(draft))) return
+    setSheet(false)
+  }
+
   if (phone) {
     return (
       <div className="da-api-cell da-api-cell--card" ref={cell}>
@@ -292,7 +321,7 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
           aria-haspopup="dialog"
           aria-label={`API access for ${email || 'this account'}: ${enabled ? 'on' : 'off'}`}
           className="da-api-cell__open"
-          onClick={() => setSheet(true)}
+          onClick={openSheet}
           type="button"
         >
           <span className={`da-api-state${enabled ? ' da-api-state--on' : ''}`}>
@@ -301,8 +330,84 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
           <ChevronRight aria-hidden="true" className="da-api-cell__chevron" size={18} />
         </button>
 
-        <Dialog onClose={() => setSheet(false)} open={sheet} title="API access">
-          <div className="da-api-sheet">{controls}</div>
+        {/*
+         * THE SWITCH IS WHERE THE CLOSE WAS. The sheet ends in its own Cancel,
+         * so a second way to say it in the corner was one control too many —
+         * and the corner beside the title is where the one decision in the
+         * sheet reads as the sheet's subject rather than its first field.
+         * Escape and the overlay still cancel.
+         */}
+        <Dialog
+          aside={<Switch checked={draft} label="API access" onChange={setDraft} />}
+          onClose={cancelSheet}
+          open={sheet}
+          title="API access"
+        >
+          <div className="da-api-sheet">
+            {showKey ? (
+              <div className="da-api-sheet__key">
+                {/* The key and the eye that reveals it, on one line: the eye is
+                    about the characters beside it, not about the key as a
+                    thing to act on. */}
+                <div className="da-api-sheet__line">
+                  <span className="da-api-cell__value">
+                    {shown ? apiKey ?? 'Loading…' : '••••••••••••••••••••••••••••••••••••'}
+                  </span>
+                  <button
+                    aria-label={shown ? 'Hide key' : 'Show key'}
+                    className="da-api-cell__icon"
+                    disabled={!apiKey}
+                    onClick={() => setShown((was) => !was)}
+                    type="button"
+                  >
+                    {shown ? <EyeOff aria-hidden="true" {...ICON} /> : <Eye aria-hidden="true" {...ICON} />}
+                  </button>
+                </div>
+
+                {/* The two things you do WITH the key, as two equal buttons —
+                    each a word, so neither is an icon to be recognised. */}
+                <div className="da-api-sheet__actions">
+                  <button
+                    className="da-api-sheet__button"
+                    disabled={!apiKey}
+                    onClick={copy}
+                    type="button"
+                  >
+                    {copied ? <Check aria-hidden="true" {...ICON} /> : <Copy aria-hidden="true" {...ICON} />}
+                    {copied ? 'Copied' : 'Copy'}
+                  </button>
+                  <button
+                    className="da-api-sheet__button"
+                    disabled={busy}
+                    onClick={() => setConfirming(true)}
+                    type="button"
+                  >
+                    Generate new
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
+            {error ? <p className="da-api-cell__error">{error}</p> : null}
+
+            <div className="da-confirm__actions">
+              <button
+                className="da-confirm__button da-confirm__button--outline"
+                onClick={cancelSheet}
+                type="button"
+              >
+                Cancel
+              </button>
+              <button
+                className="da-confirm__button da-confirm__button--primary"
+                disabled={busy || draft === Boolean(enabled)}
+                onClick={saveSheet}
+                type="button"
+              >
+                Save
+              </button>
+            </div>
+          </div>
         </Dialog>
 
         {confirmation}
