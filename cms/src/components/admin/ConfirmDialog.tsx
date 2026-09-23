@@ -141,13 +141,32 @@ export function Dialog({
     }
   }, [open])
 
+  /*
+   * ESCAPE, AND THE LISTENER THAT HEARS IT, REGISTERED ONCE PER OPENING.
+   *
+   * It was keyed on `onCancel` too, and callers pass a fresh closure on every
+   * render — so every render tore the listener down and put a new one up. That
+   * is harmless until a render happens DURING the keypress: the nav has its own
+   * Escape listener (it closes the drawer), and the state it sets re-rendered
+   * the account sheet's owner synchronously, mid-dispatch. The DOM's rule is
+   * that a listener removed during dispatch is not called and one added during
+   * dispatch waits for the next event — so Escape removed the handler that was
+   * about to close the sheet, added its replacement too late, and the sheet
+   * stayed open. Logged: `-onKey`, `+onKey`, and no close.
+   *
+   * The latest `onCancel` is read through a ref instead, so re-renders change
+   * what it calls and never whether it is listening.
+   */
+  const cancelRef = useRef(onCancel)
+  cancelRef.current = onCancel
+
   useEffect(() => {
     if (!open || !panel) return
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault()
-        onCancel()
+        cancelRef.current()
         return
       }
       if (event.key !== 'Tab') return
@@ -167,7 +186,7 @@ export function Dialog({
 
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [open, panel, onCancel])
+  }, [open, panel])
 
   if (!mounted) return null
 

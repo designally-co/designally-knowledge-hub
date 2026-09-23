@@ -1,0 +1,80 @@
+/* The account sheet (AccountSheet.tsx). The key box and its buttons are the
+   user sheet's own, from UserApiCell.css via ApiAccess. */
+
+.da-account-sheet {
+  display: grid;
+  gap: 16px;
+  margin-block-start: 16px;
+}
+
+.da-account-sheet .da-confirm__actions {
+  margin-block-start: 0;
+}
+
+/* Three facts, a label over a value, each on its own line. */
+.da-account-sheet__facts {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.da-account-sheet__fact {
+  display: grid;
+  gap: 2px;
+  min-inline-size: 0;
+}
+
+.da-account-sheet__fact dt {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 18px;
+  color: var(--da-ink-3);
+}
+
+.da-account-sheet__fact dd {
+  margin: 0;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--da-ink);
+}
+
+/* An address is one word as far as the browser knows; a long one breaks rather
+   than running out of the sheet. */
+.da-account-sheet__email {
+  overflow-wrap: anywhere;
+}
+
+/* API access, as its own panel: the switch at the end of the line that says
+   what it governs, and the key under both. */
+.da-account-sheet__api {
+  display: grid;
+  gap: 12px;
+  padding-block-start: 16px;
+  border-block-start: 1px solid var(--da-hairline);
+}
+
+.da-account-sheet__api-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.da-account-sheet__api-lead {
+  display: grid;
+  gap: 2px;
+  min-inline-size: 0;
+}
+
+.da-account-sheet__api-title {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 22px;
+  color: var(--da-ink);
+}
+
+.da-account-sheet__api-sub {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--da-ink-3);
+}

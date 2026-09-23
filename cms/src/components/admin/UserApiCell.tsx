@@ -3,8 +3,9 @@
 import React from 'react'
 import { Check, ChevronDown, Copy, Eye, EyeOff } from 'lucide-react'
 
+import { ApiKeyBox, ICON, MASK, useApiAccess } from './ApiAccess'
 import { CardOpener, useIsPhone } from './CardOpener'
-import { ConfirmDialog, Dialog } from './ConfirmDialog'
+import { Dialog } from './ConfirmDialog'
 import { Switch } from './Switch'
 import './UserApiCell.css'
 
@@ -35,18 +36,10 @@ type CellProps = {
   rowData?: Record<string, unknown>
 }
 
-const ICON = { size: 16, strokeWidth: 1.75 } as const
-
-/* The same shape Payload's own button produced — a v4 UUID — from the browser's
-   own generator rather than a package this app does not depend on directly. */
-const newKey = () => crypto.randomUUID()
-
 export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
-  const id = rowData?.id
+  const id = rowData?.id as number | string | undefined
   const email = typeof rowData?.email === 'string' ? rowData.email : ''
   const cell = React.useRef<HTMLDivElement>(null)
-  const [enabled, setEnabled] = React.useState(Boolean(rowData?.enableAPIKey))
-  const [apiKey, setApiKey] = React.useState<null | string>(null)
   const [open, setOpen] = React.useState(false)
   /* ON A DESK THE KEY OPENS IN THE ROW, behind a caret: the table is a list
      of accounts, and every enabled one opened at once is seven key boxes and no
@@ -55,80 +48,18 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
      and opens a sheet that has room for them. */
   const phone = useIsPhone()
   const [sheet, setSheet] = React.useState(false)
-  /* In the sheet the key is there whenever access is — it is the reason the
-     sheet opened. In the table it waits to be asked for. */
-  const showKey = Boolean(enabled) && (phone ? sheet : open)
-  const [shown, setShown] = React.useState(false)
-  const [copied, setCopied] = React.useState(false)
-  const [busy, setBusy] = React.useState(false)
-  const [error, setError] = React.useState<null | string>(null)
-  const [confirming, setConfirming] = React.useState(false)
 
-  /* The list does not carry the key — `apiKey` is not a column, and it should
-     not be one: forty rows of credentials on a screen anyone can leave open. It
-     is fetched for the row that is open, and only that row. */
-  React.useEffect(() => {
-    if (!showKey || !id || apiKey) return
-    let live = true
-    void (async () => {
-      try {
-        const res = await fetch(`/api/users/${id}?depth=0`, { credentials: 'include' })
-        if (!res.ok) return
-        const doc = (await res.json()) as { apiKey?: string }
-        if (live && typeof doc.apiKey === 'string') setApiKey(doc.apiKey)
-      } catch {
-        // The row still says access is on; a key that will not load is a
-        // network fault, not a state worth printing in a table cell.
-      }
-    })()
-    return () => {
-      live = false
-    }
-  }, [apiKey, id, showKey])
+  const access = useApiAccess({
+    id,
+    initialEnabled: Boolean(rowData?.enableAPIKey),
+    visible: phone ? sheet : open,
+  })
+  const { apiKey, askRegenerate, busy, confirmation, copied, copy, enabled, error, setError, setShown, showKey, shown } =
+    access
 
-  const save = React.useCallback(
-    async (patch: Record<string, unknown>) => {
-      if (!id) return false
-      setBusy(true)
-      setError(null)
-      try {
-        const res = await fetch(`/api/users/${id}`, {
-          body: JSON.stringify(patch),
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          method: 'PATCH',
-        })
-        if (!res.ok) throw new Error(String(res.status))
-        return true
-      } catch {
-        setError('Could not save. Try again.')
-        return false
-      } finally {
-        setBusy(false)
-      }
-    },
-    [id],
-  )
-
-  const toggle = async (next: boolean): Promise<boolean> => {
-    /* Turning it on with no key would leave access enabled and nothing to
-       authenticate with, which reads as working and is not. */
-    const key = next && !apiKey ? newKey() : undefined
-    const ok = await save(key ? { apiKey: key, enableAPIKey: true } : { enableAPIKey: next })
-    if (!ok) return false
-    if (key) setApiKey(key)
-    setEnabled(next)
-    setShown(false)
-    setOpen(next ? open : false)
-    return true
-  }
-
-  const regenerate = async () => {
-    const key = newKey()
-    const ok = await save({ apiKey: key, enableAPIKey: true })
-    if (!ok) return
-    setApiKey(key)
-    setConfirming(false)
+  /* Turning access off folds the row's key away with it. */
+  const toggle = async (next: boolean) => {
+    if ((await access.toggle(next)) && !next) setOpen(false)
   }
 
   /* THE ROW OPENS, NOT THE COLUMN. A cell that grew would push its own column
@@ -155,30 +86,62 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
     }
   }, [showKey, phone])
 
-  const copy = async () => {
-    if (!apiKey) return
-    try {
-      await navigator.clipboard.writeText(apiKey)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 2000)
-    } catch {
-      // Refused clipboard access says nothing useful here; the key is on screen.
-    }
+  /*
+   * THE CARD SAYS THE STATE AND OPENS. Done, not Save and Cancel: with one
+   * button there is nothing to cancel TO, so the switch writes the moment it
+   * moves, as it does in the table, and the sheet shows the result. Done,
+   * Escape and the overlay all close.
+   */
+  if (phone) {
+    return (
+      <div className="da-api-cell da-api-cell--card" ref={cell}>
+        <CardOpener
+          label={`API access for ${email || 'this account'}: ${enabled ? 'on' : 'off'}`}
+          onOpen={() => {
+            setShown(false)
+            setError(null)
+            setSheet(true)
+          }}
+        >
+          <span className={`da-api-state${enabled ? ' da-api-state--on' : ''}`}>{enabled ? 'On' : 'Off'}</span>
+        </CardOpener>
+
+        {/* THE SWITCH IS WHERE THE CLOSE WAS: the one decision in the sheet reads
+            as its subject rather than its first field. */}
+        <Dialog
+          aside={<Switch checked={enabled} label="API access" onChange={(next) => void toggle(next)} />}
+          onClose={() => setSheet(false)}
+          open={sheet}
+          title="API access"
+        >
+          <div className="da-api-sheet">
+            {showKey ? <ApiKeyBox access={access} /> : null}
+            {error ? <p className="da-api-cell__error">{error}</p> : null}
+            <div className="da-confirm__actions">
+              <button
+                className="da-confirm__button da-confirm__button--primary"
+                onClick={() => setSheet(false)}
+                type="button"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </Dialog>
+
+        {confirmation}
+      </div>
+    )
   }
 
-  /* The switch, the key and the way to replace it — the whole of what is
-     decided about an account. In the table this is the row; in a sheet it is
-     the sheet's body, which is why it is written once. */
-  const controls = (
-    <>
+  return (
+    <div className="da-api-cell" ref={cell}>
       <div className="da-api-cell__head">
-        <Switch checked={enabled} label="API access" onChange={toggle} />
+        <Switch checked={enabled} label="API access" onChange={(next) => void toggle(next)} />
 
-        {/* THE KEY IS NOT THE POINT OF THE TABLE. With every enabled account
-            opened at once, a list of seven is seven key boxes and no list. The
-            switch says whether there is access; this asks to see the key for
-            one row. */}
-        {enabled && !phone ? (
+        {/* THE KEY IS NOT THE POINT OF THE TABLE. The switch says whether there
+            is access; this asks to see the key for one row. */}
+        {enabled ? (
           <button
             aria-expanded={open}
             aria-label={open ? 'Hide key' : 'Show key'}
@@ -193,12 +156,7 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
 
       {showKey ? (
         <div className="da-api-cell__key">
-          <span className="da-api-cell__value">
-            {/* Dots until asked, and a monospace face when shown: a key is read
-                character by character when it is being checked against another
-                one. */}
-            {shown ? apiKey ?? 'Loading…' : '••••••••••••••••••••••••••••••••••••'}
-          </span>
+          <span className="da-api-cell__value">{shown ? apiKey ?? 'Loading…' : MASK}</span>
 
           <button
             aria-label={shown ? 'Hide key' : 'Show key'}
@@ -220,154 +178,14 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
             {copied ? <Check aria-hidden="true" {...ICON} /> : <Copy aria-hidden="true" {...ICON} />}
           </button>
 
-          <button
-            className="da-api-cell__regen"
-            disabled={busy}
-            onClick={() => setConfirming(true)}
-            type="button"
-          >
+          <button className="da-api-cell__regen" disabled={busy} onClick={askRegenerate} type="button">
             Generate new
           </button>
         </div>
       ) : null}
 
       {error ? <p className="da-api-cell__error">{error}</p> : null}
-    </>
-  )
 
-  /* The question worth asking twice: the key in Content Studio stops working
-     the moment this one is written, and nothing on either screen would say why
-     publishing had stopped. It is rendered beside whichever surface is in use,
-     and portals over it either way. */
-  const confirmation = (
-    <ConfirmDialog
-      confirmLabel="Generate new key"
-      description="Content Studio publishes with the current key. It stops working the moment a new one is made, until the new key is pasted into Content Studio."
-      onCancel={() => setConfirming(false)}
-      onConfirm={regenerate}
-      open={confirming}
-      title="Replace this key?"
-    />
-  )
-
-  /*
-   * THE CARD SAYS THE STATE AND OPENS.
-   *
-   * A button the size of the card rather than a control at the end of it: the
-   * whole row is the tap target, which is what a list of cards teaches a thumb
-   * to expect, and the state and the chevron ride at its end where the eye
-   * already is. It is transparent, so the address underneath is what you read;
-   * it is a `button`, so Tab reaches it and Enter opens it, which a click
-   * handler on a `<tr>` never would.
-   */
-  /*
-   * DONE, NOT SAVE AND CANCEL. With one button there is nothing to cancel
-   * TO, so the switch does what it does in the table: it writes the moment it
-   * moves, and the sheet shows the result — turn access on and the key it just
-   * made is there under it. Done, Escape and the overlay all do the same thing,
-   * which is close, because there is nothing left unsaved for any of them to
-   * decide about.
-   */
-  const openSheet = () => {
-    setShown(false)
-    setError(null)
-    setSheet(true)
-  }
-
-  const closeSheet = () => setSheet(false)
-
-  if (phone) {
-    return (
-      <div className="da-api-cell da-api-cell--card" ref={cell}>
-        <CardOpener
-          label={`API access for ${email || 'this account'}: ${enabled ? 'on' : 'off'}`}
-          onOpen={openSheet}
-        >
-          <span className={`da-api-state${enabled ? ' da-api-state--on' : ''}`}>
-            {enabled ? 'On' : 'Off'}
-          </span>
-        </CardOpener>
-
-        {/*
-         * THE SWITCH IS WHERE THE CLOSE WAS. The sheet ends in its own Done,
-         * so a second way to say it in the corner was one control too many —
-         * and the corner beside the title is where the one decision in the
-         * sheet reads as the sheet's subject rather than its first field.
-         * Escape and the overlay still close it.
-         */}
-        <Dialog
-          aside={<Switch checked={Boolean(enabled)} label="API access" onChange={(next) => void toggle(next)} />}
-          onClose={closeSheet}
-          open={sheet}
-          title="API access"
-        >
-          <div className="da-api-sheet">
-            {showKey ? (
-              <div className="da-api-sheet__key">
-                {/* The key and the eye that reveals it, on one line: the eye is
-                    about the characters beside it, not about the key as a
-                    thing to act on. */}
-                <div className="da-api-sheet__line">
-                  <span className="da-api-cell__value">
-                    {shown ? apiKey ?? 'Loading…' : '••••••••••••••••••••••••••••••••••••'}
-                  </span>
-                  <button
-                    aria-label={shown ? 'Hide key' : 'Show key'}
-                    className="da-api-cell__icon"
-                    disabled={!apiKey}
-                    onClick={() => setShown((was) => !was)}
-                    type="button"
-                  >
-                    {shown ? <EyeOff aria-hidden="true" {...ICON} /> : <Eye aria-hidden="true" {...ICON} />}
-                  </button>
-                </div>
-
-                {/* The two things you do WITH the key, as two equal buttons —
-                    each a word, so neither is an icon to be recognised. */}
-                <div className="da-api-sheet__actions">
-                  <button
-                    className="da-api-sheet__button"
-                    disabled={!apiKey}
-                    onClick={copy}
-                    type="button"
-                  >
-                    {copied ? <Check aria-hidden="true" {...ICON} /> : <Copy aria-hidden="true" {...ICON} />}
-                    {copied ? 'Copied' : 'Copy'}
-                  </button>
-                  <button
-                    className="da-api-sheet__button"
-                    disabled={busy}
-                    onClick={() => setConfirming(true)}
-                    type="button"
-                  >
-                    Generate new
-                  </button>
-                </div>
-              </div>
-            ) : null}
-
-            {error ? <p className="da-api-cell__error">{error}</p> : null}
-
-            <div className="da-confirm__actions">
-              <button
-                className="da-confirm__button da-confirm__button--primary"
-                onClick={closeSheet}
-                type="button"
-              >
-                Done
-              </button>
-            </div>
-          </div>
-        </Dialog>
-
-        {confirmation}
-      </div>
-    )
-  }
-
-  return (
-    <div className="da-api-cell" ref={cell}>
-      {controls}
       {confirmation}
     </div>
   )

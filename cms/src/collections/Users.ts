@@ -109,7 +109,27 @@ export const Users: CollectionConfig = {
     {
       name: 'email',
       type: 'email',
+      /*
+       * THE ADDRESS CANNOT BE CHANGED — by anyone, through anything.
+       *
+       * It is not a setting, it is the account's identity: every account
+       * arrives through Google sign-in, and the callback finds the account by
+       * matching the Google address against this field. Rename it and the next
+       * sign-in matches nothing and makes a second, empty account, while this
+       * one — holding Content Studio's API key — can no longer be signed in to.
+       *
+       * FIELD ACCESS, NOT ONLY A READ-ONLY INPUT. `readOnly` stops the form;
+       * `access.update` stops the REST API, the GraphQL API and any screen yet
+       * to be written, because Payload strips a field the caller may not update
+       * before it reaches the database. Creating still sets it — the Google
+       * callback creates with `overrideAccess`, and create is closed to people
+       * anyway (see `access` above).
+       */
+      access: {
+        update: () => false,
+      },
       admin: {
+        readOnly: true,
         components: { Cell: '/components/admin/UserApiCell#UserEmailCell' },
       },
     },

@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { createPortal } from 'react-dom'
-import { Link } from '@payloadcms/ui'
 import { LogOut, UserRound } from 'lucide-react'
 
 import './AccountMenu.css'
@@ -27,12 +26,12 @@ import './AccountMenu.css'
  */
 export function AccountMenu({
   email,
-  onNavigate,
+  onAccount,
   onSignOut,
 }: {
   email: string
-  /** Called when an item leaves for another page — the drawer closes on it. */
-  onNavigate?: () => void
+  /** Opens the account sheet — held by SideNav, which outlives this menu. */
+  onAccount: () => void
   onSignOut: () => void
 }) {
   const menuId = React.useId()
@@ -155,19 +154,27 @@ export function AccountMenu({
 
       <Rule />
 
-      <Link
+      {/* A SHEET, NOT A PAGE (AccountSheet). It opens over the work and closes
+          back onto it; the sheet lives in SideNav, because this menu closes on
+          select and would take a sheet mounted inside it down too. */}
+      <button
+        aria-haspopup="dialog"
         className="da-account__item"
-        href="/admin/account"
         onClick={() => {
-          close(false)
-          onNavigate?.()
+          /* Focus back to the trigger BEFORE the sheet opens, so the sheet
+             records the trigger as where to return — the item itself is gone
+             the moment the menu closes, and a sheet that returns focus to a
+             removed node leaves it on the body. */
+          close(true)
+          onAccount()
         }}
         role="menuitem"
         tabIndex={-1}
+        type="button"
       >
         <UserRound aria-hidden="true" size={18} />
         Account
-      </Link>
+      </button>
 
       <Rule />
 

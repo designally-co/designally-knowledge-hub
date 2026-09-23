@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 
 import { AccountMenu } from './AccountMenu'
+import { AccountSheet } from './AccountSheet'
 import { ConfirmDialog } from './ConfirmDialog'
 import { MOTION, duration } from './motion'
 import './SideNav.css'
@@ -45,6 +46,9 @@ const NAV: { href: string; label: string; icon: LucideIcon }[] = [
   { href: '/admin/collections/subscribers', label: 'Subscribers', icon: Mail },
   { href: '/admin/collections/users', label: 'Users', icon: Users },
 ]
+
+/** Set on the old account address, read by the next nav to open the sheet. */
+const OPEN_ACCOUNT_KEY = 'da:open-account'
 
 /** Remembered per browser: a folded rail is a preference about this screen. */
 const COLLAPSED_KEY = 'da:nav-collapsed'
@@ -195,6 +199,39 @@ export function SideNav() {
   const [confirmingSignOut, setConfirmingSignOut] = useState(false)
   const signOut = () => setConfirmingSignOut(true)
 
+  /* The account sheet, held here for the same reason. From the drawer, the
+     drawer closes as it opens — the sheet is about you, not about where to go. */
+  const [accountOpen, setAccountOpen] = useState(false)
+
+  /* THE OLD ADDRESS STILL WORKS. `/admin/account` was a page, and links and
+     bookmarks to it exist — so arriving there moves the address off the page it
+     used to name, onto the work underneath, and opens the sheet there.
+
+     THROUGH SESSION STORAGE, NOT THIS COMPONENT'S STATE. The first version set
+     `accountOpen` and then moved, and landed on the article list with no sheet:
+     the account route is laid out differently enough that the admin rebuilds
+     its nav on the way out, and the state went with it. A flag outlives the
+     component that set it; the next one reads it and clears it. */
+  useEffect(() => {
+    if (pathname === '/admin/account') {
+      try {
+        sessionStorage.setItem(OPEN_ACCOUNT_KEY, '1')
+      } catch {
+        // Private modes refuse this: the move still happens, without the sheet.
+      }
+      router.replace('/admin')
+      return
+    }
+    try {
+      if (sessionStorage.getItem(OPEN_ACCOUNT_KEY)) {
+        sessionStorage.removeItem(OPEN_ACCOUNT_KEY)
+        setAccountOpen(true)
+      }
+    } catch {
+      // As above.
+    }
+  }, [pathname, router])
+
   return (
     <>
       {mounted && (
@@ -221,7 +258,14 @@ export function SideNav() {
             </div>
             <NavLinks onNavigate={() => setOpen(false)} pathname={pathname} />
             <div className="da-drawer__foot" data-stagger>
-              <AccountMenu email={email} onNavigate={() => setOpen(false)} onSignOut={signOut} />
+              <AccountMenu
+                email={email}
+                onAccount={() => {
+                  setOpen(false)
+                  setAccountOpen(true)
+                }}
+                onSignOut={signOut}
+              />
             </div>
           </aside>
         </div>
@@ -268,7 +312,7 @@ export function SideNav() {
           {/* NavLinks takes the slack, so this sits on the floor of the rail
               whatever the list above it holds. */}
           <div className="da-rail__foot">
-            <AccountMenu email={email} onSignOut={signOut} />
+            <AccountMenu email={email} onAccount={() => setAccountOpen(true)} onSignOut={signOut} />
           </div>
         </div>
       </aside>
@@ -279,6 +323,8 @@ export function SideNav() {
           is saved" because there it is; here a document can hold edits nobody
           has saved yet, and signing out drops them — so that is what it says.
           It goes through `/admin/logout`, Payload's own route. */}
+      <AccountSheet onClose={() => setAccountOpen(false)} open={accountOpen} />
+
       <ConfirmDialog
         confirmLabel="Sign out"
         description="Anything you haven't saved will be lost."
