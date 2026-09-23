@@ -1,0 +1,48 @@
+/*
+ * The card that opens (CardOpener.tsx).
+ *
+ * Stretched over the row with `inset: 0`. The list's own CSS makes the row the
+ * positioned box and its cells static (custom.scss), so this covers the card
+ * rather than the cell it is rendered in.
+ */
+
+.da-card-open {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border: 0;
+  border-radius: 16px;
+  background: none;
+  cursor: pointer;
+}
+
+/* The state and the chevron at the end of the address's line. */
+.da-card-open--end {
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* The state at the start of a line of its own under the address, and the
+   chevron opposite it at the card's far edge. */
+.da-card-open--below {
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.da-card-open:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: -2px;
+}
+
+.da-card-open__chevron {
+  flex: none;
+  color: var(--da-ink-3);
+}
+
+/* On the line below, the chevron sits level with the chip rather than with the
+   card's bottom edge. */
+.da-card-open--below .da-card-open__chevron {
+  margin-block-end: 3px;
+}

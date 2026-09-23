@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Check, ChevronDown, Copy } from 'lucide-react'
 
 import { adminDate } from './adminDate'
-import { ConfirmDialog } from './ConfirmDialog'
+import { CardOpener, useIsPhone } from './CardOpener'
+import { ConfirmDialog, Dialog } from './ConfirmDialog'
 import './SubscriberCells.css'
 
 /**
@@ -114,6 +115,14 @@ export const SubscriberStatusCell: React.FC<CellProps> = ({ cellData, rowData })
   const [busy, setBusy] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
   const [confirming, setConfirming] = React.useState(false)
+  /* ON A PHONE THE DETAIL IS A SHEET, not a panel opening inside the card. The
+     card is one subscriber; its facts, its note and the one thing that can be
+     done to it are a sheet's worth, and a card that grew by three hundred
+     pixels pushed every subscriber under it off the screen. */
+  const phone = useIsPhone()
+  const [sheet, setSheet] = React.useState(false)
+  const email = asText(rowData?.email) ?? ''
+  const label = STATUS_LABELS[status] ?? status
 
   /* ALL THREE COME FROM THE ROW. `rowData` is the whole document — Payload
      hands a cell the record, not the one value its column shows — so the
@@ -162,10 +171,115 @@ export const SubscriberStatusCell: React.FC<CellProps> = ({ cellData, rowData })
     }
   }
 
+  /* The detail — written once, and shown in the row on a desk or in the sheet
+     on a phone. */
+  const detail = (
+    <div className="da-sub-cell__detail">
+      <dl className="da-sub-facts">
+        <div className="da-sub-facts__row">
+          <dt>Signed up from</dt>
+          {/* The title carries the whole path, because the cell shows as
+              much of it as fits and an ellipsis for the rest. */}
+          <dd
+            className={source ? 'da-sub-facts__path' : 'da-sub-facts__empty'}
+            title={source ?? undefined}
+          >
+            {source ?? 'Not recorded'}
+          </dd>
+        </div>
+        <div className="da-sub-facts__row">
+          <dt>Language</dt>
+          <dd>{language}</dd>
+        </div>
+        {signedUp ? (
+          <div className="da-sub-facts__row">
+            <dt>Signed up</dt>
+            <dd>{signedUp}</dd>
+          </div>
+        ) : null}
+      </dl>
+
+      <div className="da-sub-cell__foot">
+        <p className="da-sub-cell__note">{STATUS_NOTES[status] ?? ''}</p>
+        {status !== 'unsubscribed' ? (
+          <button
+            className="da-sub-cell__stop"
+            disabled={busy}
+            onClick={() => setConfirming(true)}
+            type="button"
+          >
+            Unsubscribe
+          </button>
+        ) : null}
+      </div>
+
+      {error ? <p className="da-sub-cell__error" role="alert">{error}</p> : null}
+    </div>
+  )
+
+  const confirmation = (
+    <ConfirmDialog
+      confirmLabel="Unsubscribe"
+      description="They stop receiving newsletters. The record stays, which is what keeps them off the next send — only they can sign up again."
+      onCancel={() => setConfirming(false)}
+      onConfirm={unsubscribe}
+      open={confirming}
+      title="Unsubscribe this address?"
+    />
+  )
+
+  /*
+   * THE CARD SAYS THE STATE AND OPENS. The state is a phrase — "Pending
+   * confirmation" is 165px — so it takes the line under the address rather
+   * than crowding it, with the chevron opposite at the card's edge.
+   *
+   * THE SHEET IS HEADED BY WHO, across the whole line. The state went in the
+   * corner first, where the user sheet keeps its switch — and a 24-character
+   * address beside a 110px chip broke as "browser.test@examp / le.com". So the
+   * corner is empty (the sheet ends in Done; a close disc up there would be one
+   * control too many) and the state opens the body instead. Unsubscribing asks
+   * first, on a dialog of its own over this one, and the sheet stays behind it
+   * showing the state it produced.
+   */
+  if (phone) {
+    return (
+      <div className="da-sub-cell da-sub-cell--card" ref={cell}>
+        <CardOpener
+          label={`${email || 'Subscriber'}: ${label}. Show details`}
+          layout="below"
+          onOpen={() => {
+            setError(null)
+            setSheet(true)
+          }}
+        >
+          <span className={`da-sub-state da-sub-state--${status}`}>{label}</span>
+        </CardOpener>
+
+        <Dialog aside={null} onClose={() => setSheet(false)} open={sheet} title={email || 'Subscriber'}>
+          <div className="da-sub-sheet">
+            <span className={`da-sub-state da-sub-state--${status}`}>{label}</span>
+            {detail}
+            <div className="da-confirm__actions">
+              <button
+                className="da-confirm__button da-confirm__button--primary"
+                onClick={() => setSheet(false)}
+                type="button"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </Dialog>
+
+        {confirmation}
+      </div>
+    )
+  }
+
   return (
     <div className="da-sub-cell" ref={cell}>
       <div className="da-sub-cell__head">
-        <span className={`da-sub-state da-sub-state--${status}`}>{STATUS_LABELS[status] ?? status}</span>
+        <span className={`da-sub-state da-sub-state--${status}`}>{label}</span>
         <button
           aria-expanded={open}
           aria-label={open ? 'Hide details' : 'Show details'}
@@ -177,58 +291,9 @@ export const SubscriberStatusCell: React.FC<CellProps> = ({ cellData, rowData })
         </button>
       </div>
 
-      {open ? (
-        <div className="da-sub-cell__detail">
-          <dl className="da-sub-facts">
-            <div className="da-sub-facts__row">
-              <dt>Signed up from</dt>
-              {/* The title carries the whole path, because the cell shows as
-                  much of it as fits and an ellipsis for the rest. */}
-              <dd
-                className={source ? 'da-sub-facts__path' : 'da-sub-facts__empty'}
-                title={source ?? undefined}
-              >
-                {source ?? 'Not recorded'}
-              </dd>
-            </div>
-            <div className="da-sub-facts__row">
-              <dt>Language</dt>
-              <dd>{language}</dd>
-            </div>
-            {signedUp ? (
-              <div className="da-sub-facts__row">
-                <dt>Signed up</dt>
-                <dd>{signedUp}</dd>
-              </div>
-            ) : null}
-          </dl>
+      {open ? detail : null}
 
-          <div className="da-sub-cell__foot">
-            <p className="da-sub-cell__note">{STATUS_NOTES[status] ?? ''}</p>
-            {status !== 'unsubscribed' ? (
-              <button
-                className="da-sub-cell__stop"
-                disabled={busy}
-                onClick={() => setConfirming(true)}
-                type="button"
-              >
-                Unsubscribe
-              </button>
-            ) : null}
-          </div>
-
-          {error ? <p className="da-sub-cell__error" role="alert">{error}</p> : null}
-        </div>
-      ) : null}
-
-      <ConfirmDialog
-        confirmLabel="Unsubscribe"
-        description="They stop receiving newsletters. The record stays, which is what keeps them off the next send — only they can sign up again."
-        onCancel={() => setConfirming(false)}
-        onConfirm={unsubscribe}
-        open={confirming}
-        title="Unsubscribe this address?"
-      />
+      {confirmation}
     </div>
   )
 }

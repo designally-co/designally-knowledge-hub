@@ -254,3 +254,35 @@ tr:hover .da-sub-email__copy,
   outline: 2px solid var(--da-focus);
   outline-offset: 2px;
 }
+
+/* ---- the phone: the card and its sheet ------------------------------------- */
+
+/* The cell renders only the opener (absolute, over the card) and the dialogs
+   (portalled), so it has no box of its own to draw. */
+.da-sub-cell--card {
+  display: contents;
+}
+
+.da-sub-sheet {
+  display: grid;
+  gap: 8px;
+  margin-block-start: 16px;
+}
+
+/* An address as a title has the whole line, and breaks only if it is longer
+   than that — a long one wraps rather than running out of the sheet. */
+.da-confirm:has(.da-sub-sheet) .da-confirm__title {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+/* The state opens the body, at its own width rather than the grid's. */
+.da-sub-sheet > .da-sub-state {
+  justify-self: start;
+}
+
+/* One fact to a line in a sheet: three columns of 10rem do not fit its 287px,
+   and two-and-one reads as a layout error rather than a list. */
+.da-sub-sheet .da-sub-facts {
+  grid-template-columns: 1fr;
+}

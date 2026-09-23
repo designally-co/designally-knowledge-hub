@@ -134,34 +134,12 @@
 
 /* --- the phone: a card that opens, and the sheet it opens ------------------
    See UserApiCell.tsx for why the deciding leaves the list on a phone. The
-   card's own geometry — what the address clears, which box the opener
-   stretches over — is in custom.scss with the rest of the card layout; what is
-   here is the two things this file owns: the opener's face and the sheet's
-   body. */
+   opener itself is CardOpener, shared with the subscriber list; the card's
+   geometry is in custom.scss. What is here is the state it carries and the
+   sheet's body. */
 
 .da-api-cell--card {
   display: contents;
-}
-
-/* Stretched over the whole row, transparent, with its two marks at the end.
-   `inset: 0` against the row, which the list's CSS makes the positioned box. */
-.da-api-cell__open {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  padding-inline: 12px;
-  border: 0;
-  border-radius: 16px;
-  background: none;
-  cursor: pointer;
-}
-
-.da-api-cell__open:focus-visible {
-  outline: 2px solid var(--da-focus);
-  outline-offset: -2px;
 }
 
 /* ON AND OFF AS A WORD. A dot would need the legend the switch used to be, and
@@ -185,11 +163,6 @@
 .da-api-state--on {
   background-color: var(--da-orange-tint);
   color: var(--da-orange-mark);
-}
-
-.da-api-cell__chevron {
-  flex: none;
-  color: var(--da-ink-3);
 }
 
 /* ---- the sheet's body ----------------------------------------------------- */

@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react'
-import { Check, ChevronDown, ChevronRight, Copy, Eye, EyeOff } from 'lucide-react'
+import { Check, ChevronDown, Copy, Eye, EyeOff } from 'lucide-react'
 
+import { CardOpener, useIsPhone } from './CardOpener'
 import { ConfirmDialog, Dialog } from './ConfirmDialog'
 import { Switch } from './Switch'
 import './UserApiCell.css'
@@ -40,38 +41,6 @@ const ICON = { size: 16, strokeWidth: 1.75 } as const
    own generator rather than a package this app does not depend on directly. */
 const newKey = () => crypto.randomUUID()
 
-/** Below this the row is a card, and a card holds one account. */
-const PHONE = '(max-width: 48rem)'
-
-/**
- * Whether this is the phone's layout — where the row opens onto a sheet.
- *
- * ON A DESK THE KEY OPENS IN THE ROW, behind a caret, because the table is a
- * list of accounts and every enabled one opened at once is seven key boxes and
- * no list. A card is not a row in a table: it is one account with a switch, a
- * masked credential and two buttons on it, which is a screen's worth of
- * decision sitting in a list. So on a phone the card says the state and opens,
- * and the deciding happens somewhere that has room for it.
- *
- * `false` until the browser answers, because this renders on the server too and
- * a desk is the safe guess: it shows a caret for a frame on a phone rather than
- * the row's own controls for a frame on a desk.
- */
-function useIsPhone(): boolean {
-  const [phone, setPhone] = React.useState(false)
-
-  React.useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return
-    const query = window.matchMedia(PHONE)
-    const read = () => setPhone(query.matches)
-    read()
-    query.addEventListener('change', read)
-    return () => query.removeEventListener('change', read)
-  }, [])
-
-  return phone
-}
-
 export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
   const id = rowData?.id
   const email = typeof rowData?.email === 'string' ? rowData.email : ''
@@ -79,6 +48,11 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
   const [enabled, setEnabled] = React.useState(Boolean(rowData?.enableAPIKey))
   const [apiKey, setApiKey] = React.useState<null | string>(null)
   const [open, setOpen] = React.useState(false)
+  /* ON A DESK THE KEY OPENS IN THE ROW, behind a caret: the table is a list
+     of accounts, and every enabled one opened at once is seven key boxes and no
+     list. On a phone a card is one account, and its switch, masked credential
+     and buttons are a screen's worth of decision — so the card says the state
+     and opens a sheet that has room for them. */
   const phone = useIsPhone()
   const [sheet, setSheet] = React.useState(false)
   /* In the sheet the key is there whenever access is — it is the reason the
@@ -305,18 +279,14 @@ export const UserApiCell: React.FC<CellProps> = ({ rowData }) => {
   if (phone) {
     return (
       <div className="da-api-cell da-api-cell--card" ref={cell}>
-        <button
-          aria-haspopup="dialog"
-          aria-label={`API access for ${email || 'this account'}: ${enabled ? 'on' : 'off'}`}
-          className="da-api-cell__open"
-          onClick={openSheet}
-          type="button"
+        <CardOpener
+          label={`API access for ${email || 'this account'}: ${enabled ? 'on' : 'off'}`}
+          onOpen={openSheet}
         >
           <span className={`da-api-state${enabled ? ' da-api-state--on' : ''}`}>
             {enabled ? 'On' : 'Off'}
           </span>
-          <ChevronRight aria-hidden="true" className="da-api-cell__chevron" size={18} />
-        </button>
+        </CardOpener>
 
         {/*
          * THE SWITCH IS WHERE THE CLOSE WAS. The sheet ends in its own Done,
