@@ -6611,32 +6611,38 @@ $list: '.template-default__wrap > .collection-list';
   color: #a6a6a6;
 }
 
-/* THE LANGUAGE, AT THE HEIGHT OF THE LINE IT IS ON.
- *
- * This described a segmented pair — a 36-tall outlined box holding two
- * segments, the chosen one filled with the chrome grey — which is what the
- * control was. It is one round button now, and the rules for the segments were
- * styling elements the component had stopped rendering. What survives is the
- * one thing this block is for: the DESK row is 36 tall, and a 44px control in
- * it sat eight pixels above the search field and Create beside it (measured, y
- * 82 against 90). It takes the row's height, and it stays a circle doing it.
- *
- * The phone's bar sets its own 44 further down, where the disc is beside the
- * menu button rather than beside a field. */
+/* THE LANGUAGE PAIR, IN THE CONTROLS' OWN SHAPE. Studio has no language on its
+   Library, but its filters beside the search are 36-tall outlined boxes with an
+   eight-pixel corner, so the pair becomes one of those holding two segments —
+   the chosen one filled with the chrome grey. 36 is the DESK row's height: a
+   44px control in it sat eight pixels above the search field and Create beside
+   it (measured, y 82 against 90).
+
+   On a phone it is one round button on the header's line instead — see the
+   bar's rules further down, and LocaleSwitch. */
 #{$list} .da-locale {
   box-sizing: border-box;
+  block-size: 36px;
+  margin: 0;
+  padding: 2px;
+  gap: 2px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: none;
+}
+
+#{$list} .da-locale__opt {
   inline-size: 36px;
   min-inline-size: 36px;
-  block-size: 36px;
-  min-block-size: 36px;
-  margin: 0;
-  padding: 0;
-  /* #e0e0e0, not the hairline: on this line it is one of the outlined controls
-     and takes their edge. On the phone's bar it is one of the discs and takes
-     theirs. */
-  border: 1px solid #e0e0e0;
-  border-radius: 999px;
-  background-color: #ffffff;
+  block-size: 30px;
+  min-block-size: 30px;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 13px;
+}
+
+#{$list} .da-locale__opt--on {
+  background-color: var(--da-chrome);
 }
 
 /* Create, at the controls' height so the line is one row: 36 tall, 16 either
@@ -8594,7 +8600,11 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
     min-inline-size: 44px;
     block-size: 44px;
     min-block-size: 44px;
+    padding: 0;
     border-color: var(--da-hairline);
+    /* The desk draws it as an eight-cornered box; on the bar it is a disc. */
+    border-radius: 999px;
+    background-color: #ffffff;
   }
 
   /* And it goes under while the field is open — the line is the field's.
@@ -8885,7 +8895,7 @@ $mediaDoc: '#{$doc}:has(.collection-edit--media)';
  */
 @media (max-width: 48rem) {
   .app-header__mobile-nav-toggler:focus-visible,
-  #{$list} .da-locale:focus-visible,
+  #{$list} .da-locale__toggle:focus-visible,
   .app-header .da-bar__more:focus-visible,
   .app-header .da-bar__save .form-submit .btn--style-primary:focus-visible {
     outline-offset: 0;

@@ -1,35 +1,34 @@
 /*
- * The language, as one round button.
+ * The language: a segmented pair on the desk, one round button on the phone.
  *
- * It was a segmented pair — EN and TH on a tinted track, the chosen one lifted
- * to white — which is the right shape for a choice you make by comparing the
- * options. With two that never change, and the one you are not in being the one
- * you want, it is a toggle: half the width, and nothing to read before pressing.
+ * DESK — EN and TH side by side, the one being edited filled. Two languages,
+ * both shown: the state is read without pressing anything, and the list's
+ * control row has the width for it. Its box — the 36-tall outlined control
+ * beside search and Create — is set with the row in custom.scss.
  *
- * THE SAME DISC AS THE MENU AND SEARCH, because it sits between them in the
- * header's line and three quiet controls on one line should be one shape. White
- * with the hairline, ink under the pointer; the accent belongs to the thing that
- * makes something.
+ * PHONE — the pair would cost a header line that already holds the menu, the
+ * title and search, so it becomes a toggle: the same disc as the menu and
+ * search beside it, its face the language being edited. The disc's place and
+ * size on the bar are set in custom.scss; this draws what is inside it.
  */
 
 .da-locale {
-  display: grid;
+  display: flex;
   flex: 0 0 auto;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.da-locale__opt {
+  display: grid;
   place-items: center;
-  inline-size: 44px;
-  block-size: 44px;
-  min-inline-size: 44px;
-  min-block-size: 44px;
   padding: 0;
-  border: 1px solid var(--da-hairline);
-  border-radius: 999px;
-  background-color: #ffffff;
+  border: 0;
+  background: none;
   font-family: var(--font-display);
-  /* Two letters at the label size the other discs draw their glyphs at. */
   font-size: 0.8125rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--da-ink-2);
+  color: var(--da-ink-3);
   cursor: pointer;
   transition:
     background-color var(--da-dur-feedback) var(--da-ease),
@@ -37,17 +36,68 @@
 }
 
 @media (hover: hover) {
-  .da-locale:hover {
-    background-color: var(--da-chrome);
+  .da-locale__opt:hover {
     color: var(--da-ink);
   }
 }
 
-.da-locale:active {
-  background-color: var(--da-chrome-active);
+.da-locale__opt--on {
+  color: var(--da-ink);
 }
 
-.da-locale:focus-visible {
+/* The phone's toggle. Not drawn on the desk. */
+.da-locale__toggle {
+  display: none;
+}
+
+.da-locale__opt:focus-visible,
+.da-locale__toggle:focus-visible {
   outline: 2px solid var(--da-focus);
   outline-offset: 2px;
+}
+
+@media (max-width: 48rem) {
+  .da-locale__opt {
+    display: none;
+  }
+
+  /* Fills the disc the bar gives it, and takes its round edge. */
+  .da-locale__toggle {
+    display: grid;
+    place-items: center;
+    inline-size: 100%;
+    block-size: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: inherit;
+    background: none;
+    font-family: var(--font-display);
+    /* Two letters at the label size the other discs draw their glyphs at. */
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--da-ink-2);
+    cursor: pointer;
+    transition:
+      background-color var(--da-dur-feedback) var(--da-ease),
+      color var(--da-dur-feedback) var(--da-ease);
+  }
+
+  @media (hover: hover) {
+    .da-locale__toggle:hover {
+      background-color: var(--da-chrome);
+      color: var(--da-ink);
+    }
+  }
+
+  .da-locale__toggle:active {
+    background-color: var(--da-chrome-active);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .da-locale__opt,
+  .da-locale__toggle {
+    transition: none;
+  }
 }

@@ -9,8 +9,9 @@ import './LocaleSwitch.css'
 /**
  * Which language you are editing, on the screens where that is a real question.
  *
- * A SINGLE ROUND BUTTON since 22 September 2026, in the header's top corner
- * beside search — see the note on the markup below.
+ * A PAIR ON THE DESK, A SINGLE ROUND BUTTON ON THE PHONE. The round button
+ * replaced the pair everywhere on 22 September 2026; the desk got its pair
+ * back on 24 September — see the note on the markup below.
  *
  * IT MOVED OUT OF THE NAV, 27 August 2026. Payload puts the locale control in
  * the app header and it was moved to the foot of the nav with the account — one
@@ -64,29 +65,48 @@ export function LocaleSwitch() {
   const next = (at + 1) % codes.length
 
   return (
-    /* ONE BUTTON, NOT A PAIR OF CHIPS.
+    /* A PAIR ON THE DESK, ONE DISC ON THE PHONE — both are rendered, and the
+     * stylesheet shows the one that fits (LocaleSwitch.css, 48rem).
      *
-     * It was EN and TH side by side with the active one filled — a segmented
-     * control, which is the right shape for a choice you make by looking at the
-     * options. There are two, they never change, and the one you are not in is
-     * the one you want: that is a toggle, and a toggle costs half the width and
-     * none of the reading. Which matters here because it now sits in the
-     * header's top corner beside search, where the line is 44px tall and every
-     * pixel of it is spoken for.
+     * On a desk the control sits in the list's own control row, 36 tall beside
+     * the search field and Create, where there is width to spare: both
+     * languages are shown and the one you are editing is filled, so the state
+     * is read at a glance and the other is one click away.
      *
-     * THE FACE IS THE STATE, AND THE LABEL IS THE ACTION. It shows where you
-     * are — the language you are editing — and says where pressing takes you,
-     * because a control that shows its own destination leaves you guessing
-     * which of the two you are looking at.
+     * On a phone it moves onto the header's top line beside search and the
+     * menu, where every pixel of a 44px line is spoken for. There it is a
+     * toggle: the face is the language you are editing, and the label says
+     * where pressing takes you.
+     *
+     * `display: none` on the form not shown keeps it out of the tab order and
+     * the accessibility tree, so each width has exactly one control.
      */
-    <button
-      aria-label={`Language: ${names[at]}. Switch to ${names[next]}`}
-      className="da-locale"
-      onClick={() => switchTo(codes[next])}
-      title={`Switch to ${names[next]}`}
-      type="button"
-    >
-      {(codes[at] ?? '').toUpperCase()}
-    </button>
+    <div aria-label="Language" className="da-locale" role="group">
+      {codes.map((code, i) => {
+        const active = i === at
+        return (
+          <button
+            aria-label={names[i]}
+            aria-pressed={active}
+            className={`da-locale__opt${active ? ' da-locale__opt--on' : ''}`}
+            key={code}
+            onClick={() => switchTo(code)}
+            title={names[i]}
+            type="button"
+          >
+            {code.toUpperCase()}
+          </button>
+        )
+      })}
+      <button
+        aria-label={`Language: ${names[at]}. Switch to ${names[next]}`}
+        className="da-locale__toggle"
+        onClick={() => switchTo(codes[next])}
+        title={`Switch to ${names[next]}`}
+        type="button"
+      >
+        {(codes[at] ?? '').toUpperCase()}
+      </button>
+    </div>
   )
 }
