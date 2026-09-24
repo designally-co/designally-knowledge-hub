@@ -7,25 +7,24 @@ import { Phrases } from '@/components/Phrases'
  * Dark, full-bleed promo band that sits under the Insights section: a three-phone
  * image over black, then the "Follow Designally" pitch and social buttons.
  *
- * The promo artwork is a single image at `phonesSrc` (default `/Brand Promo.webp`).
+ * The promo artwork is a single image at `phonesSrc` (default `/designally-promo.webp`:
+ * three phones showing Designally's own Instagram and Facebook posts).
  * Set the real Instagram / Facebook URLs via `instagramHref` / `facebookHref`.
  */
 export function InsightsVideoPromo({
   kicker,
   heading,
   body,
-  frequency,
   instagramLabel = 'Instagram',
   facebookLabel = 'Facebook',
   instagramHref = '#',
   facebookHref = '#',
-  phonesSrc = '/Brand Promo.webp',
+  phonesSrc = '/designally-promo.webp',
   phonesAlt = '',
 }: {
   kicker: string
   heading: string
   body: string
-  frequency: string
   instagramLabel?: string
   facebookLabel?: string
   instagramHref?: string
@@ -41,6 +40,10 @@ export function InsightsVideoPromo({
           <img
             className="ivp__stage-img"
             src={phonesSrc}
+            /* The artwork's own proportions, so the band holds its height
+               while the image loads instead of jumping when it arrives. */
+            width={963}
+            height={603}
             alt={phonesAlt}
             aria-hidden={phonesAlt ? undefined : true}
             loading="lazy"
@@ -64,8 +67,6 @@ export function InsightsVideoPromo({
             {facebookLabel}
           </a>
         </div>
-
-        <p className="ivp__freq">{frequency}</p>
       </div>
     </section>
   )

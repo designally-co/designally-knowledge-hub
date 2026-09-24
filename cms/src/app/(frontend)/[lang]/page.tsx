@@ -147,7 +147,6 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
         kicker={dict.home.videoPromoKicker}
         heading={dict.home.videoPromoHeading}
         body={dict.home.videoPromoBody}
-        frequency={dict.home.videoPromoFrequency}
         instagramHref="https://www.instagram.com/designally.co/"
         facebookHref="https://www.facebook.com/designallyco/"
       />

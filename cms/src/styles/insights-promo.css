@@ -86,19 +86,11 @@
   outline-offset: 3px;
 }
 
-.ivp__freq {
-  margin: clamp(var(--space-6), 4vw, var(--space-10)) 0 0;
-  font: var(--type-body);
-  letter-spacing: var(--tracking-body);
-  line-height: 1;
-  color: var(--color-neutral-white-60);
-}
-
 /* Phones: one clear step between each line, in the phone scale the cards and
    banners use. The heading a step under the page's section headings (heading-1
    against their display-2), the lede the regular body line so it supports the
-   heading rather than standing level with it, the buttons and the kicker and
-   frequency note at the label, tag and small sizes they take elsewhere. */
+   heading rather than standing level with it, the buttons and the kicker at
+   the label and tag sizes they take elsewhere. */
 @media (max-width: 47.999em) {
   .ivp__kicker {
     font-size: 10px;
@@ -130,12 +122,6 @@
     line-height: 1;
   }
 
-  .ivp__freq {
-    margin-top: var(--space-6);
-    font: var(--type-body-small);
-    letter-spacing: var(--tracking-body-small);
-    line-height: 1;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

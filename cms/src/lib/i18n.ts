@@ -110,7 +110,6 @@ export type Dictionary = {
     videoPromoKicker: string
     videoPromoHeading: string
     videoPromoBody: string
-    videoPromoFrequency: string
   }
   resources: {
     title: string
@@ -346,7 +345,6 @@ const en: Dictionary = {
     videoPromoHeading: 'Fresh design ideas, made simple.',
     videoPromoBody:
       'Follow Designally for short videos about branding, design, creative tools, AI, and new technology.',
-    videoPromoFrequency: 'New videos every week.',
   },
   resources: {
     title: 'Resources',
@@ -602,7 +600,6 @@ const th: Dictionary = {
     videoPromoHeading: 'ไอเดียดีไซน์ใหม่ ๆ เข้าใจง่าย',
     videoPromoBody:
       'ติดตาม Designally สำหรับวิดีโอสั้นเกี่ยวกับแบรนดิ้ง การออกแบบ เครื่องมือสร้างสรรค์ AI และเทคโนโลยีใหม่ ๆ',
-    videoPromoFrequency: 'วิดีโอใหม่ทุกสัปดาห์',
   },
   resources: {
     title: 'รีซอร์ส',
