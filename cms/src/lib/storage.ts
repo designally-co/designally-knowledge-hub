@@ -4,11 +4,24 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { cloudStoragePlugin } from '@payloadcms/plugin-cloud-storage'
 import type { Adapter } from '@payloadcms/plugin-cloud-storage/types'
-import { getFileKey, getFilePrefix } from '@payloadcms/plugin-cloud-storage/utilities'
+import {
+  getFileKey,
+  getFilePrefix,
+  initClientUploads,
+} from '@payloadcms/plugin-cloud-storage/utilities'
+import { createHmac, randomUUID, timingSafeEqual } from 'crypto'
 import fs from 'fs'
-import type { CollectionConfig, FileData, PayloadRequest, Plugin, TypeWithID } from 'payload'
+import type {
+  CollectionConfig,
+  FileData,
+  PayloadHandler,
+  PayloadRequest,
+  Plugin,
+  TypeWithID,
+} from 'payload'
 
 /**
  * Where the media library's files live.
@@ -195,16 +208,28 @@ const r2Adapter =
       await r2(config).send(new DeleteObjectCommand({ Bucket: config.bucket, Key: r2Key(filename) }))
     },
 
-    // Unused: with `disablePayloadAccessControl` the plugin never mounts it, and
-    // the file route is answered by `mediaFileRedirect`. Required by the type.
-    staticHandler: (_req, { params }) =>
-      Response.redirect(fileURL(config, params.filename, HUB_PREFIX), 302),
+    /* The file route is answered by `mediaFileRedirect`. The plugin calls this
+       for ONE thing: a direct upload, where Payload asks for the bytes the
+       browser just put in R2 (see DIRECT UPLOADS below). It is handed a staged
+       key, never a caller's choice of address — anything outside the staging
+       area is refused, so this cannot be pointed at another file. */
+    staticHandler: (_req, { params }) => {
+      if (params.clientUploadContext === undefined) {
+        return Response.redirect(fileURL(config, params.filename, HUB_PREFIX), 302)
+      }
+      const key = (params.clientUploadContext as { key?: unknown } | null)?.key
+      if (!isStagingKey(key)) throw new Error('Direct upload: not a staged file.')
+      return Response.redirect(publicURLForKey(config, key), 302)
+    },
+
+    /* The browser uploads the bytes itself; see DIRECT UPLOADS below. */
+    clientUploads: true,
   })
 
 /** The media library's storage, as a Payload plugin. */
 export function mediaStoragePlugin(): Plugin {
   const config = mediaStorage.kind === 'r2' ? mediaStorage.config : null
-  return cloudStoragePlugin({
+  const storage = cloudStoragePlugin({
     enabled: Boolean(config),
     /* The `prefix` column exists in every environment, not only where the
        plugin is on — so development's schema, and the generated types, match
@@ -224,6 +249,188 @@ export function mediaStoragePlugin(): Plugin {
       },
     },
   })
+
+  return (incoming) => {
+    /* Registered in every environment so the import map is the same one in
+       development and production; `enabled` is what switches it on, and off
+       Vercel there is no R2 to upload to, so uploads there stay multipart. */
+    initClientUploads({
+      clientHandler: '/components/admin/MediaUploadHandler#MediaUploadHandler',
+      collections: { media: { prefix: HUB_PREFIX } },
+      config: incoming,
+      enabled: Boolean(config),
+      serverHandler: directUploadURLHandler,
+      serverHandlerPath: DIRECT_UPLOAD_URL_PATH,
+    })
+    if (config) {
+      incoming.endpoints = [
+        ...(incoming.endpoints ?? []),
+        { path: DIRECT_UPLOAD_PROXY_PATH, method: 'post', handler: directUploadProxyHandler },
+      ]
+    }
+    return storage(incoming)
+  }
+}
+
+/* ---- DIRECT UPLOADS -------------------------------------------------------
+ *
+ * WHY THE BROWSER UPLOADS THE FILE ITSELF. Vercel refuses any request body
+ * over 4.5MB at its edge, before the Hub sees it — so a multipart upload of a
+ * font family, an ebook or a wallpaper pack could never reach Payload at all.
+ * The bytes now go to R2 without passing through a Vercel function:
+ *
+ *   1. The admin asks `/api/media-upload-url` for a staging key: a signed PUT
+ *      URL and a signed token, both for `hub/_incoming/<uuid>/<name>`.
+ *   2. It uploads there — through `/api/media-upload-proxy` when the file is
+ *      4MB or less, which needs nothing from the bucket; straight to R2 with
+ *      the signed URL when it is larger, which needs the bucket's CORS rule to
+ *      admit the Hub's origin.
+ *   3. It submits the form with the key instead of the bytes. Payload fetches
+ *      the staged file back (the adapter's staticHandler, above) — a download,
+ *      which no request limit applies to.
+ *   4. Media's `beforeOperation` then turns it back into an ordinary upload, so
+ *      the name, the download headers and the derivatives are made by the same
+ *      server path every other file takes; `afterChange` deletes the staged
+ *      copy. See collections/Media.ts.
+ *
+ * The staging area is inside `hub/`, so nothing here comes near the Content
+ * Generator's keys at the bucket root.
+ */
+
+export const DIRECT_UPLOAD_URL_PATH = '/media-upload-url'
+export const DIRECT_UPLOAD_PROXY_PATH = '/media-upload-proxy'
+const STAGING_PREFIX = `${HUB_PREFIX}/_incoming/`
+/** Under Vercel's 4.5MB request ceiling, with room for the request itself. */
+const PROXY_MAX_BYTES = 4 * 1024 * 1024
+const STAGING_TTL_MS = 15 * 60 * 1000
+
+function isStagingKey(key: unknown): key is string {
+  return (
+    typeof key === 'string' &&
+    key.startsWith(STAGING_PREFIX) &&
+    !key.includes('..') &&
+    key.length < 400
+  )
+}
+
+function publicURLForKey(config: R2Config, key: string): string {
+  return `${config.publicUrl}/${key.split('/').map(encodeURIComponent).join('/')}`
+}
+
+/** A staging key: its own folder, so two files of the same name never meet. */
+function stagingKeyFor(filename: string): string {
+  const safe =
+    filename
+      .normalize('NFKD')
+      .replace(/[^\w.-]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(-120) || 'file'
+  return `${STAGING_PREFIX}${randomUUID()}/${safe}`
+}
+
+type StagingClaim = { key: string; mimeType: string; exp: number }
+
+function signingKey(): string {
+  const secret = process.env.PAYLOAD_SECRET
+  if (!secret) throw new Error('PAYLOAD_SECRET is not set.')
+  return `media-upload:${secret}`
+}
+
+/** The proxy only writes keys this server handed out, and only for a while. */
+function signClaim(claim: StagingClaim): string {
+  const body = Buffer.from(JSON.stringify(claim)).toString('base64url')
+  const mac = createHmac('sha256', signingKey()).update(body).digest('base64url')
+  return `${body}.${mac}`
+}
+
+function readClaim(token: string | null): StagingClaim | null {
+  if (!token) return null
+  const [body, mac] = token.split('.')
+  if (!body || !mac) return null
+  const expected = createHmac('sha256', signingKey()).update(body).digest()
+  const given = Buffer.from(mac, 'base64url')
+  if (given.length !== expected.length || !timingSafeEqual(given, expected)) return null
+  try {
+    const claim = JSON.parse(Buffer.from(body, 'base64url').toString('utf8')) as StagingClaim
+    if (!isStagingKey(claim.key) || typeof claim.mimeType !== 'string') return null
+    if (!(claim.exp > Date.now())) return null
+    return claim
+  } catch {
+    return null
+  }
+}
+
+/** Only someone who may add to the library may stage a file for it. */
+async function mayUpload(req: PayloadRequest): Promise<boolean> {
+  if (!req.user) return false
+  const access = req.payload.collections.media.config.access?.create
+  if (!access) return true
+  return Boolean(await access({ req }))
+}
+
+const directUploadURLHandler: PayloadHandler = async (req) => {
+  if (mediaStorage.kind !== 'r2') return Response.json({ error: 'Not available.' }, { status: 404 })
+  if (!(await mayUpload(req))) return Response.json({ error: 'Sign in to upload.' }, { status: 401 })
+
+  const body = (await req.json?.().catch(() => null)) as {
+    filename?: unknown
+    mimeType?: unknown
+    size?: unknown
+  } | null
+  const filename = typeof body?.filename === 'string' ? body.filename.trim() : ''
+  const mimeType =
+    typeof body?.mimeType === 'string' && body.mimeType ? body.mimeType : 'application/octet-stream'
+  const size = Number(body?.size)
+  if (!filename || !Number.isFinite(size) || size <= 0) {
+    return Response.json({ error: 'That file has no name or no size.' }, { status: 400 })
+  }
+
+  const { config } = mediaStorage
+  const key = stagingKeyFor(filename)
+  const url = await getSignedUrl(
+    r2(config),
+    new PutObjectCommand({ Bucket: config.bucket, Key: key, ContentType: mimeType }),
+    { expiresIn: STAGING_TTL_MS / 1000 },
+  )
+  const token = signClaim({ key, mimeType, exp: Date.now() + STAGING_TTL_MS })
+  return Response.json({ key, url, token, proxyMaxBytes: PROXY_MAX_BYTES })
+}
+
+const directUploadProxyHandler: PayloadHandler = async (req) => {
+  if (mediaStorage.kind !== 'r2') return Response.json({ error: 'Not available.' }, { status: 404 })
+  if (!(await mayUpload(req))) return Response.json({ error: 'Sign in to upload.' }, { status: 401 })
+
+  const token = req.url ? new URL(req.url).searchParams.get('token') : null
+  const claim = readClaim(token)
+  if (!claim) {
+    return Response.json({ error: 'That upload link has expired. Try again.' }, { status: 403 })
+  }
+  if (typeof req.arrayBuffer !== 'function') {
+    return Response.json({ error: 'No file arrived.' }, { status: 400 })
+  }
+  const bytes = Buffer.from(await req.arrayBuffer())
+  if (bytes.length === 0) return Response.json({ error: 'No file arrived.' }, { status: 400 })
+  if (bytes.length > PROXY_MAX_BYTES) {
+    return Response.json({ error: 'Too large to send this way.' }, { status: 413 })
+  }
+
+  const { config } = mediaStorage
+  await r2(config).send(
+    new PutObjectCommand({
+      Bucket: config.bucket,
+      Key: claim.key,
+      Body: bytes,
+      ContentType: claim.mimeType,
+    }),
+  )
+  return Response.json({ ok: true })
+}
+
+/** Removes a staged upload once the real file is saved. Staging keys only. */
+export async function deleteStagedUpload(key: unknown): Promise<void> {
+  if (mediaStorage.kind !== 'r2' || !isStagingKey(key)) return
+  const { config } = mediaStorage
+  await r2(config).send(new DeleteObjectCommand({ Bucket: config.bucket, Key: key }))
 }
 
 type UploadHandler = NonNullable<
@@ -240,6 +447,8 @@ type UploadHandler = NonNullable<
  */
 export const mediaFileRedirect: UploadHandler = (req, { params }) => {
   if (mediaStorage.kind !== 'r2') return
+  /* A direct upload's bytes are fetched through the adapter; see above. */
+  if (params.clientUploadContext !== undefined) return
   return redirectToR2(req, params.filename, mediaStorage.config)
 }
 

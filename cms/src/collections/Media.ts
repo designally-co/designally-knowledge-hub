@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { mediaFromUrlHandler } from '../endpoints/mediaFromUrl'
 import { toSlug } from '../fields/slug'
-import { mediaFileRedirect } from '../lib/storage'
+import { deleteStagedUpload, mediaFileRedirect } from '../lib/storage'
 
 
 /**
@@ -103,6 +103,28 @@ export const Media: CollectionConfig = {
      * the incoming name is only consulted when it happens to agree.
      */
     beforeOperation: [
+      /*
+       * A DIRECT UPLOAD BECOMES AN ORDINARY ONE HERE. On the live site the
+       * browser puts the file in R2's staging area itself (lib/storage.ts,
+       * DIRECT UPLOADS) and Payload has just fetched it back, so `req.file`
+       * holds the real bytes with a `clientUploadContext` beside them. Left
+       * there, the storage plugin would skip writing the original — trusting
+       * the browser to have put it where the row says — but the browser put it
+       * under a staging key, and the name is decided below. Removing the
+       * context makes this the same upload every other doorway produces: named
+       * here, written by the adapter with its download headers, derivatives
+       * cut from the same bytes. The staged copy is deleted in afterChange.
+       */
+      ({ args }) => {
+        const req = args.req
+        const file = req?.file as { clientUploadContext?: unknown } | undefined
+        if (req && file && file.clientUploadContext !== undefined) {
+          const key = (file.clientUploadContext as { key?: unknown } | null)?.key
+          req.context = { ...req.context, stagedUploadKey: key }
+          delete file.clientUploadContext
+        }
+        return args
+      },
       ({ args, operation }) => {
         if (operation !== 'create') return args
 
@@ -128,6 +150,17 @@ export const Media: CollectionConfig = {
         }
 
         return args
+      },
+    ],
+    afterChange: [
+      async ({ doc, req }) => {
+        const key = req.context?.stagedUploadKey
+        if (key) {
+          await deleteStagedUpload(key).catch((error: unknown) =>
+            req.payload.logger.warn({ err: error, key }, 'Could not delete a staged upload.'),
+          )
+        }
+        return doc
       },
     ],
   },
@@ -341,12 +374,48 @@ export const Media: CollectionConfig = {
        still in sent newsletters and link previews. It redirects to R2; files
        are served by Cloudflare and never come through here. See lib/storage. */
     handlers: [mediaFileRedirect],
+    /* WHAT A RESOURCE CAN SHIP, not only what a cover can be. The list was
+       images, PDF and ZIP — so a font, an ebook or a Figma file was refused
+       with "Invalid MIME type" while the resource form offered OTF, EPUB and
+       Figma as formats. Payload checks the file's CONTENTS against this, so
+       each format is listed by what it is detected as.
+
+       `text/plain` and `application/octet-stream` are what a file with no
+       recognisable signature falls back to — a `.fig`, some `.sketch` — and are
+       safe here because every non-image is served as a download (see
+       contentDisposition in lib/storage.ts), never rendered by the browser. */
     mimeTypes: [
       'image/*',
       'application/pdf',
       'image/svg+xml',
       'application/zip',
       'application/x-zip-compressed',
+      'application/x-7z-compressed',
+      // Fonts
+      'font/otf',
+      'font/ttf',
+      'font/woff',
+      'font/woff2',
+      'font/collection',
+      'application/font-woff',
+      'application/x-font-ttf',
+      'application/x-font-otf',
+      'application/vnd.ms-opentype',
+      // Ebooks
+      'application/epub+zip',
+      // Illustrator / EPS
+      'application/postscript',
+      'application/illustrator',
+      // Office templates
+      'application/msword',
+      'application/vnd.ms-excel',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      // Figma, Sketch and anything else with no detectable signature
+      'application/octet-stream',
+      'text/plain',
     ],
     /* Point the admin at the 400px derivative it already generates, rather
        than the original. Unset, Payload falls back to the full-size file for
