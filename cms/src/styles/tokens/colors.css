@@ -1,5 +1,5 @@
 /* Branding Explained — Color tokens
-   The audited palette: 28 named colours in four groups. Every colour on the
+   The audited palette, in four groups. Every colour on the
    public site comes from here; see the Figma design system for where each one
    is used. Opacity variants are part of the name (`-60` = 60%). */
 :root {
@@ -7,6 +7,11 @@
   --color-neutral-black: #000000;                   /* primary text, borders */
   --color-neutral-black-60: rgba(0, 0, 0, 0.6);     /* secondary text */
   --color-neutral-black-32: rgba(0, 0, 0, 0.32);    /* muted / placeholder text */
+  /* INPUT EDGES. A field's outline is what says "type here", so it needs 3:1
+     against what it sits on (WCAG 1.4.11); the -32 drew fields at 2.2:1 and
+     the -60 would make every edge as heavy as body text. This is 3.4:1 on
+     white and on the page. Form fields only. */
+  --color-neutral-black-45: rgba(0, 0, 0, 0.45);    /* input borders */
   --color-neutral-black-12: rgba(0, 0, 0, 0.12);    /* subtle borders, dividers */
   --color-neutral-dark: #16160f;                    /* dark backgrounds, footer */
   --color-neutral-gray-400: #c9c9c9;                /* borders, disabled states */

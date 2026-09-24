@@ -59,7 +59,8 @@ export function ArticleToc({ label }: { label: string }) {
 
   const go = (e: React.MouseEvent, id: string) => {
     e.preventDefault()
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    document.getElementById(id)?.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' })
     history.replaceState(null, '', `#${id}`)
     setActiveId(id)
   }

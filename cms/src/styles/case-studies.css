@@ -36,9 +36,20 @@
   gap: var(--space-2);
 }
 
-.case-studies__control:disabled {
+.case-studies__control[aria-disabled='true'] {
   opacity: 0.28;
   cursor: not-allowed;
+}
+
+/* It stays focusable at the end of the row, so it must not look pressable. */
+.case-studies__control[aria-disabled='true']:active { transform: none; }
+
+@media (hover: hover) {
+  .case-studies__control[aria-disabled='true']:hover {
+    background: none;
+    color: var(--color-neutral-black);
+    border-color: var(--border-outline);
+  }
 }
 
 .case-studies__track {

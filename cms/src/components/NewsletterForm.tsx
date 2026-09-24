@@ -42,6 +42,16 @@ export function NewsletterForm({ dict, locale }: { dict: Dictionary; locale?: Lo
 
   const [state, setState] = React.useState<'idle' | 'sending' | 'done' | 'error'>('idle')
   const [message, setMessage] = React.useState('')
+  const fieldId = React.useId()
+  const noteId = React.useId()
+  const noteRef = React.useRef<HTMLParagraphElement>(null)
+
+  /* THE FIELD GOES, SO FOCUS GOES TO WHAT REPLACED IT. The button that was
+     pressed is removed with the form on success; left alone, focus fell to the
+     top of the document and a keyboard reader lost their place in the page. */
+  React.useEffect(() => {
+    if (state === 'done') noteRef.current?.focus()
+  }, [state])
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -86,23 +96,45 @@ export function NewsletterForm({ dict, locale }: { dict: Dictionary; locale?: Lo
     }
   }
 
-  if (state === 'done') {
-    return (
-      <p aria-live="polite" className="cta__note cta__note--done">
-        {message}
-      </p>
-    )
-  }
+  const sending = state === 'sending'
+  const done = state === 'done'
+
+  /* ONE STATUS LINE, THERE FROM THE START. A live region only announces changes
+     to something already on the page; the success line used to be a new element
+     swapped in, and a screen reader said nothing. The note, the error and the
+     confirmation are now the same paragraph changing its words. */
+  const note = (
+    <p
+      aria-live="polite"
+      className={`cta__note${state === 'error' ? ' cta__note--error' : ''}${done ? ' cta__note--done' : ''}`}
+      id={noteId}
+      ref={noteRef}
+      tabIndex={-1}
+    >
+      {message || c.note}
+    </p>
+  )
+
+  if (done) return note
 
   return (
     <>
       <form className="cta__form" noValidate onSubmit={onSubmit}>
+        <label className="visually-hidden" htmlFor={fieldId}>
+          {c.emailLabel}
+        </label>
+        {/* Read-only rather than disabled while sending: disabling the field or
+            the button under the cursor throws focus away mid-submit. The guard
+            at the top of onSubmit is what stops a second send. */}
         <input
-          aria-label={c.placeholder}
+          aria-describedby={noteId}
+          aria-invalid={state === 'error' ? true : undefined}
+          autoComplete="email"
           className="cta__input"
-          disabled={state === 'sending'}
+          id={fieldId}
           name="email"
           placeholder={c.placeholder}
+          readOnly={sending}
           required
           type="email"
         />
@@ -121,13 +153,11 @@ export function NewsletterForm({ dict, locale }: { dict: Dictionary; locale?: Lo
           tabIndex={-1}
           type="text"
         />
-        <button className="cta__submit" disabled={state === 'sending'} type="submit">
-          {state === 'sending' ? '…' : c.button}
+        <button aria-disabled={sending || undefined} className="cta__submit" type="submit">
+          {sending ? '…' : c.button}
         </button>
       </form>
-      <p aria-live="polite" className={`cta__note${state === 'error' ? ' cta__note--error' : ''}`}>
-        {message || c.note}
-      </p>
+      {note}
     </>
   )
 }

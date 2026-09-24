@@ -45,11 +45,14 @@ export function CaseStudyCarousel({
   }, [updateControls])
 
   const move = (direction: -1 | 1) => {
+    // aria-disabled, not disabled — see the controls below — so the guard is here.
+    if (direction === -1 ? !canPrevious : !canNext) return
     const track = trackRef.current
     const firstCard = track?.firstElementChild as HTMLElement | null
     if (!track || !firstCard) return
     const gap = parseFloat(getComputedStyle(track).columnGap) || 0
-    track.scrollBy({ left: direction * (firstCard.offsetWidth + gap), behavior: 'smooth' })
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    track.scrollBy({ left: direction * (firstCard.offsetWidth + gap), behavior: still ? 'auto' : 'smooth' })
   }
 
   if (items.length === 0) return null
@@ -70,7 +73,9 @@ export function CaseStudyCarousel({
             icon="arrow-left"
             label={previousLabel}
             onClick={() => move(-1)}
-            disabled={!canPrevious}
+            /* Not `disabled`: a button disabled under the keyboard drops focus
+               to the page, and reaching the end of the row did exactly that. */
+            aria-disabled={!canPrevious}
             size="md"
             variant="outline"
           />
@@ -79,7 +84,7 @@ export function CaseStudyCarousel({
             icon="arrow-right"
             label={nextLabel}
             onClick={() => move(1)}
-            disabled={!canNext}
+            aria-disabled={!canNext}
             size="md"
             variant="outline"
           />
@@ -91,6 +96,7 @@ export function CaseStudyCarousel({
         className="case-studies__track"
         onScroll={updateControls}
         tabIndex={0}
+        role="region"
         aria-label={title}
       >
         {items.map((item) => (

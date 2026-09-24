@@ -35,13 +35,18 @@ export function ListingControls({
 }: ListingControlsProps) {
   return (
     <div className="listing-controls">
-      <div className="listing-filters" role="list">
+      {/* A real list with the links inside it. `role="listitem"` on the link
+          itself replaced its link role, so each filter was announced as a list
+          item a screen reader could not follow. */}
+      <ul className="listing-filters">
         {filters.map((f) => (
-          <FilterChip key={f.href + f.label} href={f.href} active={f.active} role="listitem">
-            {f.label}
-          </FilterChip>
+          <li key={f.href + f.label}>
+            <FilterChip href={f.href} active={f.active}>
+              {f.label}
+            </FilterChip>
+          </li>
         ))}
-      </div>
+      </ul>
 
       <form className="listing-search" action={searchAction} method="get" role="search">
         {hiddenFields.map((h) => (

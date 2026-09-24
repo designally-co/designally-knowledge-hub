@@ -35,7 +35,8 @@
 }
 
 .about-eyebrow--on-accent {
-  color: var(--color-neutral-white-60);
+  /* Full white: at 60% this 12px label sat at 2.7:1 on the orange. */
+  color: var(--color-neutral-white);
 }
 
 /* ---- the opening ------------------------------------------------------- */

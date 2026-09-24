@@ -265,15 +265,26 @@ function SearchOverlay({
           </button>
         </form>
 
+        {/* WHAT A SCREEN READER HEARS, FROM ONE LINE THAT IS ALWAYS HERE. The
+            notes and the count below each carried their own aria-live, but each
+            was mounted in the same render as its words — and a live region only
+            announces a change to something already on the page, so none of them
+            was ever read out. This one stays put and changes its text. */}
+        <p className="visually-hidden" role="status">
+          {!searching
+            ? ''
+            : !results || !group
+              ? dict.search.searching
+              : results.total === 0
+                ? dict.search.empty.replace('{q}', results.query)
+                : countLabel(group.total, dict)}
+        </p>
+
         {searching ? (
           !results || !group ? (
-            <p className="search-note" aria-live="polite">
-              {dict.search.searching}
-            </p>
+            <p className="search-note">{dict.search.searching}</p>
           ) : results.total === 0 ? (
-            <p className="search-note" aria-live="polite">
-              {dict.search.empty.replace('{q}', results.query)}
-            </p>
+            <p className="search-note">{dict.search.empty.replace('{q}', results.query)}</p>
           ) : (
             <>
               {/* One bar: the tabs on the left, the count and the way to the
@@ -291,9 +302,7 @@ function SearchOverlay({
                 />
 
                 <div className="search-summary">
-                  <p className="search-summary__count" aria-live="polite">
-                    {countLabel(group.total, dict)}
-                  </p>
+                  <p className="search-summary__count">{countLabel(group.total, dict)}</p>
                   <Link className="search-summary__all" href={searchHref(locale, results.query, group.key)}>
                     {dict.search.viewAll}
                     <Icon name="arrow-right" size={18} />

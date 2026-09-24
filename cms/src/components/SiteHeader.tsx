@@ -271,7 +271,14 @@ function Drawer({ onClose, returnFocusTo, locale, dict, resourceCategories }: Dr
   return (
     <>
       <div className="drawer-scrim" onClick={onClose} />
-      <div className="drawer" role="dialog" aria-modal="true" aria-label={dict.nav.menu} ref={panelRef}>
+      <div
+        className="drawer"
+        id="site-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-label={dict.nav.menu}
+        ref={panelRef}
+      >
         <div className="drawer__head">
           <span className="wordmark">
             <Wordmark />
@@ -367,7 +374,68 @@ export function SiteHeader({
   )
   const toggleRef = React.useRef<HTMLButtonElement>(null)
   const navRef = React.useRef<HTMLDivElement>(null)
+  const panelRef = React.useRef<HTMLDivElement>(null)
   const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+  /* Set while focus is being handed BACK to a trigger (Escape), whose onFocus
+     would otherwise reopen the panel that was just closed. */
+  const quietFocus = React.useRef(false)
+
+  /* ---- THE PANELS ARE REACHABLE BY KEYBOARD ----------------------------
+     A panel renders after the whole bar — after search, Subscribe and the
+     language — so in document order Tab went from one trigger to the next and
+     never into the panel between them: every tag link was mouse-only. Focus is
+     walked by hand instead: Tab from an open trigger enters its panel, Tab off
+     the panel's last link goes on to the next trigger, Shift+Tab off its first
+     goes back to the trigger. */
+  const triggers = () =>
+    Array.from(navRef.current?.querySelectorAll<HTMLElement>('.site-nav__link') ?? [])
+  const panelLinks = () =>
+    Array.from(panelRef.current?.querySelectorAll<HTMLElement>('a[href], button') ?? [])
+  const openTrigger = () => triggers().find((t) => t.getAttribute('aria-expanded') === 'true')
+
+  const onTriggerKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key !== 'Tab' || e.shiftKey) return
+    if (e.currentTarget.getAttribute('aria-expanded') !== 'true') return
+    const first = panelLinks()[0]
+    if (!first) return
+    e.preventDefault()
+    first.focus()
+  }
+
+  const onPanelKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.key !== 'Tab') return
+    const links = panelLinks()
+    const trigger = openTrigger()
+    if (!trigger || links.length === 0) return
+    if (e.shiftKey && document.activeElement === links[0]) {
+      e.preventDefault()
+      quietFocus.current = true
+      trigger.focus()
+    } else if (!e.shiftKey && document.activeElement === links[links.length - 1]) {
+      const all = triggers()
+      const next = all[all.indexOf(trigger) + 1]
+      if (next) {
+        e.preventDefault()
+        next.focus() // its onFocus opens its own panel
+      } else {
+        // Past the last trigger: on to the bar's actions, and the panel shuts.
+        e.preventDefault()
+        closeNow()
+        navRef.current?.parentElement
+          ?.querySelector<HTMLElement>('.site-header__actions a, .site-header__actions button')
+          ?.focus()
+      }
+    }
+  }
+
+  /** Opens on focus unless focus is only being returned (see quietFocus). */
+  const openOnFocus = (key: Category | 'resources' | 'info') => {
+    if (quietFocus.current) {
+      quietFocus.current = false
+      return
+    }
+    setOpenCategory(key)
+  }
 
   const clearTimer = () => {
     if (timer.current) {
@@ -393,14 +461,22 @@ export function SiteHeader({
 
   React.useEffect(() => clearTimer, [])
 
-  // Escape closes the panel and hands focus back to the trigger row.
+  // Escape closes the panel and hands focus back to its trigger — not to the
+  // top of the page, which is where a blur() used to leave it.
   React.useEffect(() => {
     if (!openCategory) return
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
       const active = document.activeElement
+      const trigger = openTrigger()
+      const inside =
+        active instanceof HTMLElement &&
+        (navRef.current?.contains(active) || panelRef.current?.contains(active))
       closeNow()
-      if (active instanceof HTMLElement && navRef.current?.contains(active)) active.blur()
+      if (inside && trigger) {
+        quietFocus.current = true
+        trigger.focus()
+      }
     }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
@@ -428,7 +504,8 @@ export function SiteHeader({
                   aria-expanded={isOpen}
                   aria-controls={`nav-panel-${tagSlug(item)}`}
                   onMouseEnter={() => scheduleOpen(item)}
-                  onFocus={() => setOpenCategory(item)}
+                  onFocus={() => openOnFocus(item)}
+                  onKeyDown={onTriggerKeyDown}
                   onClick={closeNow}
                 >
                   {categoryLabel(item, locale)}
@@ -445,7 +522,8 @@ export function SiteHeader({
               aria-expanded={openCategory === 'resources'}
               aria-controls="nav-panel-resources"
               onMouseEnter={() => scheduleOpen('resources')}
-              onFocus={() => setOpenCategory('resources')}
+              onFocus={() => openOnFocus('resources')}
+              onKeyDown={onTriggerKeyDown}
               onClick={closeNow}
             >
               {dict.nav.resources}
@@ -462,8 +540,20 @@ export function SiteHeader({
               className={['site-nav__link', 'site-nav__link--button', openCategory === 'info' ? 'is-open' : '']
                 .filter(Boolean)
                 .join(' ')}
-              onClick={() => setOpenCategory((v) => (v === 'info' ? null : 'info'))}
-              onFocus={() => setOpenCategory('info')}
+              onClick={(e) => {
+                /* From the keyboard (a click with no pointer, detail 0) the
+                   panel is already open — focus opened it — so Enter goes into
+                   it. It used to toggle, which made Enter close the thing it
+                   was pressed to open. A mouse click still toggles. */
+                if (e.detail === 0) {
+                  setOpenCategory('info')
+                  requestAnimationFrame(() => panelLinks()[0]?.focus())
+                  return
+                }
+                setOpenCategory((v) => (v === 'info' ? null : 'info'))
+              }}
+              onFocus={() => openOnFocus('info')}
+              onKeyDown={onTriggerKeyDown}
               onMouseEnter={() => scheduleOpen('info')}
               type="button"
             >
@@ -485,6 +575,7 @@ export function SiteHeader({
               type="button"
               className="menu-toggle"
               aria-expanded={drawerOpen}
+              aria-controls="site-drawer"
               aria-label={drawerOpen ? dict.nav.closeMenu : dict.nav.menu}
               onClick={() => setDrawerOpen((v) => !v)}
               ref={toggleRef}
@@ -495,7 +586,12 @@ export function SiteHeader({
         </div>
 
         {openCategory && (
-          <div onMouseEnter={clearTimer} onMouseLeave={scheduleClose}>
+          <div
+            onMouseEnter={clearTimer}
+            onMouseLeave={scheduleClose}
+            onKeyDown={onPanelKeyDown}
+            ref={panelRef}
+          >
             {openCategory === 'resources' ? (
               <ResourcesNavPanel locale={locale} dict={dict} categories={resourceCategories} />
             ) : openCategory === 'info' ? (

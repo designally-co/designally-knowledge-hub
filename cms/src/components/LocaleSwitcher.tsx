@@ -36,7 +36,8 @@ export function LocaleSwitcher({
   // flips only if that would put it off-screen.
   const [align, setAlign] = React.useState<'end' | 'start'>('end')
   const wrapRef = React.useRef<HTMLDivElement>(null)
-  const menuRef = React.useRef<HTMLDivElement>(null)
+  const menuRef = React.useRef<HTMLUListElement>(null)
+  const menuId = React.useId()
   const triggerRef = React.useRef<HTMLButtonElement>(null)
 
   /* The switcher sits in three places, and in two of them its position moves:
@@ -82,11 +83,23 @@ export function LocaleSwitcher({
     .join(' ')
 
   return (
-    <div className={classes} ref={wrapRef}>
+    <div
+      className={classes}
+      ref={wrapRef}
+      /* Tabbing out shuts it, as Escape and a click elsewhere already did — an
+         open list left behind under the next control was a trap for the eye. */
+      onBlur={(e) => {
+        if (open && !e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false)
+      }}
+    >
+      {/* A DISCLOSURE, NOT A MENU. role="menu" promised arrow-key navigation
+          and focus management this never had, so a screen reader announced a
+          menu and then behaved like two links. It is two links: a button that
+          shows them, and a list. */}
       <button
         type="button"
         className="locale-switcher__trigger"
-        aria-haspopup="true"
+        aria-controls={open ? menuId : undefined}
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         ref={triggerRef}
@@ -100,26 +113,29 @@ export function LocaleSwitcher({
       </button>
 
       {open && (
-        <div
+        <ul
           className={`locale-switcher__menu${align === 'start' ? ' locale-switcher__menu--start' : ''}`}
-          role="menu"
+          id={menuId}
           ref={menuRef}
         >
           {LOCALES.map((l) => (
-            <Link
-              key={l}
-              role="menuitem"
-              className={`locale-switcher__option${l === locale ? ' is-active' : ''}`}
-              href={switchLocalePath(pathname, l)}
-              aria-current={l === locale ? 'true' : undefined}
-              hrefLang={l}
-              onClick={() => setOpen(false)}
-            >
-              <span>{nameOf(l)}</span>
-              {l === locale && <Icon name="check" size={14} />}
-            </Link>
+            <li key={l}>
+              <Link
+                className={`locale-switcher__option${l === locale ? ' is-active' : ''}`}
+                href={switchLocalePath(pathname, l)}
+                aria-current={l === locale ? 'true' : undefined}
+                hrefLang={l}
+                /* Each language's name in that language — "ไทย" read as Thai
+                   on an English page, "English" as English on a Thai one. */
+                lang={l}
+                onClick={() => setOpen(false)}
+              >
+                <span>{nameOf(l)}</span>
+                {l === locale && <Icon name="check" size={14} />}
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   )

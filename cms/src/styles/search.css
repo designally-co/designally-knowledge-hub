@@ -122,7 +122,7 @@
   gap: var(--space-3);
   margin-top: var(--space-8);
   padding: 0 0 var(--space-2) var(--space-2);
-  border-bottom: 1px solid color-mix(in srgb, var(--color-neutral-black) 22%, transparent);
+  border-bottom: 1px solid var(--color-neutral-black-45);
   transition: border-color var(--hover-state-dur) var(--ease-out-quart);
 }
 
@@ -266,6 +266,18 @@
   transition:
     color var(--hover-state-dur) var(--ease-out-quart),
     background var(--hover-state-dur) var(--ease-out-quart);
+}
+
+/* A 22px ✕ is a small thing to hit with a thumb. On touch its target grows to
+   about 40px without the glyph growing — kept short of the term on its left,
+   so a tap on the word never removes it. */
+@media (pointer: coarse) {
+  .search-chip__remove { position: relative; }
+  .search-chip__remove::after {
+    content: '';
+    position: absolute;
+    inset: -9px -9px -9px -6px;
+  }
 }
 
 @media (hover: hover) {

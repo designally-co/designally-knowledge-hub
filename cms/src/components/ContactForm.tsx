@@ -123,11 +123,15 @@ export function ContactForm({ dict, to }: ContactFormProps) {
           client handles `mailto:` by doing nothing at all, and the visitor is
           left looking at a form that appears to have ignored them. This is the
           address, in plain sight, the moment that could have happened. */}
-      {sent ? (
-        <p className="contact-note__fallback" role="status">
-          <a href={`mailto:${to}`}>{c.sendFallback}</a>
-        </p>
-      ) : null}
+      {/* The status container is there from the first render and only its
+          content arrives with the send — so the arrival is announced. */}
+      <div role="status">
+        {sent ? (
+          <p className="contact-note__fallback">
+            <a href={`mailto:${to}`}>{c.sendFallback}</a>
+          </p>
+        ) : null}
+      </div>
     </form>
   )
 }

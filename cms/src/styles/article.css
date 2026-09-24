@@ -83,6 +83,20 @@
   border-radius: var(--radius-pill);
 }
 
+/* The tag is 22px tall; on touch its link takes a ~40px target around it,
+   the pill itself unchanged. Four px either side, so neighbours never meet. */
+@media (pointer: coarse) {
+  .article__tag-link {
+    position: relative;
+    display: inline-flex;
+  }
+  .article__tag-link::after {
+    content: '';
+    position: absolute;
+    inset: -9px -4px;
+  }
+}
+
 @media (hover: hover) {
   .article__tag-link:hover {
     opacity: 1;

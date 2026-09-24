@@ -360,6 +360,8 @@
   border: 1px solid var(--color-neutral-gray-200);
   box-shadow: var(--shadow-card);
   animation: locale-menu-in 0.16s var(--ease-out-quart) both;
+  margin: 0;
+  list-style: none;
 }
 
 @media (max-width: 47.999em) {
@@ -919,6 +921,16 @@
   padding-bottom: var(--space-6);
 }
 
+/* SHUT MEANS SHUT TO THE KEYBOARD TOO. Zero height hid the links from the eye
+   and left all of them in the tab order — Tab walked through fifteen links
+   nobody could see, and a screen reader read them out. `visibility: hidden`
+   takes them out of both; it flips after the close animation (and before the
+   open one), so the collapse still plays. The links stay in the markup. */
+.footer-group__panel:not(.is-open) .footer-group__panel-inner {
+  visibility: hidden;
+  transition: visibility 0s linear 0.32s;
+}
+
 @media (min-width: 36em) {
   .footer-group__heading { display: block; }
   .footer-group__toggle { display: none; }
@@ -929,11 +941,13 @@
   }
 
   .footer-group__panel-inner { overflow: visible; }
+  .footer-group__panel:not(.is-open) .footer-group__panel-inner { visibility: visible; }
   .footer-group__panel.is-open .footer-group__panel-inner { padding-bottom: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .footer-group__panel { transition: none; }
+  .footer-group__panel:not(.is-open) .footer-group__panel-inner { transition: none; }
   .footer-group__caret { transition: none; }
 }
 

@@ -149,6 +149,21 @@ export function HeroCarousel({
 
   const car = useCarousel({ count: len, clones, autoAdvanceMs: DWELL })
 
+  /* TWO REASONS TO HOLD STILL, KEPT APART. Focus inside the rail and the
+     pointer over it each stop the advance while they last (WCAG 2.2.2: moving
+     content stops for whoever is reading it). One flag for both would let the
+     pointer leaving release a hold that focus still needs. */
+  const [focusHeld, setFocusHeld] = React.useState(false)
+  const [hoverHeld, setHoverHeld] = React.useState(false)
+  const { setHeld } = car
+  React.useEffect(() => setHeld(focusHeld || hoverHeld), [focusHeld, hoverHeld, setHeld])
+
+  /* AN ARROW KEY TAKES FOCUS WITH IT. The emphasis moves to the next card and
+     the one that had it becomes aria-hidden and untabbable — with focus still
+     on it, a screen reader was left on a card it had just been told to ignore.
+     Set on the key press, acted on once the new emphasis has rendered. */
+  const keyMoved = React.useRef(false)
+
   // The server renders a 1440px guess; the first measurement (and any resize)
   // moves the track to new geometry. Snap there in the same render instead of
   // sliding across the page on load.
@@ -175,6 +190,14 @@ export function HeroCarousel({
 
   const translateX = -offsetAt(car.pos - lead) + inset + dragDelta
   const activePos = dragging ? nearestTo(offsetAt(car.pos) - dragDelta) : car.pos
+
+  React.useEffect(() => {
+    if (!keyMoved.current) return
+    keyMoved.current = false
+    containerRef.current
+      ?.querySelector<HTMLAnchorElement>('.carousel__card--emph')
+      ?.focus({ preventScroll: true })
+  }, [car.pos])
 
   // ---- Swipe / drag interaction ----
   const onPointerDown = (e: React.PointerEvent) => {
@@ -250,16 +273,22 @@ export function HeroCarousel({
         onKeyDown={(e) => {
           if (e.key === 'ArrowLeft') {
             e.preventDefault()
+            keyMoved.current = true
             car.prev()
           } else if (e.key === 'ArrowRight') {
             e.preventDefault()
+            keyMoved.current = true
             car.next()
           }
         }}
-        onFocusCapture={() => car.setHeld(true)}
+        onFocusCapture={() => setFocusHeld(true)}
         onBlurCapture={(e) => {
-          if (!e.currentTarget.contains(e.relatedTarget as Node)) car.setHeld(false)
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) setFocusHeld(false)
         }}
+        onPointerEnter={(e) => {
+          if (e.pointerType === 'mouse') setHoverHeld(true)
+        }}
+        onPointerLeave={() => setHoverHeld(false)}
       >
         <div
           className={[

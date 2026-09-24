@@ -78,6 +78,8 @@ export type Dictionary = {
     lede: string
     button: string
     placeholder: string
+    /** The field's label, read by screen readers; the placeholder is only an example. */
+    emailLabel: string
     note: string
     sent: string
     failed: string
@@ -302,6 +304,7 @@ const en: Dictionary = {
     lede: 'One new article a week on branding, design and AI, emailed the day it goes live, plus any new free resource.',
     button: 'Subscribe',
     placeholder: 'Enter your email',
+    emailLabel: 'Email address',
     note: 'No spam. Unsubscribe at any time.',
     /* Said only when the server's own reply carried no message, or never came. */
     sent: 'Thanks — check your inbox to confirm.',
@@ -558,6 +561,7 @@ const th: Dictionary = {
     lede: 'บทความใหม่สัปดาห์ละหนึ่งเรื่อง ว่าด้วยแบรนด์ ดีไซน์ และ AI ส่งถึงอีเมลในวันที่เผยแพร่ พร้อมรีซอร์สฟรีชิ้นใหม่ทุกครั้งที่มี',
     button: 'ติดตาม',
     placeholder: 'กรอกอีเมลของคุณ',
+    emailLabel: 'อีเมล',
     note: 'ไม่มีสแปม ยกเลิกได้ทุกเมื่อ',
     sent: 'ขอบคุณ — โปรดเช็กกล่องจดหมายเพื่อยืนยันการสมัคร',
     failed: 'ส่งไม่สำเร็จ ลองอีกครั้ง',

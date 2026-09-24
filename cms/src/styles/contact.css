@@ -168,7 +168,7 @@
   width: 100%;
   padding: var(--space-2) 0;
   border: 0;
-  border-block-end: 1px solid var(--color-neutral-black-32);
+  border-block-end: 1px solid var(--color-neutral-black-45);
   border-radius: 0;
   background: none;
   font: var(--type-body);
@@ -178,7 +178,8 @@
 }
 
 .contact-field__input::placeholder {
-  color: var(--color-neutral-black-32);
+  /* The -60 every other field's placeholder uses; the -32 was 2.2:1. */
+  color: var(--color-neutral-black-60);
 }
 
 .contact-field__input:focus {
