@@ -53,6 +53,7 @@ type Metrics = {
   railH1: number // height of a passing card
   visible: number
   phone: boolean // the emphasis card centred, rather than led by one card
+  emphX: number // where the emphasis card's left edge always sits (desk)
 }
 
 /** How tall the row is, and roughly how many cards share the width.
@@ -65,11 +66,13 @@ type Metrics = {
 function fitRow(w: number, avg: number, widest: number): Metrics {
   for (let n = MAX_VISIBLE; n > 2; n--) {
     const unit = (w - (n - 1) * GAP) / (n - 1 + EMPH_SCALE)
-    if (unit >= MIN_UNIT) return { width: w, railH1: unit / avg, visible: n, phone: false }
+    if (unit >= MIN_UNIT) {
+      return { width: w, railH1: unit / avg, visible: n, phone: false, emphX: unit + GAP }
+    }
   }
   const emph = w - 2 * (PEEK + GAP)
   const railH2 = Math.min(emph / avg, (w - 2 * GAP) / widest)
-  return { width: w, railH1: railH2 / EMPH_SCALE, visible: 2, phone: true }
+  return { width: w, railH1: railH2 / EMPH_SCALE, visible: 2, phone: true, emphX: 0 }
 }
 
 /* A single carousel card. The emphasised card is a real 1.5x taller box and
@@ -195,16 +198,12 @@ export function HeroCarousel({
     return () => ro.disconnect()
   }, [shape])
 
-  const { width, railH1, visible, phone } = metrics
+  const { width, railH1, visible, phone, emphX } = metrics
   const railH2 = railH1 * EMPH_SCALE
   const gap = GAP
   // Clones either side enough to cover the rail even in the narrowest covers,
   // so the seam is never on screen.
   const clones = Math.max(visible + 1, Math.ceil(width / (railH1 * shape.narrowest + gap)) + 1)
-  // The card that just left the emphasis stays on screen to its left. On a
-  // phone the emphasis card leads instead, centred.
-  const lead = phone ? 0 : 1
-
   const car = useCarousel({ count: len, clones, autoAdvanceMs: DWELL })
 
   /* TWO REASONS TO HOLD STILL, KEPT APART. Focus inside the rail and the
@@ -260,9 +259,13 @@ export function HeroCarousel({
     return best
   }
 
-  // On a phone the emphasis card is centred, whatever its width.
-  const inset = phone ? (width - railH2 * (ratios[car.pos] ?? shape.avg)) / 2 : 0
-  const translateX = -offsetAt(car.pos - lead) + inset + dragDelta
+  /* THE EMPHASIS HOLDS ITS PLACE. Its left edge is the same spot on every step
+     — one average card in from the left on a desk, the middle on a phone — so
+     the eye never has to find it again. Covers differ in width, so the card
+     before it is whatever fits: a wide one runs off the left edge under the
+     mist, a narrow one leaves a sliver of the card before it. */
+  const anchor = phone ? (width - railH2 * (ratios[car.pos] ?? shape.avg)) / 2 : emphX
+  const translateX = anchor - offsetAt(car.pos) + dragDelta
   const activePos = dragging ? nearestTo(offsetAt(car.pos) - dragDelta) : car.pos
 
   React.useEffect(() => {
