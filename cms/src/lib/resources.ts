@@ -33,6 +33,9 @@ export interface CarouselItem {
   /** Width-described candidates for `image`. See coverSrcSetOf. */
   imageSrcSet?: string
   ratio: string
+  /** False when `ratio` is the placeholder: the cover is a URL, or an upload
+      without stored dimensions. The hero carousel then reads the image. */
+  ratioKnown: boolean
   href: string
 }
 
@@ -135,6 +138,10 @@ function shareImageAltOf(r: ArticleDoc): string | undefined {
  * measure (external URL or no cover — the ratio there is just a placeholder box).
  */
 const DEFAULT_RATIO = '3 / 4'
+function ratioKnownOf(r: ArticleDoc): boolean {
+  const img = r.coverImage
+  return Boolean(img && typeof img === 'object' && (img as Media).width && (img as Media).height)
+}
 function ratioOf(r: ArticleDoc): string {
   const img = r.coverImage
   if (img && typeof img === 'object') {
@@ -162,6 +169,7 @@ function toCard(r: ArticleDoc, locale: Locale): CarouselItem {
     image: coverOf(r),
     imageSrcSet: coverSrcSetOf(r),
     ratio: ratioOf(r),
+    ratioKnown: ratioKnownOf(r),
     href: localeHref(locale, `/articles/${r.slug}`),
   }
 }

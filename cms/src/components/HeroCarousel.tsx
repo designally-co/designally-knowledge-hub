@@ -16,35 +16,60 @@ import type { CarouselItem } from '@/lib/resources'
 const EMPH_SCALE = 1.5 // how much larger the emphasised card is
 const GAP = 14
 // The rail runs edge to edge: one card before the emphasis card starts at the
-// screen's left edge and the last card ends at its right. At most MAX_VISIBLE
-// cards share the width; narrower screens drop cards rather than shrink them
-// below MIN_UNIT.
+// screen's left edge, and the row runs on past the right one under the mist.
+// About MAX_VISIBLE cards share the width; narrower screens show fewer rather
+// than shrink them below MIN_UNIT.
 const MAX_VISIBLE = 6
 const MIN_UNIT = 140
-// Every cover takes the same square frame (images crop to it), so the row sums
-// to the screen width exactly whichever card holds the emphasis.
-const CARD_RATIO = 1
 // On a phone, how much of each neighbour shows beside the centred emphasis card.
 const PEEK = 40
+// Every cover keeps its own shape: one height for the row, and each card as
+// wide as its cover makes it. Only a freak — a banner strip, a sliver — is held
+// to these bounds, so it cannot take the row over or vanish from it.
+const RATIO_MIN = 0.5
+const RATIO_MAX = 2.4
 
-type Metrics = {
-  unit: number // width of a passing card
-  visible: number
-  gap: number // between cards
-  inset: number // where the row starts when the emphasis card leads (phones)
+/** Covers measured in the browser, by image URL: width over height. */
+type Measured = Record<string, number>
+
+/** A cover's width over its height. From the stored dimensions when the Hub
+    has them (lib/resources' "w / h"); otherwise from the image itself once it
+    has loaded, and a 3:4 placeholder until then. */
+const ratioOf = (item: CarouselItem | undefined, measured: Measured): number => {
+  let r = 0.75
+  if (item?.ratioKnown) {
+    const [a, b] = String(item.ratio)
+      .split('/')
+      .map((n) => parseFloat(n))
+    if (a > 0 && b > 0) r = a / b
+  } else if (item?.image && measured[item.image]) {
+    r = measured[item.image]
+  }
+  return Math.min(RATIO_MAX, Math.max(RATIO_MIN, r))
 }
 
-/** The most cards (up to MAX_VISIBLE) that fit across `w`, and their width.
-    With three or more, the rail runs edge to edge. Narrower (phones), the
-    emphasis card sits in the middle with PEEK of each neighbour either side,
-    faded by the mists, so the row reads as going both ways. */
-function fitRow(w: number): Metrics {
+type Metrics = {
+  width: number // of the rail
+  railH1: number // height of a passing card
+  visible: number
+  phone: boolean // the emphasis card centred, rather than led by one card
+}
+
+/** How tall the row is, and roughly how many cards share the width.
+
+    The row is sized for its AVERAGE cover: as many average cards as fit (up to
+    MAX_VISIBLE, none narrower than MIN_UNIT) fill the width, so wider and
+    narrower covers even out and the row still runs past the right edge. On a
+    phone the emphasis card sits in the middle with PEEK of each neighbour
+    either side — sized so even the widest cover's emphasis stays on screen. */
+function fitRow(w: number, avg: number, widest: number): Metrics {
   for (let n = MAX_VISIBLE; n > 2; n--) {
     const unit = (w - (n - 1) * GAP) / (n - 1 + EMPH_SCALE)
-    if (unit >= MIN_UNIT) return { unit, visible: n, gap: GAP, inset: 0 }
+    if (unit >= MIN_UNIT) return { width: w, railH1: unit / avg, visible: n, phone: false }
   }
   const emph = w - 2 * (PEEK + GAP)
-  return { unit: emph / EMPH_SCALE, visible: 2, gap: GAP, inset: (w - emph) / 2 }
+  const railH2 = Math.min(emph / avg, (w - 2 * GAP) / widest)
+  return { width: w, railH1: railH2 / EMPH_SCALE, visible: 2, phone: true }
 }
 
 /* A single carousel card. The emphasised card is a real 1.5x taller box and
@@ -125,27 +150,60 @@ export function HeroCarousel({
   const drag = React.useRef({ active: false, startX: 0, delta: 0, moved: false, captured: false })
 
   const containerRef = React.useRef<HTMLDivElement>(null)
-  const [metrics, setMetrics] = React.useState<Metrics>(() => fitRow(1440))
+
+  /* COVERS WITH NO STORED SIZE ARE MEASURED. A cover given as a URL, or an
+     upload saved without dimensions, has no ratio on the server, and a guessed
+     3:4 box crops a 16:9 picture to a sliver. Each is read once in the
+     browser — all of them up front, not as each card scrolls in, so the row
+     settles once rather than jumping card by card. */
+  const [measured, setMeasured] = React.useState<Measured>({})
+  React.useEffect(() => {
+    let live = true
+    items.forEach((item) => {
+      if (item.ratioKnown || !item.image) return
+      const src = item.image
+      const probe = new Image()
+      probe.onload = () => {
+        if (!live || !probe.naturalWidth || !probe.naturalHeight) return
+        const r = probe.naturalWidth / probe.naturalHeight
+        setMeasured((was) => (was[src] === r ? was : { ...was, [src]: r }))
+      }
+      probe.src = src
+    })
+    return () => {
+      live = false
+    }
+  }, [items])
+
+  const shape = React.useMemo(() => {
+    const ratios = items.map((item) => ratioOf(item, measured))
+    return {
+      avg: ratios.length ? ratios.reduce((a, b) => a + b, 0) / ratios.length : 0.75,
+      widest: ratios.length ? Math.max(...ratios) : 0.75,
+      narrowest: ratios.length ? Math.min(...ratios) : 0.75,
+    }
+  }, [items, measured])
+  const [metrics, setMetrics] = React.useState<Metrics>(() => fitRow(1440, shape.avg, shape.widest))
 
   React.useEffect(() => {
     const el = containerRef.current
     if (!el) return undefined
-    const measure = () => setMetrics(fitRow(el.clientWidth))
+    const measure = () => setMetrics(fitRow(el.clientWidth, shape.avg, shape.widest))
     measure()
     const ro = new ResizeObserver(measure)
     ro.observe(el)
     return () => ro.disconnect()
-  }, [])
+  }, [shape])
 
-  const { unit, visible, gap, inset } = metrics
-  const railH1 = unit / CARD_RATIO
+  const { width, railH1, visible, phone } = metrics
   const railH2 = railH1 * EMPH_SCALE
-  const step = unit + gap
-  // A full row of clones either side, so the seam is never on screen.
-  const clones = visible + 1
+  const gap = GAP
+  // Clones either side enough to cover the rail even in the narrowest covers,
+  // so the seam is never on screen.
+  const clones = Math.max(visible + 1, Math.ceil(width / (railH1 * shape.narrowest + gap)) + 1)
   // The card that just left the emphasis stays on screen to its left. On a
-  // phone the emphasis card leads instead, pushed in by `inset` to the middle.
-  const lead = visible >= 3 ? 1 : 0
+  // phone the emphasis card leads instead, centred.
+  const lead = phone ? 0 : 1
 
   const car = useCarousel({ count: len, clones, autoAdvanceMs: DWELL })
 
@@ -167,9 +225,11 @@ export function HeroCarousel({
   // The server renders a 1440px guess; the first measurement (and any resize)
   // moves the track to new geometry. Snap there in the same render instead of
   // sliding across the page on load.
-  const [placedUnit, setPlacedUnit] = React.useState(unit)
-  if (placedUnit !== unit) {
-    setPlacedUnit(unit)
+  const [placedH, setPlacedH] = React.useState(railH1)
+  const [placedMeasured, setPlacedMeasured] = React.useState(measured)
+  if (placedH !== railH1 || placedMeasured !== measured) {
+    setPlacedH(railH1)
+    setPlacedMeasured(measured)
     car.snap()
   }
 
@@ -182,12 +242,26 @@ export function HeroCarousel({
     return out
   }, [items, len, clones])
 
-  // Every slot is the same width, so a card's offset is its index times a step.
-  // The emphasis card grows into the room the row leaves for it.
-  const offsetAt = (i: number) => i * step
-  const nearestTo = (target: number) =>
-    Math.max(0, Math.min(strip.length - 1, Math.round(target / step)))
+  /* Where each card starts along the track. The cards before the emphasis are
+     all at the passing height, so a card's offset is the sum of the passing
+     widths before it; the emphasis card grows into the row after it. */
+  const ratios = React.useMemo(() => strip.map((entry) => ratioOf(entry.item, measured)), [strip, measured])
+  const offsets = React.useMemo(() => {
+    const out = [0]
+    ratios.forEach((r, i) => out.push(out[i] + railH1 * r + gap))
+    return out
+  }, [ratios, railH1, gap])
+  const offsetAt = (i: number) => offsets[Math.max(0, Math.min(offsets.length - 1, i))]
+  const nearestTo = (target: number) => {
+    let best = 0
+    for (let i = 1; i < strip.length; i++) {
+      if (Math.abs(offsets[i] - target) < Math.abs(offsets[best] - target)) best = i
+    }
+    return best
+  }
 
+  // On a phone the emphasis card is centred, whatever its width.
+  const inset = phone ? (width - railH2 * (ratios[car.pos] ?? shape.avg)) / 2 : 0
   const translateX = -offsetAt(car.pos - lead) + inset + dragDelta
   const activePos = dragging ? nearestTo(offsetAt(car.pos) - dragDelta) : car.pos
 
@@ -308,7 +382,7 @@ export function HeroCarousel({
             <TickerCard
               key={entry.key}
               item={entry.item}
-              ratio={CARD_RATIO}
+              ratio={ratios[j]}
               emph={j === activePos}
               index={car.real + 1}
               total={len}
