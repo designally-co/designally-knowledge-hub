@@ -12,6 +12,7 @@ import { Articles } from './collections/Articles'
 import { Resources } from './collections/Resources'
 import { ResourceCategories } from './collections/ResourceCategories'
 import { Subscribers } from './collections/Subscribers'
+import { Settings } from './globals/Settings'
 import { mediaStoragePlugin } from './lib/storage'
 
 const filename = fileURLToPath(import.meta.url)
@@ -200,6 +201,7 @@ export default buildConfig({
     },
   },
   collections: [Articles, Resources, ResourceCategories, Media, Subscribers, Users],
+  globals: [Settings],
   editor: lexicalEditor(),
   // Bilingual content: English is the source (authored/generated); Thai is a
   // translation. Localized fields store a value per locale; `fallback` shows the

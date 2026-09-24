@@ -3,6 +3,7 @@ import { convertMarkdownToLexical, editorConfigFactory } from '@payloadcms/richt
 import type { Payload, PayloadRequest } from 'payload'
 
 import type { Article } from '../payload-types'
+import { DEFAULT_TRANSLATE_MODEL } from './translateModels'
 
 /*
  * English → Thai translation for Resources.
@@ -19,8 +20,18 @@ import type { Article } from '../payload-types'
  * serverless Supabase pooler is exactly what starves connections.
  */
 
-// Default to Opus 5; override with TRANSLATE_MODEL (e.g. claude-sonnet-5) to cut cost.
-const MODEL = process.env.TRANSLATE_MODEL || 'claude-opus-5'
+/* The model is a setting, picked on the account screen (globals/Settings), so
+   it changes without a deploy. Read on every translation; the global's own
+   hook falls back to TRANSLATE_MODEL, then the default, until one is picked. */
+async function translateModel(payload: Payload, req?: PayloadRequest): Promise<string> {
+  try {
+    const settings = await payload.findGlobal({ slug: 'settings', depth: 0, overrideAccess: true, req })
+    if (settings.translateModel) return settings.translateModel
+  } catch {
+    // No settings table yet (the migration has not run): translate as before.
+  }
+  return process.env.TRANSLATE_MODEL || DEFAULT_TRANSLATE_MODEL
+}
 
 const SYSTEM = `You are a professional English→Thai translator for Designally, a design and creative-technology publication. Translate into natural, fluent, modern Thai for a design-literate audience — idiomatic, not word-for-word.
 
@@ -54,7 +65,7 @@ function extractJson(text: string): string {
   return text
 }
 
-async function translateFields(input: Fields): Promise<Fields> {
+async function translateFields(input: Fields, model: string): Promise<Fields> {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY is not set — cannot translate to Thai.')
 
@@ -65,7 +76,7 @@ async function translateFields(input: Fields): Promise<Fields> {
 
   // Stream so a large body doesn't hit request timeouts; take the final message.
   const stream = anthropic.messages.stream({
-    model: MODEL,
+    model,
     max_tokens: 16000,
     system: SYSTEM,
     messages: [{ role: 'user', content: userContent }],
@@ -118,6 +129,7 @@ export async function translateItemToThai(args: {
   })) as unknown
 
   const source = en as Record<string, any>
+  const model = await translateModel(payload, req)
   const th = await translateFields({
     title: source.title ?? '',
     summary: source.summary ?? '',
@@ -125,7 +137,7 @@ export async function translateItemToThai(args: {
     metaTitle: source.seo?.metaTitle ?? '',
     metaDescription: source.seo?.metaDescription ?? '',
     bodyMarkdown: source.bodyMarkdown ?? '',
-  })
+  }, model)
 
   // Articles carry a rich body; resources do not, so this stays undefined for
   // them and the update below simply omits it.
