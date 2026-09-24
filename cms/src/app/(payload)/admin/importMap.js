@@ -39,6 +39,8 @@ import { ArticleOverview as ArticleOverview_2189bbbf21ed1de1d6d01c49729884c2 } f
 import { ReturnToPlace as ReturnToPlace_bc9981d873c7bdb9b0e730495859686c } from '../../../components/admin/ListReturn'
 import { ArticleWrite as ArticleWrite_2189bbbf21ed1de1d6d01c49729884c2 } from '../../../components/admin/ArticleViews'
 import { ResourceActions as ResourceActions_786ca5ea86bf3b6eb17e3ea797a584ce } from '../../../components/admin/DocActions'
+import { ResourceCategoryCell as ResourceCategoryCell_07f513c68167caf320c51b8dc6c45309 } from '../../../components/admin/ListCells'
+import { CategoryActions as CategoryActions_786ca5ea86bf3b6eb17e3ea797a584ce } from '../../../components/admin/DocActions'
 import { MediaPreviewCell as MediaPreviewCell_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
 import { MediaRowTitle as MediaRowTitle_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
 import { QuietTextCell as QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1 } from '../../../components/admin/MediaCells'
@@ -61,6 +63,7 @@ import { DetailModals as DetailModals_4359a3edd7b28358aaabd2c9745aaa95 } from '.
 import { A11yNames as A11yNames_8a3d7fd2a0d2427d29a01a1084d70db8 } from '../../../components/admin/A11yNames'
 import { RowSelect as RowSelect_c0122c16be51b77923cf0f341ce22b3e } from '../../../components/admin/RowSelect'
 import { BackToList as BackToList_bc9981d873c7bdb9b0e730495859686c } from '../../../components/admin/ListReturn'
+import { MediaUploadHandler as MediaUploadHandler_0fd013897cc112961f94da8d83a84337 } from '../../../components/admin/MediaUploadHandler'
 import { DashboardRedirect as DashboardRedirect_ece04e350fec6f57c4af84d53a7af84d } from '../../../components/admin/DashboardRedirect'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -107,6 +110,8 @@ export const importMap = {
   "/components/admin/ListReturn#ReturnToPlace": ReturnToPlace_bc9981d873c7bdb9b0e730495859686c,
   "/components/admin/ArticleViews#ArticleWrite": ArticleWrite_2189bbbf21ed1de1d6d01c49729884c2,
   "/components/admin/DocActions#ResourceActions": ResourceActions_786ca5ea86bf3b6eb17e3ea797a584ce,
+  "/components/admin/ListCells#ResourceCategoryCell": ResourceCategoryCell_07f513c68167caf320c51b8dc6c45309,
+  "/components/admin/DocActions#CategoryActions": CategoryActions_786ca5ea86bf3b6eb17e3ea797a584ce,
   "/components/admin/MediaCells#MediaPreviewCell": MediaPreviewCell_caa40f712cc60fbbf39decd6b126e7a1,
   "/components/admin/MediaCells#MediaRowTitle": MediaRowTitle_caa40f712cc60fbbf39decd6b126e7a1,
   "/components/admin/MediaCells#QuietTextCell": QuietTextCell_caa40f712cc60fbbf39decd6b126e7a1,
@@ -129,6 +134,7 @@ export const importMap = {
   "/components/admin/A11yNames#A11yNames": A11yNames_8a3d7fd2a0d2427d29a01a1084d70db8,
   "/components/admin/RowSelect#RowSelect": RowSelect_c0122c16be51b77923cf0f341ce22b3e,
   "/components/admin/ListReturn#BackToList": BackToList_bc9981d873c7bdb9b0e730495859686c,
+  "/components/admin/MediaUploadHandler#MediaUploadHandler": MediaUploadHandler_0fd013897cc112961f94da8d83a84337,
   "/components/admin/DashboardRedirect#DashboardRedirect": DashboardRedirect_ece04e350fec6f57c4af84d53a7af84d,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

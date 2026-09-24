@@ -9,6 +9,7 @@ import { LOCALES, getDictionary, isLocale, type Locale } from '@/lib/i18n'
 /* The origin moved to its own module: the sitemap and robots.txt need the same
    answer this layout does. See lib/siteURL. */
 import { siteURL } from '@/lib/siteURL'
+import { getResourceCategories } from '@/lib/resources'
 /*
  * MEASUREMENT, BECAUSE THE NORTH-STAR METRIC IS SESSIONS AND NOTHING COUNTED
  * ONE. Vercel's own, for two reasons beyond it being one line: it sets no
@@ -111,6 +112,8 @@ export default async function FrontendLayout({
   if (!isLocale(lang)) notFound()
   const locale: Locale = lang
   const dict = getDictionary(locale)
+  /* Names and slugs only — a client component's props travel to the browser. */
+  const resourceCategories = (await getResourceCategories()).map(({ name, slug }) => ({ name, slug }))
 
   return (
     <html lang={locale} className={FACES}>
@@ -118,7 +121,7 @@ export default async function FrontendLayout({
         <a className="skip-link" href="#main">
           {dict.skipToContent}
         </a>
-        <SiteHeader locale={locale} dict={dict} />
+        <SiteHeader locale={locale} dict={dict} resourceCategories={resourceCategories} />
         <main id="main">{children}</main>
         <SiteFooter locale={locale} dict={dict} />
         <Analytics />

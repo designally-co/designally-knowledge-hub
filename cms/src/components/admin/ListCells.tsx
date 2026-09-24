@@ -101,6 +101,55 @@ export const TagCell: React.FC<CellProps> = ({ cellData }) => {
   )
 }
 
+/**
+ * A resource's category, by name.
+ *
+ * Payload's relationship cell expects a bare id and fetches the name itself;
+ * this list arrives with the category already populated, and handed the whole
+ * document that cell printed "<No Category>" on every row. The name is right
+ * there, so it is simply shown — with a fetch of all categories (a handful,
+ * once per page) for the case where only the id arrives.
+ */
+let categoryNames: Promise<Record<string, string>> | null = null
+function loadCategoryNames(): Promise<Record<string, string>> {
+  categoryNames ??= fetch('/api/resource-categories?limit=0&depth=0&select[name]=true', {
+    credentials: 'include',
+  })
+    .then((r) => r.json())
+    .then((j: { docs?: { id: number | string; name?: string }[] }) =>
+      Object.fromEntries((j.docs ?? []).map((d) => [String(d.id), d.name ?? ''])),
+    )
+    .catch(() => {
+      categoryNames = null
+      return {}
+    })
+  return categoryNames
+}
+
+export const ResourceCategoryCell: React.FC<CellProps> = ({ cellData }) => {
+  const populated =
+    cellData && typeof cellData === 'object' && 'name' in cellData
+      ? String((cellData as { name?: unknown }).name ?? '')
+      : ''
+  const id = typeof cellData === 'number' || typeof cellData === 'string' ? String(cellData) : ''
+  const [looked, setLooked] = React.useState('')
+
+  React.useEffect(() => {
+    if (populated || !id) return
+    let live = true
+    void loadCategoryNames().then((names) => {
+      if (live) setLooked(names[id] ?? '')
+    })
+    return () => {
+      live = false
+    }
+  }, [populated, id])
+
+  const name = populated || looked
+  if (!name) return <span className="da-cell-empty">—</span>
+  return <span>{name}</span>
+}
+
 /*
  * There were Thai and Summary cells here. They are gone, along with the
  * per-table `locale=all` fetch that fed them: Content Studio translates and

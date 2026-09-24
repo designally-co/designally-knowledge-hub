@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     articles: Article;
     resources: Resource;
+    'resource-categories': ResourceCategory;
     media: Media;
     subscribers: Subscriber;
     users: User;
@@ -81,6 +82,7 @@ export interface Config {
   collectionsSelect: {
     articles: ArticlesSelect<false> | ArticlesSelect<true>;
     resources: ResourcesSelect<false> | ResourcesSelect<true>;
+    'resource-categories': ResourceCategoriesSelect<false> | ResourceCategoriesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -348,12 +350,36 @@ export interface Resource {
    */
   newsletterSentAt?: string | null;
   /**
-   * Sets the card's artwork and colour.
+   * Sets the card's artwork and colour. Add one if it is not listed.
    */
-  category: 'Templates' | 'Fonts' | 'Ebooks & Guides' | 'Wallpapers' | 'Icons';
+  category: number | ResourceCategory;
   /**
    * From the title. Used in the URL.
    */
+  slug?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * What a download is. Each category gives its resources their cover.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resource-categories".
+ */
+export interface ResourceCategory {
+  id: number;
+  /**
+   * E.g. "Mockups". Shown on the cards and as a filter.
+   */
+  name: string;
+  /**
+   * Left empty, one is picked at random.
+   */
+  color?: ('blue' | 'red' | 'green' | 'purple' | 'orange' | 'navy') | null;
+  /**
+   * The shape on the cover. Random if left empty.
+   */
+  glyph?: ('grid' | 'type' | 'book' | 'image' | 'shapes') | null;
   slug?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -434,6 +460,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'resources';
         value: number | Resource;
+      } | null)
+    | ({
+        relationTo: 'resource-categories';
+        value: number | ResourceCategory;
       } | null)
     | ({
         relationTo: 'media';
@@ -550,6 +580,18 @@ export interface ResourcesSelect<T extends boolean = true> {
   publishedDate?: T;
   newsletterSentAt?: T;
   category?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resource-categories_select".
+ */
+export interface ResourceCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  color?: T;
+  glyph?: T;
   slug?: T;
   updatedAt?: T;
   createdAt?: T;

@@ -5,9 +5,8 @@ import { ListingHero } from '@/components/listing/ListingHero'
 import { ListingControls, type ListingFilter } from '@/components/listing/ListingControls'
 import { ListingPager } from '@/components/listing/ListingPager'
 import { NewsletterCta } from '@/components/NewsletterCta'
-import { getResourceListing } from '@/lib/resources'
+import { getResourceCategories, getResourceListing } from '@/lib/resources'
 import { RESOURCES_CHROME } from '@/lib/listingChrome'
-import { RESOURCE_CATEGORIES, resourceCategorySlug } from '@/lib/resourceCategories'
 import { getDictionary, isLocale, localeHref, type Locale } from '@/lib/i18n'
 
 /**
@@ -43,12 +42,12 @@ export default async function ResourcesPage({
   const dict = getDictionary(locale)
 
   const page = Math.max(1, Number.parseInt(sp.page ?? '1', 10) || 1)
-  const activeCat = sp.cat
-    ? RESOURCE_CATEGORIES.find((c) => resourceCategorySlug(c) === sp.cat)
-    : undefined
+  // The categories are data: an editor can add one from the resource form.
+  const categories = await getResourceCategories()
+  const activeCat = sp.cat ? categories.find((c) => c.slug === sp.cat) : undefined
   const q = sp.q?.trim() || undefined
 
-  const listing = await getResourceListing({ category: activeCat, q, page, locale })
+  const listing = await getResourceListing({ category: activeCat?.slug, q, page, locale })
 
   const basePath = localeHref(locale, '/resources')
   const buildHref = (next: { cat?: string; q?: string; page?: number }) => {
@@ -62,10 +61,10 @@ export default async function ResourcesPage({
 
   const filters: ListingFilter[] = [
     { label: dict.listing.all, href: buildHref({ q }), active: !activeCat },
-    ...RESOURCE_CATEGORIES.map((c) => ({
-      label: c,
-      href: buildHref({ cat: resourceCategorySlug(c), q }),
-      active: activeCat === c,
+    ...categories.map((c) => ({
+      label: c.name,
+      href: buildHref({ cat: c.slug, q }),
+      active: activeCat?.slug === c.slug,
     })),
   ]
 
@@ -78,7 +77,7 @@ export default async function ResourcesPage({
     .replace('{unit}', dict.listing.resourceUnit)
 
   const hrefForPage = (p: number) =>
-    buildHref({ cat: activeCat ? resourceCategorySlug(activeCat) : undefined, q, page: p })
+    buildHref({ cat: activeCat?.slug, q, page: p })
 
   const description = dict.listing.resourcesIntro || dict.resources.lede
 
@@ -96,7 +95,7 @@ export default async function ResourcesPage({
           filters={filters}
           searchAction={basePath}
           searchValue={q}
-          hiddenFields={activeCat ? [{ name: 'cat', value: resourceCategorySlug(activeCat) }] : []}
+          hiddenFields={activeCat ? [{ name: 'cat', value: activeCat.slug }] : []}
           placeholder={dict.listing.searchPlaceholder.replace('{section}', dict.resources.title)}
           searchLabel={dict.listing.searchLabel}
         />

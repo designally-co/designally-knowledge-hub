@@ -3,12 +3,7 @@ import type { CollectionConfig } from 'payload'
 import { translateToThaiHandler } from '../endpoints/translateToThai'
 import { slugField } from '../fields/slug'
 import { newsletterOnPublish, newsletterSentField } from './newsletterOnPublish'
-import {
-  RESOURCE_CATEGORY_OPTIONS,
-  RESOURCE_FORMATS,
-  RESOURCE_PRESETS,
-  isResourceCategory,
-} from '../lib/resourceCategories'
+import { RESOURCE_FORMATS } from '../lib/resourceCategories'
 import {
   localeGuardField,
   publishedOrEditor,
@@ -26,8 +21,8 @@ import {
  *
  * Two things are deliberately absent.
  *
- * There are no image fields. A resource's artwork comes from its category
- * preset (`lib/resourceCategories`), so the grid stays visually consistent and
+ * There are no image fields. A resource's artwork comes from its category's
+ * cover (`collections/ResourceCategories`), so the grid stays visually consistent and
  * nobody has to source a picture for a font. Category is therefore required and
  * single-valued: it picks the artwork, so a resource cannot have two.
  *
@@ -229,13 +224,18 @@ export const Resources: CollectionConfig = {
     /* When the list was told. See collections/newsletterOnPublish. */
     newsletterSentField,
     {
+      /* A relationship, so a category that does not exist yet is made right
+         here — Payload's "add new" beside the field opens the category's form
+         in a drawer, and its cover is picked at random if left empty. See
+         collections/ResourceCategories. */
       name: 'category',
-      type: 'select',
+      type: 'relationship',
+      relationTo: 'resource-categories',
       required: true,
-      options: RESOURCE_CATEGORY_OPTIONS,
       admin: {
         position: 'sidebar',
-        description: 'Sets the card\'s artwork and colour.',
+        description: 'Sets the card\'s artwork and colour. Add one if it is not listed.',
+        components: { Cell: '/components/admin/ListCells#ResourceCategoryCell' },
       },
     },
     ...slugField('title'),
@@ -257,9 +257,4 @@ export const Resources: CollectionConfig = {
       },
     },
   ],
-}
-
-/** Typical formats for a category — used in admin help text and the seed. */
-export function typicalFormatsFor(category: string): string {
-  return isResourceCategory(category) ? RESOURCE_PRESETS[category].typicalFormats : ''
 }

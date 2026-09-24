@@ -10,6 +10,7 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Articles } from './collections/Articles'
 import { Resources } from './collections/Resources'
+import { ResourceCategories } from './collections/ResourceCategories'
 import { Subscribers } from './collections/Subscribers'
 import { mediaStoragePlugin } from './lib/storage'
 
@@ -192,7 +193,7 @@ export default buildConfig({
       },
     },
   },
-  collections: [Articles, Resources, Media, Subscribers, Users],
+  collections: [Articles, Resources, ResourceCategories, Media, Subscribers, Users],
   editor: lexicalEditor(),
   // Bilingual content: English is the source (authored/generated); Thai is a
   // translation. Localized fields store a value per locale; `fallback` shows the

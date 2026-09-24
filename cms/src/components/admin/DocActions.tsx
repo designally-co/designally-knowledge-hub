@@ -734,6 +734,18 @@ export function ResourceActions() {
   return <DocBar collection="resources" noun="resource" rows={rows} />
 }
 
+/* ---- resource categories ----------------------------------------------- */
+
+/**
+ * The bar on a category — which mostly means the sheet that opens from a
+ * resource's "Add new Category". Payload's own control strip is hidden in every
+ * drawer here, so without this the sheet had fields and no way to save them.
+ * No menu rows: a category has no page of its own to view or link to.
+ */
+export function CategoryActions() {
+  return <DocBar collection="resource-categories" noun="category" rows={[]} />
+}
+
 /* ---- subscribers --------------------------------------------------------- */
 
 /* THERE IS NO BAR HERE. A subscriber has no document view to put one on: the

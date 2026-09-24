@@ -2,10 +2,17 @@ import { getPayload } from 'payload'
 import type { Where } from 'payload'
 
 import config from '@/payload.config'
-import type { Article as ArticleDoc, Media, Resource } from '@/payload-types'
+import type { Article as ArticleDoc, Media, Resource, ResourceCategory } from '@/payload-types'
 import { localeHref, type Locale } from './i18n'
 import { readingMinutes } from './readingTime'
-import { presetForCategory, RESOURCE_CATEGORIES, type ResourceGlyph } from './resourceCategories'
+import {
+  FALLBACK_COVER,
+  colorFor,
+  glyphFor,
+  resourceCategorySlug,
+  type ResourceCategoryInfo,
+  type ResourceGlyph,
+} from './resourceCategories'
 import { TAG_OPTIONS, TAXONOMY, type Category } from './tags'
 
 /**
@@ -557,7 +564,9 @@ export interface ResourceDetail extends ResourceItem {
 }
 
 function toResourceItem(r: Resource, locale: Locale): ResourceItem {
-  const preset = presetForCategory(r.category)
+  /* Populated at depth 1; an id alone (depth 0) or a deleted category draws
+     the fallback cover rather than failing the card. */
+  const category = typeof r.category === 'object' && r.category ? r.category : null
   const formats: string[] = []
   for (const f of r.files ?? []) {
     if (f.format && !formats.includes(f.format)) formats.push(f.format)
@@ -568,9 +577,9 @@ function toResourceItem(r: Resource, locale: Locale): ResourceItem {
     title: r.title,
     date: formatDate(r.publishedDate, locale),
     publishedAt: r.publishedDate ?? '',
-    category: r.category ?? '',
-    color: preset.color,
-    glyph: preset.glyph,
+    category: category?.name ?? '',
+    color: category ? colorFor(category.color) : FALLBACK_COVER.color,
+    glyph: category ? glyphFor(category.glyph) : FALLBACK_COVER.glyph,
     formats,
     href: localeHref(locale, `/resources/${r.slug}`),
   }
@@ -600,7 +609,7 @@ export async function getDownloadableFiles(
 }
 
 export interface ResourceListingOptions {
-  /** Exact resource category (Fonts, Templates, …). */
+  /** A resource category's slug (`fonts`, `ebooks-and-guides`, …). */
   category?: string
   /** Case-insensitive search of the title and the category's name. */
   q?: string
@@ -628,8 +637,10 @@ export async function getResourceListing({
     async () => {
       const payload = await getPayload({ config })
       const where: Where[] = [...publishedOnly]
-      if (category) where.push({ category: { equals: category } })
-      if (q?.trim()) where.push(titleOrNameMatch(q.trim(), RESOURCE_CATEGORIES, 'category'))
+      if (category) where.push({ 'category.slug': { equals: category } })
+      if (q?.trim()) {
+        where.push({ or: [{ title: { like: q.trim() } }, { 'category.name': { like: q.trim() } }] })
+      }
 
       const res = await payload.find({
         collection: 'resources',
@@ -649,6 +660,34 @@ export async function getResourceListing({
       }
     },
     empty,
+  )
+}
+
+/**
+ * Every resource category, oldest first — the five the Hub started with keep
+ * their order and a new one joins the end. For the /resources filters and the
+ * header's Resources menu.
+ */
+export async function getResourceCategories(): Promise<ResourceCategoryInfo[]> {
+  return safeRead(
+    'getResourceCategories',
+    async () => {
+      const payload = await getPayload({ config })
+      const { docs } = await payload.find({
+        collection: 'resource-categories',
+        sort: 'createdAt',
+        limit: 0,
+        pagination: false,
+        depth: 0,
+      })
+      return docs.map((c: ResourceCategory) => ({
+        name: c.name,
+        slug: c.slug || resourceCategorySlug(c.name),
+        color: colorFor(c.color),
+        glyph: glyphFor(c.glyph),
+      }))
+    },
+    [],
   )
 }
 

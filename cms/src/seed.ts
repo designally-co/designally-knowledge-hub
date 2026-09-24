@@ -9,7 +9,7 @@ import { getPayload } from 'payload'
 
 import config from './payload.config'
 import type { Article } from './payload-types'
-import { RESOURCE_CATEGORIES } from './lib/resourceCategories'
+import { STARTER_CATEGORIES } from './lib/resourceCategories'
 // The sample content. Pure-JS ESM module, untyped by design.
 import { BE_DATA } from './seed-data.js'
 
@@ -66,13 +66,27 @@ const seed = async () => {
     `Seeding ${articleCards.length} articles and ${resourceCards.length} resources…`,
   )
 
+  /* The starter categories, found or made — the seed deletes resources, not
+     categories, so a second run reuses them. */
+  const categoryIds: number[] = []
+  for (const starter of STARTER_CATEGORIES) {
+    const { docs } = await payload.find({
+      collection: 'resource-categories',
+      where: { name: { equals: starter.name } },
+      limit: 1,
+      depth: 0,
+    })
+    const doc = docs[0] ?? (await payload.create({ collection: 'resource-categories', data: starter }))
+    categoryIds.push(doc.id)
+  }
+
   let created = 0
   for (const card of articleCards) {
     await payload.create({ collection: 'articles', data: toArticle(card) })
     created++
   }
   for (const [i, card] of resourceCards.entries()) {
-    const category = RESOURCE_CATEGORIES[i % RESOURCE_CATEGORIES.length]
+    const category = categoryIds[i % categoryIds.length]
     await payload.create({
       collection: 'resources',
       data: {
