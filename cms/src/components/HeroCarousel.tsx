@@ -19,7 +19,7 @@ const GAP = 14
 // screen's left edge, and the row runs on past the right one under the mist.
 // About MAX_VISIBLE cards share the width; narrower screens show fewer rather
 // than shrink them below MIN_UNIT.
-const MAX_VISIBLE = 6
+const MAX_VISIBLE = 4
 const MIN_UNIT = 140
 // On a phone, how much of each neighbour shows beside the centred emphasis card.
 const PEEK = 40
@@ -112,7 +112,7 @@ function TickerCard({
           className="carousel__image"
           src={item.image}
           srcSet={item.imageSrcSet}
-          sizes="(max-width: 47.999em) 72vw, 22vw"
+          sizes="(max-width: 47.999em) 72vw, 34vw"
           alt=""
           loading={priority ? 'eager' : 'lazy'}
           fetchPriority={priority ? 'high' : undefined}
