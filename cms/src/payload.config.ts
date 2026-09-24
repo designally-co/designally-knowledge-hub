@@ -95,6 +95,12 @@ const allowedOrigins = [
   // request to read a host from — the same reason the localhost entries below
   // are written out.
   'https://hub.designally.co',
+  // AND ITS VERCEL ADDRESS, for the mirror-image reason. Once hub.designally.co
+  // became the project's production domain, VERCEL_PROJECT_PRODUCTION_URL named
+  // it instead — so the `.vercel.app` address the team still opens the admin at
+  // fell off the list. Reads and sign-in worked there; every authenticated
+  // POST (a save, an upload) arrived signed out.
+  'https://designally-knowledge-hub.vercel.app',
   'http://localhost:3000',
   // Next falls back here when port 3000 is occupied by the Content Generator.
   // Keep the fallback origin trusted so authenticated admin writes still pass
