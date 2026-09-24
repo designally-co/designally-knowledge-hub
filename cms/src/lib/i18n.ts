@@ -55,6 +55,7 @@ export function switchLocalePath(pathname: string, target: Locale): string {
 export type Dictionary = {
   localeName: string // this locale's own name, for the switcher
   localeNameFull: string // the language's full name, where there is room (the drawer)
+  languageLabel: string // what the switcher is, read before its visible "EN" / "ไทย"
   skipToContent: string
   nav: { resources: string; topics: string; subscribe: string; viewAll: string; menu: string; closeMenu: string }
   footer: {
@@ -78,6 +79,9 @@ export type Dictionary = {
     button: string
     placeholder: string
     note: string
+    sent: string
+    failed: string
+    offline: string
   }
   article: { related: string; onThisPage: string; references: string; writtenBy: string; minRead: string; share: string; copyLink: string; copied: string; shareVia: string }
   home: {
@@ -261,6 +265,7 @@ export type Dictionary = {
 const en: Dictionary = {
   localeName: 'EN',
   localeNameFull: 'English',
+  languageLabel: 'Language',
   skipToContent: 'Skip to content',
   nav: {
     resources: 'Resources',
@@ -288,11 +293,20 @@ const en: Dictionary = {
     /* The letter's own name. `.cta__eyebrow` sets it in caps, so it is written
        here as it reads. */
     eyebrow: 'Spec Sheet \u00b7 Newsletter',
-    title: 'Better design thinking, twice a month.',
-    lede: 'One case study, one practical workflow, and useful ideas about branding, design and AI.',
+    /* WHAT ARRIVES, AND HOW OFTEN — AS THE SYSTEM ACTUALLY SENDS IT. An email
+       goes out once per publish (see collections/newsletterOnPublish), not as
+       a digest, and Content Studio's routine publishes one article a week. The
+       old promise — "twice a month", "one case study, one workflow, three
+       ideas" — described a letter that is never assembled. */
+    title: 'Better design thinking, once a week.',
+    lede: 'One new article a week on branding, design and AI, emailed the day it goes live, plus any new free resource.',
     button: 'Subscribe',
     placeholder: 'Enter your email',
     note: 'No spam. Unsubscribe at any time.',
+    /* Said only when the server's own reply carried no message, or never came. */
+    sent: 'Thanks — check your inbox to confirm.',
+    failed: 'That did not go through. Try again.',
+    offline: 'No connection. Try again when you are back online.',
   },
   article: {
     related: 'Related articles',
@@ -428,8 +442,8 @@ const en: Dictionary = {
   },
   newsletter: {
     eyebrow: 'The Spec Sheet \u00b7 Newsletter',
-    title: 'Better design thinking, twice a month.',
-    lede: 'One case study, one practical workflow, and three useful ideas about branding, design and AI.',
+    title: 'Better design thinking, once a week.',
+    lede: 'One new article a week on branding, design and AI, emailed the day it goes live, plus any new free resource.',
     whyLabel: 'Why subscribe?',
     whyStatement: 'Because keeping up should not become another full-time job.',
     reasons: [
@@ -454,7 +468,7 @@ const en: Dictionary = {
         label: 'Limited time',
         problem:
           'You want to stay current, but you do not have hours to search for reliable articles, tools and examples.',
-        title: 'Get a focused update twice a month.',
+        title: 'Get one focused email a week.',
         answer: 'One useful email gives you a clear place to start, with no daily inbox pressure.',
       },
     ],
@@ -514,6 +528,7 @@ const en: Dictionary = {
 const th: Dictionary = {
   localeName: 'ไทย',
   localeNameFull: 'Thai',
+  languageLabel: 'ภาษา',
   skipToContent: 'ข้ามไปยังเนื้อหา',
   nav: {
     resources: 'รีซอร์ส',
@@ -539,11 +554,14 @@ const th: Dictionary = {
   },
   cta: {
     eyebrow: 'Spec Sheet \u00b7 จดหมายข่าว',
-    title: 'คิดงานออกแบบให้คมขึ้น เดือนละสองครั้ง',
-    lede: 'หนึ่งกรณีศึกษา หนึ่งเวิร์กโฟลว์ที่ใช้ได้จริง และไอเดียดี ๆ เรื่องแบรนด์ ดีไซน์ และ AI',
+    title: 'คิดงานออกแบบให้คมขึ้น สัปดาห์ละครั้ง',
+    lede: 'บทความใหม่สัปดาห์ละหนึ่งเรื่อง ว่าด้วยแบรนด์ ดีไซน์ และ AI ส่งถึงอีเมลในวันที่เผยแพร่ พร้อมรีซอร์สฟรีชิ้นใหม่ทุกครั้งที่มี',
     button: 'ติดตาม',
     placeholder: 'กรอกอีเมลของคุณ',
     note: 'ไม่มีสแปม ยกเลิกได้ทุกเมื่อ',
+    sent: 'ขอบคุณ — โปรดเช็กกล่องจดหมายเพื่อยืนยันการสมัคร',
+    failed: 'ส่งไม่สำเร็จ ลองอีกครั้ง',
+    offline: 'ไม่มีการเชื่อมต่ออินเทอร์เน็ต ลองอีกครั้งเมื่อกลับมาออนไลน์',
   },
   article: {
     related: 'บทความที่เกี่ยวข้อง',
@@ -680,8 +698,8 @@ const th: Dictionary = {
   },
   newsletter: {
     eyebrow: 'The Spec Sheet \u00b7 จดหมายข่าว',
-    title: 'คิดงานออกแบบให้คมขึ้น เดือนละสองครั้ง',
-    lede: 'หนึ่งกรณีศึกษา หนึ่งเวิร์กโฟลว์ที่ใช้ได้จริง และสามไอเดียดี ๆ เรื่องแบรนด์ ดีไซน์ และ AI',
+    title: 'คิดงานออกแบบให้คมขึ้น สัปดาห์ละครั้ง',
+    lede: 'บทความใหม่สัปดาห์ละหนึ่งเรื่อง ว่าด้วยแบรนด์ ดีไซน์ และ AI ส่งถึงอีเมลในวันที่เผยแพร่ พร้อมรีซอร์สฟรีชิ้นใหม่ทุกครั้งที่มี',
     whyLabel: 'ทำไมต้องสมัคร',
     whyStatement: 'เพราะการตามให้ทันไม่ควรกลายเป็นงานประจำอีกงานหนึ่ง',
     reasons: [
@@ -705,7 +723,7 @@ const th: Dictionary = {
         index: '03',
         label: 'เวลามีจำกัด',
         problem: 'คุณอยากตามให้ทัน แต่ไม่มีเวลาเป็นชั่วโมงไปค้นหาบทความ เครื่องมือ และตัวอย่างที่เชื่อถือได้',
-        title: 'รับอัปเดตที่คัดมาแล้ว เดือนละสองครั้ง',
+        title: 'รับอีเมลที่คัดมาแล้ว สัปดาห์ละฉบับ',
         answer: 'อีเมลฉบับเดียวที่ให้จุดเริ่มต้นชัดเจน โดยไม่ต้องกดดันกับกล่องจดหมายทุกวัน',
       },
     ],

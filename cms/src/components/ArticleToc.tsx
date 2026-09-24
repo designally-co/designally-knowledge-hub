@@ -18,7 +18,7 @@ function slugify(s: string): string {
   )
 }
 
-export function ArticleToc() {
+export function ArticleToc({ label }: { label: string }) {
   const [items, setItems] = React.useState<TocItem[]>([])
   const [activeId, setActiveId] = React.useState<string>('')
 
@@ -65,8 +65,8 @@ export function ArticleToc() {
   }
 
   return (
-    <nav className="article-toc" aria-label="On this page">
-      <p className="article-toc__label">On this page</p>
+    <nav className="article-toc" aria-label={label}>
+      <p className="article-toc__label">{label}</p>
       <ul className="article-toc__list">
         {items.map((it) => (
           <li

@@ -71,18 +71,18 @@ export function NewsletterForm({ dict, locale }: { dict: Dictionary; locale?: Lo
 
       if (response.ok && result.ok) {
         setState('done')
-        setMessage(result.message ?? 'Thanks — check your inbox to confirm.')
+        setMessage(result.message ?? c.sent)
         form.reset()
         return
       }
 
       setState('error')
-      setMessage(result.message ?? 'That did not go through. Try again.')
+      setMessage(result.message ?? c.failed)
     } catch {
       /* Offline, or the request never left. Naming the likely cause beats a
          generic failure, because the reader can act on it. */
       setState('error')
-      setMessage('No connection. Try again when you are back online.')
+      setMessage(c.offline)
     }
   }
 

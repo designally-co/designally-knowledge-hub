@@ -86,12 +86,15 @@ export function LocaleSwitcher({
       <button
         type="button"
         className="locale-switcher__trigger"
-        aria-label="Language"
         aria-haspopup="true"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         ref={triggerRef}
       >
+        {/* The name is what it shows, with what it is in front: "Language: EN".
+            An aria-label of "Language" alone replaced the visible "EN", so a
+            voice-control user saying what they could see matched nothing. */}
+        <span className="visually-hidden">{getDictionary(locale).languageLabel}: </span>
         <span>{nameOf(locale)}</span>
         <Icon name="chevron-down" size={14} className="locale-switcher__caret" />
       </button>

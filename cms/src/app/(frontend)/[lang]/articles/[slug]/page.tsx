@@ -166,7 +166,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
       {article.body && (
         <div className="article__layout">
           <aside className="article__toc-col">
-            <ArticleToc />
+            <ArticleToc label={dict.article.onThisPage} />
           </aside>
 
           <div className="article__main">
