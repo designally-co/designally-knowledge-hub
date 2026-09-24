@@ -95,6 +95,8 @@ export default async function HomePage({ params }: { params: Promise<{ lang: str
                 <img
                   className="recent-article__image"
                   src={recentArticle.image}
+                  srcSet={recentArticle.imageSrcSet}
+                  sizes="100vw"
                   alt=""
                   loading="lazy"
                   decoding="async"

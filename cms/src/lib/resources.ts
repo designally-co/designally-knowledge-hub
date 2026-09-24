@@ -23,6 +23,8 @@ export interface CarouselItem {
   publishedAt: string
   tags: string[]
   image?: string
+  /** Width-described candidates for `image`. See coverSrcSetOf. */
+  imageSrcSet?: string
   ratio: string
   href: string
 }
@@ -71,6 +73,34 @@ function coverOf(r: ArticleDoc): string | undefined {
     if (media.url) return media.url
   }
   return r.coverUrl ?? undefined
+}
+
+/**
+ * The cover's `srcset`: the derivatives Payload cut on upload, then the file.
+ *
+ * WITHOUT THIS EVERY CARD DOWNLOADED THE ORIGINAL. A card is 165-318px wide and
+ * a cover is 1600px (Content Studio's WebP) or, for the ones that predate that,
+ * a 2752px PNG of up to 6.5MB — twenty of them on the home page. `thumbnail`
+ * (400) and `card` (800) already sit beside every upload in R2; the browser
+ * picks from them against the `sizes` each component states.
+ *
+ * `hero` (1800) is absent whenever the file is narrower — Payload does not
+ * enlarge — so it joins only when it exists, and the original always closes
+ * the set at its own width. A pasted `coverUrl` has no derivatives: undefined,
+ * and the `src` alone stands.
+ */
+function coverSrcSetOf(r: ArticleDoc): string | undefined {
+  const img = r.coverImage
+  if (!img || typeof img !== 'object') return undefined
+  const media = img as Media
+  if (!media.url || !media.width) return undefined
+  const entries: string[] = []
+  for (const size of [media.sizes?.thumbnail, media.sizes?.card, media.sizes?.hero]) {
+    if (size?.url && size.width && size.width < media.width) entries.push(`${size.url} ${size.width}w`)
+  }
+  if (entries.length === 0) return undefined
+  entries.push(`${media.url} ${media.width}w`)
+  return entries.join(', ')
 }
 
 /**
@@ -123,6 +153,7 @@ function toCard(r: ArticleDoc, locale: Locale): CarouselItem {
     publishedAt: r.publishedDate ?? '',
     tags: r.tag ? [r.tag] : [],
     image: coverOf(r),
+    imageSrcSet: coverSrcSetOf(r),
     ratio: ratioOf(r),
     href: localeHref(locale, `/articles/${r.slug}`),
   }
@@ -694,6 +725,7 @@ export interface Article {
   date: string
   tags: string[]
   image?: string
+  imageSrcSet?: string
   ratio: string
   readTime?: number
   body: ArticleDoc['body']
@@ -739,6 +771,7 @@ export async function getArticleBySlug(
         publishedISO: r.publishedDate ? new Date(r.publishedDate).toISOString() : undefined,
         tags: r.tag ? [r.tag] : [],
         image: coverOf(r),
+        imageSrcSet: coverSrcSetOf(r),
         shareImage: shareImageOf(r),
         shareImageAlt: shareImageAltOf(r),
         ratio: ratioOf(r),

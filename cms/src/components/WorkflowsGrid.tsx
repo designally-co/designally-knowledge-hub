@@ -46,6 +46,8 @@ export function WorkflowsGrid({ items, title, bannerLabel, bannerHref, seeAllLab
                 <img
                   className="workflows__feature-img"
                   src={feature.image}
+                  srcSet={feature.imageSrcSet}
+                  sizes="(max-width: 47.999em) 100vw, 50vw"
                   alt=""
                   loading="lazy"
                   decoding="async"
@@ -79,6 +81,8 @@ export function WorkflowsGrid({ items, title, bannerLabel, bannerHref, seeAllLab
                           <img
                             className="workflows__row-img"
                             src={item.image}
+                            srcSet={item.imageSrcSet}
+                            sizes="(max-width: 47.999em) 25vw, 12vw"
                             alt=""
                             loading="lazy"
                             decoding="async"

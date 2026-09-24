@@ -18,6 +18,7 @@ export function SearchHitGrid({ hits, className = '' }: { hits: SearchHit[]; cla
               date={hit.item.date}
               tags={hit.item.tags}
               image={hit.item.image}
+              imageSrcSet={hit.item.imageSrcSet}
               ratio={hit.item.ratio}
               href={hit.item.href}
               titleSize="md"

@@ -68,6 +68,8 @@ function stemFor(alt: string, mimetype: string | undefined): string {
  * template files. Public read so the frontend can render/serve them. Images get
  * a small set of derivative sizes for responsive cards.
  */
+const WEBP = { format: 'webp', options: { quality: 80 } } as const
+
 export const Media: CollectionConfig = {
   slug: 'media',
   access: {
@@ -352,10 +354,17 @@ export const Media: CollectionConfig = {
        downloading a set of 1800px heroes to render them at 44px, in the list
        AND in the "Choose from existing" drawer. */
     adminThumbnail: 'thumbnail',
+    /* EVERY DERIVATIVE IS WEBP, whatever came in. Payload cuts a size in the
+       upload's own format unless told otherwise, so a 2752px PNG cover gave an
+       800px "card" of up to 1.3MB and a 400px thumbnail of 340KB — and those
+       are what the site's `srcset` serves. At quality 80 the same card is
+       ~40KB. Only the derivatives convert: the original stays exactly as
+       uploaded, because a Media row is also a resource's DOWNLOAD, and a
+       wallpaper or font specimen must reach the reader as the file it is. */
     imageSizes: [
-      { name: 'card', width: 800, height: undefined, position: 'centre' },
-      { name: 'hero', width: 1800, height: undefined, position: 'centre' },
-      { name: 'thumbnail', width: 400, height: undefined, position: 'centre' },
+      { name: 'card', width: 800, height: undefined, position: 'centre', formatOptions: WEBP },
+      { name: 'hero', width: 1800, height: undefined, position: 'centre', formatOptions: WEBP },
+      { name: 'thumbnail', width: 400, height: undefined, position: 'centre', formatOptions: WEBP },
     ],
   },
 }

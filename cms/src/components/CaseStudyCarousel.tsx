@@ -101,6 +101,7 @@ export function CaseStudyCarousel({
             date={item.date}
             tags={item.tags}
             image={item.image}
+            imageSrcSet={item.imageSrcSet}
             ratio={item.ratio}
             href={item.href}
             titleSize="sm"

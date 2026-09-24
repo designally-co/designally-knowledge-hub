@@ -146,7 +146,16 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
               its bottom half drops past the masthead onto the paper below. */}
           <div className="article__cover-frame">
             {article.image ? (
-              <img className="article__hero" src={article.image} alt="" decoding="async" />
+              /* The page's largest paint: fetched first, and never lazily. */
+              <img
+                className="article__hero"
+                src={article.image}
+                srcSet={article.imageSrcSet}
+                sizes="100vw"
+                alt=""
+                decoding="async"
+                fetchPriority="high"
+              />
             ) : (
               <div className="article__hero article__hero--empty" aria-hidden="true" />
             )}
@@ -198,6 +207,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
                   date={r.date}
                   tags={r.tags}
                   image={r.image}
+                  imageSrcSet={r.imageSrcSet}
                   ratio={r.ratio}
                   href={r.href}
                 />

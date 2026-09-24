@@ -1,7 +1,8 @@
 /* Branding Explained — Typography tokens
    Sixteen text styles in two families: Ovo, a serif, for display and some
-   headings; Geist, a sans, for UI, body and the rest. Loaded in the frontend
-   layout.
+   headings; Geist, a sans, for UI, body and the rest. Self-hosted by
+   next/font in the frontend layout, which hands each face over as a --face-*
+   variable on <html>.
 
    A style is a pair: `font: var(--type-X)` and `letter-spacing:
    var(--tracking-X)`, because the `font` shorthand cannot carry tracking.
@@ -27,8 +28,8 @@
   /* English pages. The Thai faces follow as fallbacks so the odd Thai word on
      an English page (the language switcher's "ไทย") is never set in a system
      font: Geist and Ovo have no Thai glyphs. */
-  --font-serif: "Ovo", "Athiti", Georgia, "Times New Roman", serif;
-  --font-sans: "Geist", "IBM Plex Sans Thai", "Helvetica Neue", Arial, sans-serif;
+  --font-serif: var(--face-ovo), var(--face-athiti), Georgia, "Times New Roman", serif;
+  --font-sans: var(--face-geist), var(--face-plex-thai), "Helvetica Neue", Arial, sans-serif;
   /* The serif styles' weight: Ovo is set Regular. */
   --font-serif-weight: 400;
 
@@ -72,7 +73,7 @@
 
 /* Thai: whole pages (`<html lang="th">`) and Thai passages anywhere. */
 [lang="th"] {
-  --font-serif: "Athiti", "Ovo", Georgia, serif;
-  --font-sans: "IBM Plex Sans Thai", "Geist", Arial, sans-serif;
+  --font-serif: var(--face-athiti), var(--face-ovo), Georgia, serif;
+  --font-sans: var(--face-plex-thai), var(--face-geist), Arial, sans-serif;
   --font-serif-weight: 600;
 }

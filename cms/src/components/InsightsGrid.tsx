@@ -30,7 +30,7 @@ export function InsightsGrid({
         </h2>
 
         <div className="insights__grid">
-          {items.slice(0, 6).map((item) => (
+          {items.slice(0, 6).map((item, i) => (
             <ArticleCard
               className="insights__card"
               key={item.href}
@@ -38,6 +38,8 @@ export function InsightsGrid({
               date={item.date}
               tags={item.tags}
               image={item.image}
+              imageSrcSet={item.imageSrcSet}
+              imageSizes={i === 0 ? '(max-width: 47.999em) 100vw, 50vw' : undefined}
               ratio={item.ratio}
               href={item.href}
               titleSize="sm"

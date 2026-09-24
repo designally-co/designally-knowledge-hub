@@ -131,6 +131,7 @@ export default async function CategoryPage({
                   date={it.date}
                   tags={it.tags}
                   image={it.image}
+                  imageSrcSet={it.imageSrcSet}
                   ratio={it.ratio}
                   titleSize="sm"
                   href={it.href}

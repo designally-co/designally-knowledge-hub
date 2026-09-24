@@ -56,6 +56,7 @@ function TickerCard({
   total,
   ratio,
   itemLabel,
+  priority,
 }: {
   item: CarouselItem
   emph: boolean
@@ -63,6 +64,9 @@ function TickerCard({
   total: number
   ratio: number
   itemLabel: string
+  /** The card that holds the emphasis on arrival: the home page's largest
+      paint on a phone. Fetched first rather than lazily. */
+  priority?: boolean
 }) {
   return (
     <a
@@ -82,8 +86,11 @@ function TickerCard({
         <img
           className="carousel__image"
           src={item.image}
+          srcSet={item.imageSrcSet}
+          sizes="(max-width: 47.999em) 72vw, 22vw"
           alt=""
-          loading="lazy"
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : undefined}
           decoding="async"
           draggable={false}
         />
@@ -277,6 +284,7 @@ export function HeroCarousel({
               index={car.real + 1}
               total={len}
               itemLabel={itemLabel}
+              priority={entry.key === 'real-0'}
             />
           ))}
         </div>

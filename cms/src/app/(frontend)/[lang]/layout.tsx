@@ -1,5 +1,6 @@
 import React from 'react'
 import { notFound } from 'next/navigation'
+import { Athiti, Geist, IBM_Plex_Sans_Thai, Ovo } from 'next/font/google'
 
 import '@/styles/index.css'
 import { SiteHeader } from '@/components/SiteHeader'
@@ -52,6 +53,43 @@ export const metadata = {
   },
 }
 
+/*
+ * THE FACES, SERVED FROM THIS SITE. They used to arrive through a Google Fonts
+ * <link>: a stylesheet on another origin that blocked the first paint, behind
+ * two extra connections, before a single glyph could be fetched. next/font
+ * downloads them at build time, serves them from the Hub's own domain, and
+ * adds a metric-matched fallback so text set before a face lands does not
+ * reflow when it does.
+ *
+ * Each face is exposed as a CSS variable on <html>; tokens/typography.css
+ * builds the families from those. English: Ovo + Geist. Thai: Athiti + IBM
+ * Plex Sans Thai. Geist is the variable 400–700 axis because the carousel
+ * animates its title's weight. IBM Plex Sans Thai is static, so every weight
+ * the site sets has to be listed: 500 is the labels', tags', pills' and card
+ * titles'. Left out, a Thai page drew all of them at 400.
+ *
+ * Only the Latin faces are preloaded — every page needs them. The Thai faces
+ * are split by unicode-range, so an English page downloads them only if a
+ * Thai glyph (the switcher's "ไทย") actually appears.
+ */
+const ovo = Ovo({ weight: '400', subsets: ['latin'], display: 'swap', variable: '--face-ovo' })
+const geist = Geist({ subsets: ['latin'], display: 'swap', variable: '--face-geist' })
+const athiti = Athiti({
+  weight: ['400', '600'],
+  subsets: ['thai', 'latin'],
+  display: 'swap',
+  preload: false,
+  variable: '--face-athiti',
+})
+const plexThai = IBM_Plex_Sans_Thai({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['thai', 'latin'],
+  display: 'swap',
+  preload: false,
+  variable: '--face-plex-thai',
+})
+const FACES = [ovo, geist, athiti, plexThai].map((f) => f.variable).join(' ')
+
 // Prerender both locales.
 export function generateStaticParams() {
   return LOCALES.map((lang) => ({ lang }))
@@ -75,21 +113,7 @@ export default async function FrontendLayout({
   const dict = getDictionary(locale)
 
   return (
-    <html lang={locale}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        {/* English: Ovo + Geist. Thai: Athiti + IBM Plex Sans Thai, swapped in by
-            `:root:lang(th)` in tokens/typography.css. Geist is the variable
-            400–700 axis because the carousel animates its title's weight.
-            IBM Plex Sans Thai is static, so every weight the site sets has to
-            be listed: 500 is the labels', tags', pills' and card titles'. Left
-            out, a Thai page drew all of them at 400. */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Ovo&family=Geist:wght@400..700&family=Athiti:wght@400;600&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang={locale} className={FACES}>
       <body>
         <a className="skip-link" href="#main">
           {dict.skipToContent}

@@ -55,6 +55,7 @@ export default async function NotFound() {
                   date={article.date}
                   href={article.href}
                   image={article.image}
+                  imageSrcSet={article.imageSrcSet}
                   tags={article.tags}
                   title={article.title}
                   titleSize="sm"

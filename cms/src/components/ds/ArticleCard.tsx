@@ -10,6 +10,12 @@ export interface ArticleCardProps {
   date?: string
   tags?: string[]
   image?: string
+  /** Width-described candidates for `image` (see coverSrcSetOf). */
+  imageSrcSet?: string
+  /** How wide the image renders. The default is a grid card: a quarter of the
+      page or less on a wide screen, half of it on a phone. A card that spans
+      more (a feature tile) says so. */
+  imageSizes?: string
   imageTint?: string
   ratio?: string
   ratioMobile?: string
@@ -26,6 +32,8 @@ export function ArticleCard({
   date,
   tags = [],
   image,
+  imageSrcSet,
+  imageSizes = '(max-width: 47.999em) 50vw, 25vw',
   imageTint,
   ratio = '4 / 3',
   ratioMobile,
@@ -47,7 +55,15 @@ export function ArticleCard({
   const media = (
     <span className="article-card__media">
       {image && (
-        <img className="article-card__img" src={image} alt="" loading="lazy" decoding="async" />
+        <img
+          className="article-card__img"
+          src={image}
+          srcSet={imageSrcSet}
+          sizes={imageSrcSet ? imageSizes : undefined}
+          alt=""
+          loading="lazy"
+          decoding="async"
+        />
       )}
     </span>
   )
