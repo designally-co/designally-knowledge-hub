@@ -1,8 +1,8 @@
 'use client'
 
 import React from 'react'
-import { useDocumentInfo, useFormModified } from '@payloadcms/ui'
-import { useRouter } from 'next/navigation'
+import { toast, useDocumentInfo, useFormModified, useLocale } from '@payloadcms/ui'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import './TranslateToThaiButton.css'
 
@@ -47,12 +47,28 @@ import './TranslateToThaiButton.css'
 type ThaiState = 'unknown' | 'present' | 'absent'
 type RunState = 'idle' | 'loading' | 'done' | 'error'
 
+/** The English a translation is made from, as one comparable string. */
+function englishSource(doc: Record<string, any> | undefined): string {
+  return JSON.stringify([
+    doc?.title,
+    doc?.summary,
+    doc?.description,
+    doc?.body,
+    doc?.seo?.metaTitle,
+    doc?.seo?.metaDescription,
+  ])
+}
+
 export function TranslateToThaiButton() {
   // The button is mounted on both Articles and Resources, so the target has to
   // come from the document being edited rather than being hardcoded.
-  const { id, collectionSlug } = useDocumentInfo()
+  const { id, collectionSlug, savedDocumentData } = useDocumentInfo()
   const modified = useFormModified()
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const locale = useLocale()?.code
+  const panel = React.useRef<HTMLDivElement>(null)
 
   const [thai, setThai] = React.useState<ThaiState>('unknown')
   const [state, setState] = React.useState<RunState>('idle')
@@ -85,6 +101,52 @@ export function TranslateToThaiButton() {
   React.useEffect(() => {
     void probe()
   }, [probe])
+
+  /*
+   * ENGLISH CHANGED, THAI DID NOT — SAY SO. Saving the English never touches
+   * the Thai: they are separate locales, and nothing retranslates on save. So
+   * after a save that changed the English an existing translation describes,
+   * a toast says the Thai is now behind and offers to retranslate.
+   *
+   * Compared against the last saved copy, not the form: `savedDocumentData` is
+   * replaced with the server's answer after every save. The baseline is keyed on
+   * the document and the language, so opening one or switching language never
+   * reads as an edit.
+   */
+  const thaiRef = React.useRef(thai)
+  thaiRef.current = thai
+  const baseline = React.useRef<{ key: string; value: string } | null>(null)
+
+  React.useEffect(() => {
+    if (!id || !savedDocumentData) return
+    const key = `${collectionSlug}:${id}:${locale}`
+    const value = englishSource(savedDocumentData)
+    const previous = baseline.current
+    baseline.current = { key, value }
+    if (!previous || previous.key !== key || previous.value === value) return
+    if (locale !== 'en' || thaiRef.current !== 'present') return
+
+    toast.warning('English updated. The Thai version still has the old wording.', {
+      duration: 12000,
+      action: {
+        label: 'Re-translate',
+        onClick: () => router.push(`/admin/collections/${collectionSlug}/${id}?locale=en&retranslate=1`),
+      },
+    })
+  }, [collectionSlug, id, locale, router, savedDocumentData])
+
+  /* The toast's Re-translate lands here, from either page: open the Replace
+     confirmation and bring it into view. The confirmation stays — it is what
+     warns that hand-corrected Thai will be overwritten. */
+  React.useEffect(() => {
+    if (searchParams?.get('retranslate') !== '1') return
+    if (thai === 'unknown') return
+    if (thai === 'present') setConfirming(true)
+    panel.current?.scrollIntoView({ block: 'center' })
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('retranslate')
+    router.replace(`${pathname}?${params.toString()}`)
+  }, [pathname, router, searchParams, thai])
 
   const run = async () => {
     if (!id) return
@@ -140,7 +202,7 @@ export function TranslateToThaiButton() {
   }
 
   return (
-    <div className="da-thai">
+    <div className="da-thai" ref={panel}>
       {label}
 
       {thai !== 'unknown' && (
@@ -151,7 +213,7 @@ export function TranslateToThaiButton() {
             </>
           ) : (
             <>
-              <strong>Thai is written.</strong> Switch the locale to ไทย to read it.
+              <strong>Thai is written.</strong> Switch to ไทย at the top of this column to read it.
             </>
           )}
         </p>

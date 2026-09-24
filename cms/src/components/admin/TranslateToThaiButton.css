@@ -79,6 +79,7 @@
    the comfortable target size for the second-most-consequential control in the
    document. */
 .da-thai__btn {
+  inline-size: 100%;
   margin: 0;
   min-height: 44px;
 }
@@ -103,7 +104,9 @@
   gap: 0.5rem;
 }
 
+/* Full width, as the button they replace: the pair splits the column. */
 .da-thai__actions .btn {
+  flex: 1 1 0;
   margin: 0;
   min-height: 44px;
 }

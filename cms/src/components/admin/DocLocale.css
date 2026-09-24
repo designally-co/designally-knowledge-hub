@@ -1,0 +1,72 @@
+/* The rail's language switch (DocLocale.tsx): two halves of one control, the
+   language shown filled. Full rail width, so either half is an easy target. */
+
+.da-doc-locale {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.da-doc-locale > .field-label {
+  margin: 0;
+}
+
+.da-doc-locale__track {
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--da-hairline-strong);
+  border-radius: var(--style-radius-s);
+  background-color: var(--da-warm-white);
+}
+
+.da-doc-locale__opt {
+  min-block-size: 36px;
+  padding: 0 0.75rem;
+  border: 0;
+  border-radius: calc(var(--style-radius-s) - 3px);
+  background: none;
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--da-ink-3);
+  cursor: pointer;
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+.da-doc-locale__opt--on {
+  background-color: #ffffff;
+  box-shadow: 0 0 0 1px var(--da-hairline-strong);
+  color: var(--da-ink);
+  cursor: default;
+}
+
+@media (hover: hover) {
+  .da-doc-locale__opt:not(.da-doc-locale__opt--on):not([aria-disabled='true']):hover {
+    color: var(--da-ink);
+  }
+}
+
+.da-doc-locale__opt[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.da-doc-locale__opt:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}
+
+.da-doc-locale__note {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: var(--da-ink-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .da-doc-locale__opt { transition: none; }
+}

@@ -591,6 +591,11 @@ export function ArticleActions() {
   const writing = usePathname()?.endsWith('/write') ?? false
   const slug = useFormFields(([fields]) => fields?.slug?.value)
   const status = useFormFields(([fields]) => fields?.status?.value)
+  /* The Edit page opens in the language chosen in the rail (DocLocale), said
+     in the address rather than left to the sticky preference, so the two can
+     never disagree. Cancel returns to the same language. */
+  const lang = useLocale()?.code
+  const inLang = lang ? `?locale=${lang}` : ''
 
   const path = usePublicPath('articles', slug)
   const url = path && typeof window !== 'undefined' ? `${window.location.origin}${path}` : null
@@ -606,7 +611,7 @@ export function ArticleActions() {
   if (id && !writing) {
     rows.push({
       disabled: modified,
-      href: `/admin/collections/articles/${id}/write`,
+      href: `/admin/collections/articles/${id}/write${inLang}`,
       icon: <Pencil aria-hidden="true" {...ICON} />,
       key: 'write',
       label: 'Edit article',
@@ -652,7 +657,7 @@ export function ArticleActions() {
   if (writing) {
     return (
       <DocBar
-        before={<CancelWriting id={id} modified={modified} />}
+        before={<CancelWriting id={id} inLang={inLang} modified={modified} />}
         collection="articles"
         menu={false}
         noun="article"
@@ -675,13 +680,21 @@ export function ArticleActions() {
  * does not have. `BackToList` asks the same question, in the same words, for
  * the phone's back disc.
  */
-function CancelWriting({ id, modified }: { id: number | string | undefined; modified: boolean }) {
+function CancelWriting({
+  id,
+  inLang,
+  modified,
+}: {
+  id: number | string | undefined
+  inLang: string
+  modified: boolean
+}) {
   if (!id) return null
 
   return (
     <Link
       className="da-bar__cancel"
-      href={`/admin/collections/articles/${id}`}
+      href={`/admin/collections/articles/${id}${inLang}`}
       onClick={(event) => {
         if (modified && !window.confirm('Leave without saving? This edit will be lost.')) {
           event.preventDefault()

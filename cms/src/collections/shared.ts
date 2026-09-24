@@ -105,6 +105,23 @@ export const localeGuardField: Field = {
   },
 }
 
+/**
+ * Rail control: which language of this document you are looking at. First in
+ * the rail, because every field under it answers in that language. The Edit
+ * page hides the rail, so it is not there — see DocLocale.
+ */
+export const docLocaleField: Field = {
+  name: 'docLocale',
+  type: 'ui',
+  admin: {
+    disableListColumn: true,
+    position: 'sidebar',
+    components: {
+      Field: '/components/admin/DocLocale#DocLocale',
+    },
+  },
+}
+
 /** Sidebar button: (re)generate the Thai version from the English source. */
 export const translateToThaiField: Field = {
   name: 'translateToThai',

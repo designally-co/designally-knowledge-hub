@@ -13,6 +13,7 @@ import {
   statusField,
   titleField,
   translateToThaiField,
+  docLocaleField,
 } from './shared'
 
 /**
@@ -212,6 +213,8 @@ export const Resources: CollectionConfig = {
         components: { Field: '/components/admin/DocActions#ResourceActions' },
       },
     },
+    // Which language you are looking at, at the head of the rail.
+    docLocaleField,
 
     // The same four questions as an article, asked in the same order: is it
     // live, where is it filed, what is its address, and one action at the end.

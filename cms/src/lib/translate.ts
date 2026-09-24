@@ -1,5 +1,9 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { convertMarkdownToLexical, editorConfigFactory } from '@payloadcms/richtext-lexical'
+import {
+  convertLexicalToMarkdown,
+  convertMarkdownToLexical,
+  editorConfigFactory,
+} from '@payloadcms/richtext-lexical'
 import type { Payload, PayloadRequest } from 'payload'
 
 import type { Article } from '../payload-types'
@@ -101,8 +105,10 @@ async function translateFields(input: Fields, model: string): Promise<Fields> {
 
 /**
  * Translate an item's English content into Thai and save it to the `th` locale.
- * `bodyMarkdown` (the English source) is NOT localized and is left untouched — the
- * Thai markdown is only an intermediate used to build the Thai Lexical body.
+ * The English body is read from the saved English Lexical body (see below), and
+ * `bodyMarkdown` is left untouched — the Thai markdown is only an intermediate
+ * used to build the Thai Lexical body. Only `th` is written: the English is
+ * never changed by a translation.
  *
  * Serves both collections. Articles carry a rich body built from markdown;
  * resources carry a plain-text description and no body at all, so each field is
@@ -130,20 +136,30 @@ export async function translateItemToThai(args: {
 
   const source = en as Record<string, any>
   const model = await translateModel(payload, req)
+  const editorConfig = await editorConfigFactory.default({ config: payload.config })
+
+  /* THE ENGLISH BODY AS IT IS NOW. `bodyMarkdown` is the markdown Content
+     Studio published with, and nothing updates it when the English is edited
+     here — translating from it would bring back the old text, and an article
+     written in the admin has none at all. So the source is the saved English
+     body, turned back into markdown; `bodyMarkdown` is only the fallback for a
+     body that is empty. */
+  const englishBody = source.body?.root
+    ? convertLexicalToMarkdown({ data: source.body, editorConfig }).trim()
+    : ''
   const th = await translateFields({
     title: source.title ?? '',
     summary: source.summary ?? '',
     description: source.description ?? '',
     metaTitle: source.seo?.metaTitle ?? '',
     metaDescription: source.seo?.metaDescription ?? '',
-    bodyMarkdown: source.bodyMarkdown ?? '',
+    bodyMarkdown: englishBody || source.bodyMarkdown || '',
   }, model)
 
   // Articles carry a rich body; resources do not, so this stays undefined for
   // them and the update below simply omits it.
   let body: Article['body'] | undefined
   if (th.bodyMarkdown.trim()) {
-    const editorConfig = await editorConfigFactory.default({ config: payload.config })
     body = convertMarkdownToLexical({
       editorConfig,
       markdown: th.bodyMarkdown,

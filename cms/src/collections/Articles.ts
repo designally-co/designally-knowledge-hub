@@ -16,6 +16,7 @@ import {
   summaryField,
   titleField,
   translateToThaiField,
+  docLocaleField,
 } from './shared'
 
 /**
@@ -190,8 +191,10 @@ export const Articles: CollectionConfig = {
     },
     summaryField,
     {
-      // English source markdown (set by the from-markdown endpoint). The Thai
-      // translation step reads this to produce the Thai body. Hidden from editors.
+      // The markdown Content Studio published with (set by the from-markdown
+      // endpoint). Not kept in step with edits made here, so translation reads
+      // the English body itself and uses this only when that is empty (see
+      // lib/translate.ts). Hidden from editors.
       name: 'bodyMarkdown',
       type: 'textarea',
       admin: {
@@ -377,6 +380,8 @@ export const Articles: CollectionConfig = {
         components: { Field: '/components/admin/DocActions#ArticleActions' },
       },
     },
+    // Which language you are looking at, at the head of the rail.
+    docLocaleField,
     /* THE TAG COMES BEFORE THE STATUS, in the rail and in the list, and it has to
        be moved HERE to do it. `defaultColumns` chooses which columns appear; the
        ORDER follows the fields array — measured, Payload rewrote a preference
