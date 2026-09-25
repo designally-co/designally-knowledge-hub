@@ -1,4 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
+
+import { deDash } from './deDash'
 import {
   convertLexicalToMarkdown,
   convertMarkdownToLexical,
@@ -43,6 +45,7 @@ Rules:
 - Preserve Markdown structure EXACTLY: heading levels (##, ###), lists, bold/italic, blockquotes, links, and code. Translate only human-readable text — never URLs, code, or Markdown syntax.
 - Keep established English product/brand names, technical terms, and acronyms in English where a Thai designer naturally would (e.g. Figma, UX/UI, AI, CSS, design system).
 - Do not add, drop, summarize, or reorder content.
+- Never use em dashes ("—") or en dashes as sentence punctuation, even where the English has one; they read as machine-written. Use a comma, a colon, parentheses, or two sentences instead. An en dash is fine inside a numeric range (2020–2024).
 - Return ONLY a JSON object with the same keys you were given. Keep empty strings empty. No prose, no code fences.`
 
 /** True when the Hub has an Anthropic key configured and can translate. */
@@ -93,13 +96,16 @@ async function translateFields(input: Fields, model: string): Promise<Fields> {
     .trim()
 
   const parsed = JSON.parse(extractJson(text)) as Partial<Fields>
+  /* Cleaned as well as instructed: the model is told not to use dashes, and
+     this catches any it uses anyway. References are not translated, so a
+     source's own title keeps its dash. */
   return {
-    title: parsed.title || input.title,
-    summary: parsed.summary ?? '',
-    description: parsed.description ?? '',
-    metaTitle: parsed.metaTitle ?? '',
-    metaDescription: parsed.metaDescription ?? '',
-    bodyMarkdown: parsed.bodyMarkdown ?? '',
+    title: deDash(parsed.title || input.title),
+    summary: deDash(parsed.summary ?? ''),
+    description: deDash(parsed.description ?? ''),
+    metaTitle: deDash(parsed.metaTitle ?? ''),
+    metaDescription: deDash(parsed.metaDescription ?? ''),
+    bodyMarkdown: deDash(parsed.bodyMarkdown ?? ''),
   }
 }
 
