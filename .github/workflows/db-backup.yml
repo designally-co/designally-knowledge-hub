@@ -63,7 +63,7 @@ jobs:
       BACKUP_FILE: /tmp/${{ matrix.db }}.dump
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # pg_dump must be at least as new as the server it dumps. The newest
       # client dumps every older server, so install the newest.
