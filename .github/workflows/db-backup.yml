@@ -1,0 +1,98 @@
+# Nightly database backups to a private R2 bucket. Setup, retention and how to
+# restore: docs/backups.md. The work itself is .github/scripts/db-backup.sh.
+name: Database backup
+
+on:
+  schedule:
+    # 19:00 UTC = 02:00 in Bangkok, when nobody is publishing.
+    - cron: '0 19 * * *'
+  workflow_dispatch:
+    inputs:
+      force_monthly:
+        description: Also write this run to monthly/ (normally only on the 1st)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: db-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    name: Back up ${{ matrix.db }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      # One database failing must not cancel the other's backup.
+      fail-fast: false
+      matrix:
+        include:
+          # The Hub: Supabase. The secret is the SESSION pooler (port 5432).
+          # Never the transaction pooler (6543): pg_dump opens with session
+          # SETs (search_path = '' among them), and on 6543 those leak onto
+          # the connection the live Hub gets next.
+          - db: hub
+            secret: HUB_BACKUP_DATABASE_URL
+            dump_schema: public
+            check_table: articles
+          # Survey: Neon. The secret is the DIRECT endpoint (no `-pooler` in
+          # the hostname), for the same reason.
+          - db: survey
+            secret: SURVEY_BACKUP_DATABASE_URL
+            dump_schema: ''
+            check_table: surveys
+
+    services:
+      # A scratch Postgres to restore into, so every backup is proven to
+      # restore, not just to exist.
+      verify:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: verify
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+
+    env:
+      DB: ${{ matrix.db }}
+      BACKUP_FILE: ${{ runner.temp }}/${{ matrix.db }}.dump
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # pg_dump must be at least as new as the server it dumps. The newest
+      # client dumps every older server, so install the newest.
+      - name: Install PostgreSQL 18 client
+        run: |
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y >/dev/null
+          sudo apt-get install -y -qq postgresql-client-18 >/dev/null
+          echo /usr/lib/postgresql/18/bin >> "$GITHUB_PATH"
+
+      - name: Dump
+        run: bash .github/scripts/db-backup.sh dump
+        env:
+          DATABASE_URL: ${{ secrets[matrix.secret] }}
+          DUMP_SCHEMA: ${{ matrix.dump_schema }}
+
+      - name: Upload to R2
+        run: bash .github/scripts/db-backup.sh upload
+        env:
+          R2_ACCOUNT_ID: ${{ secrets.R2_BACKUP_ACCOUNT_ID }}
+          R2_BUCKET: ${{ secrets.R2_BACKUP_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_BACKUP_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_BACKUP_SECRET_ACCESS_KEY }}
+          # Newer AWS CLIs add checksum headers by default; send them only
+          # where S3 requires them, which is what R2 expects.
+          AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+          AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+          FORCE_MONTHLY: ${{ inputs.force_monthly && '1' || '' }}
+
+      - name: Prove it restores
+        run: bash .github/scripts/db-backup.sh verify
+        env:
+          VERIFY_URL: postgresql://postgres:verify@localhost:5432/postgres
+          CHECK_TABLE: ${{ matrix.check_table }}
