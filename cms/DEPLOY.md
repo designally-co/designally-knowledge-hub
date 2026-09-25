@@ -62,6 +62,7 @@ uploaded cover images would vanish. On Vercel the build refuses to run without R
 | `R2_SECRET_ACCESS_KEY` | R2 token secret |
 | `R2_BUCKET_NAME` | the bucket name |
 | `R2_PUBLIC_URL` | `https://img.designally.co` — https, no path, no trailing slash |
+| `NEXT_PUBLIC_CF_WEB_ANALYTICS_TOKEN` | optional — Cloudflare Web Analytics site token for page-view counts (public; unset = no tracking). Redeploy after setting it: `NEXT_PUBLIC_` values are baked in at build time |
 
 The DB adapter switches on the `DATABASE_URI` scheme (`postgres://` → Postgres).
 Storage is R2 on Vercel and local disk anywhere else — see `src/lib/storage.ts`.

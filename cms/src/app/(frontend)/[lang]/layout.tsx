@@ -12,13 +12,12 @@ import { siteURL } from '@/lib/siteURL'
 import { getResourceCategories } from '@/lib/resources'
 /*
  * MEASUREMENT, BECAUSE THE NORTH-STAR METRIC IS SESSIONS AND NOTHING COUNTED
- * ONE. Vercel's own, for two reasons beyond it being one line: it sets no
- * cookies, so this site needs neither a consent banner nor a lawful basis to
- * record a page view, and it runs on the platform the Hub already deploys to.
- * It answers "how many people arrived, from where, on which page", which is
- * the question the metric asks.
+ * ONE. Cloudflare Web Analytics: no cookies, so this site needs neither a
+ * consent banner nor a lawful basis to record a page view. It answers "how many
+ * people arrived, from where, on which page", which is the question the metric
+ * asks. Why Cloudflare rather than Vercel's is in the component.
  */
-import { Analytics } from '@vercel/analytics/next'
+import { CloudflareAnalytics } from '@/components/CloudflareAnalytics'
 
 const DESCRIPTION =
   'A free library of design templates, articles and resources from Designally — your creative design ally.'
@@ -124,7 +123,7 @@ export default async function FrontendLayout({
         <SiteHeader locale={locale} dict={dict} resourceCategories={resourceCategories} />
         <main id="main">{children}</main>
         <SiteFooter locale={locale} dict={dict} />
-        <Analytics />
+        <CloudflareAnalytics />
       </body>
     </html>
   )
