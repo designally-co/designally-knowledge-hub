@@ -59,7 +59,8 @@ jobs:
 
     env:
       DB: ${{ matrix.db }}
-      BACKUP_FILE: ${{ runner.temp }}/${{ matrix.db }}.dump
+      # Not runner.temp: the runner context does not exist at job level.
+      BACKUP_FILE: /tmp/${{ matrix.db }}.dump
 
     steps:
       - uses: actions/checkout@v4
