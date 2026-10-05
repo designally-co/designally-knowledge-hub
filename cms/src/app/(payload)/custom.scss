@@ -7337,7 +7337,11 @@ $list: '.template-default__wrap > .collection-list';
     position: absolute;
     inset-block-start: 8px;
     inset-inline-start: 8px;
-    z-index: 1;
+    /* 2, NOT 1. Payload gives every cell `z-index: 1` (`.table td`), and the
+       picture's cell comes after this one, so at 1 the picture painted over
+       the checkbox: it was there, and nobody could see or press it, which made
+       the library delete-one-at-a-time. */
+    z-index: 2;
     /* Out of flow, so it has no column to take its width from. */
     inline-size: 32px;
     padding: 4px;

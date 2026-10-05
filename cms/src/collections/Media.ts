@@ -1,9 +1,9 @@
-import type { CollectionConfig } from 'payload'
+import { APIError, type CollectionConfig } from 'payload'
 
 import { mediaFromUrlHandler } from '../endpoints/mediaFromUrl'
 import { mediaUnusedHandler } from '../endpoints/mediaUnused'
 import { toSlug } from '../fields/slug'
-import { contentHashOf } from '../lib/mediaUsage'
+import { contentHashOf, mediaInUse } from '../lib/mediaUsage'
 import { deleteStagedUpload, mediaFileRedirect } from '../lib/storage'
 
 
@@ -162,6 +162,26 @@ export const Media: CollectionConfig = {
         const hash = contentHashOf(req.file as { data?: Buffer; tempFilePath?: string } | undefined)
         if (hash) data.contentHash = hash
         return data
+      },
+    ],
+    /*
+     * A FILE IN USE CANNOT BE DELETED — not one at a time, not in a bulk delete,
+     * not through the API. Deleting a cover left its article silently coverless,
+     * and the library's "Unused" view is a snapshot: select-all-and-delete acts
+     * on the ids it showed, and a publish in between could have put one of them
+     * back on an article. Checked here, at the moment of deleting, against what
+     * is true then. A bulk delete reports the refused file and removes the rest.
+     */
+    beforeDelete: [
+      async ({ id, req }) => {
+        if ((await mediaInUse(req.payload, req)).has(Number(id))) {
+          throw new APIError(
+            'This file is in use — on an article, a resource or in a body — so it was not deleted.',
+            409,
+            undefined,
+            true,
+          )
+        }
       },
     ],
     afterChange: [

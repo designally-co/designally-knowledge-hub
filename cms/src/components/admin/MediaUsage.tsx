@@ -15,8 +15,9 @@ import './MediaUsage.css'
  * the copies already made are still here, and nothing on the card says which
  * of two identical pictures is the one in use. "Unused" answers that: the
  * list narrows to the files no article (draft or published), resource or body
- * points at, and deleting them is Payload's own select-and-delete, with its
- * confirmation. This control only shows; it never deletes.
+ * points at. To clear them out: tick one card, "Select all" in the bar that
+ * appears, then Delete — Payload's own bulk delete, with its confirmation.
+ * This control only shows; it never deletes.
  *
  * THE SERVER DECIDES WHAT "UNUSED" MEANS (endpoints/mediaUnused, which reads
  * lib/mediaUsage). The list is then filtered to those ids, so the view is a
@@ -53,24 +54,14 @@ async function fetchUnused(): Promise<number[] | null> {
 }
 
 export function MediaUsage() {
-  const { data, handleWhereChange, query } = useListQuery()
+  const { handleWhereChange, query } = useListQuery()
   const active = filteredIds(query?.where) !== null
 
-  const [count, setCount] = React.useState<number | null>(null)
   const [busy, setBusy] = React.useState(false)
 
-  /* Counted again whenever the list changes size — after a delete, the number
-     on the button should already be the new one. */
-  const total = data?.totalDocs
-  React.useEffect(() => {
-    let live = true
-    void fetchUnused().then((ids) => {
-      if (live) setCount(ids ? ids.length : null)
-    })
-    return () => {
-      live = false
-    }
-  }, [total])
+  /* NO COUNT ON THE BUTTON. The list's own pager says how many files the view
+     holds the moment it is on, and a second number beside the name was the
+     same fact twice. */
 
   const showUnused = async () => {
     if (busy) return
@@ -78,7 +69,6 @@ export function MediaUsage() {
     const ids = await fetchUnused()
     setBusy(false)
     if (!ids) return
-    setCount(ids.length)
     /* An empty `in` is not "nothing" to every database adapter, so no unused
        files is asked for as an id that cannot exist: an empty list, honestly. */
     await handleWhereChange?.({ id: { in: ids.length ? ids : [0] } })
@@ -106,7 +96,7 @@ export function MediaUsage() {
         title="Files no article or resource uses, drafts included"
         type="button"
       >
-        Unused{count !== null ? <span className="da-usage__count">{count}</span> : null}
+        Unused
       </button>
     </div>
   )
