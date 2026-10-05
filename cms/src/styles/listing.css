@@ -587,11 +587,57 @@
   }
 }
 
+/* --- Empty result ---------------------------------------------------- */
+/* Takes the grid's place when nothing matched: a serif heading that names the
+   miss, a quieter line on what to try, then the way onward. Held to the
+   page's left seven columns, like the hero's words, so a short line does not
+   float in a full-width band. The control row above already leaves a section
+   step; the bottom margin keeps the block off the newsletter band. */
 .listing-empty {
-  margin: clamp(var(--space-6), 5vw, var(--space-10)) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  max-inline-size: calc(7 * var(--column-width) + 6 * var(--grid-gap));
+  margin: 0 0 clamp(var(--space-6), 4vw, var(--space-10));
+}
+
+.listing-empty__title {
+  margin: 0;
+  font: var(--type-heading-3);
+  letter-spacing: var(--tracking-heading-3);
+  color: var(--color-neutral-black);
+  overflow-wrap: anywhere;
+}
+
+.listing-empty__hint {
+  margin: 0;
   font: var(--type-body-large);
   letter-spacing: var(--tracking-body-large);
   color: var(--color-neutral-black-60);
+}
+
+.listing-empty__keywords {
+  margin-top: clamp(var(--space-4), 2.5vw, var(--space-6));
+}
+
+.listing-empty__label {
+  margin: 0 0 var(--space-3);
+  color: var(--color-neutral-black-60);
+  font: var(--type-tag);
+  letter-spacing: var(--tracking-tag);
+  text-transform: uppercase;
+}
+
+.listing-empty__action {
+  margin-top: clamp(var(--space-3), 2vw, var(--space-6));
+}
+
+@media (max-width: 47.999em) {
+  .listing-empty__title {
+    font: var(--type-heading-4);
+    letter-spacing: var(--tracking-heading-4);
+  }
 }
 
 /* --- Pager ------------------------------------------------------------ */

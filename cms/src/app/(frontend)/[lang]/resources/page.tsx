@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { ResourceCard } from '@/components/ds'
 import { ListingHero } from '@/components/listing/ListingHero'
 import { ListingControls, type ListingFilter } from '@/components/listing/ListingControls'
+import { ListingEmpty } from '@/components/listing/ListingEmpty'
 import { ListingPager } from '@/components/listing/ListingPager'
 import { NewsletterCta } from '@/components/NewsletterCta'
 import { getResourceCategories, getResourceListing } from '@/lib/resources'
@@ -132,9 +133,11 @@ export default async function ResourcesPage({
             <p className="listing-count">{count}</p>
           </>
         ) : (
-          <p className="listing-empty">
-            {q ? dict.listing.noResults.replace('{q}', q) : dict.resources.lede}
-          </p>
+          <ListingEmpty
+            title={q ? dict.listing.noResults.replace('{q}', q) : undefined}
+            hint={q ? dict.listing.noResultsHint : dict.resources.lede}
+            action={q ? { label: dict.listing.clearSearch, href: buildHref({ cat: activeCat?.slug }) } : undefined}
+          />
         )}
       </div>
 

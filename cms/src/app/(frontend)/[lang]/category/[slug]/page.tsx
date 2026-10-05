@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation'
 import { ArticleCard } from '@/components/ds'
 import { ListingHero } from '@/components/listing/ListingHero'
 import { ListingControls, type ListingFilter } from '@/components/listing/ListingControls'
+import { ListingEmpty } from '@/components/listing/ListingEmpty'
 import { ListingPager } from '@/components/listing/ListingPager'
 import { NewsletterCta } from '@/components/NewsletterCta'
 import { getArticleListing } from '@/lib/resources'
@@ -153,9 +154,18 @@ export default async function CategoryPage({
             <p className="listing-count">{count}</p>
           </>
         ) : (
-          <p className="listing-empty">
-            {q ? dict.listing.noResults.replace('{q}', q) : dict.listing.emptyForTag}
-          </p>
+          <ListingEmpty
+            title={q ? dict.listing.noResults.replace('{q}', q) : dict.listing.emptyForTag}
+            hint={q ? dict.listing.noResultsHint : undefined}
+            action={
+              q
+                ? {
+                    label: dict.listing.clearSearch,
+                    href: listingHref(basePath, { tag: activeTag ? tagSlug(activeTag) : undefined }),
+                  }
+                : undefined
+            }
+          />
         )}
       </div>
 
