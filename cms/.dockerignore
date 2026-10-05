@@ -1,0 +1,20 @@
+# Environment files never enter the build context, whatever their suffix.
+# `.env.production.local` holds production's database password.
+.env*
+!.env.example
+
+node_modules
+.next
+.vercel
+.r2-migration
+media
+*.db
+*.db-shm
+*.db-wal
+*.bak
+npm-debug.log
+tsconfig.tsbuildinfo
+test-results
+playwright-report
+Dockerfile
+*.md
