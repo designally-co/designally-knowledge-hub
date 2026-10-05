@@ -194,8 +194,10 @@ No data moves. Vercel and the NAS use the same database and the same bucket.
 
 ## 9. Vercel as the fallback
 
-Vercel stays running, on the production database, deploying `main`.
-Rollback is then one DNS change. Unlike Article Studio, the Hub has no cron
+Vercel stays running, on the production database, deploying `main` — and
+only `main`: `cms/vercel.json` switches off branch previews, which always
+failed anyway (the Preview environment has no R2, and the build refuses to
+run without it). Rollback is then one DNS change. Unlike Article Studio, the Hub has no cron
 to switch off, and its Git deploys can stay connected.
 
 What to keep in mind while both run:
