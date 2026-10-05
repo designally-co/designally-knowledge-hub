@@ -32,6 +32,7 @@ function filteredIds(where: unknown): unknown[] | null {
   if (!where || typeof where !== 'object') return null
   const record = where as Record<string, unknown>
   const id = record.id as { in?: unknown } | undefined
+  if (id && typeof id.in === 'string') return id.in.split(',')
   if (id && Array.isArray(id.in)) return id.in
   for (const value of Object.values(record)) {
     const found = Array.isArray(value)
@@ -69,9 +70,19 @@ export function MediaUsage() {
     const ids = await fetchUnused()
     setBusy(false)
     if (!ids) return
-    /* An empty `in` is not "nothing" to every database adapter, so no unused
-       files is asked for as an id that cannot exist: an empty list, honestly. */
-    await handleWhereChange?.({ id: { in: ids.length ? ids : [0] } })
+    /*
+     * ONE COMMA-SEPARATED VALUE, NOT A LIST. The filter travels in the URL,
+     * and the admin reads the URL back with qs at its default `arrayLimit` of
+     * 20: a list of 21 ids or more comes back as an object, and the database
+     * layer drops an `in` it cannot read as an array — silently, so the view
+     * showed the whole library under "Unused" (84 of 86 on 5 October 2026,
+     * when 48 were). Payload splits a comma-separated `in` itself, and a single
+     * value has no limit to cross.
+     *
+     * An empty `in` is not "nothing" to every database adapter, so no unused
+     * files is asked for as an id that cannot exist: an empty list, honestly.
+     */
+    await handleWhereChange?.({ id: { in: ids.length ? ids.join(',') : '0' } })
   }
 
   const showAll = async () => {
