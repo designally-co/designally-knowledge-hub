@@ -5,6 +5,7 @@ import * as migration_20260921_120000_subscriber_pending_default from './2026092
 import * as migration_20260924_120000_resource_categories from './20260924_120000_resource_categories';
 import * as migration_20260924_170000_settings_translate_model from './20260924_170000_settings_translate_model';
 import * as migration_20261005_120000_settings_translate_model_text from './20261005_120000_settings_translate_model_text';
+import * as migration_20261005_140000_media_alt_nullable from './20261005_140000_media_alt_nullable';
 
 export const migrations = [
   {
@@ -41,5 +42,10 @@ export const migrations = [
     up: migration_20261005_120000_settings_translate_model_text.up,
     down: migration_20261005_120000_settings_translate_model_text.down,
     name: '20261005_120000_settings_translate_model_text'
+  },
+  {
+    up: migration_20261005_140000_media_alt_nullable.up,
+    down: migration_20261005_140000_media_alt_nullable.down,
+    name: '20261005_140000_media_alt_nullable'
   },
 ];
