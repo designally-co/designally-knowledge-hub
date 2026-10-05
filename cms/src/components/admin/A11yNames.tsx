@@ -51,6 +51,18 @@ export function A11yNames({ children }: { children?: React.ReactNode }) {
           if (el.tagName !== 'BUTTON' && !el.getAttribute('role')) el.setAttribute('role', 'button')
         }
       }
+
+      /* THE LIST'S TICK-ALL BOX names itself after itself: Payload renders it
+         `aria-labelledby="select-all"` with that same id on the box, and an
+         empty `aria-label`, so it is announced as nothing. `labelledby` wins
+         over `label`, so it goes, and the box gets the words the media grid
+         prints beside it. A checkbox, so no `role` — that is the rule above's
+         business, and it would make it a button. */
+      for (const box of document.querySelectorAll<HTMLInputElement>('input#select-all')) {
+        if (box.getAttribute('aria-label')) continue
+        box.removeAttribute('aria-labelledby')
+        box.setAttribute('aria-label', 'Select all on this page')
+      }
     }
 
     label()
