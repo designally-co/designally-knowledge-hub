@@ -210,8 +210,12 @@ export type Dictionary = {
     searchLabel: string
     /** "Showing {from}–{to} of {total} {unit}". */
     showing: string
-    /** "No results for “{q}”." */
+    /** "No results for “{q}”" — the heading of an empty search on a listing. */
     noResults: string
+    /** The line under it: what to try next. */
+    noResultsHint: string
+    /** The link that drops the search and keeps the filter. */
+    clearSearch: string
     previous: string
     next: string
     /** Pager controls that jump to the first and last page. */
@@ -237,6 +241,10 @@ export type Dictionary = {
     prompt: string
     /** "Nothing found for “{q}”." */
     empty: string
+    /** /search's hero kicker when nothing matched, over the query: "No results for". */
+    noResultsHeading: string
+    /** /search's line under the band when nothing matched. */
+    emptyHint: string
     articles: string
     resources: string
     /** The overlay's close control and the field's submit button. */
@@ -484,7 +492,9 @@ const en: Dictionary = {
     searchPlaceholder: 'Search {section}…',
     searchLabel: 'Search',
     showing: 'Showing {from}–{to} of {total} {unit}',
-    noResults: 'No results for “{q}”.',
+    noResults: 'No results for “{q}”',
+    noResultsHint: 'Check the spelling, or try a shorter or more general word.',
+    clearSearch: 'Clear search',
     previous: 'Previous',
     next: 'Next',
     first: 'First page',
@@ -507,6 +517,8 @@ const en: Dictionary = {
     label: 'Search',
     prompt: 'Search across every article and resource on the hub.',
     empty: 'Nothing found for “{q}”.',
+    noResultsHeading: 'No results for',
+    emptyHint: 'Check the spelling, or try a shorter or more general word.',
     articles: 'Articles',
     resources: 'Resources',
     close: 'Close',
@@ -740,6 +752,8 @@ const th: Dictionary = {
     searchLabel: 'ค้นหา',
     showing: 'แสดง {from}–{to} จาก {total} {unit}',
     noResults: 'ไม่พบผลลัพธ์สำหรับ “{q}”',
+    noResultsHint: 'ลองตรวจตัวสะกด หรือใช้คำที่สั้นลงหรือกว้างขึ้น',
+    clearSearch: 'ล้างการค้นหา',
     previous: 'ก่อนหน้า',
     next: 'ถัดไป',
     first: 'หน้าแรกสุด',
@@ -762,6 +776,8 @@ const th: Dictionary = {
     label: 'ค้นหา',
     prompt: 'ค้นหาจากบทความและรีซอร์สทั้งหมดในฮับ',
     empty: 'ไม่พบผลลัพธ์สำหรับ “{q}”',
+    noResultsHeading: 'ไม่พบผลลัพธ์สำหรับ',
+    emptyHint: 'ลองตรวจตัวสะกด หรือใช้คำที่สั้นลงหรือกว้างขึ้น',
     articles: 'บทความ',
     resources: 'รีซอร์ส',
     close: 'ปิด',

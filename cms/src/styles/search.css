@@ -449,12 +449,6 @@
   }
 }
 
-/* On the page the note sits where the control row would, a section step
-   under the band. */
-.search-page .search-note {
-  margin: 0 0 clamp(var(--space-10), 5vw, var(--space-16));
-}
-
 @media (prefers-reduced-motion: reduce) {
   .search-overlay { animation: none; }
 }

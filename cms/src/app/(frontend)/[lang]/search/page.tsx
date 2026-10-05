@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 
 import { Tabs } from '@/components/ds'
+import { ListingEmpty } from '@/components/listing/ListingEmpty'
 import { ListingHero } from '@/components/listing/ListingHero'
 import { ListingPager } from '@/components/listing/ListingPager'
 import { NewsletterCta } from '@/components/NewsletterCta'
 import { SearchHitGrid } from '@/components/search/SearchHitGrid'
+import { getPopularTags } from '@/lib/resources'
 import { searchHub } from '@/lib/searchHub'
 import { getSearchListing } from '@/lib/searchListing'
 import {
@@ -14,7 +16,7 @@ import {
   searchHref,
   searchTypeFromSlug,
 } from '@/lib/searchShared'
-import { getDictionary, isLocale, type Locale } from '@/lib/i18n'
+import { getDictionary, isLocale, tagLabel, type Locale } from '@/lib/i18n'
 
 type Params = { lang: string }
 type Search = { q?: string; type?: string; page?: string }
@@ -56,6 +58,15 @@ export default async function SearchPage({
     ? await Promise.all([searchHub(q, locale), getSearchListing({ q, type, page, locale })])
     : [null, null]
   const tabs = overview ? overview.groups.filter((g) => g.key === 'all' || g.total > 0) : []
+  const empty = overview?.total === 0
+  // Nothing matched: offer the most-used tags as fresh searches, as the
+  // header overlay does before anything is typed.
+  const keywords = empty
+    ? (await getPopularTags(6, locale)).map((tag) => {
+        const label = tagLabel(tag, locale)
+        return { label, href: searchHref(locale, label) }
+      })
+    : []
 
   const showing = listing
     ? dict.listing.showing
@@ -68,17 +79,27 @@ export default async function SearchPage({
   return (
     <div className="listing-page search-page">
       {/* With a query: "Search results for" small, the query itself as the page
-          title. Without one: the plain "Search" title and the prompt. */}
+          title — "No results for" when nothing matched, so the band says it
+          once and the body below only says what to try. Without a query: the
+          plain "Search" title and the prompt. */}
       {searching ? (
-        <ListingHero kicker={dict.search.resultsHeading} title={`“${q}”`} tint={SEARCH_TINT} />
+        <ListingHero
+          kicker={empty ? dict.search.noResultsHeading : dict.search.resultsHeading}
+          title={`“${q}”`}
+          tint={SEARCH_TINT}
+        />
       ) : (
         <ListingHero title={dict.search.title} description={dict.search.prompt} tint={SEARCH_TINT} />
       )}
 
       <div className="listing-body">
         {overview && listing && (
-          overview.total === 0 ? (
-            <p className="search-note">{dict.search.empty.replace('{q}', q)}</p>
+          empty ? (
+            <ListingEmpty
+              hint={dict.search.emptyHint}
+              keywords={keywords}
+              keywordsLabel={dict.search.popular}
+            />
           ) : (
             <>
               {/* The catalog pages' control row: the result tabs where their
