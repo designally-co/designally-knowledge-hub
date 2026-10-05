@@ -1,5 +1,7 @@
 import { addDataAndFileToRequest, type PayloadHandler } from 'payload'
 
+import { contentHashOf } from '../lib/mediaUsage'
+
 /**
  * POST /api/media/from-url
  *
@@ -27,7 +29,8 @@ import { addDataAndFileToRequest, type PayloadHandler } from 'payload'
  *
  * Body: { url, alt, filename? }
  * Returns Payload's own shape, `{ doc: { id } }`, so callers can treat this
- * and /api/media as interchangeable.
+ * and /api/media as interchangeable — 201 for a new file, 200 with
+ * `reused: true` when the library already held these exact bytes.
  */
 
 /** Enough for any cover; small enough that a wrong URL cannot exhaust memory. */
@@ -139,6 +142,31 @@ export const mediaFromUrlHandler: PayloadHandler = async (req) => {
       { error: `That URL returned ${mimetype}, which is not an image.` },
       { status: 400 },
     )
+  }
+
+  /*
+   * THE SAME PICTURE IS THE SAME FILE. Article Studio sends its cover with
+   * every publish, re-publishes included, and each one used to become a new
+   * row: the library held the same image three and four times under the same
+   * name, and only one of them was ever on the article. Identical bytes now get
+   * the row that already holds them, and the article's cover does not change.
+   *
+   * By content, not by name or URL: a regenerated cover is a different picture
+   * at the same address, and the same picture can arrive from two.
+   */
+  const hash = contentHashOf({ data })
+  if (hash) {
+    const same = await req.payload.find({
+      collection: 'media',
+      where: { contentHash: { equals: hash } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: false,
+      user: req.user,
+      req,
+    })
+    const existing = same.docs[0]
+    if (existing) return Response.json({ doc: { id: existing.id }, reused: true }, { status: 200 })
   }
 
   try {

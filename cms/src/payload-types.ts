@@ -255,6 +255,7 @@ export interface Media {
    * (optional)
    */
   credit?: string | null;
+  contentHash?: string | null;
   prefix?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -607,6 +608,7 @@ export interface ResourceCategoriesSelect<T extends boolean = true> {
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   credit?: T;
+  contentHash?: T;
   prefix?: T;
   updatedAt?: T;
   createdAt?: T;
