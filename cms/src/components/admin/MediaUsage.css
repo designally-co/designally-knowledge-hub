@@ -1,0 +1,101 @@
+/*
+ * All | Unused — the media library's filter, drawn as the language pair is on
+ * Articles and Resources: one 36-tall outlined box in the control row holding
+ * two segments, the chosen one filled with the chrome grey (custom.scss, "THE
+ * LANGUAGE PAIR"). Media has no language, so the pair's cell in the header
+ * grid is free, and this takes it.
+ *
+ * Desk only; see MediaUsage.tsx.
+ */
+
+.da-usage {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  box-sizing: border-box;
+  block-size: 36px;
+  margin: 0;
+  padding: 2px;
+  gap: 2px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: none;
+}
+
+.da-usage__opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  block-size: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--da-ink-3);
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--da-dur-feedback) var(--da-ease),
+    color var(--da-dur-feedback) var(--da-ease);
+}
+
+@media (hover: hover) {
+  .da-usage__opt:hover {
+    color: var(--da-ink);
+  }
+}
+
+.da-usage__opt--on {
+  background-color: var(--da-chrome);
+  color: var(--da-ink);
+}
+
+.da-usage__opt[aria-busy='true'] {
+  cursor: progress;
+}
+
+.da-usage__opt:focus-visible {
+  outline: 2px solid var(--da-focus);
+  outline-offset: 2px;
+}
+
+/* How many, in the metadata grey — a fact about the button, not its name. */
+.da-usage__count {
+  font-weight: 500;
+  color: var(--da-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * ITS CELL IN THE HEADER GRID. The list's header is a grid that knows its
+ * controls by name (custom.scss, "the heading line"): with no language pair it
+ * has three columns — heading, search, Create — and anything else in it spans
+ * the full width under the heading. This gives the pair a fourth column, where
+ * the language pair stands on the bilingual screens. The repeated class out-
+ * ranks the three-column rule, which is keyed on the pair's absence.
+ */
+@media (min-width: 48.0625rem) {
+  .template-default__wrap .collection-list__wrap.collection-list__wrap:has(> .da-usage) {
+    grid-template-columns: minmax(12rem, 1fr) auto auto auto;
+  }
+
+  .template-default__wrap .collection-list .da-usage {
+    grid-area: 1 / 3 / span 2;
+    align-self: end;
+  }
+}
+
+@media (max-width: 48rem) {
+  .da-usage {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .da-usage__opt {
+    transition: none;
+  }
+}

@@ -1,7 +1,9 @@
 import type { CollectionConfig } from 'payload'
 
 import { mediaFromUrlHandler } from '../endpoints/mediaFromUrl'
+import { mediaUnusedHandler } from '../endpoints/mediaUnused'
 import { toSlug } from '../fields/slug'
+import { contentHashOf } from '../lib/mediaUsage'
 import { deleteStagedUpload, mediaFileRedirect } from '../lib/storage'
 
 
@@ -152,6 +154,16 @@ export const Media: CollectionConfig = {
         return args
       },
     ],
+    /* THE FILE'S FINGERPRINT, taken whenever bytes arrive — a new upload or a
+       replaced file, through any doorway. `from-url` reads it to reuse a
+       picture it already holds instead of filing a copy; see contentHash. */
+    beforeChange: [
+      ({ data, req }) => {
+        const hash = contentHashOf(req.file as { data?: Buffer; tempFilePath?: string } | undefined)
+        if (hash) data.contentHash = hash
+        return data
+      },
+    ],
     afterChange: [
       async ({ doc, req }) => {
         const key = req.context?.stagedUploadKey
@@ -171,6 +183,12 @@ export const Media: CollectionConfig = {
       path: '/from-url',
       method: 'post',
       handler: mediaFromUrlHandler,
+    },
+    /* The ids behind the library's "Unused" view. See endpoints/mediaUnused. */
+    {
+      path: '/unused',
+      method: 'get',
+      handler: mediaUnusedHandler,
     },
   ],
   admin: {
@@ -206,6 +224,8 @@ export const Media: CollectionConfig = {
         // The phone's search: a disc on the header's line that opens into the
         // line. See SearchBar.tsx.
         '/components/admin/SearchBar#SearchBar',
+        // All files, or only the ones nothing uses. See MediaUsage.tsx.
+        '/components/admin/MediaUsage#MediaUsage',
       ],
     },
   },
@@ -361,6 +381,16 @@ export const Media: CollectionConfig = {
         disableListColumn: true,
         components: { Field: '/components/admin/DocActions#MediaFacts' },
       },
+    },
+    {
+      /* SHA-256 of the file's bytes, set by the hook above. Not for people:
+         hidden here and in the list, and empty on files uploaded before
+         5 October 2026 — which simply means those are never matched, and a
+         re-published cover replaces one of them the ordinary way. */
+      name: 'contentHash',
+      type: 'text',
+      index: true,
+      admin: { hidden: true, disableListColumn: true },
     },
     /* NO META ROW AT THE FOOT. When it held a modified date and a created one
        it was a block of its own; with only the date it arrived, it was a fourth

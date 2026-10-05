@@ -6,6 +6,7 @@ import { slugField } from '../fields/slug'
 import { articleAnnouncement } from './announcements'
 import { newsletterOnPublish, newsletterSentField } from './newsletterOnPublish'
 import { TAG_SELECT_OPTIONS } from '../lib/tags'
+import { mediaIdOf, releaseMediaIfUnused } from '../lib/mediaUsage'
 import {
   localeGuardField,
   publishedOrEditor,
@@ -147,7 +148,38 @@ export const Articles: CollectionConfig = {
     beforeChange: stampPublishedDate,
     /* Subscribers hear about it the moment it goes live — once, on the
        transition only. See collections/newsletterOnPublish. */
-    afterChange: [newsletterOnPublish('article', articleAnnouncement)],
+    afterChange: [
+      newsletterOnPublish('article', articleAnnouncement),
+      /*
+       * A REPLACED COVER LEAVES THE LIBRARY WITH IT, unless something else
+       * still uses it. Every publish from Article Studio used to bring its
+       * cover as a new file and leave the old one behind, so the library filled
+       * with the same pictures under the same names — 50 of 86 files used by
+       * nothing on 5 October 2026. Identical bytes are now reused at the door
+       * (endpoints/mediaFromUrl); a genuinely new picture still arrives as a
+       * new file, and this lets the one it replaced go.
+       *
+       * EXCEPT ONCE THE ARTICLE HAS BEEN EMAILED. The newsletter carries the
+       * cover's address, and a sent email cannot be edited — deleting the file
+       * would leave a broken picture in every inbox. The library's "Unused"
+       * view still shows such a file, for a person to decide.
+       */
+      ({ doc, previousDoc, operation, req }) => {
+        if (operation !== 'update' || !previousDoc) return doc
+        const before = mediaIdOf(previousDoc.coverImage)
+        if (before === null || before === mediaIdOf(doc.coverImage)) return doc
+        if (previousDoc.newsletterSentAt) return doc
+        releaseMediaIfUnused(req.payload, before)
+        return doc
+      },
+    ],
+    /* An article that goes takes its cover with it, on the same terms. */
+    afterDelete: [
+      ({ doc, req }) => {
+        if (!doc?.newsletterSentAt) releaseMediaIfUnused(req.payload, doc?.coverImage)
+        return doc
+      },
+    ],
   },
   fields: [
     // ---- The document ------------------------------------------------------
