@@ -1,6 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
-import { DEFAULT_TRANSLATE_MODEL, TRANSLATE_MODELS } from '../lib/translateModels'
+import { availableModels } from '../lib/availableModels'
+import { DEFAULT_TRANSLATE_MODEL, MODEL_ID } from '../lib/translateModels'
 
 /**
  * Site-wide settings: one row, not one per person.
@@ -17,12 +18,30 @@ export const Settings: GlobalConfig = {
     read: ({ req }) => Boolean(req.user),
     update: ({ req }) => Boolean(req.user),
   },
+  endpoints: [
+    {
+      /* GET /api/globals/settings/models — the models the dropdown offers,
+         from Anthropic's live list (lib/availableModels). Signed-in only, like
+         the setting itself. */
+      path: '/models',
+      method: 'get',
+      handler: async (req) => {
+        if (!req.user) return Response.json({ error: 'Unauthorized.' }, { status: 401 })
+        return Response.json({ models: await availableModels() })
+      },
+    },
+  ],
   fields: [
     {
       name: 'translateModel',
-      type: 'select',
+      /* TEXT, NOT A SELECT. A select is a Postgres enum, which refuses any
+         model it was not created with — so a model Anthropic released after
+         the migration could be shown but never saved. The choices now come
+         from Anthropic's list at runtime; the shape of the id is checked here. */
+      type: 'text',
       label: 'Thai translation model',
-      options: TRANSLATE_MODELS.map(({ label, value }) => ({ label, value })),
+      validate: (value: string | null | undefined) =>
+        !value || MODEL_ID.test(value) ? true : 'That is not a Claude model id.',
       hooks: {
         /* Until someone picks one, the model is what it was before this
            setting existed: the TRANSLATE_MODEL env var, then the default. So

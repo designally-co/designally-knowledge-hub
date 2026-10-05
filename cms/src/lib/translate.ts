@@ -81,14 +81,28 @@ async function translateFields(input: Fields, model: string): Promise<Fields> {
     input,
   )}`
 
-  // Stream so a large body doesn't hit request timeouts; take the final message.
+  /* Stream so a large body doesn't hit request timeouts; take the final message.
+
+     ROOM FOR THINKING. Opus 5, Opus 5.5 and Sonnet 5.5 think before they
+     answer unless told otherwise, and that thinking is counted against
+     max_tokens. 16,000 was sized for the translation alone, so a long article
+     could be cut off mid-JSON and fail to parse. 64,000 holds both on every
+     current model (Haiku 4.5's ceiling), and streaming keeps it clear of
+     timeouts. */
   const stream = anthropic.messages.stream({
     model,
-    max_tokens: 16000,
+    max_tokens: 64000,
     system: SYSTEM,
     messages: [{ role: 'user', content: userContent }],
   })
   const message = await stream.finalMessage()
+  // Said plainly, rather than as a JSON parse error on an empty or cut-off reply.
+  if (message.stop_reason === 'refusal') {
+    throw new Error(`${model} declined to translate this (a safety filter). Try again, or pick another model.`)
+  }
+  if (message.stop_reason === 'max_tokens') {
+    throw new Error(`The Thai translation was cut off at ${model}'s output limit. Try again, or pick another model.`)
+  }
   const text = message.content
     .filter((b): b is Anthropic.TextBlock => b.type === 'text')
     .map((b) => b.text)
