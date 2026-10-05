@@ -7222,59 +7222,11 @@ $list: '.template-default__wrap > .collection-list';
     display: block;
   }
 
-  /* THE HEADER ROW GOES — EXCEPT ITS TICK-ALL BOX. A grid of pictures has no
-     columns to label, but Articles and Resources tick a whole page from their
-     header row, and without it the library could only be selected one card
-     at a time (or by ticking one and finding "Select all" in the bar). So the
-     row stays, holding only Payload's own select-all, above the first card,
-     with the words its column heading never needed. Desk only: on a phone a
-     list is cleared by swiping a row (RowSelect), as everywhere else. */
+  /* NO HEADER ROW, and no tick-all box in one. A page is selected the way
+     the bar offers once one card is ticked — "Select all (N)" — which is
+     where the other lists' bulk actions live too. */
   .table thead {
-    display: block;
-    margin-block-end: 12px;
-  }
-
-  .table thead tr {
-    display: flex;
-    overflow: visible;
-    border: 0;
-    border-radius: 0;
-    background: none;
-  }
-
-  .table thead th {
     display: none;
-  }
-
-  .table thead th#heading-_select {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    inline-size: auto;
-    padding: 0;
-    border: 0;
-    background: none;
-
-    /* On the plate the cards' own boxes ride on (`td.cell-_select` below).
-       Bare, its #f0f0f0 edge sat on the parchment ground with nothing to
-       separate it — on Articles it has the white table under it, here it has
-       the page. */
-    > .checkbox-input {
-      padding: 4px;
-      border: 1px solid var(--da-hairline);
-      border-radius: 8px;
-      background-color: #ffffff;
-    }
-
-    /* Words beside the box, which a column heading never had to say. Not part
-       of the control; A11yNames gives the box the same words as its name. */
-    &::after {
-      content: 'Select all on this page';
-      font-size: 13px;
-      font-weight: 400;
-      color: var(--da-ink-3);
-      pointer-events: none;
-    }
   }
 
   .table tbody {
@@ -7393,11 +7345,23 @@ $list: '.template-default__wrap > .collection-list';
        the checkbox: it was there, and nobody could see or press it, which made
        the library delete-one-at-a-time. */
     z-index: 2;
-    /* Out of flow, so it has no column to take its width from. */
-    inline-size: 32px;
+    /* NO PLATE. It was a white 32px tile with 4px around a 16px box, so the
+       box sat in the left of it with a strip of white beside — a second shape
+       around the control. The box itself is the white thing now (below), and
+       the 4px stays as a clear margin so the target is still 24px. */
+    inline-size: auto;
     padding: 4px;
-    border-radius: 8px;
-    background-color: rgb(255 255 255 / 0.92);
+    line-height: 0;
+    background: none;
+  }
+
+  /* Over a photograph the list's empty box — a hairline round nothing — has
+     nothing to be seen against, so unticked it is filled white with a firmer
+     edge. Ticked, it is the accent like every other list's. */
+  .table td.cell-_select .checkbox-input:not(.checkbox-input--checked) .checkbox-input__input:not(:has(> .checkbox-input__icon.partial)) {
+    border-color: var(--da-hairline-strong);
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px rgb(27 29 35 / 0.18);
   }
 
   /* A PHONE KEEPS THE GRID, TWO WIDE. The list screens turn every row into a
@@ -7407,10 +7371,6 @@ $list: '.template-default__wrap > .collection-list';
      simply get narrower. The checkbox stays gone, as it is on every list at this
      width: a phone deletes by swiping a card, not by selecting several. */
   @media (max-width: 48rem) {
-    .table thead {
-      display: none;
-    }
-
     .table tbody {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;
