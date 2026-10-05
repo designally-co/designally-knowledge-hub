@@ -57,8 +57,9 @@ export async function GET() {
     // Thai auto-translation on publish. Absent means articles arrive English
     // only — a degraded publish, not a failed one.
     ANTHROPIC_API_KEY: present('ANTHROPIC_API_KEY'),
-    // Media storage. Required on Vercel — a deployment without all five fails
-    // its build, so on a running production deployment these are always true.
+    // Media storage. Required in production — a Vercel deployment without all
+    // five fails its build, and the NAS container refuses to start — so on a
+    // running production deployment these are always true.
     ...Object.fromEntries(R2_VARS.map((name) => [name, present(name)])),
     /* The newsletter. Absent means publishing an article tells nobody — which
        is a quiet failure by design (the send must never break a publish), and
@@ -101,9 +102,17 @@ export async function GET() {
     // it — the site still reads — so neither pulls this to false. Both are
     // visible below for whoever is looking.
     ok: database.ok && env.DATABASE_URI && env.PAYLOAD_SECRET,
-    commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? 'local',
+    /* Which deployment answered. While the NAS serves the Hub and Vercel is
+       kept as the fallback, both can be reached on the same database, and this
+       is how to tell which one hub.designally.co points at. The container's
+       commit is baked into its image (APP_COMMIT_SHA, from the release
+       workflow); Vercel supplies its own. */
+    host: process.env.VERCEL === '1' ? 'vercel' : process.env.APP_COMMIT_SHA ? 'nas' : 'local',
+    commit: (process.env.APP_COMMIT_SHA || process.env.VERCEL_GIT_COMMIT_SHA)?.slice(0, 7) ?? 'local',
+    /* In full, to match against the IMAGE_TAG Portainer runs (`sha-<this>`). */
+    commitSha: process.env.APP_COMMIT_SHA || process.env.VERCEL_GIT_COMMIT_SHA || null,
     branch: process.env.VERCEL_GIT_COMMIT_REF ?? null,
-    environment: process.env.VERCEL_ENV ?? 'development',
+    environment: process.env.VERCEL_ENV ?? (process.env.APP_COMMIT_SHA ? 'production' : 'development'),
     region: process.env.VERCEL_REGION ?? null,
     database,
     // The two integrations that are easy to get wrong and silent when they are.

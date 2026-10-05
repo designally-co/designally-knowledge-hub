@@ -61,6 +61,21 @@ const TRUSTED_HOST = /^(localhost|([a-z0-9-]+\.)*designally\.co|([a-z0-9-]+\.)*v
  */
 export function originFrom(req: Request): string {
   const requested = new URL(req.url)
+  /* BEHIND A PROXY, THE PROXY KNOWS THE ADDRESS. On the NAS, Caddy terminates
+     https and hands the request on as plain http to a server listening on
+     0.0.0.0:3000 — which is what `req.url` then says, and which sent Article
+     Studio's Google sign-in to https://0.0.0.0:3000 on the day it moved. Caddy
+     names the address the reader actually used in X-Forwarded-Host and
+     -Proto, as Vercel's edge does. The container publishes no port, so nothing
+     but Caddy can set them; and the host still has to pass TRUSTED_HOST. */
+  const forwardedHost = req.headers.get('x-forwarded-host')?.split(',')[0]?.trim()
+  const forwardedProto = req.headers.get('x-forwarded-proto')?.split(',')[0]?.trim()
+  if (forwardedHost && (forwardedProto === 'https' || forwardedProto === 'http')) {
+    const forwarded = URL.canParse(`${forwardedProto}://${forwardedHost}`)
+      ? new URL(`${forwardedProto}://${forwardedHost}`)
+      : null
+    if (forwarded && TRUSTED_HOST.test(forwarded.hostname)) return forwarded.origin
+  }
   if (TRUSTED_HOST.test(requested.hostname)) return requested.origin
   if (process.env.SITE_URL) return process.env.SITE_URL.replace(/\/$/, '')
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {

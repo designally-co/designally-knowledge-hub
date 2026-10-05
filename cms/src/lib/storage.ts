@@ -26,14 +26,15 @@ import type {
 /**
  * Where the media library's files live.
  *
- * ON VERCEL: Cloudflare R2, under `hub/`, in the bucket the Content Generator
- * also writes to. The prefix is the whole of the separation — the generator's
- * files sit at the bucket root — so nothing here ever reads, writes or deletes
- * a key outside it.
+ * IN PRODUCTION: Cloudflare R2, under `hub/`, in the bucket the Content
+ * Generator also writes to. The prefix is the whole of the separation — the
+ * generator's files sit at the bucket root — so nothing here ever reads, writes
+ * or deletes a key outside it. Production is Vercel (`VERCEL=1`, which Vercel
+ * sets) or the container on the NAS (`MEDIA_STORAGE=r2`, which its stack sets).
  *
- * EVERYWHERE ELSE: `cms/media/` on local disk, with a warning at startup. Off
- * Vercel is development, and R2 is not used there even when its variables are
- * set, so an upload made on a laptop cannot land in the production bucket.
+ * EVERYWHERE ELSE: `cms/media/` on local disk, with a warning at startup. That
+ * is development, and R2 is not used there even when its variables are set, so
+ * an upload made on a laptop cannot land in the production bucket.
  *
  * A row's `prefix` says its file is in R2 (`hub`). Every row has one: the files
  * that lived in Supabase Storage were copied across on 11 September 2026, and
@@ -89,9 +90,20 @@ function readR2Config(): R2Config | null {
 export type MediaStorageMode = { kind: 'r2'; config: R2Config } | { kind: 'local' }
 
 /**
- * Decided once, when the config is built — so a deployment missing R2 fails
- * its BUILD, and the previous deployment goes on serving. Refusing at runtime
- * instead would take the live site down to report a configuration mistake.
+ * Decided once, when the config is built — so a Vercel deployment missing R2
+ * fails its BUILD, and the previous deployment goes on serving. Refusing at
+ * runtime instead would take the live site down to report a configuration
+ * mistake.
+ *
+ * THE CONTAINER IS THE EXCEPTION, because its image is built in CI with no
+ * secrets at all and only meets its R2 variables when it starts. So
+ * `MEDIA_STORAGE=r2` is read at runtime, and a container that has it without
+ * the five variables fails every request that needs Payload: /api/health
+ * answers 500 and Docker marks the container unhealthy, while the pages the
+ * build made go on being served. Its stack requires all six, so that should
+ * never be reached. What must never happen is the quiet alternative: a
+ * production container saving uploads to its own disk, where the next stack
+ * update throws them away.
  */
 function decideMode(): MediaStorageMode {
   /* `=== '1'`, the exact value Vercel sets, not merely present. The env file
@@ -100,11 +112,13 @@ function decideMode(): MediaStorageMode {
      `payload migrate` against production from a laptop would demand R2 it
      never uses. Such a command runs with VERCEL=0, which the env loader leaves
      alone because it never overrides a variable that is already set. */
-  if (process.env.VERCEL === '1') {
+  const where =
+    process.env.VERCEL === '1' ? 'on Vercel' : process.env.MEDIA_STORAGE === 'r2' ? 'with MEDIA_STORAGE=r2' : null
+  if (where) {
     const config = readR2Config()
     if (!config) {
       throw new Error(
-        `Media storage: R2 is required on Vercel and none of it is configured. Set ${R2_VARS.join(', ')}.`,
+        `Media storage: R2 is required ${where} and none of it is configured. Set ${R2_VARS.join(', ')}.`,
       )
     }
     return { kind: 'r2', config }
@@ -116,7 +130,7 @@ function decideMode(): MediaStorageMode {
   if (!flag.__hubMediaStorageWarned) {
     flag.__hubMediaStorageWarned = true
     const ignored = R2_VARS.some((name) => process.env[name])
-      ? ' The R2_* variables are set and deliberately IGNORED off Vercel, so nothing uploaded here reaches the production bucket.'
+      ? ' The R2_* variables are set and deliberately IGNORED without VERCEL=1 or MEDIA_STORAGE=r2, so nothing uploaded here reaches the production bucket.'
       : ''
     console.warn(
       `\n  Media storage: uploads are saved to cms/media/ on local disk — development only.${ignored}\n`,
@@ -252,8 +266,10 @@ export function mediaStoragePlugin(): Plugin {
 
   return (incoming) => {
     /* Registered in every environment so the import map is the same one in
-       development and production; `enabled` is what switches it on, and off
-       Vercel there is no R2 to upload to, so uploads there stay multipart. */
+       development and production; `enabled` is what switches it on, and in
+       development there is no R2 to upload to, so uploads there stay multipart.
+       The NAS container takes the same direct path as Vercel: it has no body
+       limit of its own, but one upload path is one path to test. */
     initClientUploads({
       clientHandler: '/components/admin/MediaUploadHandler#MediaUploadHandler',
       collections: { media: { prefix: HUB_PREFIX } },
