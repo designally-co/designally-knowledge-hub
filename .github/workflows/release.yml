@@ -1,0 +1,261 @@
+name: Release
+
+# The runbook's GitHub Actions contract, for the Knowledge Hub (the app in cms/).
+#
+#   Every pull request   type check; then the image is built for linux/amd64,
+#                        started against a throwaway Postgres, and checked: its
+#                        /api/health, its English and Thai pages, its sharp,
+#                        and that it refuses MEDIA_STORAGE=r2 without R2.
+#                        Nothing is pushed.
+#   A release-* tag      the same, then the image that passed is pushed to GHCR
+#   (or a manual run     as sha-<full commit> — never latest — and the image,
+#   on main)             digest and commit are written to the run summary.
+#
+# Nothing here deploys. Production changes only when the Portainer stack is
+# pointed at a new IMAGE_TAG (docs/deploy-nas.md). Vercel goes on deploying
+# main by itself, as it always has.
+
+on:
+  pull_request:
+    paths:
+      - 'cms/**'
+      - '.github/workflows/release.yml'
+      - '.github/scripts/check-hub-health.mjs'
+  push:
+    tags: ['release-*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  # Named after the repository. The package is private on GHCR until someone
+  # changes that, whatever the repository's own visibility.
+  IMAGE: ghcr.io/designally-co/designally-knowledge-hub
+  # The commit the image is built from: the branch head on a pull request (not
+  # GitHub's merge commit), the tagged or dispatched commit otherwise.
+  COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+  RELEASE: ${{ startsWith(github.ref, 'refs/tags/release-') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') }}
+  # Cloudflare Web Analytics' site token for hub.designally.co. Public — it is
+  # in the source of every page — and baked in at build time.
+  CF_WEB_ANALYTICS_TOKEN: 575115eee9b845edb3d0fd86d5acb417
+
+jobs:
+  checks:
+    name: Types
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: cms
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: cms/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npx tsc --noEmit
+
+  image:
+    name: Image (linux/amd64)
+    needs: checks
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          # A throwaway database that exists only for this job.
+          POSTGRES_PASSWORD: ci-throwaway
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      LOCAL_TAG: knowledge-hub:ci
+      CI_DATABASE_URI: postgres://postgres:ci-throwaway@127.0.0.1:5432/postgres
+    steps:
+      - uses: actions/checkout@v5
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build
+        uses: docker/build-push-action@v6
+        with:
+          context: cms
+          platforms: linux/amd64
+          build-args: |
+            APP_COMMIT_SHA=${{ env.COMMIT }}
+            NEXT_PUBLIC_CF_WEB_ANALYTICS_TOKEN=${{ env.CF_WEB_ANALYTICS_TOKEN }}
+          tags: ${{ env.LOCAL_TAG }}
+          load: true
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Architecture and health check are baked in
+        run: |
+          platform="$(docker image inspect --format '{{.Os}}/{{.Architecture}}' "$LOCAL_TAG")"
+          echo "platform: $platform"
+          test "$platform" = "linux/amd64"
+          docker image inspect --format '{{json .Config.Healthcheck}}' "$LOCAL_TAG" | grep -q '/api/health'
+
+      - name: No credential-shaped strings in the image history
+        run: |
+          if docker history --no-trunc --format '{{.CreatedBy}}' "$LOCAL_TAG" \
+            | grep -Eq 'sk-ant-|re_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|postgres(ql)?://[^[:space:]]+:[^[:space:]@]+@'; then
+            echo "::error::A credential-shaped string is in the image history."
+            exit 1
+          fi
+
+      # The schema comes from the repository's Payload config, as a fresh
+      # database would get it; production's own changes go through migrations.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: cms/package-lock.json
+      - name: Schema for the throwaway database
+        working-directory: cms
+        run: |
+          npm ci --no-audit --no-fund
+          DATABASE_URI="$CI_DATABASE_URI" PAYLOAD_SECRET=ci-throwaway node --import tsx ./src/scripts/pushSchema.ts
+
+      - name: sharp loads inside the image
+        run: |
+          docker run --rm --entrypoint node "$LOCAL_TAG" -e \
+            "import('sharp').then(({default: s}) => s({create:{width:1,height:1,channels:3,background:'#fff'}}).webp().toBuffer()).then(b => console.log('sharp ok', b.length))"
+
+      - name: The app starts, refreshes its pages and answers /api/health
+        run: |
+          docker run -d --name smoke --network host \
+            -e DATABASE_URI="$CI_DATABASE_URI" \
+            -e PAYLOAD_SECRET=ci-throwaway \
+            "$LOCAL_TAG"
+          for attempt in $(seq 1 45); do
+            if docker logs smoke 2>&1 | grep -q '\[warm\]'; then break; fi
+            sleep 2
+          done
+          curl -s -o health.json http://127.0.0.1:3000/api/health
+          node .github/scripts/check-hub-health.mjs health.json "$COMMIT"
+
+          echo "--- pre-rendered pages"
+          docker logs smoke 2>&1 | grep '\[warm\]'
+          docker logs smoke 2>&1 | grep -Eq '\[warm\] refreshed ([0-9]+) of \1 ' \
+            || { echo "::error::Not every pre-rendered page could be refreshed."; exit 1; }
+          if docker logs smoke 2>&1 | grep -q 'EACCES'; then
+            echo "::error::The server could not write somewhere it needs to (EACCES)."
+            exit 1
+          fi
+
+          echo "--- pages, as Caddy will ask for them"
+          for path in / /about /resources /th /th/about /sitemap.xml /robots.txt; do
+            code="$(curl -s -o /dev/null -w '%{http_code}' \
+              -H 'Host: hub.designally.co' -H 'X-Forwarded-Host: hub.designally.co' -H 'X-Forwarded-Proto: https' \
+              "http://127.0.0.1:3000$path")"
+            echo "$code  $path"
+            test "$code" = 200
+          done
+
+          # A fresh database has no users, so the admin sends you on to make
+          # the first one: a redirect, not a page. Anything but a 5xx will do.
+          code="$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/admin)"
+          echo "$code  /admin"
+          test "$code" -lt 500
+
+          echo "--- Google sign-in returns to the public address"
+          location="$(curl -s -o /dev/null -w '%{redirect_url}' \
+            -H 'Host: hub.designally.co' -H 'X-Forwarded-Host: hub.designally.co' -H 'X-Forwarded-Proto: https' \
+            http://127.0.0.1:3000/auth/google)"
+          echo "$location"
+          case "$location" in https://hub.designally.co/*) ;; *) exit 1 ;; esac
+
+      - name: Server log on failure
+        if: failure()
+        run: docker logs smoke 2>&1 | tail -80 || true
+
+      - name: MEDIA_STORAGE=r2 without R2 is refused, not saved to disk
+        run: |
+          docker rm -f smoke >/dev/null 2>&1 || true
+          docker run -d --name refuse --network host \
+            -e DATABASE_URI="$CI_DATABASE_URI" \
+            -e PAYLOAD_SECRET=ci-throwaway \
+            -e MEDIA_STORAGE=r2 \
+            "$LOCAL_TAG"
+          for attempt in $(seq 1 45); do
+            if docker logs refuse 2>&1 | grep -q '\[warm\]'; then break; fi
+            sleep 2
+          done
+          code="$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3000/api/health)"
+          echo "health: $code"
+          docker logs refuse 2>&1 | grep -m1 -o 'Media storage: R2 is required[^.]*' || true
+          docker rm -f refuse >/dev/null
+          test "$code" != 200
+
+      - name: Keep the tested image for publishing
+        if: env.RELEASE == 'true'
+        run: docker save "$LOCAL_TAG" | gzip > image.tar.gz
+
+      - uses: actions/upload-artifact@v4
+        if: env.RELEASE == 'true'
+        with:
+          name: image
+          path: image.tar.gz
+          retention-days: 7
+
+  publish:
+    # A fixed name: on a pull request this job is skipped, and GitHub then
+    # lists an expression in the name unevaluated.
+    name: Publish to GHCR
+    needs: image
+    if: startsWith(github.ref, 'refs/tags/release-') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: The commit is on main
+        run: |
+          git fetch --quiet origin main
+          if ! git merge-base --is-ancestor "$COMMIT" origin/main; then
+            echo "::error::$COMMIT is not on main. Release only reviewed, merged commits."
+            exit 1
+          fi
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: image
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push the tested image
+        run: |
+          gunzip -c image.tar.gz | docker load
+          docker tag knowledge-hub:ci "$IMAGE:sha-$COMMIT"
+          docker push "$IMAGE:sha-$COMMIT"
+          digest="$(docker image inspect --format '{{index .RepoDigests 0}}' "$IMAGE:sha-$COMMIT")"
+          {
+            echo "### Knowledge Hub release image"
+            echo ""
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Image | \`$IMAGE:sha-$COMMIT\` |"
+            echo "| Digest | \`$digest\` |"
+            echo "| Commit | \`$COMMIT\` |"
+            echo "| Platform | linux/amd64 |"
+            echo ""
+            echo "Portainer: set \`IMAGE_TAG=sha-$COMMIT\`. Any schema migration in this release runs first. Deploying it needs Ake's approval."
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,5 +1,10 @@
 # Deploying the Knowledge Hub to Vercel
 
+> The Hub is moving to the Designally NAS, with Vercel kept as the fallback.
+> The container, its stack and the cutover plan are in
+> [`docs/deploy-nas.md`](../docs/deploy-nas.md). This file still describes the
+> Vercel deployment, which keeps running.
+
 The Hub is a Payload CMS + Next.js app living in **`cms/`** (the repo root is the
 legacy Vite app — it is NOT deployed). Deploying is env-only: no code changes
 between local dev (SQLite + local media) and production (Postgres + R2).

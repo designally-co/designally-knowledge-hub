@@ -31,6 +31,15 @@ import { siteURL } from '@/lib/siteURL'
  * unreachable during a build costs a stale sitemap rather than a failed deploy.
  */
 
+/**
+ * REBUILT HOURLY, NOT ONLY AT A DEPLOY. Without this the sitemap was a static
+ * file made by the build: an article published on Monday was missing from it
+ * until the next deploy, which on Vercel was whenever someone pushed, and on
+ * the NAS — where the image is built in CI with no database at all — would
+ * have been never.
+ */
+export const revalidate = 3600
+
 /** `/x` for Thai, `` for English — and the origin in front of both. */
 const url = (locale: Locale, path: string) => `${siteURL}${localePrefix(locale)}${path}`
 
