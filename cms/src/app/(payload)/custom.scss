@@ -7222,8 +7222,59 @@ $list: '.template-default__wrap > .collection-list';
     display: block;
   }
 
+  /* THE HEADER ROW GOES — EXCEPT ITS TICK-ALL BOX. A grid of pictures has no
+     columns to label, but Articles and Resources tick a whole page from their
+     header row, and without it the library could only be selected one card
+     at a time (or by ticking one and finding "Select all" in the bar). So the
+     row stays, holding only Payload's own select-all, above the first card,
+     with the words its column heading never needed. Desk only: on a phone a
+     list is cleared by swiping a row (RowSelect), as everywhere else. */
   .table thead {
+    display: block;
+    margin-block-end: 12px;
+  }
+
+  .table thead tr {
+    display: flex;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  .table thead th {
     display: none;
+  }
+
+  .table thead th#heading-_select {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    inline-size: auto;
+    padding: 0;
+    border: 0;
+    background: none;
+
+    /* On the plate the cards' own boxes ride on (`td.cell-_select` below).
+       Bare, its #f0f0f0 edge sat on the parchment ground with nothing to
+       separate it — on Articles it has the white table under it, here it has
+       the page. */
+    > .checkbox-input {
+      padding: 4px;
+      border: 1px solid var(--da-hairline);
+      border-radius: 8px;
+      background-color: #ffffff;
+    }
+
+    /* Words beside the box, which a column heading never had to say. Not part
+       of the control; A11yNames gives the box the same words as its name. */
+    &::after {
+      content: 'Select all on this page';
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--da-ink-3);
+      pointer-events: none;
+    }
   }
 
   .table tbody {
@@ -7337,7 +7388,11 @@ $list: '.template-default__wrap > .collection-list';
     position: absolute;
     inset-block-start: 8px;
     inset-inline-start: 8px;
-    z-index: 1;
+    /* 2, NOT 1. Payload gives every cell `z-index: 1` (`.table td`), and the
+       picture's cell comes after this one, so at 1 the picture painted over
+       the checkbox: it was there, and nobody could see or press it, which made
+       the library delete-one-at-a-time. */
+    z-index: 2;
     /* Out of flow, so it has no column to take its width from. */
     inline-size: 32px;
     padding: 4px;
@@ -7352,6 +7407,10 @@ $list: '.template-default__wrap > .collection-list';
      simply get narrower. The checkbox stays gone, as it is on every list at this
      width: a phone deletes by swiping a card, not by selecting several. */
   @media (max-width: 48rem) {
+    .table thead {
+      display: none;
+    }
+
     .table tbody {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 12px;

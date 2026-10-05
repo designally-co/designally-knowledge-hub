@@ -25,7 +25,6 @@
 .da-usage__opt {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
   block-size: 30px;
   padding: 0 12px;
   border: 0;
@@ -60,13 +59,6 @@
 .da-usage__opt:focus-visible {
   outline: 2px solid var(--da-focus);
   outline-offset: 2px;
-}
-
-/* How many, in the metadata grey — a fact about the button, not its name. */
-.da-usage__count {
-  font-weight: 500;
-  color: var(--da-ink-3);
-  font-variant-numeric: tabular-nums;
 }
 
 /*
