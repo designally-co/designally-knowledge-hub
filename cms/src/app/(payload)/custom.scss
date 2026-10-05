@@ -6539,6 +6539,33 @@ $list: '.template-default__wrap > .collection-list';
   #{$list} .collection-list__tables {
     margin-block-start: 40px;
   }
+
+  /*
+   * AN EMPTY LIST STANDS WHERE THE TABLE WOULD HAVE — 40 below the line, as
+   * the table does — and fills the page down to its foot, with the message in
+   * the middle of it. It used to sit 4px under the controls at the height of
+   * its own three lines, so "Nothing to show" read as a strip stuck to the
+   * header with the rest of the page blank below it. Every list shares this:
+   * an empty search, an empty "Unused", a collection with nothing in it yet.
+   *
+   * 210 is what is above and below it on a desk: the heading block ends at
+   * about 130, the 40 under it, and the page's 40 at the foot. A floor keeps
+   * a short window from squeezing the message.
+   */
+  #{$list} .no-results {
+    margin-block-start: 40px;
+    min-block-size: max(20rem, calc(100dvh - 210px));
+    align-content: center;
+  }
+}
+
+/* An empty list keeps no room at its foot. The list holds 96 there on a desk
+   (and 96 + 80 on a phone) so the last rows can scroll clear of the selection
+   bar and the floating Create; with no rows there is nothing to clear, and
+   the room only made the empty page scroll by that much. */
+#{$list}:has(.no-results) {
+  padding-block-end: 0;
+  margin-block-end: 0;
 }
 
 /* DESK ONLY. Below the rail the title is the bar's 16px name (the page header
@@ -7662,6 +7689,16 @@ $list: '.template-default__wrap > .collection-list';
   /* The controls row takes the ground's gutter; the cards start 16 under it. */
   #{$list} .collection-list__tables {
     margin-block-start: 16px;
+  }
+
+  /* The empty list on a phone, on the same terms as the desk's: 16 under the
+     bar where the cards would start, down to clear of the floating Upload,
+     the message centred. 185 is the bar's 73, the 16, and the 96 the floating
+     button and its gutter hold at the foot. */
+  #{$list} .no-results {
+    margin-block-start: 16px;
+    min-block-size: max(18rem, calc(100dvh - 185px));
+    align-content: center;
   }
 
   /* One line under the cards: the count and the two discs. The per-page choice
