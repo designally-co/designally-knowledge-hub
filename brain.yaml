@@ -1,7 +1,4 @@
-# yaml-language-server: $schema=../../schema/brain.schema.json
-# Spec: designally-brain/docs/brain-yaml.md
-# Draft kept in designally-brain until it is copied to the root of
-# designally-co/designally-knowledge-hub.
+# Spec: https://github.com/designally-co/designally-brain/blob/main/docs/brain-yaml.md
 
 format_version: 1
 slug: knowledge-hub
@@ -169,4 +166,4 @@ generated:
   by: ai
   at: "2026-10-07"
   from_commit: 2f44b75
-  checked_by:
+  checked_by: DigiGang
