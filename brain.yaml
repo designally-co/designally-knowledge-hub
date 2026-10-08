@@ -116,13 +116,13 @@ tables:
     sensitive: false
   - name: subscribers
     description: Newsletter list with consent status.
-    sensitive: true
+    sensitive: false
   - name: users
     description: CMS accounts, including API keys for Article Studio.
-    sensitive: true
+    sensitive: false
   - name: users_sessions
     description: CMS login sessions.
-    sensitive: true
+    sensitive: false
   - name: payload_preferences
     description: Payload internal. Admin screen preferences per user.
     sensitive: false
