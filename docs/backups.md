@@ -104,8 +104,9 @@ aws s3 cp s3://designally-db-backups/daily/hub/2026-09-25.dump . --endpoint-url 
 pg_restore --no-owner --no-privileges --dbname="<target database URL>" 2026-09-25.dump
 ```
 
-The Hub dump holds only the `public` schema: Payload's tables, its migration
-history and its users. Supabase's own schemas are not included. Media files
+The Hub dump holds only the `hub` schema (it was `public` until 2026-10-12, when
+the tables moved: `docs/deploy-nas.md` §5a): Payload's tables, its enum types,
+its migration history and its users. Supabase's own schemas are not included. Media files
 are not in any dump. They live in R2 under `hub/`.
 
 ## Not covered

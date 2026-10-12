@@ -165,6 +165,13 @@ fails with `relation "articles" does not exist`.
 7. The nightly backup's matrix: `dump_schema: hub`, `check_table: hub.articles`
    (`docs/backups.md`). Merge it the same day.
 
+**Done on 2026-10-12** (approved by P Aek, Buk 2026-10-12): the night's backup
+was green; a run of the same statements on the real data that undid itself
+moved 19 tables, 9 enum types, 40 constraints, 81 indexes and 16 sequences;
+then the file ran through the Supabase connector (19 tables and 9 enums in
+`hub`, 0 tables in `public`, row security on 19), the stack got
+`DB_SCHEMA: hub`, and `/api/health` and the site worked (Buk).
+
 **Going back:** run the same statements the other way (`alter table hub.x set
 schema public`, `alter type hub.x set schema public`), then empty `DB_SCHEMA`.
 
