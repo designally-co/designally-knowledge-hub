@@ -101,6 +101,7 @@ Portainer as stack variables.
 | `RESEND_API_KEY`, `NEWSLETTER_FROM` | As Vercel. `NEWSLETTER_TEST_TO` stays empty |
 | `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL` | As Vercel |
 | `MEDIA_FETCH_HOSTS` | Optional, as Vercel if it is set there |
+| `DB_SCHEMA` | `hub` once the tables are in the schema `hub` (§5a); empty before. Vercel needs the same value |
 
 Set in the compose file itself, not secret: `SITE_URL`,
 `PAYLOAD_PUBLIC_SERVER_URL` and `FRONTEND_URL` (all `https://hub.designally.co`),
@@ -118,7 +119,11 @@ new value.
 Nothing changes here. Schema changes go through Payload migrations, run from a
 laptop against production **before** the code that needs them is deployed
 anywhere (`VERCEL=0`, `y` on stdin; see the Hub's migration notes). The image
-never migrates.
+never migrates. The laptop needs the same `DB_SCHEMA` as the stack (§5a):
+with `DB_SCHEMA=hub`, Payload reads its history from `hub.payload_migrations`,
+and `payload migrate:create` writes new migrations for the schema `hub`. The
+migrations written before the move name `public` in their SQL; they have all
+run, so they never run again.
 
 What is new is that two deployments read one database. Vercel deploys `main`
 the moment it is pushed, and the NAS runs whatever release tag Portainer is
@@ -126,6 +131,42 @@ on. So "before the code deploys" now means before the merge to `main` *and*
 before the release tag reaches the NAS.
 
 ---
+
+## 5a. Moving the tables into the schema `hub`
+
+All Supabase projects are being combined into Project Friday, the company's one
+project, where other apps' tables already sit (`decisions/tables-in-schema-hub.md`).
+Each app moves in its own schema, in three phases: code, then the tables move
+inside the Hub's own project, then the schema is copied into Friday.
+
+The code needs nothing new: `payload.config.ts` has always read `DB_SCHEMA`
+(Payload's `schemaName`), and the compose file now passes it to the container.
+Payload then looks for its tables **and its enum types** in that schema, so both
+must move together, and the setting must change at the same moment: tested
+locally on 2026-10-12, Payload with `DB_SCHEMA=hub` reads, writes (an enum
+value included) and sees all 9 migrations as run, and without it every read
+fails with `relation "articles" does not exist`.
+
+**Ake approves** the run against production. Then, at a quiet time:
+
+1. Make sure last night's backup is there (`docs/backups.md`).
+2. Vercel (the fallback, §9): add `DB_SCHEMA=hub` to its Production
+   environment. It takes effect on the next deploy (step 6), not now.
+3. Run [`cms/deploy/move-to-schema-hub.sql`](../cms/deploy/move-to-schema-hub.sql)
+   once, in one transaction (the SQL Editor, or the Supabase connector after a
+   run on the real data that undoes itself). It refuses to run twice, and
+   stops if anything would stay in `public`. Expect 19 tables and 9 enum types
+   in `hub`, 0 tables in `public`, row security on 19.
+   From here until step 4, the site's uncached pages fail.
+4. Portainer: set the stack variable `DB_SCHEMA` to `hub` and update the stack
+   (`IMAGE_TAG` unchanged; the compose file must be the one with `DB_SCHEMA`).
+5. `/api/health`, the home page, an article, the admin login.
+6. Redeploy the latest Production deployment on Vercel, so it picks up step 2.
+7. The nightly backup's matrix: `dump_schema: hub`, `check_table: hub.articles`
+   (`docs/backups.md`). Merge it the same day.
+
+**Going back:** run the same statements the other way (`alter table hub.x set
+schema public`, `alter type hub.x set schema public`), then empty `DB_SCHEMA`.
 
 ## 6. Things that do not change
 
