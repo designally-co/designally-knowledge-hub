@@ -32,6 +32,9 @@ services:
       # The Supabase SESSION pooler (port 5432), not the transaction pooler
       # Vercel uses (6543): this server stays up and keeps its connections.
       DATABASE_URI: ${DATABASE_URI:?}
+      # The Postgres schema that holds the Hub's tables: `hub` once they have moved
+      # there (docs/deploy-nas.md §5a), empty before (Payload then uses `public`).
+      DB_SCHEMA: ${DB_SCHEMA:-}
       # Copied exactly from Vercel. A new value signs everyone out and breaks
       # every unsubscribe and confirm link already sent by email.
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:?}
