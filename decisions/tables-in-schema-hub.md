@@ -21,4 +21,4 @@ The Hub's tables and enum types live in the schema `hub`. The code already suppo
 
 ## Why
 
-One schema per app keeps the names apart inside the one shared project (`users`, for one, is also Article Studio's), and lets the Hub connect as a database user that can reach `hub` and nothing else. Today it connects as `postgres`, which inside Friday could read payroll. Moving the tables in the Hub's own project first proves the change against the real data before the data changes project.
+One schema per app keeps the names apart inside the one shared project (`users`, for one, is also Article Studio's), and lets the Hub connect as a database user that can reach `hub` and nothing else. Before the move it connected as `postgres`, which inside Friday could have read payroll. The copy into Friday was done on 2026-10-12, after a rehearsal into a throwaway database, with every table compared afterwards; the Hub now connects as `hub_app`. Moving the tables in the Hub's own project first proved the change against the real data before the data changed project.
