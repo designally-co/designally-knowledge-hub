@@ -85,60 +85,79 @@ features:
 
 tables:
   - name: articles
+    schema: hub
     description: Articles (language-neutral fields).
     sensitive: false
   - name: articles_locales
+    schema: hub
     description: Article fields per language (en, th).
     sensitive: false
   - name: articles_references
+    schema: hub
     description: Reference links listed under an article.
     sensitive: false
   - name: articles_rels
+    schema: hub
     description: Links from an article to related articles.
     sensitive: false
   - name: resources
+    schema: hub
     description: Downloadable resources (language-neutral fields).
     sensitive: false
   - name: resources_locales
+    schema: hub
     description: Resource fields per language (en, th).
     sensitive: false
   - name: resources_files
+    schema: hub
     description: Files attached to a resource, with their format.
     sensitive: false
   - name: resource_categories
+    schema: hub
     description: Categories that group resources.
     sensitive: false
   - name: media
+    schema: hub
     description: Uploaded file records (the files themselves are in R2).
     sensitive: false
   - name: settings
+    schema: hub
     description: Site settings, such as the Claude model used for Thai translation.
     sensitive: false
   - name: subscribers
+    schema: hub
     description: Newsletter list with consent status.
     sensitive: false
   - name: users
+    schema: hub
     description: CMS accounts, including API keys for Article Studio.
     sensitive: false
   - name: users_sessions
+    schema: hub
     description: CMS login sessions.
     sensitive: false
   - name: payload_preferences
+    schema: hub
     description: Payload internal. Admin screen preferences per user.
     sensitive: false
   - name: payload_preferences_rels
+    schema: hub
     description: Payload internal. Links preferences to users.
     sensitive: false
   - name: payload_locked_documents
+    schema: hub
     description: Payload internal. Stops two people editing one document at once.
     sensitive: false
   - name: payload_locked_documents_rels
+    schema: hub
     description: Payload internal. Links locks to documents and users.
     sensitive: false
   - name: payload_kv
+    schema: hub
     description: Payload internal key-value store.
     sensitive: false
   - name: payload_migrations
+    schema: hub
     description: Payload internal. Which database migrations have run.
     sensitive: false
 

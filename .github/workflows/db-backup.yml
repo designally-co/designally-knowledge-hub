@@ -36,8 +36,10 @@ jobs:
           # the connection the live Hub gets next.
           - db: hub
             secret: HUB_BACKUP_DATABASE_URL
-            dump_schema: public
-            check_table: articles
+            # The Hub's tables moved to the schema hub on 2026-10-12
+            # (docs/deploy-nas.md §5a).
+            dump_schema: hub
+            check_table: hub.articles
           # Survey: Neon. The secret is the DIRECT endpoint (no `-pooler` in
           # the hostname), for the same reason.
           - db: survey
