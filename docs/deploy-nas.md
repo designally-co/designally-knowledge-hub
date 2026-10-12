@@ -172,6 +172,18 @@ then the file ran through the Supabase connector (19 tables and 9 enums in
 `hub`, 0 tables in `public`, row security on 19), the stack got
 `DB_SCHEMA: hub`, and `/api/health` and the site worked (Buk).
 
+**Moved into Project Friday on 2026-10-12** (approved by P Aek, Buk
+2026-10-12), with the designally-brain workflow "App move"
+(`docs/app-moves.md` there): a rehearsal, then, with the stack stopped, one
+copy in one transaction with every table compared. The stack's
+`DATABASE_URI` is now Friday's session pooler string for the user
+`hub_app`, which owns `hub` and can read nothing outside it; `/api/health`
+showed the database ok with the articles counted. A migration run uses that
+string too, with `DB_SCHEMA=hub`. Vercel's `DATABASE_URI` is Friday's
+transaction pooler string for `hub_app`. The old project
+(`mqhrcjvaufdlmqgrbldx`) is kept, unused, for about a week as the way
+back, then deleted.
+
 **Going back:** run the same statements the other way (`alter table hub.x set
 schema public`, `alter type hub.x set schema public`), then empty `DB_SCHEMA`.
 
