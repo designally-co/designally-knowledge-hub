@@ -43,7 +43,10 @@ jobs:
           - db: survey
             secret: SURVEY_BACKUP_DATABASE_URL
             dump_schema: ''
-            check_table: surveys
+            # Schema-qualified: the survey's tables are in the schema survey
+            # since 2026-10-14 (survey repo, decisions/tables-in-schema-survey.md),
+            # and the scratch Postgres looks in public for a bare name.
+            check_table: survey.surveys
 
     services:
       # A scratch Postgres to restore into, so every backup is proven to
