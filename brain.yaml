@@ -79,9 +79,10 @@ features:
     description: Cloudflare Web Analytics, cookieless, on only when its token is set.
   - name: Nightly database backup
     description: >
-      A GitHub Actions job dumps the database to a private R2 bucket every
-      night at 02:00 Bangkok time. The same job also backs up the Survey app's
-      database.
+      The Hub's database (schema hub in Project Friday) is in Friday's nightly
+      encrypted backup to a private R2 bucket, with a restore check every
+      night (designally-brain). This repo's own nightly job now backs up only
+      the Survey app's database.
 
 tables:
   - name: articles

@@ -30,18 +30,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # The Hub: Supabase. The secret is the SESSION pooler (port 5432).
-          # Never the transaction pooler (6543): pg_dump opens with session
-          # SETs (search_path = '' among them), and on 6543 those leak onto
-          # the connection the live Hub gets next.
-          - db: hub
-            secret: HUB_BACKUP_DATABASE_URL
-            # The Hub's tables moved to the schema hub on 2026-10-12
-            # (docs/deploy-nas.md §5a).
-            dump_schema: hub
-            check_table: hub.articles
+          # The Hub is not here any more: its database moved into Project
+          # Friday on 2026-10-12, and Friday's own nightly backup (encrypted,
+          # restore proven nightly; designally-brain, docs/backups.md) covers
+          # its schema hub. Removed 2026-10-14, before the Hub's old project
+          # is deleted (docs/backups.md here).
+          #
           # Survey: Neon. The secret is the DIRECT endpoint (no `-pooler` in
-          # the hostname), for the same reason.
+          # the hostname). Never a pooler that keeps sessions for others:
+          # pg_dump opens with session SETs (search_path = '' among them), and
+          # they would leak onto the connection the live app gets next.
           - db: survey
             secret: SURVEY_BACKUP_DATABASE_URL
             dump_schema: ''

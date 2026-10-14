@@ -182,7 +182,8 @@ showed the database ok with the articles counted. A migration run uses that
 string too, with `DB_SCHEMA=hub`. Vercel's `DATABASE_URI` is Friday's
 transaction pooler string for `hub_app`. The old project
 (`mqhrcjvaufdlmqgrbldx`) is kept, unused, for about a week as the way
-back, then deleted.
+back, then deleted. Its nightly backup is now Friday's (designally-brain);
+the Hub entry in `db-backup.yml` was removed on 2026-10-14 (`docs/backups.md`).
 
 **Going back:** run the same statements the other way (`alter table hub.x set
 schema public`, `alter type hub.x set schema public`), then empty `DB_SCHEMA`.
