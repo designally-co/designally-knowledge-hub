@@ -1,12 +1,21 @@
 # Database backups
 
-Every night at 02:00 Bangkok time, GitHub Actions backs up two databases to a
-private Cloudflare R2 bucket:
+Every night at 02:00 Bangkok time, GitHub Actions backs up the Survey
+platform's database to a private Cloudflare R2 bucket:
 
 | Database | Where it lives | Secret |
 |---|---|---|
-| `hub`: the Knowledge Hub | Supabase | `HUB_BACKUP_DATABASE_URL` |
 | `survey`: the Survey platform | Neon | `SURVEY_BACKUP_DATABASE_URL` |
+
+**The Hub's database is no longer backed up here.** It moved into Project
+Friday on 2026-10-12 (`docs/deploy-nas.md` §5a), and Friday's own nightly
+backup covers its schema `hub`: every non-Supabase schema, encrypted with the
+key holder's public key, restore proven every night (designally-brain repo,
+workflow "Friday backup", `docs/backups.md` there). The Hub entry was removed
+here on 2026-10-14, before the Hub's old project is deleted, so that this
+job does not fail every night. The Hub's last dumps made here stay in the
+bucket until the lifecycle rules remove them (`daily/hub/` after 30 days,
+`monthly/hub/` after a year); the restore steps below still apply to them.
 
 Each run dumps the database, uploads the dump, then **restores it into a
 scratch Postgres** and checks a key table came back with rows. A green run
@@ -58,7 +67,7 @@ password percent-encoded) and pipes it straight in, so the password is never
 shown:
 
 ```bash
-python3 .github/scripts/backup-db-url.py hub cms/.env.production.local | gh secret set HUB_BACKUP_DATABASE_URL
+# (until 2026-10-14) python3 .github/scripts/backup-db-url.py hub cms/.env.production.local | gh secret set HUB_BACKUP_DATABASE_URL
 ```
 
 ```bash
@@ -111,7 +120,7 @@ are not in any dump. They live in R2 under `hub/`.
 
 ## Not covered
 
-- **Article Studio's database.** It is in the Designally Supabase org on the
-  Pro plan, which keeps its own daily backups. To add it here anyway, add a
-  matrix entry and a secret the same way.
+- **Article Studio's database** and **the Hub's**: both are in Project Friday
+  since 2026-10-12, so Friday's encrypted nightly backup covers them
+  (designally-brain). Not here.
 - **Media files.** R2 already stores them; there is no second copy.
