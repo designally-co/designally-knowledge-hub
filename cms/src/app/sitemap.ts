@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 
-import { LOCALES, DEFAULT_LOCALE, localePrefix, type Locale } from '@/lib/i18n'
+import { PUBLIC_LOCALES, DEFAULT_LOCALE, localePrefix, type Locale } from '@/lib/i18n'
 import { getAllArticleSlugs, getAllResourceSlugs } from '@/lib/resources'
 /* The SAME lists and the SAME slug helpers the two routes build themselves
    from — `generateStaticParams` on each page maps over exactly these. A
@@ -21,7 +21,8 @@ import { siteURL } from '@/lib/siteURL'
  * served unprefixed. Listing them as `alternates.languages` on one entry is
  * what tells a crawler they are the same page in two languages rather than two
  * pages competing for the same words — the difference between ranking and
- * splitting your own traffic.
+ * splitting your own traffic. Only the languages in PUBLIC_LOCALES are
+ * listed: while Thai is not ready (14 October 2026) the map is English only.
  *
  * DRAFTS ARE ABSENT because the slug helpers only return published rows, which
  * is also what the pages themselves serve.
@@ -55,7 +56,7 @@ const entry = (
   priority,
   ...(lastModified ? { lastModified } : {}),
   alternates: {
-    languages: Object.fromEntries(LOCALES.map((locale) => [locale, url(locale, path)])),
+    languages: Object.fromEntries(PUBLIC_LOCALES.map((locale) => [locale, url(locale, path)])),
   },
 })
 

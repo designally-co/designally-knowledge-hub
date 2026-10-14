@@ -12,6 +12,21 @@ export const LOCALES = ['en', 'th'] as const
 export type Locale = (typeof LOCALES)[number]
 export const DEFAULT_LOCALE: Locale = 'en'
 
+/*
+ * THE LANGUAGES VISITORS ARE OFFERED. English only, from 14 October 2026: the
+ * Hub went live before the Thai copy was ready, and P Aek asked for the
+ * language switch to be hidden and the English site released (Buk,
+ * 2026-10-14). Thai pages still render under `/th`, so the team can read the
+ * copy as it is written, but nothing links to them, the sitemap leaves them
+ * out, and each one tells a crawler not to index it. Put 'th' back in this
+ * list when the Thai copy is ready; nothing else needs to change.
+ */
+export const PUBLIC_LOCALES: readonly Locale[] = ['en']
+
+export function isPublicLocale(locale: Locale): boolean {
+  return PUBLIC_LOCALES.includes(locale)
+}
+
 export function isLocale(value: unknown): value is Locale {
   return typeof value === 'string' && (LOCALES as readonly string[]).includes(value)
 }

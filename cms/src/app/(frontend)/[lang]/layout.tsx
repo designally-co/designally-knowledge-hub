@@ -5,7 +5,7 @@ import { Athiti, Geist, IBM_Plex_Sans_Thai, Ovo } from 'next/font/google'
 import '@/styles/index.css'
 import { SiteHeader } from '@/components/SiteHeader'
 import { SiteFooter } from '@/components/SiteFooter'
-import { LOCALES, getDictionary, isLocale, type Locale } from '@/lib/i18n'
+import { LOCALES, getDictionary, isLocale, isPublicLocale, type Locale } from '@/lib/i18n'
 /* The origin moved to its own module: the sitemap and robots.txt need the same
    answer this layout does. See lib/siteURL. */
 import { siteURL } from '@/lib/siteURL'
@@ -34,7 +34,7 @@ const DESCRIPTION =
  * both languages: it carries the brand rather than a sentence, so there is
  * nothing on it to translate.
  */
-export const metadata = {
+const metadata = {
   metadataBase: new URL(siteURL),
   title: 'Designally Knowledge Hub',
   description: DESCRIPTION,
@@ -51,6 +51,21 @@ export const metadata = {
     description: DESCRIPTION,
     images: ['/og.png'],
   },
+}
+
+/*
+ * A LANGUAGE NOT YET OFFERED IS NOT INDEXED. While Thai is out of
+ * PUBLIC_LOCALES its pages still render, for the team to read, but a crawler
+ * that finds one is told to leave it out of search: half-ready copy on Google
+ * would be the first thing a Thai reader saw. A page that sets its own
+ * `robots` (search, the design system) already says noindex.
+ */
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }) {
+  const { lang } = await params
+  if (isLocale(lang) && !isPublicLocale(lang)) {
+    return { ...metadata, robots: { index: false, follow: false } }
+  }
+  return metadata
 }
 
 /*
