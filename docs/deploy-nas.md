@@ -27,7 +27,7 @@ file, the compose file, a pull request, a ticket or a chat.
 | Newsletter | Resend, sent when an article is published | Unchanged |
 | Analytics | Cloudflare Web Analytics | Unchanged; the token is baked into the image |
 | Scheduler | none | none. The Hub has no cron |
-| Backups | nightly `pg_dump` to R2 (`docs/backups.md`) | Unchanged. Vercel is a standby app, not a backup |
+| Backups | nightly `pg_dump` to R2 (`docs/backups.md`) | Project Friday's encrypted nightly backup since 2026-10-14 (designally-brain). Vercel is a standby app, not a backup |
 
 ---
 
