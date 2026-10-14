@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import { Icon } from './ds'
-import { LOCALES, getDictionary, switchLocalePath, type Locale } from '@/lib/i18n'
+import { PUBLIC_LOCALES, getDictionary, switchLocalePath, type Locale } from '@/lib/i18n'
 
 /*
  * Language switcher — the current locale and a caret, opening a small menu of
@@ -74,6 +74,10 @@ export function LocaleSwitcher({
     }
   }, [open])
 
+  /* One language on offer is nothing to switch between, so the switcher draws
+     nothing at all, in all three places. See PUBLIC_LOCALES. */
+  if (PUBLIC_LOCALES.length < 2) return null
+
   const classes = [
     'locale-switcher',
     placement === 'up' ? 'locale-switcher--up' : '',
@@ -118,7 +122,7 @@ export function LocaleSwitcher({
           id={menuId}
           ref={menuRef}
         >
-          {LOCALES.map((l) => (
+          {PUBLIC_LOCALES.map((l) => (
             <li key={l}>
               <Link
                 className={`locale-switcher__option${l === locale ? ' is-active' : ''}`}
