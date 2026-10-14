@@ -1,102 +1,30 @@
 # Database backups
 
-Every night at 02:00 Bangkok time, GitHub Actions backs up the Survey
-platform's database to a private Cloudflare R2 bucket:
+**This repo no longer backs up any database (since 2026-10-14).** Both
+databases it used to back up live in Project Friday now: the Hub's (schema
+`hub`, since 2026-10-12) and the Survey app's (schema `survey`, since
+2026-10-14). Friday's own nightly backup covers them: every non-Supabase
+schema, encrypted with the key holder's public key, restore proven every
+night (designally-brain repo, workflow "Friday backup", `docs/backups.md`
+there). The job that ran here (`db-backup.yml`, with `db-backup.sh` and
+`backup-db-url.py`) was removed on 2026-10-14; why is in
+`decisions/database-backup-by-project-friday.md`.
 
-| Database | Where it lives | Secret |
-|---|---|---|
-| `survey`: the Survey platform | Neon | `SURVEY_BACKUP_DATABASE_URL` |
+## What is still in the bucket
 
-**The Hub's database is no longer backed up here.** It moved into Project
-Friday on 2026-10-12 (`docs/deploy-nas.md` §5a), and Friday's own nightly
-backup covers its schema `hub`: every non-Supabase schema, encrypted with the
-key holder's public key, restore proven every night (designally-brain repo,
-workflow "Friday backup", `docs/backups.md` there). The Hub entry was removed
-here on 2026-10-14, before the Hub's old project is deleted, so that this
-job does not fail every night. The Hub's last dumps made here stay in the
-bucket until the lifecycle rules remove them (`daily/hub/` after 30 days,
-`monthly/hub/` after a year); the restore steps below still apply to them.
-
-Each run dumps the database, uploads the dump, then **restores it into a
-scratch Postgres** and checks a key table came back with rows. A green run
-means the backup is proven to restore, not just that it exists.
-
-- Workflow: `.github/workflows/db-backup.yml`
-- Script: `.github/scripts/db-backup.sh`
-
-## What is kept
+The last dumps this job made stay in the private R2 bucket
+`designally-db-backups` until its lifecycle rules delete them:
 
 ```
-daily/hub/2026-09-25.dump     one per night, kept 30 days
-monthly/hub/2026-09.dump      the 1st of each month, kept 1 year
+daily/hub/       daily/survey/       one per night, deleted 30 days after upload
+monthly/hub/     monthly/survey/     the 1st of each month, deleted after a year
 ```
 
-R2 lifecycle rules delete old files, not the workflow. Files are `pg_dump`
-custom format (compressed).
-
-## One-time setup
-
-### 1. Cloudflare: bucket and token
-
-1. **R2 → Create bucket** named `designally-db-backups`. Do **not** connect a
-   custom domain or turn on public access. These files hold user accounts
-   and subscriber emails. They must never be in the media bucket, which
-   `img.designally.co` serves to the public.
-2. In the bucket, go to **Settings → Object lifecycle rules** and add two rules:
-   - prefix `daily/`: delete objects 30 days after upload
-   - prefix `monthly/`: delete objects 365 days after upload
-3. **R2 → Manage API tokens → Create token**: "Object Read & Write", applied
-   to **that bucket only**. Keep the Access Key ID and Secret Access Key.
-
-### 2. GitHub: secrets
-
-Repo **Settings → Secrets and variables → Actions → New repository secret**:
-
-| Secret | Value |
-|---|---|
-| `R2_BACKUP_ACCOUNT_ID` | Cloudflare account ID (R2 overview page) |
-| `R2_BACKUP_BUCKET` | `designally-db-backups` |
-| `R2_BACKUP_ACCESS_KEY_ID` | from step 1.3 |
-| `R2_BACKUP_SECRET_ACCESS_KEY` | from step 1.3 |
-
-The two database secrets are **not** the apps' own connection strings. Both
-apps connect through a transaction pooler. pg_dump there would leak its
-session settings onto the connection a live app gets next. The helper
-rewrites each one (Supabase session pooler on :5432, Neon's direct endpoint,
-password percent-encoded) and pipes it straight in, so the password is never
-shown:
-
-```bash
-# (until 2026-10-14) python3 .github/scripts/backup-db-url.py hub cms/.env.production.local | gh secret set HUB_BACKUP_DATABASE_URL
-```
-
-```bash
-python3 .github/scripts/backup-db-url.py survey ../designally-platform/.env.vercel | gh secret set SURVEY_BACKUP_DATABASE_URL
-```
-
-For Survey, first check that `.env.vercel` still points at the database the
-NAS uses. The `DATABASE_URL` in the Portainer `survey` stack is the source of
-truth.
-
-### 3. First run
-
-**Actions → Database backup → Run workflow**, tick "Also write this run to
-monthly/", run. Both jobs should go green, and the bucket should hold
-`daily/` and `monthly/` files for each database.
-
-## When it fails
-
-- GitHub emails a failed scheduled run to whoever last changed the workflow's
-  schedule. Each database is its own job, so one failing never stops the
-  other.
-- **The restore check failed but the upload passed:** the night's dump is
-  already in R2. The failure means it could not be proven to restore. Look at
-  the "Prove it restores" log before trusting that file.
-- **Hub dump fails with a connection error:** the Supabase project may be
-  paused, or its password was reset. Re-run the helper above after any
-  password change.
-- **The repo is public:** GitHub switches off scheduled workflows after 60 days
-  without a commit and emails a warning first. Re-enable it on the Actions tab.
+They are `pg_dump` custom format, **not encrypted**, and hold user accounts,
+subscriber e-mails and survey answers. The Hub's dumps from before
+2026-10-12 hold the `public` schema; later ones hold `hub`. The Survey's hold
+the whole Neon database, its tables in `public` (the last one was made the
+night before they moved to `survey`).
 
 ## Restoring
 
@@ -120,7 +48,4 @@ are not in any dump. They live in R2 under `hub/`.
 
 ## Not covered
 
-- **Article Studio's database** and **the Hub's**: both are in Project Friday
-  since 2026-10-12, so Friday's encrypted nightly backup covers them
-  (designally-brain). Not here.
-- **Media files.** R2 already stores them; there is no second copy.
+- **Media files.** R2 already stores them under `hub/`; there is no second copy.
