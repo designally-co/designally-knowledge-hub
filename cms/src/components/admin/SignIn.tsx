@@ -2,6 +2,7 @@
 
 import React from 'react'
 
+import { Wordmark } from '../Wordmark'
 import './SignIn.css'
 
 /**
@@ -9,8 +10,8 @@ import './SignIn.css'
  *
  * PORTED FROM Content Studio `src/app/login/page.tsx`, which retired the
  * platform's Cut-and-Point composition for one made of what every other screen
- * is made of: one white plate on the ground, the flat mark, an eyebrow, a
- * heading in the display face, a deck, and the primary button. The Hub carried
+ * is made of: one white plate on the ground, the wordmark, a heading in the
+ * display face, a deck, and the primary button. The Hub carried
  * the retired one; two products behind one Google Workspace login should not
  * have two different front doors.
  *
@@ -54,16 +55,10 @@ export const SignIn: React.FC = () => {
        corner — at the width of a form. No shadow: elevation here is
        structural, and the hairline is what says "object" on this ground. */
     <section aria-labelledby="signin-title" className="da-signin">
-      {/* The flat mark, the one the side nav carries: the D in ink, the full
-          stop in the accent. */}
-      <span aria-label="Designally" className="da-signin__mark" role="img">
-        <i className="da-signin__mark-d" />
-        <i className="da-signin__mark-dot" />
-      </span>
-
-      {/* Eyebrow, heading, deck — the side nav's lockup and every page heading
-          are built from these same lines. */}
-      <p className="da-signin__eyebrow">Designally</p>
+      {/* The wordmark, then heading and deck — the side nav's lockup carries
+          the same word over the same name. It takes the place of the D. and
+          the "Designally" eyebrow together: the word says both. */}
+      <Wordmark className="da-signin__wordmark" />
       <h1 className="da-signin__title" id="signin-title">
         Knowledge Hub
       </h1>

@@ -2,8 +2,8 @@
    Sign-in — Article Studio's door, ported
 
    The same screen as Content Studio's `/login`: one white plate on the ground,
-   the flat mark, an eyebrow, a heading in the display face, a deck, the primary
-   button and one line about who can come in. Every value below is the studio's
+   the wordmark, a heading in the display face, a deck, the primary button
+   and one line about who can come in. Every value below is the studio's
    own, read off its tokens — the `--da-*` variables here carry the same hexes.
 
    PIXELS, NOT REMS. Studio's Tailwind sizes are rems on a 16px root; Payload
@@ -87,53 +87,23 @@
   font-family: var(--font-body);
 }
 
-/* ---- the flat mark ------------------------------------------------------- */
+/* ---- the wordmark -------------------------------------------------------- */
 
-/* Studio's `FlatMark` at 36px. `designally-mark.png` is a white D. on
-   transparency, so it cannot simply be recoloured — but it splits: the drawing
-   holds two runs of ink with a gap between them at 73.79% of the width. Two
-   layers masked by the same file and clipped either side of that gap give each
-   its own colour. */
-.da-signin__mark {
-  position: relative;
+/* The D.'s two colours: charcoal letters, the stop in the mark's orange. */
+.da-signin__wordmark {
   display: block;
-  inline-size: 36px;
-  aspect-ratio: 290 / 256;
-}
-
-.da-signin__mark i {
-  position: absolute;
-  inset: 0;
-  -webkit-mask: url('/designally-mark.png') no-repeat center / contain;
-  mask: url('/designally-mark.png') no-repeat center / contain;
-}
-
-.da-signin__mark-d {
-  background-color: #1b1d23;
-  clip-path: inset(0 26.21% 0 0);
-}
-
-.da-signin__mark-dot {
-  background-color: var(--da-orange-mark);
-  clip-path: inset(0 0 0 73.79%);
+  inline-size: 150px;
+  block-size: auto;
+  color: #1b1d23;
+  --wordmark-dot: var(--da-orange-mark);
 }
 
 /* ---- the type ------------------------------------------------------------ */
 
 /* `margin` on every line, because Payload's base styles give `h1` and `p`
    margins of their own and this has to be the studio's rhythm, not theirs. */
-.da-signin__eyebrow {
-  margin: 28px 0 0;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 16px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--da-ink-3);
-}
-
 .da-signin__title {
-  margin: 6px 0 0;
+  margin: 28px 0 0;
   font-family: var(--font-display);
   font-size: 32px;
   font-weight: 500;

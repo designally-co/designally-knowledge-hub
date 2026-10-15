@@ -149,14 +149,20 @@ body.da-rail-ready .da-rail {
   margin: 0;
 }
 
+/* The wordmark on the eyebrow's line, 16px like the caps it replaces, in the
+   D.'s own two colours so the mark and the word beside it read as one brand. */
 .da-lockup__eyebrow {
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 16px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--da-ink-3);
+  display: flex;
+  align-items: center;
+  block-size: 16px;
+}
+
+.da-lockup__wordmark {
+  display: block;
+  inline-size: 94px;
+  block-size: auto;
+  color: #1b1d23;
+  --wordmark-dot: var(--da-orange-mark);
 }
 
 .da-lockup__name {

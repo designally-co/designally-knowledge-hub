@@ -19,6 +19,7 @@ import { AccountMenu } from './AccountMenu'
 import { AccountSheet } from './AccountSheet'
 import { ConfirmDialog } from './ConfirmDialog'
 import { MOTION, duration } from './motion'
+import { Wordmark } from '../Wordmark'
 import './SideNav.css'
 
 /**
@@ -340,13 +341,19 @@ export function SideNav() {
   )
 }
 
-/** The mark, "Designally" over the product's name — the rail's and the drawer's. */
+/**
+ * The mark, the wordmark over the product's name — the rail's and the drawer's.
+ * The wordmark stands where "Designally" was set as a caps eyebrow; the D.
+ * stays beside it because it is also what the folded rail keeps.
+ */
 function Lockup() {
   return (
     <div className="da-lockup">
-      <FlatMark />
+      <FlatMark decorative />
       <div className="da-lockup__text">
-        <p className="da-lockup__eyebrow">Designally</p>
+        <p className="da-lockup__eyebrow">
+          <Wordmark className="da-lockup__wordmark" />
+        </p>
         <p className="da-lockup__name">Knowledge Hub</p>
       </div>
     </div>
