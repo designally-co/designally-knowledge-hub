@@ -55,10 +55,12 @@ export const SignIn: React.FC = () => {
        corner — at the width of a form. No shadow: elevation here is
        structural, and the hairline is what says "object" on this ground. */
     <section aria-labelledby="signin-title" className="da-signin">
-      {/* The wordmark, then heading and deck — the side nav's lockup carries
-          the same word over the same name. It takes the place of the D. and
-          the "Designally" eyebrow together: the word says both. */}
-      <Wordmark className="da-signin__wordmark" />
+      {/* The brand on its own strip, then the task: heading, deck, button.
+          The wordmark takes the place of the D. and the "Designally" eyebrow
+          together — the word says both. */}
+      <div className="da-signin__brand">
+        <Wordmark className="da-signin__wordmark" />
+      </div>
       <h1 className="da-signin__title" id="signin-title">
         Knowledge Hub
       </h1>
