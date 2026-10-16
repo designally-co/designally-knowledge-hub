@@ -1,11 +1,17 @@
-/** Real Payload/SQLite check; synthetic data and media only, in a temporary folder. */
+/** Real Payload check; synthetic data/media and either SQLite or CI-only Postgres. */
 import assert from 'node:assert/strict'
 import { mkdtemp, rm } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 
 const scratch = await mkdtemp(path.join(os.tmpdir(), 'hub-public-reads-'))
-process.env.DATABASE_URI = `file:${path.join(scratch, 'test.db')}`
+const ciDatabase = process.env.HUB_READ_TEST_DATABASE_URI
+if (ciDatabase) {
+  const target = new URL(ciDatabase)
+  assert.ok(['localhost', '127.0.0.1'].includes(target.hostname), 'scratch database only')
+  assert.equal(target.password, 'ci-throwaway', 'scratch credentials only')
+}
+process.env.DATABASE_URI = ciDatabase || `file:${path.join(scratch, 'test.db')}`
 process.env.PAYLOAD_SECRET = 'isolated-public-read-regression-only'
 process.env.MEDIA_STORAGE = 'local'
 for (const key of ['DB_SCHEMA', 'VERCEL', 'RESEND_API_KEY', 'ANTHROPIC_API_KEY']) delete process.env[key]
