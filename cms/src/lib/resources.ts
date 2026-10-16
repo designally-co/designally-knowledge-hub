@@ -2,7 +2,7 @@ import { getPayload } from 'payload'
 import type { Where } from 'payload'
 
 import config from '@/payload.config'
-import type { Article as ArticleDoc, Media, Resource, ResourceCategory } from '@/payload-types'
+import type { Article as ArticleDoc, ArticlesSelect, Media, Resource, ResourceCategory } from '@/payload-types'
 import { localeHref, type Locale } from './i18n'
 import { readingMinutes } from './readingTime'
 import {
@@ -39,6 +39,21 @@ export interface CarouselItem {
   href: string
 }
 
+// A card never renders the article body, references or SEO text. Selecting the
+// fields here keeps both rich-text locales off the database connection; mapping
+// a full document to a small card afterwards is too late to save that traffic.
+const ARTICLE_CARD_SELECT = {
+  title: true,
+  publishedDate: true,
+  tag: true,
+  coverImage: true,
+  coverUrl: true,
+  slug: true,
+} as const satisfies ArticlesSelect
+
+type ArticleCardDoc = Pick<ArticleDoc, 'id' | keyof typeof ARTICLE_CARD_SELECT>
+type ArticleCover = Pick<ArticleDoc, 'coverImage' | 'coverUrl'>
+
 /** Human date, e.g. "6 July 2026". Empty string when unset. */
 function formatDate(value: string | null | undefined, locale: Locale): string {
   if (!value) return ''
@@ -66,7 +81,7 @@ function formatDate(value: string | null | undefined, locale: Locale): string {
  * Only an uploaded file has a description. A pasted `coverUrl` is a string with
  * no record behind it, so there is nothing to say about it.
  */
-function coverAltOf(r: ArticleDoc): string | undefined {
+function coverAltOf(r: ArticleCover): string | undefined {
   const img = r.coverImage
   if (img && typeof img === 'object') {
     const media = img as Media
@@ -76,7 +91,7 @@ function coverAltOf(r: ArticleDoc): string | undefined {
 }
 
 /** Resolve a cover image URL: uploaded Media takes precedence over an external coverUrl. */
-function coverOf(r: ArticleDoc): string | undefined {
+function coverOf(r: ArticleCover): string | undefined {
   const img = r.coverImage
   if (img && typeof img === 'object') {
     const media = img as Media
@@ -99,7 +114,7 @@ function coverOf(r: ArticleDoc): string | undefined {
  * the set at its own width. A pasted `coverUrl` has no derivatives: undefined,
  * and the `src` alone stands.
  */
-function coverSrcSetOf(r: ArticleDoc): string | undefined {
+function coverSrcSetOf(r: ArticleCover): string | undefined {
   const img = r.coverImage
   if (!img || typeof img !== 'object') return undefined
   const media = img as Media
@@ -123,12 +138,12 @@ function coverSrcSetOf(r: ArticleDoc): string | undefined {
  * set it — 0 of 22 articles — so the `??` only ever resolved right, and the
  * field has been retired. See `seoField` in collections/shared.ts.
  */
-function shareImageOf(r: ArticleDoc): string | undefined {
+function shareImageOf(r: ArticleCover): string | undefined {
   return coverOf(r)
 }
 
 /** What that picture shows, when the file carries a description. */
-function shareImageAltOf(r: ArticleDoc): string | undefined {
+function shareImageAltOf(r: ArticleCover): string | undefined {
   return coverAltOf(r)
 }
 
@@ -138,11 +153,11 @@ function shareImageAltOf(r: ArticleDoc): string | undefined {
  * measure (external URL or no cover — the ratio there is just a placeholder box).
  */
 const DEFAULT_RATIO = '3 / 4'
-function ratioKnownOf(r: ArticleDoc): boolean {
+function ratioKnownOf(r: ArticleCover): boolean {
   const img = r.coverImage
   return Boolean(img && typeof img === 'object' && (img as Media).width && (img as Media).height)
 }
-function ratioOf(r: ArticleDoc): string {
+function ratioOf(r: ArticleCover): string {
   const img = r.coverImage
   if (img && typeof img === 'object') {
     const media = img as Media
@@ -159,7 +174,7 @@ function ratioOf(r: ArticleDoc): string {
  * the shape they already take. Keeping the view model plural means the singular
  * field is a CMS concern rather than something every component has to know.
  */
-function toCard(r: ArticleDoc, locale: Locale): CarouselItem {
+function toCard(r: ArticleCardDoc, locale: Locale): CarouselItem {
   return {
     id: String(r.id),
     title: r.title,
@@ -228,6 +243,8 @@ export async function getRecentArticles(
         sort: '-publishedDate',
         limit,
         depth: 1, // populate the coverImage upload relation
+        select: ARTICLE_CARD_SELECT,
+        pagination: false,
         locale,
       })
       return docs.map((r) => toCard(r, locale))
@@ -280,12 +297,14 @@ export async function getRelatedArticles(
         where: { and: [{ slug: { equals: slug } }, ...publishedOnly] },
         limit: 1,
         depth: 0,
+        select: { related: true, tag: true },
+        pagination: false,
         locale,
       })
       const self = selfDocs[0]
       if (!self) return []
 
-      const cardsFor = async (where: Where, limit: number): Promise<ArticleDoc[]> => {
+      const cardsFor = async (where: Where, limit: number): Promise<ArticleCardDoc[]> => {
         if (limit <= 0) return []
         const { docs } = await payload.find({
           collection: 'articles',
@@ -293,6 +312,8 @@ export async function getRelatedArticles(
           sort: '-publishedDate',
           limit,
           depth: 1, // populate coverImage
+          select: ARTICLE_CARD_SELECT,
+          pagination: false,
           locale,
         })
         return docs
@@ -309,10 +330,10 @@ export async function getRelatedArticles(
          also the exclusion list, so nothing can appear twice and the article
          never links to itself. It always holds at least `self.id`, so the
          `not_in` below is never handed an empty array. */
-      const out: ArticleDoc[] = []
+      const out: ArticleCardDoc[] = []
       const taken = [self.id]
       const room = () => count - out.length
-      const add = (docs: ArticleDoc[]) => {
+      const add = (docs: ArticleCardDoc[]) => {
         for (const doc of docs) {
           out.push(doc)
           taken.push(doc.id)
@@ -330,7 +351,7 @@ export async function getRelatedArticles(
         add(
           pickedIds
             .map((id) => byId.get(id))
-            .filter((d): d is ArticleDoc => Boolean(d))
+            .filter((d): d is ArticleCardDoc => Boolean(d))
             .slice(0, count),
         )
       }
@@ -369,6 +390,8 @@ export async function getLatestTags(count = 12, locale: Locale = 'en'): Promise<
         sort: '-publishedDate',
         limit: 80,
         depth: 0,
+        select: { tag: true },
+        pagination: false,
         locale,
       })
       const seen: string[] = []
@@ -400,6 +423,8 @@ export async function getPopularTags(count = 6, locale: Locale = 'en'): Promise<
         sort: '-publishedDate',
         limit: 1000,
         depth: 0,
+        select: { tag: true },
+        pagination: false,
         locale,
       })
       // A Map keeps first-seen order, which is newest first; the sort is stable,
@@ -434,6 +459,8 @@ export async function getArticlesByTag(
         sort: '-publishedDate',
         limit,
         depth: 1,
+        select: ARTICLE_CARD_SELECT,
+        pagination: false,
         locale,
       })
       return docs.map((r) => toCard(r, locale))
@@ -458,6 +485,8 @@ export async function getArticlesByCategory(
         sort: '-publishedDate',
         limit,
         depth: 1,
+        select: ARTICLE_CARD_SELECT,
+        pagination: false,
         locale,
       })
       return docs.map((r) => toCard(r, locale))
@@ -527,6 +556,7 @@ export async function getArticleListing({
         page,
         limit: perPage,
         depth: 1,
+        select: ARTICLE_CARD_SELECT,
         locale,
       })
       return {
