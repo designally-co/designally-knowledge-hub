@@ -72,6 +72,7 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - run: npx tsc --noEmit
       - name: Public article reads preserve content without fetching bodies for cards
+        timeout-minutes: 2
         run: npx tsx scripts/test-public-article-reads.ts
         env:
           HUB_READ_TEST_DATABASE_URI: postgres://postgres:ci-throwaway@127.0.0.1:5432/postgres

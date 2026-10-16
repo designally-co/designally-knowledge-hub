@@ -76,3 +76,6 @@ try {
   await payload.destroy()
   await rm(scratch, { recursive: true, force: true })
 }
+// Payload's Postgres development initialization leaves handles alive after
+// destroy(). This standalone check has finished and owns no production client.
+process.exit(0)
