@@ -43,8 +43,8 @@
   .site-header__bar > .site-nav { grid-column: 4 / span 6; justify-self: center; gap: var(--space-8); }
 }
 
-/* The brand, in the header and at the head of the drawer. It holds the mark
-   rather than the word now — see `Wordmark` in SiteHeader. */
+/* The brand, in the header and at the head of the drawer — the wordmark, see
+   `Wordmark`. */
 .wordmark {
   display: inline-flex;
   align-items: center;
@@ -56,37 +56,29 @@
   flex: none;
 }
 
-/* THE FLAT MARK, ONE FILE MASKED TWICE. The artwork is a white D. on
-   transparency; the D runs to 73.79% of the width and the stop begins there, so
-   two layers clipped either side of that seam take their own colours while both
-   stay registered to the same drawing. The ratio is the file's own, 290x256. */
-.wordmark__mark {
-  position: relative;
-  display: inline-block;
-  inline-size: 30px;
-  aspect-ratio: 290 / 256;
+/* SIZED BY WIDTH, the height follows the drawing (739 x 79.06). 128px on a
+   phone leaves the action cluster its room at 360px; 152 from the tablet bar.
+   From 64em the wordmark owns two grid columns, 137px at 1024, so it steps
+   down to 132 until 80em hands it a third. The letters are ink and the stop is
+   the accent, as the D. and its stop were. */
+.wordmark__svg {
+  display: block;
+  inline-size: 128px;
+  block-size: auto;
+  color: var(--color-neutral-black);
+  --wordmark-dot: var(--color-accent-orange);
 }
 
 @media (min-width: 48em) {
-  .wordmark__mark { inline-size: 34px; }
+  .wordmark__svg { inline-size: 152px; }
 }
 
-.wordmark__mark i {
-  position: absolute;
-  inset: 0;
-  mask: url('/designally-mark.png') no-repeat center / contain;
-  -webkit-mask: url('/designally-mark.png') no-repeat center / contain;
+@media (min-width: 64em) {
+  .wordmark__svg { inline-size: 132px; }
 }
 
-.wordmark__d {
-  background-color: var(--color-neutral-black);
-  clip-path: inset(0 26.21% 0 0);
-}
-
-/* The stop is the one part of this identity that has always been the accent. */
-.wordmark__dot {
-  background-color: var(--color-accent-orange);
-  clip-path: inset(0 0 0 73.79%);
+@media (min-width: 80em) {
+  .wordmark__svg { inline-size: 160px; }
 }
 
 /* Desktop navigation. Below 64em the four items plus the wordmark and the
@@ -744,40 +736,17 @@
   .site-footer__cols > :nth-child(4) { grid-column: 11 / span 2; }
 }
 
-/* THE SAME MARK AS THE HEADER'S, at masthead size and reversed out of the
-   footer's ochre. It is the header's lockup enlarged rather than a second
-   treatment: the D takes the paper the footer's type is set in, and the stop
-   keeps the accent. */
+/* THE HEADER'S WORDMARK at masthead size, reversed out of the footer's ochre.
+   White, not the paper off-white: on the ochre band the warm page colour read
+   as tinted letters rather than reversed ones. The stop is white too, and only
+   here — an orange stop on the ochre is one warm colour on another, so the
+   lockup is knocked out whole. */
 .site-footer__mark {
-  position: relative;
   display: block;
-  inline-size: clamp(56px, 11vw, 74px);
-  aspect-ratio: 290 / 256;
+  inline-size: clamp(180px, 30vw, 240px);
+  block-size: auto;
   margin: 0 0 var(--space-6);
-}
-
-.site-footer__mark i {
-  position: absolute;
-  inset: 0;
-  mask: url('/designally-mark.png') no-repeat center / contain;
-  -webkit-mask: url('/designally-mark.png') no-repeat center / contain;
-}
-
-/* White, not the paper off-white: on the ochre band the warm page colour read as a
-   tinted D rather than a reversed one, and this is the only place in the
-   identity where the letter is knocked out of a colour. */
-.site-footer__mark-d {
-  background-color: var(--color-neutral-white);
-  clip-path: inset(0 26.21% 0 0);
-}
-
-/* WHITE HERE, AND ONLY HERE. Everywhere else the stop is the accent; on the
-   ochre band an orange stop is one warm colour on another, so the lockup is
-   knocked out whole. Two layers still, because the mask needs them — they just
-   happen to be the same value on this ground. */
-.site-footer__mark-dot {
-  background-color: var(--color-neutral-white);
-  clip-path: inset(0 0 0 73.79%);
+  color: var(--color-neutral-white);
 }
 
 /* THE FOOTER'S ORDER. The serif tagline leads; everything under it is set on

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Divider, SocialLinks } from './ds'
 import { FooterNavGroup } from './FooterNavGroup'
 import { LocaleSwitcher } from './LocaleSwitcher'
+import { Wordmark } from './Wordmark'
 import { CATEGORIES, TAG_OPTIONS, categorySlug, tagPath } from '@/lib/tags'
 import {
   categoryLabel,
@@ -39,13 +40,9 @@ export function SiteFooter({ locale, dict }: { locale: Locale; dict: Dictionary 
 
         <div className="site-footer__cols">
           <div className="site-footer__masthead">
-            {/* The mark heads the masthead: left-aligned beside the lists, and
-                centred with the rest of the masthead on a phone. The two layers
-                are decoration — the label says the name. */}
-            <p aria-label="Designally" className="site-footer__mark" role="img">
-              <i aria-hidden="true" className="site-footer__mark-d" />
-              <i aria-hidden="true" className="site-footer__mark-dot" />
-            </p>
+            {/* The wordmark heads the masthead: left-aligned beside the lists,
+                and centred with the rest of the masthead on a phone. */}
+            <Wordmark className="site-footer__mark" />
             <p className="site-footer__blurb">{dict.footer.blurb}</p>
             <p className="site-footer__label site-footer__label--social">{dict.footer.social}</p>
             <SocialLinks tone="onDark" className="site-footer__social" />

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Button, Icon } from './ds'
 import { LocaleSwitcher } from './LocaleSwitcher'
 import { HeaderSearch } from './HeaderSearch'
+import { Wordmark } from './Wordmark'
 import { CATEGORIES, TAXONOMY, categorySlug, tagPath, tagSlug, type Category } from '@/lib/tags'
 import {
   categoryLabel,
@@ -25,32 +26,6 @@ import {
  * that category's tags, with debounced hover intent. Below 64em / on touch the nav
  * collapses into the drawer.
  */
-
-/**
- * The mark, not the word.
- *
- * Ported from designally-platform's `FlatMark` — the D in ink with the full
- * stop in the accent, which is the approved lockup; `DESIGNALLY` set in caps
- * was retired there on 19 August 2026 and is not reintroduced here.
- *
- * IT IS ONE FILE, MASKED TWICE. `designally-mark.png` is a white D. on
- * transparency, so it cannot simply be recoloured — but it splits: the D runs
- * to 73.79% of the width and the stop begins there. Two layers masked by the
- * same artwork and clipped either side of that seam give each its own colour
- * while both stay registered to one drawing. The percentages are the
- * platform's measured ones, not a redraw.
- *
- * The whole lockup is one `role="img"` carrying the company's name: the two
- * layers are decoration, and a screen reader should hear "Designally" once.
- */
-function Wordmark() {
-  return (
-    <span aria-label="Designally" className="wordmark__mark" role="img">
-      <i aria-hidden="true" className="wordmark__d" />
-      <i aria-hidden="true" className="wordmark__dot" />
-    </span>
-  )
-}
 
 /** Category listing page, in the given locale. */
 function categoryAnchor(category: Category, locale: Locale): string {
@@ -281,7 +256,7 @@ function Drawer({ onClose, returnFocusTo, locale, dict, resourceCategories }: Dr
       >
         <div className="drawer__head">
           <span className="wordmark">
-            <Wordmark />
+            <Wordmark className="wordmark__svg" />
           </span>
           <button
             type="button"
@@ -490,7 +465,7 @@ export function SiteHeader({
       >
         <div className="shell site-header__bar">
           <Link className="wordmark" href={localeHref(locale, '/')} onFocus={closeNow}>
-            <Wordmark />
+            <Wordmark className="wordmark__svg" />
           </Link>
 
           <nav className="site-nav" aria-label={dict.nav.menu} ref={navRef}>
